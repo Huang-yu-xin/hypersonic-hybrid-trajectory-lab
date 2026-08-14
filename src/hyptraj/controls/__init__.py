@@ -1,25 +1,5 @@
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+"""Control laws for hypersonic trajectory modeling."""
 
-[project]
-name = "hyptraj"
-version = "0.1.0"
-description = "Dynamics, predictability and optimization of hybrid hypersonic trajectories"
-requires-python = ">=3.11"
-dependencies = [
-    "numpy>=1.26",
-    "scipy>=1.12",
-    "matplotlib>=3.8",
-]
+from .constant_k import ConstantKControl
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0",
-]
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+__all__ = ["ConstantKControl"]
