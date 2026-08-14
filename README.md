@@ -25,13 +25,22 @@ trajectories.
 - [x] Phase A — Physical-model foundation
 - [x] Phase B — Qian baseline dynamics
 - [x] Phase B.5 — Continuous-glide model audit
-- [ ] Phase C — Numerical validation
+- [x] Phase C — Numerical validation
 - [ ] Phase D — Sanger hybrid trajectory
 - [ ] Phase E — Baseline comparison
 - [ ] Phase F — Parameter sensitivity
 - [ ] Predictability / STM / FTLE
 - [ ] Risk
 - [ ] Optimization
+
+## Phase C — Numerical Validation
+
+    Phase C — Numerical Validation: COMPLETE
+    Production solver: DOP853 / rtol=1e-9 / state-scaled atol / max_step=20 s
+
+See [docs/phase_c/](docs/phase_c/) — final report, run order and the frozen
+`PRODUCTION_SOLVER_CONFIG` (`src/hyptraj/simulation/numerics.py`); the Phase B
+`DEFAULT_SOLVER_CONFIG` remains untouched for regression continuity.
 
 ## Frozen Baselines
 
