@@ -1,0 +1,12 @@
+# 竞赛材料（不公开传播）
+A题钱学森(1).pdf
+高超声速滑翔弹道_Phase_A-H_详细实现计划_公式双美元.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
