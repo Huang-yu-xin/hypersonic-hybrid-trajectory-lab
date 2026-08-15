@@ -295,7 +295,36 @@ calculation（属后续阶段）。
 | 15 | research endpoint = SRTI | **PASS** |
 | 16 | ground = compatibility only | **PASS** |
 | 17 | tests 126 passed、Qian/Sanger regression unchanged | **PASS** |
-| 18 | D1-D9 figure visual approval | **PENDING（人工/ChatGPT）** |
+| 18 | D1-D9 figure visual approval | **PASS**（zai-mcp-server 9/9 视觉检查） |
+| 19 | D7 final audit（D7A reference/production 核对 + D7B freeze） | **PASS** |
+
+### Final Phase D acceptance
+
+```
+D0 Mathematical specification:   PASS
+D1 Continuous dynamics:          PASS
+D2 Event primitives:             PASS
+D3 Hybrid state machine:         PASS
+D4 Skip-cycle metrics:           PASS
+D5 Canonical baseline:           PASS
+D6 Numerical / topology validation: PASS
+D7 Final audit:                  PASS
+Figure visual review:            PASS (D1-D9, 9/9)
+Final Phase D acceptance:        PASS
+```
+
+正式结论：
+
+```
+completed skip_count = 2
+mode topology: SANGER_ATM -> SANGER_VAC -> SANGER_ATM -> SANGER_VAC -> SANGER_ATM
+research endpoint = SRTI
+production solver = DOP853, rtol = 1e-9, state-scaled atol, max_step = 20 s
+topology validation = 18 / 18 cases match
+```
+
+所有 baseline 数值保持不变（本报告数值均为 numerical baseline，**不是**
+"真实唯一桑格尔轨迹"、"精确解"或"解析解"）。
 
 ## 17. Scope boundary / next phase
 
@@ -320,5 +349,6 @@ Phase D 核心结论：
 
 ---
 
-*D7A audit 完成。Tag freeze（sanger-baseline-v1.0 / phase-d-v1.0）
-等待 D1-D9 图像人工视觉验收后由 D7B 执行。*
+*D7A audit 与 D7B final freeze 完成：D1-D9 图像视觉验收 PASS（9/9），
+`sanger-baseline-v1.0` 与 `phase-d-v1.0` 已创建并指向最终冻结 commit。
+Phase D COMPLETE。*

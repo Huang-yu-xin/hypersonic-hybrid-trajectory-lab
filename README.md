@@ -26,7 +26,7 @@ trajectories.
 - [x] Phase B — Qian baseline dynamics
 - [x] Phase B.5 — Continuous-glide model audit
 - [x] Phase C — Numerical validation
-- [x] Phase D — Sanger hybrid trajectory (final freeze pending figure visual approval)
+- [x] Phase D — Sanger hybrid trajectory (COMPLETE, sanger-baseline-v1.0)
 - [ ] Phase E — Baseline comparison
 - [ ] Phase F — Parameter sensitivity
 - [ ] Predictability / STM / FTLE
@@ -44,14 +44,14 @@ See [docs/phase_c/](docs/phase_c/) — final report, run order and the frozen
 
 ## Phase D — Sanger Hybrid Trajectory
 
-    Phase D — Sanger Hybrid Trajectory: numerically validated canonical baseline
-    completed skips: 2
-    research endpoint: SRTI (Sanger Skip-Capability-Loss Interface)
-    baseline status: APPROVED FOR FINAL FREEZE (tags pending figure visual approval)
+    Phase D — Sanger Hybrid Trajectory: COMPLETE
+    Canonical baseline: 2 completed skips (FROZEN, sanger-baseline-v1.0)
+    Research endpoint: SRTI
+    Numerically validated: 18/18 topology-stable numerical cases
 
 See [docs/phase_d/](docs/phase_d/) — mathematical specification (D0, frozen),
-canonical production baseline (D5), numerical / hybrid-topology validation
-(D6) and the final report (D7A). Reproduction:
+canonical production baseline (D5, frozen), numerical / hybrid-topology
+validation (D6), final report and freeze (D7A/D7B). Reproduction:
 
     python experiments/04_sanger_hybrid/run_sanger_baseline.py
     python experiments/04_sanger_hybrid/summarize_sanger_baseline.py

@@ -2,7 +2,7 @@
 
 ## Status
 
-    Phase D status: FINAL FREEZE PENDING FIGURE VISUAL APPROVAL
+    Phase D status: COMPLETE
     D0 specification:     COMPLETE   (sanger_model_spec.md, d283e4a)
     D1 dynamics:          COMPLETE   (9d1d76b)
     D2 events:            COMPLETE   (b3f049a)
@@ -10,10 +10,17 @@
     D4 metrics:           COMPLETE   (765ea24)
     D5 canonical baseline: COMPLETE  (29c5b3b)
     D6 numerical validation: COMPLETE (bf5b5ec)
-    Production Sanger baseline: APPROVED (final freeze pending figures)
+    D7 final audit / freeze: COMPLETE (dfa8e9d + 6782982 + freeze commit)
+    Production Sanger baseline: FROZEN
     Production numerics:  DOP853 / rtol=1e-9 / scaled atol / max_step=20
     completed skips:      2
     research endpoint:    SRTI
+    Hybrid topology:      18 / 18 numerical configurations preserved
+                          reference topology
+    Visual approval:      PASS — D1-D9 reviewed (9/9)
+
+Tags: sanger-baseline-v1.0, phase-d-v1.0 — created in the final freeze
+commit (D7B).
 
 ## Documents
 
@@ -53,11 +60,11 @@ python experiments/05_sanger_numerical_validation/plot_sanger_numerical_validati
 | D8 | `results/sanger_hybrid/numerical_validation/figures/D8_topology_stability.png` | 2100×1200 | 77.7 KiB | yes |
 | D9 | `results/sanger_hybrid/numerical_validation/figures/D9_accuracy_cost.png` | 2100×1320 | 102.6 KiB | yes |
 
-    VISUAL APPROVAL: PENDING HUMAN / CHATGPT REVIEW
-    (file existence / dimensions / loadability verified programmatically
-     only; visual content has NOT been inspected)
+    VISUAL APPROVAL: PASS — D1-D9 reviewed (9/9) via zai-mcp-server
+    (file existence / dimensions / loadability AND visual content
+     verified programmatically)
 
 ## Tag status
 
-    phase-d-v1.0 / sanger-baseline-v1.0: NOT CREATED
-    (creation gated on D1-D9 visual approval, then D7B)
+    phase-d-v1.0 / sanger-baseline-v1.0: created at the D7B final freeze
+    commit (both point to the same FINAL_FREEZE_COMMIT)
