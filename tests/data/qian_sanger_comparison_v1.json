@@ -1,0 +1,151 @@
+{
+  "schema_version": "phase-e-comparison-regression-v1",
+  "reference_name": "qian-sanger-comparison-v1",
+  "source_protocol": "Phase E E0",
+  "qian_baseline": "qian-baseline-v1.0",
+  "sanger_baseline": "sanger-baseline-v1.0",
+  "solver": {
+    "method": "DOP853",
+    "rtol": 1e-09,
+    "atol": [
+      0.0001,
+      1e-11,
+      1e-07,
+      1e-11
+    ],
+    "max_step": 20.0,
+    "dense_output": true
+  },
+  "initial_conditions": {
+    "h0_m": 100000.0,
+    "v0_mps": 7000.0,
+    "gamma0_deg": -5.0,
+    "theta0_rad": 0.0,
+    "K": 3.0
+  },
+  "terminal_semantics": {
+    "qian": "RTI = QEG feasibility loss",
+    "sanger": "SRTI = skip-capability loss"
+  },
+  "semantic_fields": {
+    "qian_terminal_kind": "RTI",
+    "sanger_terminal_kind": "SRTI",
+    "sanger_skip_count": 2,
+    "qian_source_structure": [
+      "ENTRY_CAPTURE",
+      "QEG_GLIDE"
+    ],
+    "sanger_mode_sequence": [
+      "SANGER_ATM",
+      "SANGER_VAC",
+      "SANGER_ATM",
+      "SANGER_VAC",
+      "SANGER_ATM"
+    ],
+    "common_time_limiter": "qian",
+    "common_range_limiter": "qian",
+    "exposure_limiter": "qian",
+    "protocol_d_qian_status": "UNIQUE",
+    "protocol_d_sanger_status": "UNIQUE",
+    "checkpoint_modes": {
+      "common_time": {
+        "qian": [
+          "QEG_GLIDE",
+          "ATM"
+        ],
+        "sanger": [
+          "SANGER_ATM",
+          "ATM"
+        ]
+      },
+      "common_range": {
+        "qian": [
+          "QEG_GLIDE",
+          "ATM"
+        ],
+        "sanger": [
+          "SANGER_ATM",
+          "ATM"
+        ]
+      },
+      "protocol_d": {
+        "qian": [
+          "QEG_GLIDE",
+          "ATM"
+        ],
+        "sanger": [
+          "SANGER_ATM",
+          "ATM"
+        ]
+      }
+    }
+  },
+  "production_values": {
+    "t_common": 723.0379653550676,
+    "qian_R": 3490698.335988048,
+    "qian_h": 46040.88570915535,
+    "qian_v": 3192.53318163586,
+    "qian_E": -56954955.424265355,
+    "qian_loss": 19921285.479898177,
+    "sanger_R": 4601398.70804812,
+    "sanger_h": 95386.91220718343,
+    "sanger_v": 5970.746642264376,
+    "sanger_E": -43752660.020941764,
+    "sanger_loss": 6718990.076574586,
+    "DeltaR_time": 1110700.3720600721,
+    "DeltaH_time": 49346.02649802808,
+    "DeltaV_time": 2778.213460628516,
+    "DeltaE_time": 13202295.40332359,
+    "R_common": 3490698.335988048,
+    "t_Q": 723.0379653550676,
+    "t_S": 540.7202357300262,
+    "time_saving": 182.31772962504147,
+    "DeltaH_range": 25182.669435710646,
+    "DeltaV_range": 3319.429649922083,
+    "DeltaE_range": 16349253.77978275,
+    "tau_common": 723.0379653550676,
+    "pd_t_Q": 723.0379653550676,
+    "pd_t_S": 1071.4025228573248,
+    "elapsed_time_extension": 348.3645575022572,
+    "DeltaR_atm_exposure": 3121549.638631025,
+    "DeltaH_tau": 34576.28802322317,
+    "DeltaV_tau": 2302.4219845310768,
+    "DeltaE_tau": 10333683.794067994,
+    "qian_total_loss": 19921285.479898177,
+    "sanger_total_loss": 9600742.611784741,
+    "sanger_atm_duration": 771.1814266152292,
+    "sanger_vac_duration": 348.3645575022572,
+    "sanger_vac_range": 2171733.900618002,
+    "sanger_vac_max_rel_drift": 1.8363745124041446e-16,
+    "tau_at_common_time_qian": 723.0379653550676,
+    "tau_at_common_time_sanger": 441.3617470363778,
+    "tau_at_common_range_qian": 723.0379653550676,
+    "tau_at_common_range_sanger": 259.0440174113363,
+    "qian_h_min": 46040.88570915628,
+    "qian_h_max": 99999.99999972526,
+    "qian_v_min": 3192.53318163586,
+    "sanger_h_min": 45510.561815059744,
+    "sanger_h_max": 130352.12118171807,
+    "sanger_v_min": 5482.946113518439,
+    "qian_atm_fraction": 1.0,
+    "sanger_atm_fraction": 0.6888340787744727,
+    "sanger_vac_fraction": 0.3111659212255273,
+    "qian_q_max": 61386.61096966274,
+    "sanger_q_max": 61386.61096966347,
+    "qian_aD_max": 12.277322193933127,
+    "sanger_aD_max": 12.27732219393288,
+    "qian_q_max_time": 92.64648149546886,
+    "sanger_q_max_time": 92.64647922005015,
+    "qian_q_max_alt": 46051.408376862295,
+    "sanger_q_max_alt": 46051.408438110724,
+    "ct_qian_q_max": 61386.61096966274,
+    "ct_sanger_q_max": 61386.61096966347,
+    "cr_qian_q_max": 61386.61096966274,
+    "cr_sanger_q_max": 61386.61096966347,
+    "qian_capture_time": 93.42878537129322,
+    "qian_terminal_time": 723.0379653550676,
+    "qian_terminal_range": 3490698.335988048,
+    "sanger_terminal_time": 1119.5459841174863,
+    "sanger_terminal_range": 6872895.31994491
+  }
+}

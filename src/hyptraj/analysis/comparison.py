@@ -556,19 +556,24 @@ def build_qian_comparison_trajectory(
     vehicle: VehicleParams,
     initial: InitialCondition,
     control,
+    solver_config: SolverConfig | None = None,
 ) -> ComparisonTrajectory:
     """Qian Phase-E comparison realization.
 
-    Runs the frozen ``integrate_qian_glide`` with
-    ``PRODUCTION_SOLVER_CONFIG`` and an E0.1 ``DenseOutputCollector``.
-    The primary research domain is ``[t0, RTI]`` (ENTRY_CAPTURE +
-    QEG_GLIDE); the GROUND_CONTINUATION dense stage collected by the
-    hook is excluded from the comparison trajectory.
+    Runs the frozen ``integrate_qian_glide`` with an E0.1
+    ``DenseOutputCollector``.  ``solver_config`` defaults to
+    ``PRODUCTION_SOLVER_CONFIG`` (E6 audit may override it with a
+    high-precision reference config; the default path is bit-identical
+    to the pre-E6 behavior).  The primary research domain is ``[t0,
+    RTI]`` (ENTRY_CAPTURE + QEG_GLIDE); the GROUND_CONTINUATION dense
+    stage collected by the hook is excluded from the comparison
+    trajectory.
     """
+    solver_config = solver_config or PRODUCTION_SOLVER_CONFIG
     collector = DenseOutputCollector()
     result: TrajectoryResult = integrate_qian_glide(
         env, vehicle, initial, control,
-        solver=PRODUCTION_SOLVER_CONFIG,
+        solver=solver_config,
         dense_output_collector=collector,
     )
 
@@ -655,6 +660,7 @@ def build_qian_comparison_trajectory(
         env=env,
         vehicle=vehicle,
         control=control,
+        solver_config=solver_config,
     )
 
 
@@ -663,19 +669,23 @@ def build_sanger_comparison_trajectory(
     vehicle: VehicleParams,
     initial: InitialCondition,
     control,
+    solver_config: SolverConfig | None = None,
 ) -> ComparisonTrajectory:
     """Sanger Phase-E comparison realization.
 
-    Runs the frozen ``integrate_sanger_hybrid`` (default
-    ``PRODUCTION_SOLVER_CONFIG``, explicit) with an E0.1
-    ``DenseOutputCollector``.  The research domain is the full hybrid
+    Runs the frozen ``integrate_sanger_hybrid`` with an E0.1
+    ``DenseOutputCollector``.  ``solver_config`` defaults to
+    ``PRODUCTION_SOLVER_CONFIG`` (E6 audit may override it with a
+    high-precision reference config; the default path is bit-identical
+    to the pre-E6 behavior).  The research domain is the full hybrid
     trajectory from the synthetic E0 to SRTI; the ground compatibility
     continuation is not part of this integrator at all.
     """
+    solver_config = solver_config or PRODUCTION_SOLVER_CONFIG
     collector = DenseOutputCollector()
     traj = integrate_sanger_hybrid(
         env, vehicle, initial, control,
-        solver=PRODUCTION_SOLVER_CONFIG,
+        solver=solver_config,
         dense_output_collector=collector,
     )
     if not traj.success:
@@ -738,6 +748,7 @@ def build_sanger_comparison_trajectory(
         env=env,
         vehicle=vehicle,
         control=control,
+        solver_config=solver_config,
     )
 
 
@@ -755,6 +766,7 @@ def _assemble(
     env: EnvironmentParams,
     vehicle: VehicleParams,
     control,
+    solver_config: SolverConfig | None = None,
 ) -> ComparisonTrajectory:
     """Assemble a ComparisonTrajectory with its exact event lookup.
 
@@ -783,7 +795,7 @@ def _assemble(
         environment=env,
         vehicle=vehicle,
         K=getattr(control, "value", None),
-        solver_config=PRODUCTION_SOLVER_CONFIG,
+        solver_config=solver_config or PRODUCTION_SOLVER_CONFIG,
         _event_lookup=event_lookup,
     )
 
