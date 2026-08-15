@@ -6,6 +6,7 @@
 
     F0: COMPLETE
     F0.1: COMPLETE  (Qian Regime-Classification Access Amendment)
+    F1: COMPLETE    (Single-parameter pilot; no stop gate)
 
     Anchor: phase-e-v1.0
             44a99119cf9e82e64d68b5b8abdbb4a20406c7bc
@@ -17,7 +18,7 @@
         gamma0 ∈ [-7, -3] deg
         K     ∈ [2.0, 4.0]
 
-    Next: F1 single-parameter pilot
+    Next: F2 coarse gamma0-K hybrid regime map
 
 ## Documents
 
@@ -26,6 +27,9 @@
   margins、boundary refinement、derivative 策略、数值/artefact 策略、
   F1–F7 roadmap；F0.1 Amendment：Qian research-terminal API 与
   regime classifier）。
+- [`f1_pilot_report.md`](f1_pilot_report.md) — F1 单参数先导报告
+  （gamma slice + K slice、regime 观察、transition intervals、
+  topology margins、stop-gate audit、F2 决策）。
 
 ## Roadmap
 
