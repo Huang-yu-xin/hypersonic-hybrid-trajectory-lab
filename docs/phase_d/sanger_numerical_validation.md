@@ -31,8 +31,12 @@ dense_output = True
 ```
 
 参考拓扑：skip_count = 2，terminal_kind = SRTI，
-SRTI: t = 1119.5459841174863 s，h = 86138.741034 m，R = 6872895.319945 m，
-v = 5482.946114 m/s。
+SRTI: t = 1119.5459837862807 s，h = 86138.7409782568 m，
+R = 6872895.318287604 m，v = 5482.946114224176 m/s。
+
+> 注意：reference 的 SRTI 全精度值与 production baseline
+> （t = 1119.5459841174863 s）**不同**——两者之差即 production 数值误差
+> （Δt = 3.312e-7 s）。reference 仅用于误差估计，不是正式 baseline。
 
 ## 3. Reference self-stability（0.1 s vs 0.05 s）
 
@@ -137,12 +141,12 @@ crossing direction 检查（采样邻域，无状态扰动）：全部事件方�
 
 | 量 | 值 | 意义 |
 |---|---:|---|
-| SRTI altitude margin M_h = h_atm − h_SRTI | 13861.26 m | ≫ 数值误差（~1e-4 m）：第三跳失败不是数值边界效应 |
-| second apogee clearance M_A1 = h_A1 − h_atm | 2232.58 m | ≫ 毫米/厘米级误差：第二跳存在性数值稳健 |
-| exit gamma (X1) | +0.02245912 rad | 明确 outward crossing，非 grazing |
-| exit dh/dt (X1) | +133.92 m/s | 事件 transversal |
-| entry gamma / dh/dt | −0.02245912 rad / −133.92 m/s | 明确 re-entry |
-| SRTI gamma_dot | −8.719e-4 rad/s | 非退化 crossing，root 定位可靠 |
+| SRTI altitude margin M_h = h_atm − h_SRTI | 13861.2590217432 m | ≫ 数值误差（~1e-4 m）：第三跳失败不是数值边界效应 |
+| second apogee clearance M_A1 = h_A1 − h_atm | 2232.5755237359554 m | ≫ 毫米/厘米级误差：第二跳存在性数值稳健 |
+| exit gamma (X1) | +0.02245911898378354 rad | 明确 outward crossing，非 grazing |
+| exit dh/dt (X1) | +133.91587577494028 m/s | 事件 transversal |
+| entry gamma / dh/dt | −0.022459118983799688 rad / −133.91587577503648 m/s | 明确 re-entry |
+| SRTI gamma_dot | −8.719203963150439e-4 rad/s | 非退化 crossing，root 定位可靠 |
 
 ## 11. Accuracy-cost tradeoff
 

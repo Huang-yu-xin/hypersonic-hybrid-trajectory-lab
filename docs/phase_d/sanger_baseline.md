@@ -1,14 +1,19 @@
-# Sanger Hybrid Baseline — Canonical Candidate（D5）
+# Sanger Hybrid Baseline — Approved for Final Freeze（D5/D6/D7A）
 
-状态：**CANONICAL BASELINE CANDIDATE**（D5 freeze 前的正式候选）
+状态：**APPROVED FOR FINAL FREEZE**（D6 数值验证通过，D7A audit 批准；
+tag 待 D1-D9 图像人工视觉验收后由 D7B 创建）
 
 日期：2026-08-15
 分支：`feature/phase-d-sanger-hybrid`
-起点 commit：`765ea24`（D4）
 规范依据：`docs/phase_d/sanger_model_spec.md`（D0，source of truth）
 
-> 本候选在 **D6 numerical validation 通过之前**不得视为最终冻结基线；
-> 届时才创建 `sanger-baseline-v1.0` / `phase-d-v1.0` tag。
+数值验证：见 [sanger_numerical_validation.md](sanger_numerical_validation.md)
+（D6：18/18 拓扑稳定）
+最终报告：见 [phase_d_final_report.md](phase_d_final_report.md)（D7A）
+
+> 本 baseline 经 D6 数值验证（18/18 numerical cases 拓扑一致）批准为
+> 正式冻结候选；`sanger-baseline-v1.0` / `phase-d-v1.0` tag 仅在
+> 图像人工视觉验收通过后创建。baseline 数值未作任何更改。
 
 ## 1. Baseline definition
 
@@ -188,7 +193,7 @@ constant；其正式 numerical threshold 由 D6 定义。
 | 29 | no Phase E/F/predictability work | **PASS** |
 | 30 | all tests PASS | **PASS** |
 
-**D5 Acceptance：PASS（CANONICAL BASELINE CANDIDATE）**
+**D5 Acceptance：PASS（APPROVED FOR FINAL FREEZE — D6 数值验证通过，D7A audit 批准）**
 
 ---
 
