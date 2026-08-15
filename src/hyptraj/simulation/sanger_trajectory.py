@@ -71,6 +71,10 @@ from hyptraj.modes.sanger_hybrid import (
     sanger_atm_rhs,
     sanger_vac_rhs,
 )
+from hyptraj.simulation.dense_output import (
+    DenseOutputCollector,
+    DenseSolutionSegment,
+)
 from hyptraj.simulation.events import make_ground_event
 from hyptraj.simulation.numerics import PRODUCTION_SOLVER_CONFIG
 from hyptraj.simulation.sanger_events import (
@@ -237,6 +241,7 @@ def _make_segment(
     state_end: np.ndarray,
     trigger_event: str,
     sol,
+    dense_output_collector: DenseOutputCollector | None = None,
     pullout_time: float | None = None,
     pullout_state: np.ndarray | None = None,
     apogee_time: float | None = None,
@@ -244,6 +249,20 @@ def _make_segment(
 ) -> HybridSegment:
     t_grid = np.linspace(t_start, t_end, SEGMENT_SAMPLES)
     y_grid = sol.sol(t_grid)
+    if dense_output_collector is not None:
+        # E0.1 opt-in observation: expose the dense interpolant already
+        # computed by this segment's solve_ivp (runtime-only, never
+        # serialized, never re-integrated).
+        dense_output_collector.add(
+            DenseSolutionSegment(
+                index=index,
+                name=mode,
+                mode=mode,
+                t_start=t_start,
+                t_end=t_end,
+                solution=sol.sol,
+            )
+        )
     return HybridSegment(
         index=index,
         mode=mode,
@@ -291,6 +310,7 @@ def integrate_sanger_hybrid(
     initial: InitialCondition,
     control: Callable[[float, np.ndarray], float],
     solver: SolverConfig | None = None,
+    dense_output_collector: DenseOutputCollector | None = None,
     max_time: float = 5000.0,
     max_segments: int = 50,
 ) -> SangerHybridTrajectory:
@@ -306,6 +326,14 @@ def integrate_sanger_hybrid(
     ``max_time`` / ``max_segments`` are safety guards, not physical
     endpoints: triggering one stops the loop with ``success = False`` and
     a clear message.
+
+    ``dense_output_collector`` (E0.1 amendment) is an opt-in observer
+    hook: when passed, the solver dense interpolants already computed for
+    every segment are exposed as ``DenseSolutionSegment`` objects (one
+    per ``HybridSegment``, in integration order).  The default ``None``
+    leaves every existing call byte-identical; the hook never
+    re-integrates and never alters results.  Collected solutions are
+    runtime-only and must not be serialized into canonical artifacts.
 
     Raises
     ------
@@ -436,6 +464,7 @@ def integrate_sanger_hybrid(
                     _make_segment(
                         len(segments), SANGER_ATM, t_current, state,
                         t_e, x_e, ATMOSPHERE_EXIT, sol,
+                        dense_output_collector=dense_output_collector,
                         pullout_time=pullout_time,
                         pullout_state=pullout_state,
                     )
@@ -482,6 +511,7 @@ def integrate_sanger_hybrid(
                     _make_segment(
                         len(segments), SANGER_ATM, t_current, state,
                         t_e, x_e, SRTI, sol,
+                        dense_output_collector=dense_output_collector,
                         pullout_time=pullout_time,
                         pullout_state=pullout_state,
                     )
@@ -516,6 +546,7 @@ def integrate_sanger_hybrid(
                     _make_segment(
                         len(segments), SANGER_ATM, t_current, state,
                         t_e, x_e, TERMINAL_GROUND_BEFORE_SRTI, sol,
+                        dense_output_collector=dense_output_collector,
                         pullout_time=pullout_time,
                         pullout_state=pullout_state,
                     )
@@ -540,6 +571,7 @@ def integrate_sanger_hybrid(
                         len(segments), SANGER_ATM, t_current, state,
                         terminal_time, terminal_state,
                         TERMINAL_SOLVER_FAILURE, sol,
+                        dense_output_collector=dense_output_collector,
                         pullout_time=pullout_time,
                         pullout_state=pullout_state,
                     )
@@ -559,6 +591,7 @@ def integrate_sanger_hybrid(
                 _make_segment(
                     len(segments), SANGER_ATM, t_current, state,
                     terminal_time, terminal_state, TERMINAL_MAX_TIME, sol,
+                    dense_output_collector=dense_output_collector,
                     pullout_time=pullout_time,
                     pullout_state=pullout_state,
                 )
@@ -627,6 +660,7 @@ def integrate_sanger_hybrid(
                 _make_segment(
                     len(segments), SANGER_VAC, t_current, state,
                     t_e, x_e, ATMOSPHERE_ENTRY, sol,
+                    dense_output_collector=dense_output_collector,
                     apogee_time=apogee_time,
                     apogee_state=apogee_state,
                 )
@@ -649,6 +683,7 @@ def integrate_sanger_hybrid(
                     len(segments), SANGER_VAC, t_current, state,
                     terminal_time, terminal_state,
                     TERMINAL_SOLVER_FAILURE, sol,
+                    dense_output_collector=dense_output_collector,
                     apogee_time=apogee_time,
                     apogee_state=apogee_state,
                 )
@@ -666,6 +701,7 @@ def integrate_sanger_hybrid(
             _make_segment(
                 len(segments), SANGER_VAC, t_current, state,
                 terminal_time, terminal_state, TERMINAL_MAX_TIME, sol,
+                dense_output_collector=dense_output_collector,
                 apogee_time=apogee_time,
                 apogee_state=apogee_state,
             )

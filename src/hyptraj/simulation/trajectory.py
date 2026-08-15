@@ -24,6 +24,10 @@ from hyptraj.models.parameters import (
     InitialCondition,
     VehicleParams,
 )
+from hyptraj.simulation.dense_output import (
+    DenseOutputCollector,
+    DenseSolutionSegment,
+)
 from hyptraj.simulation.events import (
     make_capture_event,
     make_ground_event,
@@ -232,6 +236,7 @@ def integrate_qian_glide(
     initial: InitialCondition,
     control: Callable[[float, np.ndarray], float],
     solver: SolverConfig | None = None,
+    dense_output_collector: DenseOutputCollector | None = None,
 ) -> TrajectoryResult:
     """Integrate the APPROVED Qian continuous-glide baseline (dual endpoint).
 
@@ -251,6 +256,14 @@ def integrate_qian_glide(
     No state value is modified at any transition; no altitude clipping is
     used.  Saltation-matrix handling across the hybrid capture event is
     deferred to the predictability phase (documented in metadata).
+
+    ``dense_output_collector`` (E0.1 amendment) is an opt-in observer
+    hook: when passed, the solver dense interpolants already computed by
+    this function are exposed as ``DenseSolutionSegment`` objects (one
+    per stage, in integration order).  The default ``None`` leaves every
+    existing call byte-identical; the hook never re-integrates and never
+    alters results.  Collected solutions are runtime-only and must not be
+    serialized into canonical artifacts.
 
     Raises
     ------
@@ -287,6 +300,17 @@ def integrate_qian_glide(
         )
     t_capture = float(sol_cap.t_events[0][0])
     state_capture = sol_cap.sol(t_capture)
+    if dense_output_collector is not None:
+        dense_output_collector.add(
+            DenseSolutionSegment(
+                index=0,
+                name=ENTRY_CAPTURE,
+                mode=ENTRY_CAPTURE,
+                t_start=0.0,
+                t_end=t_capture,
+                solution=sol_cap.sol,
+            )
+        )
 
     # ---- Stage 1: QEG_GLIDE ----------------------------------------------
     sol_qeg = solve_ivp(
@@ -307,6 +331,17 @@ def integrate_qian_glide(
         )
     t_rti = float(sol_qeg.t_events[0][0])
     state_rti = sol_qeg.sol(t_rti)
+    if dense_output_collector is not None:
+        dense_output_collector.add(
+            DenseSolutionSegment(
+                index=1,
+                name=QEG_GLIDE,
+                mode=QEG_GLIDE,
+                t_start=t_capture,
+                t_end=t_rti,
+                solution=sol_qeg.sol,
+            )
+        )
 
     # ---- Stage 2: GROUND_CONTINUATION ------------------------------------
     ground = make_ground_event(env)
@@ -327,6 +362,17 @@ def integrate_qian_glide(
         )
     t_ground = float(sol_gnd.t_events[0][0])
     state_ground = sol_gnd.sol(t_ground)
+    if dense_output_collector is not None:
+        dense_output_collector.add(
+            DenseSolutionSegment(
+                index=2,
+                name=GROUND_CONTINUATION,
+                mode=GROUND_CONTINUATION,
+                t_start=t_rti,
+                t_end=t_ground,
+                solution=sol_gnd.sol,
+            )
+        )
 
     # ---- assemble uniform grids per stage --------------------------------
     n_pts = [400, 1200, 1200]  # ENTRY_CAPTURE, QEG_GLIDE, GROUND_CONTINUATION

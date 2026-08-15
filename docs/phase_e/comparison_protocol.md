@@ -233,6 +233,45 @@ Common-range protocol 使用前必须由 E1/E2 程序验证：
 - event states：优先使用 exact stored event states（如 RTI / SRTI 事件
   状态），不另行采样近似。
 
+### 10A. Continuous-Evaluation Access Amendment (E0.1)
+
+**原 E0 §10 continuous evaluation requirement 保持不变。**
+
+审计发现（E1 前置）：Qian 与 Sanger 的 frozen integrators 均已使用
+`dense_output=True` 并在内部拥有 `sol.sol`，但返回对象未暴露这些
+continuous interpolants，导致 §10 的 continuous state_at_time /
+segment-aware root solving / first_time_at_range 无法在无近似下实现。
+
+**E0.1 新增授权：**
+
+Phase E 可以对 frozen integration APIs 增加 **backward-compatible opt-in
+observation hook**（`dense_output_collector=None` 默认参数），仅暴露
+solver 已经产生的 dense output（`OdeSolution.sol` 及对应
+segment/stage metadata），以 `DenseSolutionSegment`（runtime-only）形式
+交给调用方。
+
+明确边界：
+
+- **no physics change** —— 不修改任何 RHS / 气动 / 引力 / 能量模型
+- **no numerical-config change** —— `DEFAULT_SOLVER_CONFIG` /
+  `PRODUCTION_SOLVER_CONFIG` 不动，`dense_output=True` 不变
+- **no event change** —— 事件函数、事件定位、事件判定语义不变
+- **no baseline change** —— baseline JSON / metrics / regression
+  artifacts 不变
+- **frozen tags remain immutable** —— `qian-baseline-v1.0` /
+  `phase-b-v1.0` / `phase-c-v1.0` / `sanger-baseline-v1.0` /
+  `phase-d-v1.0` 不移动、不删除、不重写
+- **default historical calls remain unchanged** —— 不传新参数时结果
+  bit-for-bit 不变（Qian: Capture / RTI / Ground 事件与 metrics 不变；
+  Sanger: `terminal_kind=SRTI`、`skip_count=2`、事件/模式序列不变）
+- **dense runtime objects are not frozen artifacts** —— 禁止写入 JSON /
+  CSV / pickle / canonical schema / regression artifacts
+
+禁止：重新运行 `solve_ivp`、重新拟合 interpolation、基于 sampled grid
+构造 cubic spline、monkeypatch module `solve_ivp`。
+
+这不是修改 comparison semantics，只是消除 API accessibility blocker。
+
 ## 11. Protocol D — Common Atmospheric Exposure
 
 定义累计 atmospheric exposure：
