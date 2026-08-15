@@ -4,7 +4,8 @@
 
     Phase F: IN PROGRESS
 
-    F0: PROTOCOL FREEZE
+    F0: COMPLETE
+    F0.1: COMPLETE  (Qian Regime-Classification Access Amendment)
 
     Anchor: phase-e-v1.0
             44a99119cf9e82e64d68b5b8abdbb4a20406c7bc
@@ -23,7 +24,8 @@
 - [`sensitivity_protocol.md`](sensitivity_protocol.md) — Phase F source of
   truth（F0 冻结：参数语义、computational domain、regime 分类、topology
   margins、boundary refinement、derivative 策略、数值/artefact 策略、
-  F1–F7 roadmap）。
+  F1–F7 roadmap；F0.1 Amendment：Qian research-terminal API 与
+  regime classifier）。
 
 ## Roadmap
 

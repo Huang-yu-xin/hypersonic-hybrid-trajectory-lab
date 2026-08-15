@@ -2,7 +2,8 @@
 
 ## Status
 
-    Phase F status:       F0 PROTOCOL FREEZE（Sensitivity / Topology Protocol Freeze）
+    Phase F status:       F0 COMPLETE + F0.1 COMPLETE
+                          （F0.1: Qian Regime-Classification Access Amendment）
     Branch:               feature/phase-f-gamma-k-sensitivity
     Created from:         phase-e-v1.0（44a99119cf9e82e64d68b5b8abdbb4a20406c7bc）
     F0 freeze date:       2026-08-16
@@ -17,6 +18,10 @@ F1–F7 的全部实现必须与本协议一致；任何冲突必须先修订本
 
 F0 本身**不**：运行正式 sweep、实现 sensitivity engine、修改 frozen physics、
 修改 Phase E comparison code、计算 derivative、进入 F1。
+
+F0.1（本文档 Amendment 节）**只**解决 Qian terminal/regime observability：
+新增一个严格受限、backward-compatible、classification-oriented 的 Qian
+research integration API；不运行 F1 slices。
 
 ---
 
@@ -722,3 +727,149 @@ F0 必须全部 PASS：
     [x] future event metadata requirement recorded
     [x] F0 docs only
     [x] pytest PASS（229 passed，test count 不变）
+
+---
+
+## Amendment — F0.1: Qian Regime-Classification Access Amendment
+
+状态：**COMPLETE**（2026-08-16）
+
+### A. Original blocker（为什么原 Qian baseline API 不足以做 regime classification）
+
+`src/hyptraj/simulation/trajectory.py` 的 `integrate_qian_glide` 是唯一 Qian
+生产入口，其 stage event 监听为：
+
+| Stage | 监听 events（frozen） | 缺失行为 |
+|---|---|---|
+| Stage 0 ENTRY_CAPTURE | 仅 `make_capture_event()` | capture missing 与 solver failure 走**同一个** `raise RuntimeError` |
+| Stage 1 QEG_GLIDE | 仅 `make_qeg_end_event(...)` | RTI missing 与 solver failure 走**同一个** `raise RuntimeError` |
+| Stage 2 GROUND_CONTINUATION | 仅 `make_ground_event(env)` | — |
+
+因此当前 public API 无法可靠区分：
+
+    GROUND_BEFORE_CAPTURE
+    GROUND_AFTER_CAPTURE_BEFORE_RTI
+    CENSORED / no-event（horizon）
+    NUMERICAL_FAILURE
+
+违反 F0 §8 冻结的 regime taxonomy。F0.1 仅解决该 observability 缺口。
+
+### B. 冻结约束（F0.1 硬性要求）
+
+- **historical Qian API remains frozen**：`integrate_qian_glide` 的 signature、
+  historical output、RuntimeError 行为、三阶段 ground-continuation 结果全部
+  保持不变（Phase B-E regression 依赖它）。
+- 禁止复制第二套 Qian 动力学：新 API 只复用 frozen
+  `atmospheric_dynamics`、`continuous_glide_rhs`、`make_capture_event`、
+  `make_qeg_end_event`、`make_ground_event`、`PRODUCTION_SOLVER_CONFIG`、
+  `DenseOutputCollector`（E0.1）。
+- 禁止解析 RuntimeError / SciPy message 文本做 regime 分类；terminal reason
+  必须来自 structured result。
+- 禁止靠 ground altitude sampled grid 判断终端；必须使用 exact event
+  localization（`sol.sol(t_event)`）。
+- `INVALID_INPUT`（如 `K <= 0`）仍由 `ConstantKControl` 抛 `ValueError`，
+  新 integrator 不吞掉；sweep layer 捕获并分类 `INVALID_INPUT`。
+
+### C. 新增 API（F0.1）
+
+1. `src/hyptraj/simulation/qian_research_trajectory.py`
+   - `integrate_qian_research_trajectory(env, vehicle, initial, control,
+     solver=PRODUCTION_SOLVER_CONFIG, dense_output_collector=None,
+     max_time=5000.0, simultaneous_tol_s=1e-6) -> QianResearchTrajectory`
+   - `QianResearchTrajectory`：`success` / `terminal_kind` /
+     `terminal_time` / `terminal_state` / `message` / `segments` /
+     `events` / `capture_event`（optional）/ `rti_event`（optional）/
+     `ground_event`（optional）/ `mode_sequence` / `initial_state` /
+     `solver_config` / `max_time_s` / `initial_conditions`。
+   - Terminal kinds（冻结词汇）：
+
+         RTI
+         GROUND_BEFORE_CAPTURE
+         GROUND_AFTER_CAPTURE_BEFORE_RTI
+         MAX_TIME
+         SOLVER_FAILURE
+         AMBIGUOUS_SIMULTANEOUS_EVENT
+
+   - Stage 语义（frozen RHS / events 不变，只扩监听）：
+     - Stage 0 同时监听 capture + ground：capture first → 进入 QEG_GLIDE；
+       ground first → `GROUND_BEFORE_CAPTURE`（physical terminal）。
+     - Stage 1 同时监听 RTI + ground：RTI first → `RTI`（research
+       success）；ground first → `GROUND_AFTER_CAPTURE_BEFORE_RTI`。
+     - 显式 event-time 比较（绝不依赖 events list position）；两个 root 在
+       `simultaneous_tol_s = 1e-6 s` 内同时 → `AMBIGUOUS_SIMULTANEOUS_EVENT`
+       （不任意归边）。
+     - horizon 内无任何 event → `MAX_TIME`（computational censor，不是
+       physical no-RTI）。默认 `max_time = 5000 s` 与 production t_span
+       兼容，不为 pilot 随意扩大。
+     - solver failure → `SOLVER_FAILURE`。
+   - `success` 语义与 Sanger 一致：仅 RTI 达成时为 True；`GROUND_*` 是
+     physical terminal 但 `success = False`。**classifier 必须以
+     `terminal_kind` 为准，不得以 `success` 为准。**
+
+2. `src/hyptraj/analysis/sensitivity_trajectory.py`（pure mapping）
+   - `classify_qian_regime(result)`：terminal kind → regime label：
+
+         RTI                               -> QIAN_RTI
+         GROUND_BEFORE_CAPTURE             -> GROUND_BEFORE_CAPTURE
+         GROUND_AFTER_CAPTURE_BEFORE_RTI   -> GROUND_AFTER_CAPTURE_BEFORE_RTI
+         MAX_TIME                          -> CENSORED
+         SOLVER_FAILURE                    -> NUMERICAL_FAILURE
+         AMBIGUOUS_SIMULTANEOUS_EVENT      -> BOUNDARY_AMBIGUOUS（F0.1 新增）
+
+     `BOUNDARY_AMBIGUOUS` 文档定义：两个终端事件在严格 tie tolerance 内
+     同时发生、数值上无法分辨先后 —— 属于边界模糊状态，既不是纯数值失败
+     也不是纯 censored；heatmap 处理同 censored（禁止插值），F3 boundary
+     refinement 必须检查该类点。
+   - `classify_sanger_regime(result, skip_count=None)`：`srti + skip_count
+     = N -> SRTI_N{N}`；`ground_before_srti -> GROUND_BEFORE_SRTI`；
+     `max_time / max_segments -> CENSORED`；`solver_failure ->
+     NUMERICAL_FAILURE`。SRTI 必须提供 frozen `skip_count`。
+   - 未知 terminal kind 抛 `KeyError`（编程错误），绝不静默归为 failure。
+
+### D. 架构选择理由
+
+选择 **simulation-level research integrator**（而非纯 analysis wrapper）：
+`integrate_qian_glide` 不暴露 stage 级结构化 solver 结果（每 stage 的
+`success`、`t_events`、dense output），analysis wrapper 只能捕获
+`RuntimeError` 而禁止解析其文本 —— 无法获得 terminal reason。因此必须由
+simulation 层直接编排 `solve_ivp` 调用（完全复用 frozen RHS / events /
+solver config），与 `integrate_sanger_hybrid`（`sanger_trajectory.py`）的
+既有模式平行。`trajectory.py` 未做任何修改。
+
+### E. Sanger 未修改
+
+`integrate_sanger_hybrid` 已能可靠区分 `srti` / `ground_before_srti` /
+`max_time` / `max_segments` / `solver_failure`，F0.1 只新增薄 classifier
+（`classify_sanger_regime`），**不修改** Sanger integrator 与 metrics。
+
+### F. F0.1 测试覆盖（tests/test_phase_f_regime_classification.py）
+
+A–L 全项：baseline → QIAN_RTI（capture/RTI exact state 与 Phase E
+regression 在 1e-9 相对容差内一致，实测 diff = 0.0）；historical
+`integrate_qian_glide` 数值不变；GROUND_BEFORE_CAPTURE /
+GROUND_AFTER_CAPTURE_BEFORE_RTI（真实冻结动力学 + monkeypatch
+counterpart event）；max_time → CENSORED；mocked solver failure →
+NUMERICAL_FAILURE；censored ≠ numerical failure；classifier pure mapping
+（不解析 message）；tie policy → BOUNDARY_AMBIGUOUS；Sanger baseline →
+SRTI_N2；INVALID_INPUT 透传 ValueError。
+
+### G. F0.1 acceptance
+
+    [x] original blocker documented
+    [x] no RuntimeError-text classification
+    [x] structured Qian terminal result available
+    [x] RTI distinguished
+    [x] ground-before-capture distinguished
+    [x] ground-after-capture-before-RTI distinguished
+    [x] censored distinguished
+    [x] numerical failure distinguished
+    [x] event states exact
+    [x] baseline anchor matches Phase E
+    [x] old integrate_qian_glide unchanged
+    [x] Qian physics unchanged
+    [x] Qian control unchanged
+    [x] event surfaces unchanged
+    [x] solver constants unchanged
+    [x] Sanger integrator unchanged
+    [x] Phase E regression unchanged
+    [x] all tests PASS
