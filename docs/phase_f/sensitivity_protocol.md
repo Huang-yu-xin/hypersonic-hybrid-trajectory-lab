@@ -873,3 +873,89 @@ SRTI_N2；INVALID_INPUT 透传 ValueError。
     [x] Sanger integrator unchanged
     [x] Phase E regression unchanged
     [x] all tests PASS
+
+---
+
+## Amendment — F2.1: Sanger Grazing-Transition / Event-Qualification Observability
+
+状态：**COMPLETE**（2026-08-16）
+
+完整记录见 `docs/phase_f/f21_sanger_grazing_amendment.md`。本节冻结 F2.1
+的协议语义（protocol-level amendment）：
+
+### 1. Grazing transition definition
+
+Atmosphere interface `G_h(x) = h - h_atm`，`dG_h/dt = v sin(gamma)`；
+SRTI candidate `gamma = 0`。skip-count transition 的 limiting geometry
+满足 `G_h = 0 且 gamma = 0`（`dG_h/dt = 0`）时，定义为 **Sanger
+atmosphere-interface grazing / tangency transition**。F2.1 已通过 strict
+numerical audit 确认：F2 blocker 是 production event-resolution 问题
+（max_step=20 漏检极浅 excursion，REF self-stable 于 SRTI_N3），与
+grazing 几何一致。
+
+### 2. Research-event recovery policy
+
+- 触发：ATM solve 返回 SRTI candidate 且 `h_candidate > h_atm`、exit 未
+  被 solve_ivp 返回、pass 已有 pullout 且 `h_pullout < h_atm`。
+- 方法：在 `[t_pullout, t_candidate]` 上以 brentq 从已计算 dense
+  interpolant 定位 `h - h_atm = 0` 上穿 root；禁止 sampled-row /
+  linear-interp / epsilon perturbation。
+- recovered root 必须满足：`t_pullout < t_rec < t_candidate`、residual
+  < 1e-6 m、`gamma(t_rec) > 0`、`dh/dt > 0`（真 transverse upward
+  exit）。任一项失败 → 不 recovery，terminal kind =
+  `GRAZING_OR_UNRESOLVED_EVENT`。
+- recovered switch：`x_plus = x_minus`（严格连续）；`f_minus`/`f_plus`/
+  `normal` 与 normal exit 相同；`event_resolution = "DENSE_RECOVERED"`；
+  不创造新的 physical switch。
+- normal detected exit 一律使用 `SOLVER_EVENT`（不得重新 root solve）；
+  candidate below boundary 一律 frozen qualification（不 recovery）。
+- `candidate_overshoot_m = h_candidate - h_atm` 只是 qualification
+  probe / numerical diagnostic，不是 physical post-exit state；暂不
+  冻结为最终 F3 metric（F3 开始时再决定是否正式定义
+  `Phi(gamma0, K)`）。
+
+### 3. Recovered events 必须 strict-reference verify
+
+任何 `event_resolution = DENSE_RECOVERED` 的 point 自动进入
+strict-reference verification queue：用 REF-0.1（必要时 REF-0.05）确认
+terminal kind / skip_count / exact topology 一致。任何 recovered point
+与 reference topology 不一致 → F2 HARD STOP。禁止静默接受 recovery。
+
+### 4. SANGER_GRAZING_BOUNDARY 不是 stable regime
+
+- 若 reference 验证后仍无法稳定分配给任一 transverse side：regime
+  display `GR`、label `SANGER_GRAZING_BOUNDARY`。
+- 它不是 CENSORED / NUMERICAL_FAILURE / SRTI_N；不作为 HARD STOP；自动
+  成为 F3 P0 priority point/cell。
+- 若只是 production ambiguity 而 strict reference 可明确 N：最终使用
+  reference-confirmed physical side，并记录
+  `production_event_resolution_recovered = True`。
+- 禁止用 arbitrary 物理阈值（|M| < 100 m 等）制造 grazing band；
+  `_SRTI_ALTITUDE_ASSERT_TOL_M = 1 m` 只是 frozen assertion tolerance。
+
+### 5. Frozen Phase-D Sanger API 不修改
+
+`sanger_trajectory.py`、`sanger_events.py`、`sanger_hybrid.py`、
+`PRODUCTION_SOLVER_CONFIG` 全部保持 frozen。Phase-F 只新增
+`src/hyptraj/simulation/sanger_research_trajectory.py`（research
+event-resolution integrator，复用全部 frozen RHS/events/helpers），
+与 F0.1 Qian research API 思想一致：只增加 robust observability，
+不改变 physics / event surfaces / reset semantics。禁止
+exception-message 文本解析。
+
+### 6. F3 前允许使用 structured grazing metadata
+
+`grazing_diagnostics`（per-ATM-pass：candidate_seen /
+candidate_overshoot_m / exit_detected_by_solver / exit_recovered /
+recovered_exit_time / interface_residual / exit_gamma / exit_dhdt）与
+`recovered_events` 可作为 F3 refinement 的 structured 输入；F3 开始时
+再决定 grazing margin `Phi` 的正式定义。
+
+### 7. Canonical F2 sweep executor
+
+F2 canonical map 必须使用 F2.1 research integrator 作为 Sanger sweep
+executor；frozen `integrate_sanger_hybrid` 保留用于 regression /
+comparison audit。F2 cache schema 升级为 `f2-coarse-map-point-v2`，
+provenance 增加 `phase_f_f21_commit` 与
+`sanger_research_event_resolution_version = "v1"`；旧 v1 cache 不得静默
+作为 canonical final cache。

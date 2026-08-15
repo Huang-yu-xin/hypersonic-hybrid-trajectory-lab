@@ -291,7 +291,12 @@ def _sanger_row(
     max_time: float,
     max_segments: int,
 ) -> dict:
-    """Sanger row schema (F1 §13; NA -> None)."""
+    """Sanger row schema (F1 §13; NA -> None).
+
+    ``trajectory`` may be the frozen ``SangerHybridTrajectory`` or the
+    F2.1 ``SangerResearchTrajectory``; the F2.1 event-resolution metadata
+    is extracted additively when present.
+    """
     terminal = trajectory.terminal_state
     event_kinds = tuple(e.kind for e in trajectory.events)
     mode_sequence = tuple(s.mode for s in trajectory.segments)
@@ -302,6 +307,11 @@ def _sanger_row(
         _energy(initial_state, env) if initial_state is not None else None
     )
     terminal_energy = _energy(terminal, env)
+
+    # F2.1 additive event-resolution metadata (absent on frozen results).
+    recovered = tuple(getattr(trajectory, "recovered_events", ()))
+    grazing_diag = tuple(getattr(trajectory, "grazing_diagnostics", ()))
+    resolution = getattr(trajectory, "event_resolution", "SOLVER_EVENT")
 
     row: dict = {
         "schema_version": SCHEMA_VERSION,
@@ -351,6 +361,35 @@ def _sanger_row(
         "message": trajectory.message,
     }
     row.update(_sanger_margins(env, trajectory))
+    # F2.1 additive observability fields (absent -> defaults).
+    row["event_resolution"] = resolution
+    row["recovered_exit_count"] = len(recovered)
+    if recovered:
+        row["recovered_exits"] = [
+            {
+                "time_s": r.time_s,
+                "interface_residual_m": r.interface_residual_m,
+                "exit_gamma_rad": r.exit_gamma_rad,
+                "exit_dhdt_mps": r.exit_dhdt_mps,
+                "candidate_overshoot_m": r.candidate_overshoot_m,
+                "resolution": r.resolution,
+            }
+            for r in recovered
+        ]
+    else:
+        row["recovered_exits"] = []
+    row["grazing_diagnostics"] = [
+        {
+            "pass_index": d.get("pass_index"),
+            "candidate_seen": d.get("candidate_seen"),
+            "candidate_overshoot_m": d.get("candidate_overshoot_m"),
+            "exit_detected_by_solver": d.get("exit_detected_by_solver"),
+            "exit_recovered": d.get("exit_recovered"),
+            "recovered_exit_time_s": d.get("recovered_exit_time_s"),
+            "interface_residual_m": d.get("interface_residual_m"),
+        }
+        for d in grazing_diag
+    ]
     return row
 
 
@@ -416,6 +455,7 @@ def run_parameter_point(
     qian_max_time: float = QIAN_MAX_TIME_S,
     sanger_max_time: float = SANGER_MAX_TIME_S,
     sanger_max_segments: int = SANGER_MAX_SEGMENTS,
+    sanger_integrator: Callable | None = None,
 ) -> PairedPointResult:
     """Run one paired (Qian, Sanger) point; returns rows + raw results.
 
@@ -423,6 +463,13 @@ def run_parameter_point(
     and a fresh ``ConstantKControl`` are created per point; the baseline
     objects are never mutated.  ``ValueError`` (invalid input) is caught
     and classified per model; any other exception propagates.
+
+    ``sanger_integrator`` (F2.1 additive) selects the Sanger sweep
+    executor: the frozen ``integrate_sanger_hybrid`` by default, or the
+    F2.1 ``integrate_sanger_research_trajectory`` for the canonical F2
+    map (grazing event-resolution observability).  Its signature must be
+    ``(env, vehicle, initial, control, solver=..., max_time=...,
+    max_segments=...) -> SangerHybridTrajectory | SangerResearchTrajectory``.
     """
     initial = InitialCondition(
         altitude=100_000.0,
@@ -488,15 +535,26 @@ def run_parameter_point(
     # ---- Sanger -----------------------------------------------------------
     sanger_raw: object | None = None
     try:
-        sanger = integrate_sanger_hybrid(
-            env,
-            vehicle,
-            initial,
-            control,
-            solver=solver,
-            max_time=sanger_max_time,
-            max_segments=sanger_max_segments,
-        )
+        if sanger_integrator is None:
+            sanger = integrate_sanger_hybrid(
+                env,
+                vehicle,
+                initial,
+                control,
+                solver=solver,
+                max_time=sanger_max_time,
+                max_segments=sanger_max_segments,
+            )
+        else:
+            sanger = sanger_integrator(
+                env,
+                vehicle,
+                initial,
+                control,
+                solver=solver,
+                max_time=sanger_max_time,
+                max_segments=sanger_max_segments,
+            )
         sanger_raw = sanger
         metrics = analyze_sanger_trajectory(sanger, env)
         sanger_row = _sanger_row(
