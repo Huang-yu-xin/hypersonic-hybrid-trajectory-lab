@@ -32,6 +32,8 @@ SANGER_COLORS = {
     "SRTI_N3": "#ff9896",
     "SRTI_N4": "#ffbb78",
     "SRTI_N5": "#c5b0d5",
+    "SRTI_N6": "#dbdb8d",
+    "SANGER_GRAZING_BOUNDARY": "#ff00ff",
     "GROUND_BEFORE_SRTI": "#8c564b",
     "CENSORED": "#e0e0e0",
     "NUMERICAL_FAILURE": "#d62728",

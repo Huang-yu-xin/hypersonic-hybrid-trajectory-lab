@@ -20,10 +20,16 @@ def _load(name: str) -> dict:
         return json.load(f)
 
 
-def _cell_label(regime: str) -> str:
-    """Matrix cell code: N0/N1/N2..., GB, C, F, or ?"""
+def _cell_label(regime) -> str:
+    """Matrix cell code: N0/N1/N2..., GB, C, F, GR, or ?"""
+    if isinstance(regime, int):
+        return f"N{regime}"  # skip-count matrix cells
+    if regime is None:
+        return "?"
     if regime.startswith("SRTI_N"):
         return regime[-2:]  # "N2"
+    if regime == "SANGER_GRAZING_BOUNDARY":
+        return "GR"
     if regime == "GROUND_BEFORE_SRTI":
         return "GB"
     if regime == "CENSORED":

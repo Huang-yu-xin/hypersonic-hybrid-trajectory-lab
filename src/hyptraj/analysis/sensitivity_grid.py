@@ -40,10 +40,18 @@ from hyptraj.analysis.sensitivity_pilot import (
 
 # Frozen Phase F commits (provenance anchors, never recomputed).
 F1_COMMIT = "417b2a46cd9e3e621a4914f35f531ef7f0a092f4"
+F21_COMMIT = "6d6ee7f18da6124c7da632e1a36d76217b825a8b"
 
-# F2 schema / cache versions.
-F2_POINT_SCHEMA = "f2-coarse-map-point-v1"
-F2_SUMMARY_SCHEMA = "f2-coarse-map-summary-v1"
+# F2 schema / cache versions.  v2 (F2.1 amendment): the canonical Sanger
+# sweep executor is the F2.1 research event-resolution integrator, so the
+# cache schema carries the F2.1 commit and the research event-resolution
+# version.  v1 caches are provenance-invalid and are never reused as the
+# canonical final cache.
+F2_POINT_SCHEMA = "f2-coarse-map-point-v2"
+F2_SUMMARY_SCHEMA = "f2-coarse-map-summary-v2"
+
+# Sanger research event-resolution implementation version (F2.1 §34).
+SANGER_RESEARCH_EVENT_RESOLUTION_VERSION = "v1"
 
 # Frozen initial coarse grid (F0 §8).
 GAMMA_MIN_INIT = -7.0
@@ -166,6 +174,10 @@ def make_point_record(
             "phase_f_protocol_commit": F0_PROTOCOL_COMMIT,
             "phase_f_f01_commit": F01_COMMIT,
             "phase_f_f1_commit": F1_COMMIT,
+            "phase_f_f21_commit": F21_COMMIT,
+            "sanger_research_event_resolution_version": (
+                SANGER_RESEARCH_EVENT_RESOLUTION_VERSION
+            ),
             "f1_row_schema": F1_SCHEMA_VERSION,
             "f2_point_schema": F2_POINT_SCHEMA,
             "solver_config": solver_config,
@@ -197,9 +209,10 @@ def validate_cache_record(
 ) -> tuple[bool, str]:
     """A cache record is reusable only if every provenance anchor matches.
 
-    Compares schema version, Phase E anchor, F0 / F0.1 / F1 commits and
-    the solver configuration; the declared domain must be SELF-CONSISTENT
-    (the record's own parameter point lies inside its declared domain),
+    Compares schema version, Phase E anchor, F0 / F0.1 / F1 / F2.1
+    commits, the Sanger research event-resolution version and the solver
+    configuration; the declared domain must be SELF-CONSISTENT (the
+    record's own parameter point lies inside its declared domain),
     because the active domain legitimately changes between the initial
     grid and expansion strips.  The running ``git_commit`` is deliberately
     NOT part of the reuse check (the HEAD may move between F2 runs).
@@ -227,6 +240,13 @@ def validate_cache_record(
         == expected_provenance.get("phase_f_f01_commit"),
         "phase_f_f1_commit": prov.get("phase_f_f1_commit")
         == expected_provenance.get("phase_f_f1_commit"),
+        "phase_f_f21_commit": prov.get("phase_f_f21_commit")
+        == expected_provenance.get("phase_f_f21_commit"),
+        "sanger_event_resolution_version": (
+            prov.get("sanger_research_event_resolution_version")
+            == expected_provenance.get(
+                "sanger_research_event_resolution_version")
+        ),
         "solver_config": prov.get("solver_config")
         == expected_provenance.get("solver_config"),
         "domain_self_consistent": in_domain,

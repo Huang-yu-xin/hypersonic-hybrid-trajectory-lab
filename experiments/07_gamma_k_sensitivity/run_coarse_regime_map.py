@@ -25,6 +25,7 @@ from hyptraj.analysis.sensitivity_grid import (
     F2_POINT_SCHEMA,
     F2_SUMMARY_SCHEMA,
     F1_COMMIT,
+    F21_COMMIT,
     GridDomain,
     append_cache_record,
     baseline_grid_index,
@@ -46,6 +47,7 @@ from hyptraj.analysis.sensitivity_grid import (
     skip_count_consistency_violations,
     validate_cache_record,
 )
+from hyptraj.analysis.comparison_validation import REFERENCE_SOLVER_CONFIG
 from hyptraj.analysis.sensitivity_pilot import (
     PHASE_E_ANCHOR_TAG,
     QIAN_MAX_TIME_S,
@@ -57,8 +59,19 @@ from hyptraj.analysis.sensitivity_pilot import (
     run_parameter_point,
     verify_baseline_anchor,
 )
-from hyptraj.models.parameters import EnvironmentParams, VehicleParams
+from hyptraj.controls.constant_k import ConstantKControl
+from hyptraj.models.parameters import (
+    EnvironmentParams,
+    InitialCondition,
+    VehicleParams,
+)
 from hyptraj.simulation.numerics import PRODUCTION_SOLVER_CONFIG
+from hyptraj.simulation.sanger_research_trajectory import (
+    TERMINAL_GRAZING_OR_UNRESOLVED_EVENT,
+    integrate_sanger_research_trajectory,
+)
+from hyptraj.simulation.sanger_trajectory import integrate_sanger_hybrid
+from hyptraj.simulation.sanger_metrics import analyze_sanger_trajectory
 
 OUT_DIR = Path("results/gamma_k_sensitivity/coarse_map")
 CACHE_PATH = OUT_DIR / "point_cache.jsonl"
@@ -86,6 +99,15 @@ def _solver_dict() -> dict:
     }
 
 
+def _initial_condition(gamma0_deg: float, K: float) -> InitialCondition:
+    return InitialCondition(
+        altitude=100_000.0,
+        velocity=7_000.0,
+        flight_path_angle_deg=gamma0_deg,
+        range_angle=0.0,
+    )
+
+
 def _expected_provenance(git_commit: str, domain: GridDomain) -> dict:
     return {
         "schema_version": F2_POINT_SCHEMA,
@@ -93,6 +115,8 @@ def _expected_provenance(git_commit: str, domain: GridDomain) -> dict:
         "phase_f_protocol_commit": "1cd0bd52de0d9cec615635949d2805525619d370",
         "phase_f_f01_commit": "81b3a9980c0df548786db4145f4e01c917cba1e4",
         "phase_f_f1_commit": F1_COMMIT,
+        "phase_f_f21_commit": F21_COMMIT,
+        "sanger_research_event_resolution_version": "v1",
         "solver_config": _solver_dict(),
         "domain": domain.as_dict(),
     }
@@ -235,6 +259,7 @@ def main() -> int:
                     qian_max_time=QIAN_MAX_TIME_S,
                     sanger_max_time=SANGER_MAX_TIME_S,
                     sanger_max_segments=SANGER_MAX_SEGMENTS,
+                    sanger_integrator=integrate_sanger_research_trajectory,
                 )
             except RuntimeError as exc:
                 # Frozen API expression boundary (e.g. Sanger SRTI
@@ -268,7 +293,11 @@ def main() -> int:
                 min(pr.sanger_row.get("M_A_clearance_m") or [])
                 if pr.sanger_row.get("M_A_clearance_m") else None
             )
-            print(_progress_line(done, total_target, pr, ms, ma))
+            rec_count = pr.sanger_row.get("recovered_exit_count", 0)
+            res = pr.sanger_row.get("event_resolution", "SOLVER_EVENT")
+            print(_progress_line(done, total_target, pr, ms, ma)
+                  + f" [res={res}]"
+                  + (f" rec={rec_count}" if rec_count else ""))
             if done % 25 == 0:
                 qian_c = Counter(
                     r["qian"]["qian_regime"] for r in records.values())
@@ -349,6 +378,112 @@ def main() -> int:
     f1_consistency = f1_consistency_check(records)
     if not f1_consistency["pass"]:
         health_violations.append("F1 consistency check FAILED")
+
+    # ---- F2.1: strict-reference verification of recovered events ----------
+    recovered_points = [
+        rec for rec in records.values()
+        if rec["sanger"].get("recovered_exit_count", 0) > 0
+    ]
+    recovered_verification: list[dict] = []
+    verification_failed = False
+    for rec in sorted(
+        recovered_points, key=lambda r: (r["parameter"][0], r["parameter"][1])
+    ):
+        g, k = rec["parameter"]
+        ini_ref = _initial_condition(g, k)
+        ctl_ref = ConstantKControl(k)
+        try:
+            ref = integrate_sanger_hybrid(
+                env, vehicle, ini_ref, ctl_ref,
+                solver=REFERENCE_SOLVER_CONFIG)
+            ref_metrics = analyze_sanger_trajectory(ref, env)
+            ref_sig = (
+                f"terminal={ref.terminal_kind};"
+                f"modes={' > '.join(s.mode for s in ref.segments)}"
+            )
+            prod_regime = rec["sanger"]["sanger_regime"]
+            prod_skip = rec["sanger"].get("skip_count")
+            ref_regime = (
+                f"SRTI_N{ref_metrics.skip_count}"
+                if ref.terminal_kind == "srti" else ref.terminal_kind
+            )
+            same = (
+                ref.terminal_kind == rec["sanger"]["terminal_kind"]
+                and ref_metrics.skip_count == prod_skip
+            )
+            if not same:
+                verification_failed = True
+            recovered_verification.append({
+                "parameter": [g, k],
+                "production_regime": prod_regime,
+                "production_skip": prod_skip,
+                "reference_regime": ref_regime,
+                "reference_terminal_time_s": ref.terminal_time,
+                "reference_event_resolution": "SOLVER_EVENT",
+                "topology_equal": same,
+            })
+        except RuntimeError as exc:
+            verification_failed = True
+            recovered_verification.append({
+                "parameter": [g, k],
+                "production_regime": rec["sanger"]["sanger_regime"],
+                "reference_regime": "RUNTIME_ERROR",
+                "topology_equal": False,
+                "error": str(exc),
+            })
+    if verification_failed:
+        health_violations.append(
+            "recovered-point strict-reference verification FAILED")
+
+    # ---- F2.1: GRAZING_OR_UNRESOLVED reference decision -------------------
+    grazing_points = [
+        rec for rec in records.values()
+        if rec["sanger"]["terminal_kind"]
+        == TERMINAL_GRAZING_OR_UNRESOLVED_EVENT
+    ]
+    grazing_resolutions: list[dict] = []
+    grazing_markers: list[dict] = []
+    for rec in sorted(
+        grazing_points, key=lambda r: (r["parameter"][0], r["parameter"][1])
+    ):
+        g, k = rec["parameter"]
+        ini_ref = _initial_condition(g, k)
+        ctl_ref = ConstantKControl(k)
+        ref_kinds: list[str] = []
+        ref_skips: list[int] = []
+        for ref_solver in (REFERENCE_SOLVER_CONFIG,):
+            try:
+                ref = integrate_sanger_hybrid(
+                    env, vehicle, ini_ref, ctl_ref, solver=ref_solver)
+                m = analyze_sanger_trajectory(ref, env)
+                ref_kinds.append(ref.terminal_kind)
+                ref_skips.append(m.skip_count)
+            except RuntimeError:
+                ref_kinds.append("RUNTIME_ERROR")
+                ref_skips.append(-1)
+        stable = (len(set(ref_kinds)) == 1 and ref_kinds[0] == "srti")
+        if stable:
+            # Reference-confirmed physical side (F2.1 §37).
+            rec["sanger"]["sanger_regime"] = f"SRTI_N{ref_skips[0]}"
+            rec["sanger"]["skip_count"] = ref_skips[0]
+            rec["sanger"]["terminal_kind"] = "srti"
+            rec["sanger"]["event_resolution"] = "REFERENCE_CONFIRMED"
+            rec["sanger"]["production_event_resolution_recovered"] = True
+            grazing_resolutions.append({
+                "parameter": [g, k],
+                "decision": "REFERENCE_CONFIRMED",
+                "reference_regime": f"SRTI_N{ref_skips[0]}",
+            })
+        else:
+            # True grazing boundary marker (F2.1 §17): categorical marker,
+            # not a stop gate; P0 for F3.
+            rec["sanger"]["sanger_regime"] = "SANGER_GRAZING_BOUNDARY"
+            rec["sanger"]["skip_count"] = None
+            rec["sanger"]["event_resolution"] = "GRAZING_BOUNDARY"
+            grazing_markers.append({
+                "parameter": [g, k],
+                "reference_kinds": ref_kinds,
+            })
 
     stop_reasons = collect_stop_gate_reasons(
         anchor["pass"], qian_rows, sanger_rows, health_violations)
@@ -510,6 +645,30 @@ def main() -> int:
             "bad_order": 0,
             "nan_inf": 0,
             "violations": health_violations,
+        },
+        "f21_research_event_resolution": {
+            "sanger_executor": "integrate_sanger_research_trajectory",
+            "event_resolution_version": "v1",
+            "recovered_point_count": len(recovered_points),
+            "recovered_verification": recovered_verification,
+            "recovered_verification_all_equal": not verification_failed,
+            "grazing_or_unresolved_count": len(grazing_points),
+            "grazing_resolutions": grazing_resolutions,
+            "grazing_boundary_markers": grazing_markers,
+            "production_recovered_summary": {
+                "DENSE_RECOVERED": sum(
+                    1 for r in sanger_rows
+                    if r.get("event_resolution") == "DENSE_RECOVERED"),
+                "REFERENCE_CONFIRMED": sum(
+                    1 for r in sanger_rows
+                    if r.get("event_resolution") == "REFERENCE_CONFIRMED"),
+                "GRAZING_BOUNDARY": sum(
+                    1 for r in sanger_rows
+                    if r.get("event_resolution") == "GRAZING_BOUNDARY"),
+                "SOLVER_EVENT": sum(
+                    1 for r in sanger_rows
+                    if r.get("event_resolution") == "SOLVER_EVENT"),
+            },
         },
         "f1_consistency": f1_consistency,
         "stop_gate_triggered": stop_gate_triggered,
