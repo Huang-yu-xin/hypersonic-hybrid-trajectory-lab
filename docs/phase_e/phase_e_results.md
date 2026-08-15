@@ -1,5 +1,11 @@
 # Phase E — Qian vs Sanger Baseline Comparison Results
 
+> **Status**: results approved by the E6 numerical / regression audit;
+> Phase E final freeze COMPLETE (see
+> [phase_e_final_report.md](phase_e_final_report.md)).  The E2-E4
+> scientific values below are unchanged and match the frozen production
+> regression snapshot `tests/data/qian_sanger_comparison_v1.json`.
+
 ## 1. Scope and frozen configuration
 
 本文件汇总 Phase E（E2–E5）的最终 deterministic baseline comparison

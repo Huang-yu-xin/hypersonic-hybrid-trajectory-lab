@@ -27,7 +27,8 @@ trajectories.
 - [x] Phase B.5 — Continuous-glide model audit
 - [x] Phase C — Numerical validation
 - [x] Phase D — Sanger hybrid trajectory (COMPLETE, sanger-baseline-v1.0)
-- [ ] Phase E — Baseline comparison
+- [x] Phase E — Qian vs Sanger baseline comparison (COMPLETE,
+  qian-sanger-comparison-v1.0)
 - [ ] Phase F — Parameter sensitivity
 - [ ] Predictability / STM / FTLE
 - [ ] Risk
@@ -56,6 +57,20 @@ validation (D6), final report and freeze (D7A/D7B). Reproduction:
     python experiments/04_sanger_hybrid/run_sanger_baseline.py
     python experiments/04_sanger_hybrid/summarize_sanger_baseline.py
     python experiments/04_sanger_hybrid/plot_sanger_baseline.py
+
+## Phase E — Qian vs Sanger Baseline Comparison
+
+    Phase E — Qian vs Sanger Baseline Comparison: COMPLETE
+    Common-time / common-range / common-exposure comparison
+    completed under frozen baselines and production numerics.
+    Tags: qian-sanger-comparison-v1.0, phase-e-v1.0
+
+See [docs/phase_e/](docs/phase_e/) — comparison protocol (E0, frozen),
+alignment infrastructure (E1), common-condition comparison (E2),
+atmospheric-exposure / energy mechanism (E3), native / structural /
+aerodynamic diagnostics (E4), core figures (E5, 5/5 visual PASS),
+numerical / regression audit (E6, production numerics APPROVED) and
+the final report / freeze (E7).
 
 ## Frozen Baselines
 
