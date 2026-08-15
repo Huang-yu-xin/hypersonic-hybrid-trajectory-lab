@@ -1,23 +1,29 @@
-"""D5 Phase D baseline figures.
+"""D5 Phase D baseline figures (D7B-pre corrected rendering).
 
 Generates the five Phase D baseline figures from the canonical
 artifacts (results/sanger_hybrid/baseline/trajectory.csv and
 events.csv) — the SAME canonical run, never a re-integration:
 
-    D1_altitude_range.png   altitude vs ground range (ATM/VAC colored,
-                            events marked; NO ground compatibility tail)
-    D2_altitude_time.png    altitude vs time with the 100 km boundary
-    D3_velocity_time.png    velocity vs time with event markers
-    D4_gamma_time.png       flight-path angle vs time (pull-out / VAC
-                            apogee / SRTI distinguished in the legend)
+    D1_altitude_range.png   altitude vs ground range, both in km
+    D2_altitude_time.png    altitude vs time, both in km / s
+    D3_velocity_time.png    velocity vs time, both in km/s
+    D4_gamma_time.png       flight-path angle vs time (event semantics
+                            distinguished in the legend)
     D5_mode_timeline.png    ATM / VAC mode timeline
+
+Rendering conventions (D7B-pre):
+
+* trajectory curves and event markers use the SAME units on every axis
+  (km for range/altitude, km/s for velocity, s for time);
+* every event semantic contributes exactly one legend entry (deduplicated);
+* no event-marker unit mixing (the previous m vs km / m/s vs km/s
+  mismatch is fixed);
+* no re-integration: the figures are redrawn from the canonical CSV
+  artifacts only.
 
 Run from the project root:
 
     python experiments/04_sanger_hybrid/plot_sanger_baseline.py
-
-The figures are for human / external visual inspection; this script only
-reports file existence, size and pixel dimensions.
 """
 
 import json
@@ -43,6 +49,10 @@ EVENT_STYLE = {
     "atmosphere_entry": ("atmosphere entry", "v", "#8c564b"),
     "srti": ("SRTI (research endpoint)", "*", "#000000"),
 }
+# Scaling from raw artifact units to the display unit of each axis.
+RANGE_SCALE = 1e-3   # m -> km
+ALT_SCALE = 1e-3     # m -> km
+VEL_SCALE = 1e-3     # m/s -> km/s
 
 
 def _load():
@@ -78,90 +88,98 @@ def _load():
     )
 
 
-def _mark(ax, events, key, x_key, y_key):
+def _legend_once(ax, fontsize=7):
+    """Deduplicated legend: one entry per distinct label."""
+    handles, labels = ax.get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    ax.legend(by_label.values(), by_label.keys(), fontsize=fontsize,
+              loc="upper right")
+
+
+def _mark(ax, events, key, x_key, y_key, x_scale, y_scale):
+    """Scatter one event semantic at the DISPLAY units (scaled)."""
     for e in events:
         if e["kind"] != key:
             continue
         label, marker, color = EVENT_STYLE[key]
-        ax.scatter(e[x_key], e[y_key], marker=marker, s=60,
-                   color=color, zorder=5, label=label)
+        ax.scatter(e[x_key] * x_scale, e[y_key] * y_scale, marker=marker,
+                   s=60, color=color, zorder=5, label=label)
 
 
 def main() -> None:
     t, alt, rng, v, gam, mode, events = _load()
     atm_mask = mode == "SANGER_ATM"
     vac_mask = mode == "SANGER_VAC"
-    h_atm_km = 100.0
 
     FIG_DIR.mkdir(parents=True, exist_ok=True)
 
-    # ---- D1: altitude vs range ------------------------------------------
+    # ---- D1: altitude vs range (both km) --------------------------------
     fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    ax.plot(rng[atm_mask] / 1000.0, alt[atm_mask] / 1000.0,
+    ax.plot(rng[atm_mask] * RANGE_SCALE, alt[atm_mask] * ALT_SCALE,
             color=ATM_COLOR, lw=1.2, label="SANGER_ATM")
-    ax.plot(rng[vac_mask] / 1000.0, alt[vac_mask] / 1000.0,
+    ax.plot(rng[vac_mask] * RANGE_SCALE, alt[vac_mask] * ALT_SCALE,
             color=VAC_COLOR, lw=1.2, label="SANGER_VAC")
     for key in EVENT_STYLE:
-        _mark(ax, events, key, "range_m", "altitude_m")
-    ax.axhline(h_atm_km, color="gray", ls="--", lw=0.8,
+        _mark(ax, events, key, "range_m", "altitude_m",
+              RANGE_SCALE, ALT_SCALE)
+    ax.axhline(100.0, color="gray", ls="--", lw=0.8,
                label="h_atm = 100 km")
     ax.set_xlabel("Ground range R [km]")
     ax.set_ylabel("Altitude h [km]")
     ax.set_title("Sanger Hybrid Baseline — Altitude vs Range")
-    ax.legend(fontsize=7, loc="upper right")
     ax.grid(alpha=0.3)
+    _legend_once(ax)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "D1_altitude_range.png", dpi=DPI)
     plt.close(fig)
 
-    # ---- D2: altitude vs time --------------------------------------------
+    # ---- D2: altitude vs time (km / s) -----------------------------------
     fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    ax.plot(t, alt / 1000.0, color="#1f77b4", lw=1.2,
+    ax.plot(t, alt * ALT_SCALE, color=ATM_COLOR, lw=1.2,
             label="Sanger trajectory")
-    ax.axhline(h_atm_km, color="gray", ls="--", lw=0.8,
+    ax.axhline(100.0, color="gray", ls="--", lw=0.8,
                label="h_atm = 100 km")
-    for key in ("atmosphere_exit", "atmosphere_entry"):
-        _mark(ax, events, key, "time_s", "altitude_m")
-    _mark(ax, events, "srti", "time_s", "altitude_m")
+    for key in ("atmosphere_exit", "atmosphere_entry", "srti"):
+        _mark(ax, events, key, "time_s", "altitude_m", 1.0, ALT_SCALE)
     ax.set_xlabel("Time t [s]")
     ax.set_ylabel("Altitude h [km]")
     ax.set_title("Sanger Hybrid Baseline — Altitude vs Time")
-    ax.legend(fontsize=7, loc="upper right")
     ax.grid(alpha=0.3)
+    _legend_once(ax)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "D2_altitude_time.png", dpi=DPI)
     plt.close(fig)
 
-    # ---- D3: velocity vs time --------------------------------------------
+    # ---- D3: velocity vs time (km/s) -------------------------------------
     fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    ax.plot(t, v / 1000.0, color="#1f77b4", lw=1.2, label="v(t)")
+    ax.plot(t, v * VEL_SCALE, color=ATM_COLOR, lw=1.2, label="v(t)")
     for key in EVENT_STYLE:
-        _mark(ax, events, key, "time_s", "velocity_mps")
+        _mark(ax, events, key, "time_s", "velocity_mps", 1.0, VEL_SCALE)
     ax.set_xlabel("Time t [s]")
     ax.set_ylabel("Velocity v [km/s]")
     ax.set_title("Sanger Hybrid Baseline — Velocity vs Time")
-    ax.legend(fontsize=7, loc="lower left")
     ax.grid(alpha=0.3)
+    _legend_once(ax, fontsize=7)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "D3_velocity_time.png", dpi=DPI)
     plt.close(fig)
 
-    # ---- D4: gamma vs time -----------------------------------------------
+    # ---- D4: gamma vs time (deg; event semantics distinguished) ----------
     fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    ax.plot(t, gam, color="#1f77b4", lw=1.2, label="gamma(t)")
+    ax.plot(t, gam, color=ATM_COLOR, lw=1.2, label="gamma(t)")
     ax.axhline(0.0, color="gray", lw=0.8)
     for key in ("atmospheric_pullout", "vacuum_apogee", "srti"):
-        _mark(ax, events, key, "time_s", "gamma_deg")
+        _mark(ax, events, key, "time_s", "gamma_deg", 1.0, 1.0)
     ax.set_xlabel("Time t [s]")
     ax.set_ylabel("Flight-path angle gamma [deg]")
     ax.set_title("Sanger Hybrid Baseline — Flight-Path Angle vs Time")
-    ax.legend(fontsize=7, loc="lower right")
     ax.grid(alpha=0.3)
+    _legend_once(ax, fontsize=7)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "D4_gamma_time.png", dpi=DPI)
     plt.close(fig)
 
-    # ---- D5: mode timeline ------------------------------------------------
+    # ---- D5: mode timeline (unchanged design, minor typography) ----------
     fig, ax = plt.subplots(figsize=(7.2, 2.6))
     change_idx = np.where(mode[1:] != mode[:-1])[0]
     bounds = np.concatenate(([0], change_idx + 1, [len(t)]))
@@ -179,7 +197,7 @@ def main() -> None:
     for e in events:
         if e["kind"] == "srti":
             ax.axvline(e["time_s"], color="black", ls="--", lw=1.0)
-    ax.set_xlim(0.0, t[-1])
+    ax.set_xlim(0.0, t[-1] + 30.0)  # leave room for the SRTI marker
     ax.set_ylim(-0.5, 0.5)
     ax.set_yticks([])
     ax.set_xlabel("Time t [s]")
@@ -197,11 +215,10 @@ def main() -> None:
         "D5_mode_timeline.png",
     ):
         path = FIG_DIR / name
-        size = path.stat().st_size
         img = plt.imread(path)
         print(
             f"  {name:24s} {img.shape[1]}x{img.shape[0]} px  "
-            f"{size / 1024.0:.1f} KiB"
+            f"{path.stat().st_size / 1024.0:.1f} KiB"
         )
 
 
