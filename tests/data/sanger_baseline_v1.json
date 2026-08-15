@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "baseline_name": "sanger-hybrid-baseline-v1-candidate",
+  "completed_skip_count": 2,
+  "mode_sequence": [
+    "SANGER_ATM",
+    "SANGER_VAC",
+    "SANGER_ATM",
+    "SANGER_VAC",
+    "SANGER_ATM"
+  ],
+  "event_sequence": [
+    "synthetic_initial_entry",
+    "atmospheric_pullout",
+    "atmosphere_exit",
+    "vacuum_apogee",
+    "atmosphere_entry",
+    "atmospheric_pullout",
+    "atmosphere_exit",
+    "vacuum_apogee",
+    "atmosphere_entry",
+    "atmospheric_pullout",
+    "srti"
+  ],
+  "events": [
+    {
+      "kind": "synthetic_initial_entry",
+      "time_s": 0.0,
+      "altitude_m": 100000.0,
+      "velocity_mps": 7000.0,
+      "range_m": 0.0,
+      "gamma_rad": -0.0872664626
+    },
+    {
+      "kind": "atmospheric_pullout",
+      "time_s": 93.42878537129322,
+      "altitude_m": 46040.885709,
+      "velocity_mps": 6810.795567,
+      "range_m": 644461.468098,
+      "gamma_rad": -0.0
+    },
+    {
+      "kind": "atmosphere_exit",
+      "time_s": 202.96413572759334,
+      "altitude_m": 100000.0,
+      "velocity_mps": 6474.788281,
+      "range_m": 1352050.535955,
+      "gamma_rad": 0.066613773485
+    },
+    {
+      "kind": "vacuum_apogee",
+      "time_s": 343.8022448869377,
+      "altitude_m": 130352.121182,
+      "velocity_mps": 6430.266933,
+      "range_m": 2242293.238823,
+      "gamma_rad": 0.0
+    },
+    {
+      "kind": "atmosphere_entry",
+      "time_s": 484.6403540462832,
+      "altitude_m": 100000.0,
+      "velocity_mps": 6474.788281,
+      "range_m": 3132535.941691,
+      "gamma_rad": -0.066613773485
+    },
+    {
+      "kind": "atmospheric_pullout",
+      "time_s": 595.7956604647202,
+      "altitude_m": 45812.093384,
+      "velocity_mps": 6299.665569,
+      "range_m": 3842655.026408,
+      "gamma_rad": 0.0
+    },
+    {
+      "kind": "atmosphere_exit",
+      "time_s": 748.1137977144123,
+      "altitude_m": 100000.0,
+      "velocity_mps": 5963.151745,
+      "range_m": 4748680.128962,
+      "gamma_rad": 0.022459119233
+    },
+    {
+      "kind": "vacuum_apogee",
+      "time_s": 781.4579673061984,
+      "altitude_m": 102232.575573,
+      "velocity_mps": 5959.591732,
+      "range_m": 4944304.376403,
+      "gamma_rad": 0.0
+    },
+    {
+      "kind": "atmosphere_entry",
+      "time_s": 814.8021368979796,
+      "altitude_m": 100000.0,
+      "velocity_mps": 5963.151745,
+      "range_m": 5139928.623844,
+      "gamma_rad": -0.022459119233
+    },
+    {
+      "kind": "atmospheric_pullout",
+      "time_s": 969.0696243196126,
+      "altitude_m": 45510.561815,
+      "velocity_mps": 5800.347911,
+      "range_m": 6048764.66647,
+      "gamma_rad": -0.0
+    },
+    {
+      "kind": "srti",
+      "time_s": 1119.5459841174863,
+      "altitude_m": 86138.741034,
+      "velocity_mps": 5482.946114,
+      "range_m": 6872895.319945,
+      "gamma_rad": 0.0
+    }
+  ],
+  "global": {
+    "research_time_s": 1119.545984,
+    "research_range_m": 6872895.319945,
+    "max_altitude_m": 130352.121182
+  },
+  "srti": {
+    "time_s": 1119.545984,
+    "altitude_m": 86138.741034,
+    "velocity_mps": 5482.946114,
+    "range_m": 6872895.319945
+  },
+  "cycles": [
+    {
+      "atmospheric_duration_s": 202.964136,
+      "vacuum_duration_s": 281.676218,
+      "atmospheric_range_m": 1352050.535955,
+      "vacuum_range_m": 1780485.405736,
+      "pullout_altitude_m": 46040.885709,
+      "apogee_altitude_m": 130352.121182
+    },
+    {
+      "atmospheric_duration_s": 263.473444,
+      "vacuum_duration_s": 66.688339,
+      "atmospheric_range_m": 1616144.187272,
+      "vacuum_range_m": 391248.494882,
+      "pullout_altitude_m": 45812.093384,
+      "apogee_altitude_m": 102232.575573
+    }
+  ]
+}
