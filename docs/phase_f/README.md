@@ -11,9 +11,10 @@
     F2: COMPLETE    (Canonical coarse map; OPEN_BOUNDARY recorded)
     F3: COMPLETE    (Adaptive grazing-boundary refinement; Phi_N frozen)
     F4: COMPLETE    (Fixed-regime local sensitivity; GLOBAL_STEP_POLICY)
-    F5: COMPLETE    (Fixed-topology structural sensitivity map; 1089
-                    centers; Qian single-topology smooth field; Sanger
-                    N0-N5 regime-dependent derivatives)
+    F5: COMPLETE    (Fixed-topology structural sensitivity map)
+    F6: COMPLETE    (Phase-E common-condition comparison surfaces;
+                    1089 centers; dynamic limiters; Protocol-D UNIQUE
+                    dominant; 19 comparison signatures)
 
     Anchor: phase-e-v1.0
             44a99119cf9e82e64d68b5b8abdbb4a20406c7bc
@@ -28,8 +29,7 @@
         gamma0 ∈ [-9, -1] deg
         K     ∈ [1.0, 5.0]
 
-    Next: F6 Phase-E common-condition comparison surfaces
-          over parameter space
+    Next: F7 numerical / regression audit and Phase F final freeze
 
 ## Documents
 
@@ -47,8 +47,10 @@
 - [`f4_fd_convergence.md`](f4_fd_convergence.md) — F4 固定拓扑局部灵敏度
   与 FD 收敛（GLOBAL_STEP_POLICY、5×2/7×2 Jacobians）。
 - [`f5_structural_sensitivity.md`](f5_structural_sensitivity.md) — F5 固定
-  拓扑结构灵敏度全域映射（1089 centers、模型特定 mask、global/adaptive
-  step 覆盖、regime 统计、reference audit、core figures）。
+  拓扑结构灵敏度全域映射。
+- [`f6_comparison_surfaces.md`](f6_comparison_surfaces.md) — F6 共同条件
+  比较表面（Phase-E B/C/D 复用、动态 limiter、comparison signatures、
+  Protocol-D UNIQUE 主导、reference audit）。
 
 ## Roadmap
 

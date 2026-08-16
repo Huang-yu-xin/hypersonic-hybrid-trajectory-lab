@@ -305,7 +305,7 @@ def integrate_sanger_research_trajectory(
     and F2.1 §11–§14).
     """
     solver = solver or PRODUCTION_SOLVER_CONFIG
-    collector = dense_output_collector or DenseOutputCollector()
+    collector = (dense_output_collector if dense_output_collector is not None else DenseOutputCollector())
 
     segments: list[HybridSegment] = []
     events: list[HybridEventRecord] = []

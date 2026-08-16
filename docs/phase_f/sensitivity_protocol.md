@@ -1107,3 +1107,43 @@ gate + plateau + reference audit 自动选择），不强行最小 h。
     smooth、grazing 带 mask）；禁止跨 topology 差分/插值、禁止
     "derivative diverges at boundary" 表述、禁止 Qian-vs-Sanger winner
     ranking、禁止 native RTI/SRTI fair-performance claim。
+
+---
+
+## Amendment — F6: Common-Condition Comparison Surfaces（语义冻结）
+
+状态：**COMPLETE**（2026-08-17）。完整记录见
+`docs/phase_f/f6_comparison_surfaces.md`。
+
+### 冻结语义
+
+1. **Canonical centers = 1089**；Protocol B/C/D 实现原样复用 Phase E
+   （零修改；无 v2）。
+2. **Phase-F Sanger comparison adapter**：从 F2.1 research integrator
+   构建 ComparisonTrajectory；recovered exit 是正常 ATM→VAC switch；
+   candidate overshoot state 永不进入 comparison history。
+3. **动态 limiters**：time/range/exposure limiter 每点从
+   (T_Q,T_S)/(R_Q,R_S)/(tau_Q,tau_S) 动态分类
+   （QIAN/SANGER/NUMERICAL_TIE），禁止假设全域 QIAN。
+4. **Protocol-D UNIQUE/AMBIGUOUS**：AMBIGUOUS 是合法 comparison
+   semantic 结构（formal 字段全 None，不选 earliest/latest/midpoint）；
+   数值边界（inverse root 落于 domain 外 epsilon）→
+   `NOT_AVAILABLE_FLOAT_EDGE` 保护（非物理 unavailable）。
+5. **Pointwise eligibility vs display continuity 分离**：F3 exclusion
+   box 不删除 pointwise comparison value，只阻断平滑插值跨 box /
+   跨 comparison-signature 边界。
+6. **comparison_signature = (qian_regime, sanger_regime, time_limiter,
+   range_limiter, exposure_limiter, protocol_D_status)**（F0 §34），
+   扩展 checkpoint_structure 单独保存。
+7. **禁 native winner map**：只报告 metric sign distribution
+   （"At equal time, DeltaR_time > 0 at X sampled centers"），禁止
+   "wins N%"。
+8. **recovered centers**：pointwise metrics 允许，但必须全部
+   strict-reference audit；categorical mismatch → HARD STOP。
+9. **Reference audit**：deterministic sample（baseline + per-regime +
+   per-limiter + per-D-status + all recovered + extremal +
+   per-checkpoint-mode）；字段级 tolerance（time/exposure 1e-3 s、
+   range 1 m、velocity 1e-2 m/s、energy 0.1 J/kg）。
+10. **Sign conventions**：DeltaR_time = R_S - R_Q；time_saving =
+    t_Q - t_S；elapsed extension = t_S - t_Q（Phase E 符号不变）。
+11. 禁止 comparison derivatives / optimization / STM/saltation/FTLE。

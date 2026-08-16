@@ -310,7 +310,7 @@ def integrate_qian_research_trajectory(
         Strict tie tolerance for near-simultaneous terminal events.
     """
     solver = solver or PRODUCTION_SOLVER_CONFIG
-    collector = dense_output_collector or DenseOutputCollector()
+    collector = (dense_output_collector if dense_output_collector is not None else DenseOutputCollector())
 
     state0 = _initial_state(env, initial)
     events: list[QianResearchEvent] = []
