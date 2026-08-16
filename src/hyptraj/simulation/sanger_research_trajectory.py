@@ -712,6 +712,23 @@ def integrate_sanger_research_trajectory(
 
         if t_entry.size > 0:
             t_e = float(t_entry[0])
+            if t_e <= t_current:
+                # Degenerate zero-duration VAC arc (grazing limit): the
+                # atmosphere entry is located at (or before) the arc
+                # start.  This happens after a recovered exit at the
+                # tangency limit where the new skip degenerates.  The
+                # frozen chatter guard would raise; instead this is
+                # structured as GRAZING_OR_UNRESOLVED_EVENT so the sweep
+                # can run the strict-reference decision (F2.1 §12, F3).
+                terminal_kind = TERMINAL_GRAZING_OR_UNRESOLVED_EVENT
+                terminal_time = t_current
+                terminal_state = state.copy()
+                message = (
+                    "Degenerate zero-duration VAC arc after an interface "
+                    "event at t = {:.6f} s (grazing limit); structured as "
+                    "GRAZING_OR_UNRESOLVED_EVENT.".format(t_current)
+                )
+                break
             x_e = sol.sol(t_e).copy()
             f_minus = sanger_vac_rhs(t_e, x_e, env, vehicle)
             f_plus = sanger_atm_rhs(t_e, x_e, env, vehicle, control)

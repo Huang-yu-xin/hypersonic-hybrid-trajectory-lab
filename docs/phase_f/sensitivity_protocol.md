@@ -959,3 +959,57 @@ comparison audit。F2 cache schema 升级为 `f2-coarse-map-point-v2`，
 provenance 增加 `phase_f_f21_commit` 与
 `sanger_research_event_resolution_version = "v1"`；旧 v1 cache 不得静默
 作为 canonical final cache。
+
+---
+
+## Amendment — F3: Adaptive Grazing-Boundary Refinement（Phi_N 正式冻结）
+
+状态：**COMPLETE**（2026-08-16）。完整记录见
+`docs/phase_f/f3_boundary_refinement.md`。
+
+### 1. Phi_N — branch-conditioned signed grazing diagnostic（F3 冻结定义）
+
+对 branch B_N（SRTI_N ↔ SRTI_{N+1}）：
+
+- **N side**（regime = SRTI_N）：`Phi_N = h_SRTI - h_atm = -M_S`
+  （理论侧 < 0；SRTI local maximum 从下方接近大气边界）。
+- **N+1 side**（regime = SRTI_{N+1}）：`Phi_N = h_apogee,new - h_atm`，
+  其中 `h_apogee,new` 是 newly-created LAST VAC apogee（VAC arc index
+  N，zero-based）。**禁止 `min(M_A_clearance_m)` 替代**（早期 VAC 弧与
+  本次 topology creation 无关）。
+- 其他 regime：`Phi_N = None`（不跨 N-1 / N+2 延拓；不是全局光滑 scalar
+  field）。
+- limiting geometry：`h = h_atm ∧ gamma = 0`（`G_h = 0`，
+  `dG_h/dt = v sin gamma = 0`）= numerically refined hybrid grazing
+  transition（不声称解析 bifurcation proof）。
+
+### 2. Newly-created exit transversality T_N
+
+N+1 侧：`T_N = dh/dt` at newly-created atmosphere exit（exit index N，
+zero-based）。应 T_N > 0 且随 refinement 趋近 0+；secondary grazing
+diagnostic，不是 boundary locator。`T_N → 0+` 意味着 transversal-event
+saltation formula 的 `n^T f_minus = dh/dt` 分母病态（saltation 属未来
+phase）。
+
+### 3. Refinement 规则冻结
+
+- dyadic 2D bisection（integer lattice）；target Δgamma ≤ 0.01 deg 且
+  ΔK ≤ 0.01；max_depth = 6。
+- child candidate：Sanger compact/exact 变化、Qian 变化、同 B_N 邻域
+  Phi_N 两侧、grazing marker → candidate；uniform 停止；center 与四角
+  不同 → 保留 children。
+- 最终输出 = enclosing parameter rectangle；cell center 仅
+  visualization_center_only；禁止 boundary fit / critical-K regression。
+- 域严格 = guardrails [-9,-1]×[1,5]；guardrail 接触 → OPEN_BOUNDARY
+  refined intersection（不采样域外）。
+- GRAZING_OR_UNRESOLVED_EVENT（含 degenerate zero-duration VAC arc）：
+  strict-reference decision 优先；reference-confirmed side 或
+  SANGER_GRAZING_BOUNDARY marker（P0，非 stop gate，禁止插值）。
+- 每条 B_N 两侧 closest-to-zero 点必须 REF-0.1 + REF-0.05 双 reference
+  certification。
+
+### 4. F4 前置
+
+`boundary_exclusion_cells.json` = 全部 REFINED_BOUNDARY_CELL +
+UNRESOLVED + GRAZING marker boxes。F4 finite-difference stencil 跨盒或
+端点跨 exact topology → derivative undefined（协议 §27 不变）。
