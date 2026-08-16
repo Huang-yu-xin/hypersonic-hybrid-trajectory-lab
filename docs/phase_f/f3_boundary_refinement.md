@@ -172,8 +172,12 @@ transversality 丧失，standard saltation formula 病态 —— 未来 phase �
 
 ## 17. Limitations
 
-- multiplicity（row=5 / column=5）= 5 条 branch 带在 sampled domain 内
-  的 empirical 结构；**不冻结全局 K=f(gamma) 假设**。
+- multiplicity（row=5 / column=5）= 5 条 branch 带在 sampled domain 内的
+  empirical 结构。**F4 的 per-branch multiplicity audit 澄清**：每条
+  B_N 自身的 max row / column multiplicity 均为 1 —— 即
+  "five branch families coexist; per-branch multiplicity = 1"
+  （每条 branch 在 fixed-gamma row 与 fixed-K column 上均单值；
+  不冻结全局 K=f(gamma) 假设，因为 5 条 branch 共存且斜向排列）。
 - Phi_N 收敛是 numerical grazing evidence，非解析 bifurcation proof。
 - OPEN_BOUNDARY 三个方向的域外拓扑未采样（F0 guardrail 规则）。
 - 3298 个 recovered 点仅 REF-0.1 verified（双 REF 仅用于 extremal

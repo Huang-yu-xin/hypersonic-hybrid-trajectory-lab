@@ -1013,3 +1013,54 @@ phase）。
 `boundary_exclusion_cells.json` = 全部 REFINED_BOUNDARY_CELL +
 UNRESOLVED + GRAZING marker boxes。F4 finite-difference stencil 跨盒或
 端点跨 exact topology → derivative undefined（协议 §27 不变）。
+
+---
+
+## Amendment — F4: Fixed-Regime Local Sensitivity / FD Convergence（policy 冻结）
+
+状态：**COMPLETE**（2026-08-17）。完整记录见
+`docs/phase_f/f4_fd_convergence.md`。
+
+### 1. Ordinary derivative 语义（F4 冻结）
+
+- 仅定义在 fixed exact topology interior；`D_gamma(h) = [y(g+h)-y(g-h)]
+  / (2 h_rad)`（h_rad = h_deg·π/180；canonical 单位 per radian，
+  per-degree 显式报告）；`D_K(h)` 单位 per unit K。
+- 这是 parameter-output Jacobian `J = ∂y_terminal/∂(gamma0, K)`，不是
+  STM / variational matrix / saltation matrix。skip_count 等离散
+  topology label 永不微分；max-based 非光滑 observable 不入 vector。
+- 不新增 elasticity / percentage / normalized composite sensitivity
+  （如未来需要，F5 再定义）。
+
+### 2. Stencil eligibility gate（F4 冻结）
+
+central stencil（minus, center, plus）全部满足才 FD_ELIGIBLE：
+(1) 全部在 guardrails 内；(2) center→minus / center→plus 线段不与任一
+F3 exclusion box 相交（segment-vs-rectangle gate，仅端点同 label 不够）；
+(3) 三点 exact topology signature identical（模型特定）；(4) 无
+GRAZING / GRAZING_OR_UNRESOLVED / DENSE_RECOVERED / reference-only
+recovered discrepancy；(5) 全部 valid physical terminal。否则
+derivative = None + reason（OUTSIDE_DOMAIN / BOUNDARY_INTERSECTION /
+TOPOLOGY_CHANGE / RECOVERED_EVENT / GRAZING_ADJACENT / INVALID_NEIGHBOR）。
+
+### 3. FD step policy（F4 冻结）
+
+**GLOBAL_STEP_POLICY**：h_gamma = **0.1 deg**（per-radian）、
+h_K = **0.025**。判据（dimension-aware，已文档化）：plateau = 连续两层
+`|D(h)-D(h/2)| <= 0.01 * |D_ref|`；negligible output 阈值 gamma 1e-3/rad、
+K 1e-2/unitK 不参与判据。参考 derivative = REF-0.1 numerical FD
+（非 analytic）；REF-0.05 用于 self-stability（topology identical +
+导数差量化）。若未来某点无法满足 gate/plateau → 回退
+ADAPTIVE_STEP_POLICY（largest-safe-converged central step，按上述
+gate + plateau + reference audit 自动选择），不强行最小 h。
+
+### 4. 其他冻结
+
+- production-vs-reference 误差按 output dimension 报告（近零导数不报
+  巨大相对 %，改报绝对误差 + reference floor）。
+- 禁止 mixed-unit 全局误差；禁止跨 topology 的 ordinary derivative。
+- recovered / grazing / certified extremal 点及 stencil 不得用于
+  ordinary FD（deliberately conservative）。
+- F4 已确认 per-branch multiplicity：每条 B_N 的 row/column
+  multiplicity 均为 1（"five branch families coexist; per-branch
+  single-valued"）。
