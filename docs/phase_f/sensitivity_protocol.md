@@ -1064,3 +1064,46 @@ gate + plateau + reference audit 自动选择），不强行最小 h。
 - F4 已确认 per-branch multiplicity：每条 B_N 的 row/column
   multiplicity 均为 1（"five branch families coexist; per-branch
   single-valued"）。
+
+---
+
+## Amendment — F5: Fixed-Topology Structural Sensitivity Mapping（语义冻结）
+
+状态：**COMPLETE**（2026-08-17）。完整记录见
+`docs/phase_f/f5_structural_sensitivity.md`。
+
+### 冻结语义
+
+1. **Canonical centers = F2 33×33 = 1089**（不新增 uniform dense grid；
+   F3 负责 boundary refinement）。
+2. **模型特定 mask**：Qian 导数从不因 Sanger exclusion geometry mask
+   （只要求 Qian exact topology + guardrail + valid terminal）；Sanger
+   额外强制 F3 exclusion geometry（segment-rect gate）+ exact Sanger
+   topology + recovered/grazing 排除。两 mask 独立保存。
+3. **Global-step-first**：h_gamma=0.1 deg、h_K=0.025，h/2 plateau audit
+   map-wide；失败 → ADAPTIVE_STEP_POLICY（largest-safe-converged；
+   gamma ≤0.00625 deg、K ≤0.0015625 last resort 需报告）。
+4. **Status vocabulary（categorical，禁止插值）**：GLOBAL_ACCEPTED /
+   ADAPTIVE_ACCEPTED / BOUNDARY_INTERSECTION / TOPOLOGY_CHANGE /
+   RECOVERED_EVENT_EXCLUDED / GUARDRAIL_CENTRAL_UNAVAILABLE /
+   NO_SAFE_STENCIL / NO_CONVERGENCE / INVALID / REFERENCE_AUDIT_FAILED。
+   NO_SAFE_STENCIL 与 NO_CONVERGENCE 是正常 mask 状态（非 HARD STOP）。
+5. **Guardrail**：只做 central FD；gamma=-9/-1、K=1/5 的对应方向
+   GUARDRAIL_CENTRAL_UNAVAILABLE（不用 one-sided 补边）。
+6. **Recovered Sanger policy（F4 conservative 延续）**：center/± 任一
+   DENSE_RECOVERED → 该 Sanger stencil 不可用于 ordinary FD，即使
+   strict-reference 证明 topology 正确。
+7. **输出**：严格复用 F4 primary outputs（Qian 5 / Sanger 7）；raw
+   storage per radian / per unit K；per-degree 仅 visualization 且
+   caption 注明。不新增 skip_count/max-altitude derivative、winner
+   metric、normalized composite。
+8. **Reference audit**：deterministic stratified（baseline + 每 regime
+   ≥3 + extremal + adaptive ≤30），REF-0.1 + REF-0.05 subset；
+   REFERENCE_AUDIT_FAILED >5% audited → F5 HARD STOP。
+9. **Field health**：same exact topology 相邻 centers 的 adjacent
+   derivative jump（>5×）是 diagnostic（非 second derivative）；确认
+   真实跳变则记为 strong within-regime sensitivity variation。
+10. **F5 结论边界**：Sanger derivative fields 是 piecewise（regime 内
+    smooth、grazing 带 mask）；禁止跨 topology 差分/插值、禁止
+    "derivative diverges at boundary" 表述、禁止 Qian-vs-Sanger winner
+    ranking、禁止 native RTI/SRTI fair-performance claim。

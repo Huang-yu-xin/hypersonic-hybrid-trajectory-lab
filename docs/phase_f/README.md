@@ -10,8 +10,10 @@
     F2.1: COMPLETE  (Sanger Grazing-Transition Observability Amendment)
     F2: COMPLETE    (Canonical coarse map; OPEN_BOUNDARY recorded)
     F3: COMPLETE    (Adaptive grazing-boundary refinement; Phi_N frozen)
-    F4: COMPLETE    (Fixed-regime local sensitivity; GLOBAL_STEP_POLICY
-                    h_gamma=0.1 deg / h_K=0.025; 5x2/7x2 Jacobians)
+    F4: COMPLETE    (Fixed-regime local sensitivity; GLOBAL_STEP_POLICY)
+    F5: COMPLETE    (Fixed-topology structural sensitivity map; 1089
+                    centers; Qian single-topology smooth field; Sanger
+                    N0-N5 regime-dependent derivatives)
 
     Anchor: phase-e-v1.0
             44a99119cf9e82e64d68b5b8abdbb4a20406c7bc
@@ -26,8 +28,8 @@
         gamma0 ∈ [-9, -1] deg
         K     ∈ [1.0, 5.0]
 
-    Next: F5 structural sensitivity analysis
-          over fixed-topology interiors
+    Next: F6 Phase-E common-condition comparison surfaces
+          over parameter space
 
 ## Documents
 
@@ -43,8 +45,10 @@
 - [`f3_boundary_refinement.md`](f3_boundary_refinement.md) — F3 自适应
   grazing-boundary 精化（Phi_N 冻结、5 branch 双 reference 认证）。
 - [`f4_fd_convergence.md`](f4_fd_convergence.md) — F4 固定拓扑局部灵敏度
-  与 FD 收敛（GLOBAL_STEP_POLICY、5×2/7×2 Jacobians、production-vs-
-  reference 审计、per-branch multiplicity 澄清）。
+  与 FD 收敛（GLOBAL_STEP_POLICY、5×2/7×2 Jacobians）。
+- [`f5_structural_sensitivity.md`](f5_structural_sensitivity.md) — F5 固定
+  拓扑结构灵敏度全域映射（1089 centers、模型特定 mask、global/adaptive
+  step 覆盖、regime 统计、reference audit、core figures）。
 
 ## Roadmap
 
