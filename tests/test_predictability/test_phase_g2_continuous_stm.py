@@ -431,12 +431,31 @@ def test_g2_snapshot_fd_classifications_valid_smooth():
             assert set(cls) <= {"VALID_SMOOTH_FLOW"}, (mode, cls)
 
 
-def test_g2_snapshot_windows_no_event_crossing():
-    from hyptraj.predictability.event_metadata import EVENT_TAXONOMY
-    # Sanity: recorded windows are single continuous modes (no saltation).
+def test_g2_snapshot_windows_are_single_continuous_modes(base):
+    """Real no-event-crossing check (G2R §10, option 1).
+
+    For every recorded G2 window, run the frozen mode-window gate over the
+    window with the snapshot's starting state and assert the nominal
+    trajectory stays inside the single continuous mode (no true-switch
+    crossing; diagnostic events allowed).  This replaces the old
+    placeholder assertion that only checked ``duration > 0`` /
+    ``h0 > 0``.
+    """
+    from hyptraj.predictability.perturbation import gate_perturbed_trajectory
+    from hyptraj.predictability.stm import stm_production_like_config
+    from hyptraj.predictability.jacobian import constant_k_value
+
+    env, veh, _ini = base
+    solver = stm_production_like_config()
     for mode, rec in SNAPSHOT["per_mode"].items():
-        assert rec["window"]["duration_s"] > 0.0
-        assert rec["window"]["h0_m"] > 0.0
+        w = rec["window"]
+        x0 = np.array(w["x0"], dtype=float)
+        cls = gate_perturbed_trajectory(
+            mode, x0, (w["t0"], w["t1"]), env, veh, K, solver
+        )
+        assert cls.value == "VALID_SMOOTH_FLOW", (
+            f"{mode}: nominal window crossing detected ({cls.value})"
+        )
 
 
 # ---------------------------------------------------------------------------

@@ -284,3 +284,51 @@ saltation 更新与 event-time sensitivity —— 现已有 `HybridEventRecord`
 - [x] 无 saltation / hybrid STM / FTLE / event-time scope leak
 
 **G2 = COMPLETE；等待人工验收后再进入 G3。**
+---
+
+## 18. G2R — corrective patch（validation gate）
+
+状态：**COMPLETE**（2026-08-18；commit "修正 Phase G2 双侧扰动与连续模式窗口验证门"）
+
+修正两个 validation-contract 缺陷，**不改动** G2 的数学结果：
+
+### Issue 1 — centered FD 双侧 gate（修复前只 gate +ε）
+
+```
+column_valid = （cls_plus == VALID_SMOOTH_FLOW） AND （cls_minus == VALID_SMOOTH_FLOW）
+```
+
+任一测 invalid → column rejected，不得进入 STM error metric。machine-readable
+输出保留每列的 `classification_plus` / `classification_minus` 以及 derived
+pair `classification`（VALID_SMOOTH_FLOW / PAIR_INVALID）。
+
+### Issue 2 — MODE_WINDOW_INVALID 真正生效（修复前为保留枚举）
+
+validation observer 复用 frozen event surfaces 检测 perturbed trajectory
+是否在 window 内跨过 true-switch：
+
+```
+ENTRY_CAPTURE   make_capture_event（gamma=0, dir+1）          → 跨过则 MODE_WINDOW_INVALID
+SANGER_ATM      make_atmosphere_exit_event（h-h_atm, dir+1）  → 跨过则 MODE_WINDOW_INVALID
+SANGER_VAC      make_atmosphere_entry_event（h-h_atm, dir-1） → 跨过则 MODE_WINDOW_INVALID
+QEG_INTERIOR    仍由 active-set gate（0<u_L*<1；RTI u_L*→1 自然捕获）→ ACTIVE_SET_CHANGED
+```
+
+diagnostic events（Sanger pullout / VAC apogee，gamma=0）不是 true switch，
+不导致 invalid。仅观察 frozen surface，无 hybrid propagation / reset /
+RHS 切换 / saltation。
+
+### Revalidation（原 G2 windows）
+
+| mode | plateau mult | plus classes | minus classes | pair_valid | FD/STM acceptance |
+|---|---|---|---|---|---|
+| ENTRY_CAPTURE | 0.03 | 4×VALID | 4×VALID | True | 不变（rel 1.04e-6） |
+| QEG_INTERIOR | 0.01 | 4×VALID | 4×VALID | True | 不变（rel 2.6e-8） |
+| SANGER_ATM | 0.03 | 4×VALID | 4×VALID | True | 不变（rel 3.2e-8） |
+| SANGER_VAC | 0.1 | 4×VALID | 4×VALID | True | 不变（rel 4.7e-9） |
+
+G2 snapshot 中所有 STM 矩阵 / solver convergence / semigroup / scaling /
+psi_atol 数据与 7445378 逐位一致（69 fields，0 mismatch）；仅新增
+per-side / pair 字段。
+
+**G2R = COMPLETE；G2 整体等验收后再进入 G3。**

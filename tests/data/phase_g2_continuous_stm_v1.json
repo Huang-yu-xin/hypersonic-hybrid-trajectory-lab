@@ -1,7 +1,7 @@
 {
   "schema_version": "phase-g2-continuous-stm-v1",
-  "status": "pre-freeze (G2 accept-time audit)",
-  "starting_g1_commit": "d1b3030c0988a380fcd389de7b7f10ae65185ade",
+  "status": "pre-freeze (G2R corrective patch)",
+  "starting_g1_commit": "74453782b4a1b0c008c18cef9d94d7786598e368",
   "state_order": [
     "r",
     "theta",
@@ -112,6 +112,18 @@
       "status": "PASS"
     }
   },
+  "psi_atol_audit": {
+    "window": "qeg_interior [187.87, 534.16]",
+    "base_config": "production_like (rtol=1e-9, max_step=20) varying psi_atol",
+    "max_abs_phi_diff_vs_REF01": {
+      "1e-09": 1.3969838619232178e-09,
+      "1e-11": 7.683411240577698e-09,
+      "1e-13": 3.026798367500305e-09
+    },
+    "default_production_psi_atol": 1e-11,
+    "default_strict_psi_atol": 1e-13
+  },
+  "psi_atol_defaults_backed": true,
   "scientific_canonical_scaling_status": "CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION",
   "per_mode": {
     "entry_capture": {
@@ -256,6 +268,18 @@
         "mult_0.001": {
           "multiplier": 0.001,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -274,6 +298,18 @@
         "mult_0.003": {
           "multiplier": 0.003,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -292,6 +328,18 @@
         "mult_0.01": {
           "multiplier": 0.01,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -310,6 +358,18 @@
         "mult_0.03": {
           "multiplier": 0.03,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -328,6 +388,18 @@
         "mult_0.1": {
           "multiplier": 0.1,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -346,6 +418,18 @@
         "mult_0.3": {
           "multiplier": 0.3,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -364,6 +448,18 @@
         "mult_1": {
           "multiplier": 1.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -382,6 +478,18 @@
         "mult_3": {
           "multiplier": 3.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -400,6 +508,18 @@
         "mult_10": {
           "multiplier": 10.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -425,6 +545,24 @@
           0.001552204291,
           1.444932063e-09,
           0.0001180343679
+        ],
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
         ]
       },
       "fd_reference_agreement": {
@@ -438,12 +576,25 @@
           0.0005028473679
         ],
         "validation_scaled_error": 2.511501857e-07,
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
         "classification": [
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW"
         ],
+        "pair_valid": true,
         "status": "PASS"
       }
     },
@@ -611,6 +762,18 @@
         "mult_0.001": {
           "multiplier": 0.001,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -629,6 +792,18 @@
         "mult_0.003": {
           "multiplier": 0.003,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -647,6 +822,18 @@
         "mult_0.01": {
           "multiplier": 0.01,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -665,6 +852,18 @@
         "mult_0.03": {
           "multiplier": 0.03,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -683,6 +882,18 @@
         "mult_0.1": {
           "multiplier": 0.1,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -701,6 +912,18 @@
         "mult_0.3": {
           "multiplier": 0.3,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -719,6 +942,18 @@
         "mult_1": {
           "multiplier": 1.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -737,6 +972,18 @@
         "mult_3": {
           "multiplier": 3.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -755,6 +1002,18 @@
         "mult_10": {
           "multiplier": 10.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -780,6 +1039,24 @@
           4.547473509e-06,
           1.041369213e-10,
           0.002111712703
+        ],
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
         ]
       },
       "fd_reference_agreement": {
@@ -793,54 +1070,47 @@
           0.01930870651
         ],
         "validation_scaled_error": 1.562693294e-08,
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
         "classification": [
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW"
         ],
+        "pair_valid": true,
         "status": "PASS"
       },
       "qeg_perturbation_gate": [
         {
           "column": 0,
-          "sign": 1.0,
-          "class": "VALID_SMOOTH_FLOW"
-        },
-        {
-          "column": 0,
-          "sign": -1.0,
-          "class": "VALID_SMOOTH_FLOW"
+          "plus": "VALID_SMOOTH_FLOW",
+          "minus": "VALID_SMOOTH_FLOW"
         },
         {
           "column": 1,
-          "sign": 1.0,
-          "class": "VALID_SMOOTH_FLOW"
-        },
-        {
-          "column": 1,
-          "sign": -1.0,
-          "class": "VALID_SMOOTH_FLOW"
+          "plus": "VALID_SMOOTH_FLOW",
+          "minus": "VALID_SMOOTH_FLOW"
         },
         {
           "column": 2,
-          "sign": 1.0,
-          "class": "VALID_SMOOTH_FLOW"
-        },
-        {
-          "column": 2,
-          "sign": -1.0,
-          "class": "VALID_SMOOTH_FLOW"
+          "plus": "VALID_SMOOTH_FLOW",
+          "minus": "VALID_SMOOTH_FLOW"
         },
         {
           "column": 3,
-          "sign": 1.0,
-          "class": "VALID_SMOOTH_FLOW"
-        },
-        {
-          "column": 3,
-          "sign": -1.0,
-          "class": "VALID_SMOOTH_FLOW"
+          "plus": "VALID_SMOOTH_FLOW",
+          "minus": "VALID_SMOOTH_FLOW"
         }
       ]
     },
@@ -986,6 +1256,18 @@
         "mult_0.001": {
           "multiplier": 0.001,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1004,6 +1286,18 @@
         "mult_0.003": {
           "multiplier": 0.003,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1022,6 +1316,18 @@
         "mult_0.01": {
           "multiplier": 0.01,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1040,6 +1346,18 @@
         "mult_0.03": {
           "multiplier": 0.03,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1058,6 +1376,18 @@
         "mult_0.1": {
           "multiplier": 0.1,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1076,6 +1406,18 @@
         "mult_0.3": {
           "multiplier": 0.3,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1094,6 +1436,18 @@
         "mult_1": {
           "multiplier": 1.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1112,6 +1466,18 @@
         "mult_3": {
           "multiplier": 3.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1130,6 +1496,18 @@
         "mult_10": {
           "multiplier": 10.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1155,6 +1533,24 @@
           0.009313225746,
           3.171130558e-08,
           0.001647616446
+        ],
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
         ]
       },
       "fd_reference_agreement": {
@@ -1168,12 +1564,25 @@
           0.002853775979
         ],
         "validation_scaled_error": 4.084336561e-07,
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
         "classification": [
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW"
         ],
+        "pair_valid": true,
         "status": "PASS"
       }
     },
@@ -1319,6 +1728,18 @@
         "mult_0.001": {
           "multiplier": 0.001,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1337,6 +1758,18 @@
         "mult_0.003": {
           "multiplier": 0.003,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1355,6 +1788,18 @@
         "mult_0.01": {
           "multiplier": 0.01,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1373,6 +1818,18 @@
         "mult_0.03": {
           "multiplier": 0.03,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1391,6 +1848,18 @@
         "mult_0.1": {
           "multiplier": 0.1,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1409,6 +1878,18 @@
         "mult_0.3": {
           "multiplier": 0.3,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1427,6 +1908,18 @@
         "mult_1": {
           "multiplier": 1.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1445,6 +1938,18 @@
         "mult_3": {
           "multiplier": 3.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1463,6 +1968,18 @@
         "mult_10": {
           "multiplier": 10.0,
           "n_valid_columns": 4,
+          "classification_plus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
+          "classification_minus": [
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW",
+            "VALID_SMOOTH_FLOW"
+          ],
           "classification": [
             "VALID_SMOOTH_FLOW",
             "VALID_SMOOTH_FLOW",
@@ -1488,6 +2005,24 @@
           0.0004656612873,
           1.297500773e-09,
           9.711284656e-05
+        ],
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
         ]
       },
       "fd_reference_agreement": {
@@ -1501,12 +2036,25 @@
           0.0006945113419
         ],
         "validation_scaled_error": 4.195412419e-08,
+        "classification_plus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
+        "classification_minus": [
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW",
+          "VALID_SMOOTH_FLOW"
+        ],
         "classification": [
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW",
           "VALID_SMOOTH_FLOW"
         ],
+        "pair_valid": true,
         "status": "PASS"
       }
     }
@@ -1516,18 +2064,16 @@
     "ACTIVE_SET_CHANGED",
     "MODE_WINDOW_INVALID",
     "NONPHYSICAL_STATE",
-    "NUMERICAL_FAILURE"
+    "NUMERICAL_FAILURE",
+    "PAIR_INVALID"
   ],
-  "psi_atol_audit": {
-    "window": "qeg_interior [187.87, 534.16]",
-    "base_config": "production_like (rtol=1e-9, max_step=20) varying psi_atol",
-    "max_abs_phi_diff_vs_REF01": {
-      "1e-09": 1.3969838619232178e-09,
-      "1e-11": 7.683411240577698e-09,
-      "1e-13": 3.026798367500305e-09
-    },
-    "default_production_psi_atol": 1e-11,
-    "default_strict_psi_atol": 1e-13
-  },
-  "psi_atol_defaults_backed": true
+  "g2r": {
+    "issue1_both_side_gate": "a centered-FD column is valid iff BOTH +eps and -eps are VALID_SMOOTH_FLOW",
+    "issue2_mode_window_detection": "MODE_WINDOW_INVALID detects frozen true-switch crossings (Qian capture gamma=0,+1; Sanger ATM exit / VAC entry h-h_atm); diagnostic events excluded",
+    "per_side_fields": [
+      "classification_plus",
+      "classification_minus"
+    ],
+    "pair_field": "classification"
+  }
 }
