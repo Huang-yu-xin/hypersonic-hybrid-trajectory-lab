@@ -11,10 +11,12 @@ representative cases, validation and reference-solver policies):
   convention formulas.
 
 G1 adds the continuous-mode Jacobians (``jacobian``), the numerical FD
-oracle, and the minimal variational algebra (``stm``).  G1 performs NO
-STM propagation, NO saltation, NO FTLE production.  Placeholder modules
-that remain empty for the G2-G6 layers: ``perturbation``, ``ftle``,
-``metrics``, ``observability``.
+oracle, and the minimal variational algebra (``stm``).  G2 extends
+``stm`` with the 20-D augmented continuous STM integrator and activates
+``perturbation`` for the fixed-time nonlinear flow-map validation (FD
+sweep + smooth-flow gate).  G2 performs NO saltation, NO hybrid STM,
+NO FTLE production.  Placeholder modules that remain empty for the
+G4-G6 layers: ``ftle``, ``metrics``, ``observability``.
 """
 
 from hyptraj.predictability.protocol import machine_readable_protocol
@@ -30,6 +32,15 @@ from hyptraj.predictability.jacobian import (
 from hyptraj.predictability.stm import (
     state_transition_initial_value,
     variational_rhs,
+    pack_augmented,
+    unpack_augmented,
+    make_augmented_rhs,
+    integrate_continuous_stm,
+    integrate_standalone_mode,
+    computational_scaling_transform,
+    stm_production_like_config,
+    stm_strict_reference_config,
+    stm_companion_reference_config,
 )
 
 __all__ = [
@@ -43,4 +54,13 @@ __all__ = [
     "jacobian_error_summary",
     "state_transition_initial_value",
     "variational_rhs",
+    "pack_augmented",
+    "unpack_augmented",
+    "make_augmented_rhs",
+    "integrate_continuous_stm",
+    "integrate_standalone_mode",
+    "computational_scaling_transform",
+    "stm_production_like_config",
+    "stm_strict_reference_config",
+    "stm_companion_reference_config",
 ]
