@@ -29,7 +29,10 @@ trajectories.
 - [x] Phase D — Sanger hybrid trajectory (COMPLETE, sanger-baseline-v1.0)
 - [x] Phase E — Qian vs Sanger baseline comparison (COMPLETE,
   qian-sanger-comparison-v1.0)
-- [ ] Phase F — Parameter sensitivity
+- [x] Phase F — gamma0-K sensitivity / hybrid topology (COMPLETE / FROZEN,
+  phase-f-v1.0, gamma-k-sensitivity-v1.0; Qian single sampled topology,
+  Sanger N0-N5 grazing-separated regimes, fixed-topology sensitivities,
+  common-condition comparison surfaces — docs/phase_f/)
 - [ ] Predictability / STM / FTLE
 - [ ] Risk
 - [ ] Optimization
@@ -64,6 +67,12 @@ validation (D6), final report and freeze (D7A/D7B). Reproduction:
     Common-time / common-range / common-exposure comparison
     completed under frozen baselines and production numerics.
     Tags: qian-sanger-comparison-v1.0, phase-e-v1.0
+
+Phase F — gamma0-K Sensitivity / Hybrid Topology:
+    COMPLETE / FROZEN
+    - Qian single sampled topology; Sanger N0-N5 grazing-separated regimes
+    - fixed-topology sensitivities; common-condition comparison surfaces
+    - docs/phase_f/
 
 See [docs/phase_e/](docs/phase_e/) — comparison protocol (E0, frozen),
 alignment infrastructure (E1), common-condition comparison (E2),

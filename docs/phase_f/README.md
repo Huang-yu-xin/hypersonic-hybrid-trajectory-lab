@@ -2,7 +2,8 @@
 
 ## Status
 
-    Phase F: IN PROGRESS
+    Phase F: COMPLETE
+             FROZEN
 
     F0: COMPLETE
     F0.1: COMPLETE  (Qian Regime-Classification Access Amendment)
@@ -13,23 +14,15 @@
     F4: COMPLETE    (Fixed-regime local sensitivity; GLOBAL_STEP_POLICY)
     F5: COMPLETE    (Fixed-topology structural sensitivity map)
     F6: COMPLETE    (Phase-E common-condition comparison surfaces;
-                    1089 centers; dynamic limiters; Protocol-D UNIQUE
-                    dominant; 19 comparison signatures)
+                    corrected: Protocol-D UNIQUE 1089, 15 signatures)
+    F7: COMPLETE    (Numerical / regression freeze audit)
 
-    Anchor: phase-e-v1.0
-            44a99119cf9e82e64d68b5b8abdbb4a20406c7bc
+    Frozen tags: phase-f-v1.0, gamma-k-sensitivity-v1.0
+    Anchor: phase-e-v1.0 (44a99119cf9e82e64d68b5b8abdbb4a20406c7bc)
+    Baseline: gamma0 = -5 deg, K = 3
+    Domain: gamma0 ∈ [-9,-1] deg × K ∈ [1,5]（computational window）
 
-    Baseline: gamma0 = -5 deg
-              K = 3
-
-    Primary domain:
-        gamma0 ∈ [-7, -3] deg
-        K     ∈ [2.0, 4.0]
-    Final coarse domain:
-        gamma0 ∈ [-9, -1] deg
-        K     ∈ [1.0, 5.0]
-
-    Next: F7 numerical / regression audit and Phase F final freeze
+    Next: future predictability / hybrid sensitivity phase (not started)
 
 ## Documents
 
@@ -51,6 +44,11 @@
 - [`f6_comparison_surfaces.md`](f6_comparison_surfaces.md) — F6 共同条件
   比较表面（Phase-E B/C/D 复用、动态 limiter、comparison signatures、
   Protocol-D UNIQUE 主导、reference audit）。
+- [`f7_numerical_regression_audit.md`](f7_numerical_regression_audit.md) —
+  F7 数值与回归冻结审计（float-edge resolution、REF self-stability、
+  regression snapshot）。
+- [`phase_f_final_report.md`](phase_f_final_report.md) — Phase F 最终综合
+  报告（三层科学结论、claim boundaries、未来 predictability 连接）。
 
 ## Roadmap
 
