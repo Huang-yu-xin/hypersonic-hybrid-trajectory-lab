@@ -20,6 +20,7 @@ event kind (never nearest-time heuristics):
 
 from __future__ import annotations
 
+from collections import Counter
 from enum import Enum
 
 import numpy as np
@@ -144,6 +145,77 @@ def _trajectory_terminal_time(result) -> float:
     return float(result.terminal_time)
 
 
+def _trajectory_terminal_kind(result) -> str:
+    """Frozen structured terminal kind (never parsed from message text).
+
+    Compatible with ``QianResearchTrajectory`` (``terminal_kind`` directly)
+    and ``SangerResearchTrajectory`` (``trajectory.terminal_kind``).
+    """
+    if hasattr(result, "trajectory"):
+        return str(result.trajectory.terminal_kind)
+    return str(result.terminal_kind)
+
+
+# Frozen structured terminal kinds (Qian research API, F0.1 §5).
+_QIAN_TERMINAL_KINDS = (
+    "RTI", "GROUND_BEFORE_CAPTURE", "GROUND_AFTER_CAPTURE_BEFORE_RTI",
+    "MAX_TIME", "SOLVER_FAILURE", "AMBIGUOUS_SIMULTANEOUS_EVENT",
+)
+# Frozen structured terminal kinds (Sanger research API, D3 / F2.1).
+_SANGER_TERMINAL_KINDS = (
+    "srti", "ground_before_srti", "max_time", "max_segments",
+    "solver_failure", "grazing_or_unresolved_event",
+)
+_SOLVER_FAILURE_KINDS = frozenset({"SOLVER_FAILURE", "solver_failure"})
+_GRAZING_KINDS = frozenset({"grazing_or_unresolved_event"})
+_PHYSICAL_TERMINAL_KINDS = frozenset({
+    "GROUND_BEFORE_CAPTURE", "GROUND_AFTER_CAPTURE_BEFORE_RTI",
+    "ground_before_srti", "RTI", "srti",
+})
+_CENSOR_KINDS = frozenset({"MAX_TIME", "max_time", "max_segments"})
+_AMBIGUOUS_KINDS = frozenset({"AMBIGUOUS_SIMULTANEOUS_EVENT"})
+
+
+def _classify_terminal_before(
+    result,
+    t_final: float,
+) -> tuple[HybridTopologyGate | None, str]:
+    """Endpoint-scoped terminal classification (G4R §4).
+
+    Returns ``(None, "")`` when the frozen terminal occurs AFTER the fixed
+    endpoint (``terminal_time > T``) -- in that case the fixed-time prefix
+    is unaffected and downstream checks decide the gate.  A terminal that
+    occurs at or before ``T`` is routed by its STRUCTURED ``terminal_kind``:
+
+    * solver failure            -> NUMERICAL_FAILURE
+    * grazing_or_unresolved     -> GRAZING_CROSSED
+    * physical terminals (RTI / SRTI / ground / ...) -> TOPOLOGY_CHANGED
+    * computational censor      -> TOPOLOGY_CHANGED
+    * ambiguous simultaneous    -> TOPOLOGY_CHANGED
+    """
+    terminal_time = _trajectory_terminal_time(result)
+    if terminal_time > t_final:
+        return None, ""
+    kind = _trajectory_terminal_kind(result)
+    if kind in _SOLVER_FAILURE_KINDS:
+        return HybridTopologyGate.NUMERICAL_FAILURE, \
+            "solver_failure_before_fixed_endpoint"
+    if kind in _GRAZING_KINDS:
+        return HybridTopologyGate.GRAZING_CROSSED, \
+            "grazing_or_unresolved_before_fixed_endpoint"
+    if kind in _PHYSICAL_TERMINAL_KINDS:
+        return HybridTopologyGate.TOPOLOGY_CHANGED, \
+            f"terminal_before_fixed_endpoint:{kind}"
+    if kind in _CENSOR_KINDS:
+        return HybridTopologyGate.TOPOLOGY_CHANGED, \
+            "computational_censor_before_fixed_endpoint"
+    if kind in _AMBIGUOUS_KINDS:
+        return HybridTopologyGate.TOPOLOGY_CHANGED, \
+            "ambiguous_simultaneous_event_before_fixed_endpoint"
+    return HybridTopologyGate.TOPOLOGY_CHANGED, \
+        f"terminal_before_fixed_endpoint:{kind}"
+
+
 def classify_perturbed_topology(
     model: str,
     nominal_signature: tuple[str, ...],
@@ -154,36 +226,65 @@ def classify_perturbed_topology(
     env, vehicle, k,
     check_qeg_interior: bool,
 ) -> tuple[HybridTopologyGate, dict]:
-    """Full-hybrid topology gate for one perturbed trajectory (G4 §24)."""
-    if result is None or (hasattr(result, "success") and not result.success):
-        return HybridTopologyGate.NUMERICAL_FAILURE, {"reason": "solver_failure"}
+    """Full-hybrid topology gate for one perturbed trajectory (G4 §24, G4R).
 
-    terminal_time = _trajectory_terminal_time(result)
-    if terminal_time <= t_final:
-        # perturbed research trajectory ended before the fixed endpoint
-        return HybridTopologyGate.TOPOLOGY_CHANGED, {
-            "reason": "terminal_before_fixed_endpoint",
-            "terminal_time": terminal_time,
+    G4R corrective contract:
+
+    * ``result.success == False`` is NOT a generic numerical failure; the
+      gate is ENDPOINT-SCOPED -- a terminal/failure only matters if it
+      occurs at or before ``t_final``, or if the dense fixed-time state /
+      topology cannot be obtained at ``t_final``;
+    * ``EVENT_ORDER_CHANGED`` requires the SAME length and the SAME event
+      multiset INCLUDING multiplicity (``Counter``), with a different
+      chronological sequence -- a missing / extra repeated pair is
+      ``TOPOLOGY_CHANGED``, never ``EVENT_ORDER_CHANGED``.
+
+    Resolution order: no-result -> terminal-before-T -> dense endpoint
+    availability -> signature / endpoint mode / event order -> QEG
+    active-set -> TOPOLOGY_PRESERVED.
+    """
+    if result is None:
+        return HybridTopologyGate.NUMERICAL_FAILURE, {
+            "reason": "no_result", "terminal_time": None}
+
+    terminal_gate, term_reason = _classify_terminal_before(result, t_final)
+    if terminal_gate is not None:
+        return terminal_gate, {
+            "reason": term_reason,
+            "terminal_time": _trajectory_terminal_time(result),
+            "terminal_kind": _trajectory_terminal_kind(result),
         }
-    if getattr(result, "terminal_kind", None) == "grazing_or_unresolved_event":
-        return HybridTopologyGate.GRAZING_CROSSED, {"reason": "grazing_or_unresolved"}
+
+    # Terminal (if any) occurs after T: the fixed-time prefix may still be
+    # a valid TOPOLOGY_PRESERVED object (endpoint-scoped semantics).
+    try:
+        _, endpoint_mode = fixed_time_state(collector, t_final)
+    except Exception:
+        return HybridTopologyGate.NUMERICAL_FAILURE, {
+            "reason": "fixed_endpoint_unavailable",
+            "terminal_time": _trajectory_terminal_time(result),
+        }
 
     switches = _trajectory_true_switch_times(result, t_final)
     pert_sig = tuple(sw["kind"] for sw in switches)
-    _, endpoint_mode = fixed_time_state(collector, t_final)
 
-    if pert_sig == nominal_signature and endpoint_mode == nominal_endpoint_mode:
-        pass
-    else:
-        if sorted(set(pert_sig)) == sorted(set(nominal_signature)) and \
-                pert_sig != nominal_signature:
+    if pert_sig != nominal_signature:
+        same_multiset = Counter(pert_sig) == Counter(nominal_signature)
+        same_length = len(pert_sig) == len(nominal_signature)
+        if same_length and same_multiset:
             return HybridTopologyGate.EVENT_ORDER_CHANGED, {
                 "reason": "event_order_changed",
                 "pert_signature": list(pert_sig),
                 "endpoint_mode": endpoint_mode,
             }
         return HybridTopologyGate.TOPOLOGY_CHANGED, {
-            "reason": "signature_or_endpoint_changed",
+            "reason": "signature_changed",
+            "pert_signature": list(pert_sig),
+            "endpoint_mode": endpoint_mode,
+        }
+    if endpoint_mode != nominal_endpoint_mode:
+        return HybridTopologyGate.TOPOLOGY_CHANGED, {
+            "reason": "endpoint_mode_changed",
             "pert_signature": list(pert_sig),
             "endpoint_mode": endpoint_mode,
         }
@@ -207,6 +308,8 @@ def classify_perturbed_topology(
         "reason": "ok",
         "pert_signature": list(pert_sig),
         "endpoint_mode": endpoint_mode,
+        "terminal_time": _trajectory_terminal_time(result),
+        "terminal_kind": _trajectory_terminal_kind(result),
     }
 
 
@@ -376,12 +479,16 @@ def _nonlinear_event_time(
     x_pert = x0 + sign * eps[j] * e_j
     result, collector = run_nonlinear_hybrid(
         model, x_pert, env, vehicle, k, research_solver)
-    terminal_time = _trajectory_terminal_time(result)
-    if terminal_time <= t_final:
-        return None, HybridTopologyGate.TOPOLOGY_CHANGED, {}
+    terminal_gate, term_reason = _classify_terminal_before(result, t_final)
+    if terminal_gate is not None:
+        return None, terminal_gate, {"reason": term_reason}
+    try:
+        _, ep_mode = fixed_time_state(collector, t_final)
+    except Exception:
+        return None, HybridTopologyGate.NUMERICAL_FAILURE, {
+            "reason": "fixed_endpoint_unavailable"}
     switches = _trajectory_true_switch_times(result, t_final)
     pert_sig = tuple(sw["kind"] for sw in switches)
-    _, ep_mode = fixed_time_state(collector, t_final)
     if pert_sig != nominal_signature or ep_mode != nominal_endpoint_mode:
         return None, HybridTopologyGate.TOPOLOGY_CHANGED, {}
     if k_idx >= len(switches):

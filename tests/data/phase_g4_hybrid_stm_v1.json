@@ -1726,5 +1726,11 @@
   },
   "scientific_canonical_scaling_status": "CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION",
   "grazing_anchors_excluded": true,
-  "grazing_threshold_none_frozen": true
+  "grazing_threshold_none_frozen": true,
+  "g4r": {
+    "endpoint_scoped_terminal_classification": true,
+    "success_false_not_equal_numerical_failure": true,
+    "event_order_preserves_multiplicity": true,
+    "corrective_patch_note": "G4R: topology gate contract corrected (terminal-before-T routed by structured terminal_kind; success=False is not generic numerical failure; EVENT_ORDER_CHANGED preserves repeated-switch multiplicity). Numerical STM/factor/eta/FD payload unchanged."
+  }
 }

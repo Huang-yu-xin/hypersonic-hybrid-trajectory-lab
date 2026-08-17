@@ -323,7 +323,7 @@ def test_topology_gate_terminal_before_t():
         _fake_collector("QEG_GLIDE"), 600.0, env, veh, 3.0,
         check_qeg_interior=False)
     assert gate == HybridTopologyGate.TOPOLOGY_CHANGED
-    assert info["reason"] == "terminal_before_fixed_endpoint"
+    assert info["reason"].startswith("terminal_before_fixed_endpoint")
 
 
 def test_topology_gate_signature_changed():
