@@ -431,7 +431,7 @@ def test_no_stm_saltation_ftle():
 def test_phase_e_regression_unchanged():
     import subprocess
     out = subprocess.run(
-        ["git", "status", "--short", "tests/data/"],
+        ["git", "status", "--short", "tests/data/qian_sanger_comparison_v1.json"],
         capture_output=True, text=True)
     assert out.stdout.strip() == ""
 

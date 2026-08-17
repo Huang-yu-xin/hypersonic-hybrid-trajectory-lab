@@ -1,0 +1,417 @@
+{
+  "schema_version": "phase-f-gamma-k-sensitivity-regression-v1",
+  "source_commit": {
+    "f7a_prefreeze": "pre-freeze (F7A audit pending final tag)",
+    "phase_e_anchor": "44a99119cf9e82e64d68b5b8abdbb4a20406c7bc",
+    "f0": "1cd0bd52de0d9cec615635949d2805525619d370",
+    "f01": "81b3a9980c0df548786db4145f4e01c917cba1e4",
+    "f1": "417b2a46cd9e3e621a4914f35f531ef7f0a092f4",
+    "f21": "6d6ee7f18da6124c7da632e1a36d76217b825a8b",
+    "f2": "35c66375081bf9f4924f365f2a5517dcfee3e3f4",
+    "f3": "255490fe9047f26ea79cace0e80e0b2a50e9cbee",
+    "f4": "79f39a5e7de73522f308aa2a1f5cd398b8af9d9c",
+    "f5": "fdba52175f9426337604f794ef0a84f6327e7618",
+    "f6": "a1e2fe96671621cd7e49bed74329a60bc22a6984"
+  },
+  "domain": {
+    "gamma0_deg": [
+      -9.0,
+      -1.0
+    ],
+    "gamma_step_deg": 0.25,
+    "K": [
+      1.0,
+      5.0
+    ],
+    "K_step": 0.125,
+    "canonical_centers": 1089
+  },
+  "topology": {
+    "qian_regime_counts": {
+      "QIAN_RTI": 1089
+    },
+    "sanger_regime_counts": {
+      "SRTI_N0": 322,
+      "SRTI_N1": 306,
+      "SRTI_N2": 211,
+      "SRTI_N3": 153,
+      "SRTI_N4": 85,
+      "SRTI_N5": 12
+    },
+    "branch_count": 5,
+    "branches": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "boundary_cell_count": 5735,
+    "open_edges": {
+      "gamma_lower": 7,
+      "gamma_upper": 0,
+      "K_lower": 0,
+      "K_upper": 9
+    }
+  },
+  "grazing": {
+    "phi_sign_consistency": "100%",
+    "extremal_anchors": [
+      {
+        "branch": "B0",
+        "side": "N_side",
+        "parameter": [
+          -2.046875,
+          3.984375
+        ],
+        "production_phi": -0.080914,
+        "reference_phi": {
+          "REF-0.1": -0.080928,
+          "REF-0.05": -0.080928
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B0",
+        "side": "N1_side",
+        "parameter": [
+          -1.7421875,
+          4.875
+        ],
+        "production_phi": 0.047971,
+        "reference_phi": {
+          "REF-0.1": 0.047965,
+          "REF-0.05": 0.047965
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B1",
+        "side": "N_side",
+        "parameter": [
+          -3.2421875,
+          4.1953125
+        ],
+        "production_phi": -0.128153,
+        "reference_phi": {
+          "REF-0.1": -0.128188,
+          "REF-0.05": -0.128188
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B1",
+        "side": "N1_side",
+        "parameter": [
+          -7.296875,
+          2.234375
+        ],
+        "production_phi": 0.169171,
+        "reference_phi": {
+          "REF-0.1": 0.169139,
+          "REF-0.05": 0.169139
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B2",
+        "side": "N_side",
+        "parameter": [
+          -5.7265625,
+          3.703125
+        ],
+        "production_phi": -0.154836,
+        "reference_phi": {
+          "REF-0.1": -0.154892,
+          "REF-0.05": -0.154892
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B2",
+        "side": "N1_side",
+        "parameter": [
+          -4.03125,
+          4.82421875
+        ],
+        "production_phi": 0.10215,
+        "reference_phi": {
+          "REF-0.1": 0.102113,
+          "REF-0.05": 0.102113
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B3",
+        "side": "N_side",
+        "parameter": [
+          -6.125,
+          4.57421875
+        ],
+        "production_phi": -0.135112,
+        "reference_phi": {
+          "REF-0.1": -0.135172,
+          "REF-0.05": -0.135172
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B3",
+        "side": "N1_side",
+        "parameter": [
+          -8.0546875,
+          3.98046875
+        ],
+        "production_phi": 0.036106,
+        "reference_phi": {
+          "REF-0.1": 0.036027,
+          "REF-0.05": 0.036027
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B4",
+        "side": "N_side",
+        "parameter": [
+          -8.875,
+          4.69140625
+        ],
+        "production_phi": -0.407766,
+        "reference_phi": {
+          "REF-0.1": -0.407857,
+          "REF-0.05": -0.407857
+        },
+        "reference_dual_stable": true
+      },
+      {
+        "branch": "B4",
+        "side": "N1_side",
+        "parameter": [
+          -7.9296875,
+          4.8984375
+        ],
+        "production_phi": 0.419223,
+        "reference_phi": {
+          "REF-0.1": 0.419125,
+          "REF-0.05": 0.419125
+        },
+        "reference_dual_stable": true
+      }
+    ],
+    "recovered_canonical_count": 5,
+    "recovered_verified": 5
+  },
+  "fd": {
+    "gamma_step_deg": 0.1,
+    "K_step": 0.025,
+    "gamma_policy": "GLOBAL_STEP_POLICY",
+    "K_policy": "GLOBAL_STEP_POLICY",
+    "baseline_qian_jacobian": {
+      "gamma": {
+        "qian_rti_time_s": 2926.9094212871105,
+        "qian_rti_range_m": 25495250.78210271,
+        "qian_rti_altitude_m": 115752.33852692532,
+        "qian_rti_velocity_mps": 20536.94086742386,
+        "qian_energy_loss_jpkg": -66689755.308558784
+      },
+      "K": {
+        "qian_rti_time_s": 216.5136007785145,
+        "qian_rti_range_m": 998822.4692415167,
+        "qian_rti_altitude_m": 2653.3966898173094,
+        "qian_rti_velocity_mps": 26.063610690662244,
+        "qian_energy_loss_jpkg": -108866.50689974427
+      }
+    },
+    "baseline_sanger_jacobian": {
+      "gamma": {
+        "sanger_srti_time_s": -2010.1781605838025,
+        "sanger_srti_range_m": -5305267.739976943,
+        "sanger_srti_altitude_m": -234451.16754239908,
+        "sanger_srti_velocity_mps": 9275.897640058523,
+        "sanger_energy_loss_jpkg": -48619710.76285969,
+        "sanger_atm_duration_s": 8134.274688195972,
+        "sanger_vac_duration_s": -10144.452848779774
+      },
+      "K": {
+        "sanger_srti_time_s": 140.37624217440225,
+        "sanger_srti_range_m": 1101209.850361105,
+        "sanger_srti_altitude_m": 14949.974973611534,
+        "sanger_srti_velocity_mps": 486.48184347686765,
+        "sanger_energy_loss_jpkg": -2810074.9818581343,
+        "sanger_atm_duration_s": -179.9224290120651,
+        "sanger_vac_duration_s": 320.29867118646735
+      }
+    }
+  },
+  "f5": {
+    "availability": {
+      "qian_gamma": {
+        "GUARDRAIL_CENTRAL_UNAVAILABLE": 66,
+        "GLOBAL_ACCEPTED": 1023
+      },
+      "qian_K": {
+        "GUARDRAIL_CENTRAL_UNAVAILABLE": 66,
+        "GLOBAL_ACCEPTED": 1023
+      },
+      "sanger_gamma": {
+        "GUARDRAIL_CENTRAL_UNAVAILABLE": 66,
+        "GLOBAL_ACCEPTED": 878,
+        "ADAPTIVE_ACCEPTED": 119,
+        "BOUNDARY_INTERSECTION": 14,
+        "TOPOLOGY_CHANGE": 3,
+        "NO_CONVERGENCE": 9
+      },
+      "sanger_K": {
+        "GUARDRAIL_CENTRAL_UNAVAILABLE": 66,
+        "ADAPTIVE_ACCEPTED": 80,
+        "GLOBAL_ACCEPTED": 925,
+        "BOUNDARY_INTERSECTION": 14,
+        "NO_CONVERGENCE": 2,
+        "TOPOLOGY_CHANGE": 2
+      }
+    },
+    "regime_sign_classes": {
+      "dR_dgamma": {
+        "SRTI_N0": {
+          "positive": 285,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N1": {
+          "positive": 143,
+          "negative": 146,
+          "near_zero": 0
+        },
+        "SRTI_N2": {
+          "positive": 34,
+          "negative": 166,
+          "near_zero": 0
+        },
+        "SRTI_N3": {
+          "positive": 5,
+          "negative": 133,
+          "near_zero": 0
+        },
+        "SRTI_N4": {
+          "positive": 0,
+          "negative": 76,
+          "near_zero": 0
+        },
+        "SRTI_N5": {
+          "positive": 0,
+          "negative": 9,
+          "near_zero": 0
+        }
+      },
+      "dR_dK": {
+        "SRTI_N0": {
+          "positive": 283,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N1": {
+          "positive": 297,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N2": {
+          "positive": 204,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N3": {
+          "positive": 141,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N4": {
+          "positive": 74,
+          "negative": 0,
+          "near_zero": 0
+        },
+        "SRTI_N5": {
+          "positive": 6,
+          "negative": 0,
+          "near_zero": 0
+        }
+      },
+      "qian_dR_dgamma": {
+        "positive": 1023,
+        "negative": 0,
+        "near_zero": 0
+      }
+    }
+  },
+  "f6": {
+    "centers": 1089,
+    "protocol_b_valid": 1089,
+    "protocol_d": {
+      "UNIQUE": 1089,
+      "AMBIGUOUS": 0,
+      "NOT_AVAILABLE": 0
+    },
+    "limiters": {
+      "time": {
+        "QIAN": 651,
+        "SANGER": 438
+      },
+      "range": {
+        "QIAN": 733,
+        "SANGER": 356
+      },
+      "exposure": {
+        "QIAN": 376,
+        "SANGER": 713
+      },
+      "joint": {
+        "('QIAN', 'QIAN', 'QIAN')": 376,
+        "('SANGER', 'QIAN', 'SANGER')": 82,
+        "('QIAN', 'QIAN', 'SANGER')": 275,
+        "('SANGER', 'SANGER', 'SANGER')": 356
+      }
+    },
+    "checkpoint_modes": {
+      "common_time_sanger": {
+        "ATM": 812,
+        "VAC": 277
+      },
+      "common_range_sanger": {
+        "ATM": 647,
+        "VAC": 442
+      },
+      "common_exposure_sanger": {
+        "ATM": 1089
+      }
+    },
+    "signature_count": 15,
+    "signature_transition_cells": 269,
+    "signature_transition_by_reason": {
+      "SANGER_TOPOLOGY": 41,
+      "MULTIPLE": 138,
+      "EXPOSURE_LIMITER": 63,
+      "RANGE_LIMITER": 14,
+      "TIME_LIMITER": 13
+    },
+    "recovered_centers": 5,
+    "metric_sign_classes": {
+      "delta_range_time": {
+        "count": 1089,
+        "positive": 1089,
+        "negative": 0
+      },
+      "time_saving": {
+        "count": 1089,
+        "positive": 1089,
+        "negative": 0
+      },
+      "delta_range_tau": {
+        "count": 1089,
+        "positive": 1089,
+        "negative": 0
+      }
+    },
+    "baseline_anchors": {
+      "t_common_s": 220.639974334139
+    }
+  }
+}

@@ -74,6 +74,64 @@ from hyptraj.simulation.sanger_research_trajectory import (
 from hyptraj.simulation.trajectory import SolverConfig
 
 # Limiter vocabulary.
+# Endpoint snapping tolerance: Phase-E endpoint-identity tolerance
+# (comparison_protocols._TIME_TOL_S = 1e-6 s).  Used ONLY to canonicalize
+# a reconstructed float that mathematically equals a stored exact
+# endpoint but sits a few ulps beyond it (F7 §9–§11).
+ENDPOINT_SNAP_TOL_S = 1e-6
+
+
+class SnappedComparisonTrajectory(ComparisonTrajectory):
+    """Phase-F-only endpoint-canonicalization wrapper (F7 §9).
+
+    ``state_at_time`` snaps a query within ``ENDPOINT_SNAP_TOL_S`` of a
+    stored exact endpoint to that endpoint before the frozen
+    ``_check_time_in_domain`` guard runs.  This does NOT expand the
+    research domain, does NOT average endpoints, does NOT move interior
+    points, and never alters metric formulas; ``endpoint_resolution``
+    metadata is reported per point by the runner.
+    """
+
+    def _check_time_in_domain(self, t: float) -> None:
+        """Endpoint-canonicalize before the frozen domain guard.
+
+        Overriding the guard (instead of only ``state_at_time``) covers
+        every Phase-E query path -- ``state_at_time``, ``mode_at_time``,
+        ``atmospheric_exposure_at_time``, the range inversion and the
+        Protocol-D tau-consistency re-evaluation -- all of which call
+        ``_check_time_in_domain`` internally.
+        """
+        if abs(t - self.terminal_time_s) <= ENDPOINT_SNAP_TOL_S:
+            t = self.terminal_time_s
+        if abs(t - self.initial_time_s) <= ENDPOINT_SNAP_TOL_S:
+            t = self.initial_time_s
+        return super()._check_time_in_domain(t)
+
+
+def snap_trajectory(trajectory: ComparisonTrajectory) -> ComparisonTrajectory:
+    """Wrap a ComparisonTrajectory with endpoint snapping (idempotent)."""
+    if isinstance(trajectory, SnappedComparisonTrajectory):
+        return trajectory
+    return SnappedComparisonTrajectory(
+        name=trajectory.name,
+        initial_time_s=trajectory.initial_time_s,
+        terminal_time_s=trajectory.terminal_time_s,
+        terminal_kind=trajectory.terminal_kind,
+        terminal_semantics=trajectory.terminal_semantics,
+        initial_state=trajectory.initial_state,
+        terminal_state=trajectory.terminal_state,
+        dense_segments=trajectory.dense_segments,
+        events=trajectory.events,
+        atmospheric_intervals=trajectory.atmospheric_intervals,
+        environment=trajectory.environment,
+        vehicle=trajectory.vehicle,
+        K=trajectory.K,
+        solver_config=trajectory.solver_config,
+        _event_lookup=trajectory._event_lookup,
+        _monotonicity=trajectory._monotonicity,
+    )
+
+
 LIMITER_QIAN = "QIAN"
 LIMITER_SANGER = "SANGER"
 LIMITER_NUMERICAL_TIE = "NUMERICAL_TIE"
@@ -207,10 +265,11 @@ def evaluate_comparison_point(
     """Full paired B/C/D evaluation at one canonical center."""
     solver = solver_config or PRODUCTION_SOLVER_CONFIG
 
-    qian = build_qian_comparison_trajectory(
-        env, vehicle, initial, control, solver_config=solver)
+    qian = snap_trajectory(build_qian_comparison_trajectory(
+        env, vehicle, initial, control, solver_config=solver))
     sanger, research = build_sanger_research_comparison_trajectory(
         env, vehicle, initial, control, solver_config=solver)
+    sanger = snap_trajectory(sanger)
 
     alignment = verify_comparison_alignment(qian, sanger)
     if not alignment.all_equal:
