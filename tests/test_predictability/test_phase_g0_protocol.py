@@ -779,16 +779,23 @@ def test_g0_status_flags():
 
 
 def test_placeholder_g1_modules_stay_empty():
+    """Phase-stage guard (minimal G1 update).
+
+    ``jacobian`` / ``stm`` are officially activated by Phase G1 (their
+    G1 content is guarded by ``tests/test_predictability/
+    test_phase_g1_jacobian.py``); the remaining G2-G6 placeholder modules
+    must still contain no executable predictability logic.
+    """
     import importlib.util
 
-    for mod in ("stm", "jacobian", "perturbation", "ftle", "metrics",
-                "observability"):
+    for mod in ("perturbation", "ftle", "metrics", "observability"):
         spec = importlib.util.find_spec(f"hyptraj.predictability.{mod}")
         assert spec is not None, f"placeholder module {mod} missing"
         # Placeholders must contain no executable predictability logic.
         source = Path(spec.origin).read_text(encoding="utf-8")
         assert source.strip() == "", (
-            f"G1 placeholder {mod} must remain empty in G0"
+            f"G2-G6 placeholder {mod} must remain empty (G1 scope only: "
+            "jacobian / stm)"
         )
 
 

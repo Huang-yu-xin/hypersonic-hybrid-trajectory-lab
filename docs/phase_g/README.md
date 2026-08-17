@@ -1,11 +1,12 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0 COMPLETE**（Predictability Protocol Freeze，2026-08-18）
+状态：**G0 COMPLETE / ACCEPTED**；**G1 COMPLETE**（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
+G0 commit：`9db3a35`；G1 commit：见 git log（G1 accept 后创建）。
 
-G0 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
+G0/G1 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
 
 ## 1. Phase G 目标
@@ -27,32 +28,42 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 
 | 阶段 | 内容 | G0 状态 |
 |---|---|---|
-| **G0** | Predictability Protocol Freeze（state / 事件分类 / scaling / 约定 / validation） | **COMPLETE**（本文档） |
-| G1 | continuous Jacobian `A_m = df_m/dx` + variational 数值验证 | PENDING（不实现） |
-| G2 | 连续 mode STM / FD 校验 / 固定时间剪贴 | PENDING |
+| **G0** | Predictability Protocol Freeze（state / 事件分类 / scaling / 约定 / validation） | **COMPLETE / ACCEPTED** |
+| **G1** | continuous Jacobian `A_m = df_m/dx` + FD 验证 + minimal variational algebra | **COMPLETE**（`g1_continuous_variational.md`） |
+| G2 | 连续 mode STM / augmented variational integrator / 固定时间剪贴 | PENDING（不实现） |
 | G3 | hybrid saltation / event-time sensitivity 数值验证 | PENDING |
 | G4 | 跨事件 STM 与 nonlinear FD 对照（topology gate） | PENDING |
 | G5 | fixed-time 与 terminal predictability 指标（scaling audit） | PENDING |
 | G6 | grazing / transversality-loss 分析（B0–B4 anchors） | PENDING |
 | G7 | 最终报告 / 冻结 | PENDING |
 
-G0 硬性禁止：continuous Jacobian、variational solver、STM propagation、
-saltation、production FTLE、Monte Carlo、optimization、gamma0-K 域重扫。
+G0/G1 硬性禁止：STM propagation、saltation、production FTLE、
+Monte Carlo、optimization、gamma0-K 域重扫（G2–G6 范围）。
 
 ## 3. 文档与代码索引
 
 - `docs/phase_g/predictability_protocol.md` —— **G0 权威协议**（human-readable
   source of truth）
+- `docs/phase_g/g1_continuous_variational.md` —— **G1 连续变分动力学报告**
+  （推导 / API / 验证 / 误差表 / invariants / G2 handoff）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结
   （7 个事件，与 frozen event factories 交叉校验）
 - `src/hyptraj/predictability/scaling.py` —— state scaling 候选（A/B/C）
   与 canonical-scaling 状态
+- `src/hyptraj/predictability/jacobian.py` —— **G1** 连续 mode Jacobians
+  （A_atm / A_vac / A_QEG,int）、QEG active-set、FD oracle、误差统计、
+  代表状态提取
+- `src/hyptraj/predictability/stm.py` —— **G1** minimal variational RHS
+  （`dphi = A @ phi`，无积分）
 - `tests/test_predictability/test_phase_g0_protocol.py` —— G0 语义测试
+- `tests/test_predictability/test_phase_g1_jacobian.py` —— G1 Jacobian
+  语义 / FD 验证 / invariants 测试
+- `tests/data/phase_g1_continuous_jacobian_v1.json` —— G1 数值审计 snapshot
 
-未来 G1–G5 模块（`stm.py` / `jacobian.py` / `perturbation.py` / `ftle.py`
-/ `metrics.py` / `observability.py`）保持为空占位，G0 未实现。
+未来 G2–G6 模块（`perturbation.py` / `ftle.py` / `metrics.py` /
+`observability.py`）保持为空占位，G1 未实现。
 
 ## 4. 与其他 Phase 的关系
 
@@ -67,22 +78,14 @@ saltation、production FTLE、Monte Carlo、optimization、gamma0-K 域重扫。
 
 ## 5. G0 输出摘要
 
-- 冻结 state convention `[r, theta, v, gamma]` 与 STM 行列语义。
-- 冻结 7 事件 taxonomy（Qian Capture / RTI, Sanger exit / entry /
-  pullout / apogee / SRTI）。
-- 冻结 saltation convention（identity-reset 下 `I + (f^+-f^-)n^T/(n^T f^-)`）
-  与 event-time convention（`delta t_e = - (n^T dx^-)/(n^T f^-)`）。
-- 冻结 grazing 分类语义（TRANSVERSE / GRAZING_ADJACENT /
-  GRAZING_NONTRANSVERSE），阈值留给 G6。
-- 冻结 state-scaling 约定 `tilde_Phi = S^-1 Phi S`；3 套物理候选
-  （characteristic / tolerance / terminal-geometry）；canonical numeric
-  数值标记 `CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION`。
-- 冻结 fixed-time 与 event-conditioned 两类 predictability 定义与
-  FTLE 定义。
-- 冻结 representative set（Qian/Sanger baseline、F4 N0–N5 deep、
-  B0–B4 10 grazing anchors 保留给 G6）。
-- 冻结 validation protocol（nonlinear FD、topology gate、error taxonomy、
-  reference solver policy）。
-- 新增语义测试（`tests/test_predictability/test_phase_g0_protocol.py`）。
+- 冻结 G0 协议 semantics（state / 事件分类 / saltation / event-time /
+  scaling 约定 / grazing policy / claim boundaries）—— G1 零修改。
+- **G1** 建立并验证 4 个 continuous mode 的解析 Jacobian（A_atm /
+  A_vac / A_QEG,int），independent FD oracle（4 modes × 4 samples，best
+  relative error ≪ 1e-6），结构 invariants 全 PASS，minimal variational
+  RHS `dphi = A @ phi`。
+- 新增测试文件 `tests/test_predictability/test_phase_g1_jacobian.py`
+  （29 tests）与 snapshot `tests/data/phase_g1_continuous_jacobian_v1.json`；
+  完整 pytest 通过（含 G0 的 476 旧回归 + G1 新增）。
 
-**Phase G0 = COMPLETE；等待人工验收后再进入 G1。**
+**Phase G0 + G1 = COMPLETE；等待人工验收后再进入 G2。**

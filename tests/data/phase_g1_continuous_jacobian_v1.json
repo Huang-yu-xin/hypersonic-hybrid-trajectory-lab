@@ -1,0 +1,1237 @@
+{
+  "schema_version": "phase-g1-continuous-jacobian-v1",
+  "status": "pre-freeze (G1 accept-time audit)",
+  "starting_commit": "9db3a35a9e4d41df55c38b5747a6ec74bfa6f015",
+  "state_order": [
+    "r",
+    "theta",
+    "v",
+    "gamma"
+  ],
+  "mode_list": [
+    "entry_capture",
+    "qeg_interior",
+    "sanger_atm",
+    "sanger_vac"
+  ],
+  "constant_k": 3.0,
+  "fd_policy": {
+    "scheme": "central3",
+    "step_vector": [
+      100.0,
+      1e-05,
+      1.0,
+      0.0001
+    ],
+    "multipliers": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "note": "G0 tolerance-candidate-B as FD step reference scale; NOT canonical state scaling"
+  },
+  "per_mode": {
+    "entry_capture": {
+      "samples": [
+        {
+          "sample": {
+            "time_s": 23.3571963428,
+            "h_m": 85224.1239999,
+            "r_m": 6456224.124,
+            "theta_rad": 0.025226775876,
+            "v_mps": 7019.38387408,
+            "gamma_rad": -0.0933653255733,
+            "source_segment": "segment0",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 23.3571963428
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0932297391181,
+              6988.81181253
+            ],
+            [
+              -1.67666442578e-10,
+              0.0,
+              1.54214693309e-07,
+              0.000101361928394
+            ],
+            [
+              9.07150652293e-06,
+              0.0,
+              -1.99748184582e-05,
+              -9.51111370777
+            ],
+            [
+              -3.74288682941e-09,
+              0.0,
+              3.51517003278e-07,
+              -2.55149533259e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 3.09044480673e-07,
+              "max_rel_error_nonzero": 6.36169527441e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 3.20160324918e-08,
+              "max_rel_error_nonzero": 5.61118233863e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.21461198432e-07,
+              "max_rel_error_nonzero": 1.57815079874e-10,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.16476003313e-05,
+              "max_rel_error_nonzero": 1.66666877751e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00116480184442,
+              "max_rel_error_nonzero": 1.66666658487e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 42.0429534171,
+            "h_m": 72720.1960278,
+            "r_m": 6443720.19603,
+            "theta_rad": 0.0454904028134,
+            "v_mps": 7033.04860692,
+            "gamma_rad": -0.0970010763873,
+            "source_segment": "segment0",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 42.0429534171
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0968490307058,
+              6999.98683139
+            ],
+            [
+              -1.68586919541e-10,
+              0.0,
+              1.54460319976e-07,
+              0.000105706629054
+            ],
+            [
+              4.94203166712e-05,
+              0.0,
+              -0.000106017865361,
+              -9.54474815741
+            ],
+            [
+              -2.09509349552e-08,
+              0.0,
+              3.70036099466e-07,
+              -2.63507061448e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 3.53435098077e-07,
+              "max_rel_error_nonzero": 3.56579885955e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 1.23745849123e-08,
+              "max_rel_error_nonzero": 4.88786049115e-10,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.14692738862e-07,
+              "max_rel_error_nonzero": 2.40494192909e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.16664114103e-05,
+              "max_rel_error_nonzero": 1.67537949935e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00116666442864,
+              "max_rel_error_nonzero": 1.66666857737e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 60.7287104913,
+            "h_m": 60030.7137713,
+            "r_m": 6431030.71377,
+            "theta_rad": 0.0658157562971,
+            "v_mps": 7032.06084267,
+            "gamma_rad": -0.0942662197447,
+            "source_segment": "segment0",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 32.70007488
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0941266716016,
+              7000.84010331
+            ],
+            [
+              -1.69273506689e-10,
+              0.0,
+              1.54805702752e-07,
+              0.000102923545397
+            ],
+            [
+              0.000269557780975,
+              0.0,
+              -0.000575591456782,
+              -9.58496627323
+            ],
+            [
+              -1.14863670754e-07,
+              0.0,
+              4.71416331265e-07,
+              -2.59468414989e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 2.67627001449e-07,
+              "max_rel_error_nonzero": 3.6941184936e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 1.6590092855e-08,
+              "max_rel_error_nonzero": 2.96579176506e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.19834112411e-07,
+              "max_rel_error_nonzero": 2.96605889221e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.16681421787e-05,
+              "max_rel_error_nonzero": 2.96608712404e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00116680656265,
+              "max_rel_error_nonzero": 0.00296869837094,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 79.4144675656,
+            "h_m": 49253.8192579,
+            "r_m": 6420253.81926,
+            "theta_rad": 0.0861204102736,
+            "v_mps": 6959.2618607,
+            "gamma_rad": -0.0620302844819,
+            "source_segment": "segment0",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 14.0143178057
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0619905125658,
+              6945.87738175
+            ],
+            [
+              -1.68508850699e-10,
+              0.0,
+              1.55457520342e-07,
+              6.71948838736e-05
+            ],
+            [
+              0.00111183429552,
+              0.0,
+              -0.00239685083516,
+              -9.64148113425
+            ],
+            [
+              -4.791070988e-07,
+              0.0,
+              8.7115029927e-07,
+              -1.88533321481e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 2.01357579499e-07,
+              "max_rel_error_nonzero": 3.69420050682e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 2.40561348619e-09,
+              "max_rel_error_nonzero": 2.9629379628e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.14123395178e-07,
+              "max_rel_error_nonzero": 2.96345950081e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.15763141366e-05,
+              "max_rel_error_nonzero": 2.96348642469e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00115764619113,
+              "max_rel_error_nonzero": 0.00296609538574,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        }
+      ],
+      "summary": {
+        "n_samples": 4,
+        "best_max_abs_error": 2.40561348619e-09,
+        "best_max_rel_error_nonzero": 2.40494192909e-11
+      }
+    },
+    "qeg_interior": {
+      "samples": [
+        {
+          "sample": {
+            "time_s": 187.870162369,
+            "h_m": 46040.8857092,
+            "r_m": 6417040.88571,
+            "theta_rad": 0.193728804396,
+            "v_mps": 5821.1792078,
+            "gamma_rad": -3.58133797487e-17,
+            "source_segment": "segment1",
+            "u_l_star": 0.163356127693,
+            "active_set": "INTERIOR",
+            "distance_to_0": 0.163356127693,
+            "distance_to_1": 0.836643872307,
+            "distance_to_nearest_event_s": 94.4413769976
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -3.58133797487e-17,
+              5821.1792078
+            ],
+            [
+              -1.41364823962e-10,
+              0.0,
+              1.55835067566e-07,
+              3.24878873717e-20
+            ],
+            [
+              0.00119414321903,
+              0.0,
+              -0.00307706525533,
+              -9.66973572202
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 1.23258381279e-09,
+              "max_rel_error_nonzero": 3.69630611542e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 9.70430846792e-10,
+              "max_rel_error_nonzero": 2.96348932895e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 9.70203473116e-08,
+              "max_rel_error_nonzero": 2.96296537527e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 9.70196470007e-06,
+              "max_rel_error_nonzero": 2.96298929931e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.000970196486378,
+              "max_rel_error_nonzero": 0.00296559782291,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": 1.08420217249e-19
+        },
+        {
+          "sample": {
+            "time_s": 282.311539366,
+            "h_m": 46040.8857092,
+            "r_m": 6417040.88571,
+            "theta_rad": 0.273720631391,
+            "v_mps": 5082.66254607,
+            "gamma_rad": -1.00799815464e-16,
+            "source_segment": "segment1",
+            "u_l_star": 0.275540653045,
+            "active_set": "INTERIOR",
+            "distance_to_0": 0.275540653045,
+            "distance_to_1": 0.724459346955,
+            "distance_to_nearest_event_s": 188.882753995
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -1.00799815464e-16,
+              5082.66254607
+            ],
+            [
+              -1.23430265661e-10,
+              0.0,
+              1.55835067566e-07,
+              7.98392056146e-20
+            ],
+            [
+              0.00091036809913,
+              0.0,
+              -0.00268668662599,
+              -9.66973572202
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 1.23258381279e-09,
+              "max_rel_error_nonzero": 3.69537130747e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 8.46739567351e-10,
+              "max_rel_error_nonzero": 2.96278557549e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 8.47112460178e-08,
+              "max_rel_error_nonzero": 2.96296523732e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 8.47110368341e-06,
+              "max_rel_error_nonzero": 2.9629892982e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.000847110381983,
+              "max_rel_error_nonzero": 0.00296559782291,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": -2.16840434497e-19
+        },
+        {
+          "sample": {
+            "time_s": 408.233375363,
+            "h_m": 46040.8857092,
+            "r_m": 6417040.88571,
+            "theta_rad": 0.365867240482,
+            "v_mps": 4347.29106437,
+            "gamma_rad": 5.07177628212e-17,
+            "source_segment": "segment1",
+            "u_l_star": 0.448759027473,
+            "active_set": "INTERIOR",
+            "distance_to_0": 0.448759027473,
+            "distance_to_1": 0.551240972527,
+            "distance_to_nearest_event_s": 314.804589992
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              5.07177628212e-17,
+              4347.29106437
+            ],
+            [
+              -1.05572086701e-10,
+              0.0,
+              1.55835067566e-07,
+              -3.43592757229e-20
+            ],
+            [
+              0.000665996451061,
+              0.0,
+              -0.00229797053337,
+              -9.66973572202
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 3.20830828571e-09,
+              "max_rel_error_nonzero": 3.69694154698e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 7.23957782611e-10,
+              "max_rel_error_nonzero": 2.96243168498e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 7.24558049114e-08,
+              "max_rel_error_nonzero": 2.96296520157e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 7.2454849942e-06,
+              "max_rel_error_nonzero": 2.96298929926e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.000724548474864,
+              "max_rel_error_nonzero": 0.00296559782291,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": -2.16840434497e-19
+        },
+        {
+          "sample": {
+            "time_s": 534.15521136,
+            "h_m": 46040.8857092,
+            "r_m": 6417040.88571,
+            "theta_rad": 0.445540412031,
+            "v_mps": 3797.81441021,
+            "gamma_rad": -1.37127061157e-16,
+            "source_segment": "segment1",
+            "u_l_star": 0.648993410234,
+            "active_set": "INTERIOR",
+            "distance_to_0": 0.648993410234,
+            "distance_to_1": 0.351006589766,
+            "distance_to_nearest_event_s": 188.882753995
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -1.37127061157e-16,
+              3797.81441021
+            ],
+            [
+              -9.22282833724e-11,
+              0.0,
+              1.55835067566e-07,
+              8.11562740782e-20
+            ],
+            [
+              0.000508278750896,
+              0.0,
+              -0.00200751812488,
+              -9.66973572202
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 1.23258381279e-09,
+              "max_rel_error_nonzero": 3.69469269779e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 6.32553565083e-10,
+              "max_rel_error_nonzero": 2.96211851827e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 6.32967385172e-08,
+              "max_rel_error_nonzero": 2.96296571168e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 6.32969022263e-06,
+              "max_rel_error_nonzero": 2.96298929885e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.000632969036815,
+              "max_rel_error_nonzero": 0.00296559782291,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": -4.33680868994e-19
+        }
+      ],
+      "summary": {
+        "n_samples": 4,
+        "best_max_abs_error": 6.32553565083e-10,
+        "best_max_rel_error_nonzero": 2.96211851827e-09
+      }
+    },
+    "sanger_atm": {
+      "samples": [
+        {
+          "sample": {
+            "time_s": 60.8892407183,
+            "h_m": 59924.5129536,
+            "r_m": 6430924.51295,
+            "theta_rad": 0.0659905099836,
+            "v_mps": 7031.87906461,
+            "gamma_rad": -0.0941706982217,
+            "source_segment": "segment0",
+            "u_l_star": 0.313503426553,
+            "active_set": "INTERIOR",
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 32.539544653
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0940315737429,
+              7000.72232486
+            ],
+            [
+              -1.69276249665e-10,
+              0.0,
+              1.54809656627e-07,
+              0.000102818599951
+            ],
+            [
+              0.000273392041373,
+              0.0,
+              -0.00058378478228,
+              -9.58536937275
+            ],
+            [
+              -1.1650230281e-07,
+              0.0,
+              4.73189385673e-07,
+              -2.59291670935e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 3.2808384276e-07,
+              "max_rel_error_nonzero": 1.09029919291e-08,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 4.38667484559e-08,
+              "max_rel_error_nonzero": 2.96597828869e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.2097916624e-07,
+              "max_rel_error_nonzero": 2.96601430357e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.16675819299e-05,
+              "max_rel_error_nonzero": 2.96604073929e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.0011667870167,
+              "max_rel_error_nonzero": 0.00296865194916,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 101.482067864,
+            "h_m": 47108.06261,
+            "r_m": 6418108.06261,
+            "theta_rad": 0.109639700023,
+            "v_mps": 6716.38414503,
+            "gamma_rad": 0.0381699558945,
+            "source_segment": "segment0",
+            "u_l_star": 0.0849700404758,
+            "active_set": "INTERIOR",
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 8.0532824925
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              0.0381606879785,
+              6711.4920361
+            ],
+            [
+              -1.62931489946e-10,
+              0.0,
+              1.55695666998e-07,
+              -3.99341733112e-05
+            ],
+            [
+              0.0013789415767,
+              0.0,
+              -0.00307939494711,
+              -9.65947935885
+            ],
+            [
+              -6.15593752584e-07,
+              0.0,
+              1.05756320005e-06,
+              1.49883947058e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 3.03305569105e-07,
+              "max_rel_error_nonzero": 3.70772989786e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 1.90884748008e-08,
+              "max_rel_error_nonzero": 2.96258584998e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.08809217636e-07,
+              "max_rel_error_nonzero": 2.96271557135e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.11857434604e-05,
+              "max_rel_error_nonzero": 2.96274230864e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00111858194487,
+              "max_rel_error_nonzero": 0.00296535061144,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 142.074895009,
+            "h_m": 68371.075156,
+            "r_m": 6439371.07516,
+            "theta_rad": 0.151128767567,
+            "v_mps": 6528.73886836,
+            "gamma_rad": 0.091316945323,
+            "source_segment": "segment0",
+            "u_l_star": 1.72615153834,
+            "active_set": "UPPER_SATURATED",
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 48.646109638
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              0.0911900861723,
+              6501.5369056
+            ],
+            [
+              -1.56793887211e-10,
+              0.0,
+              1.5464763447e-07,
+              -9.24556533633e-05
+            ],
+            [
+              7.67686706844e-05,
+              0.0,
+              -0.00017575376117,
+              -9.56277739774
+            ],
+            [
+              -3.48526195632e-08,
+              0.0,
+              4.19377337479e-07,
+              4.16711704335e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.01,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 1.13702299132e-07,
+              "max_rel_error_nonzero": 3.66704387233e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 1.82787118774e-11,
+              "max_rel_error_nonzero": 2.95362698392e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.07987034426e-07,
+              "max_rel_error_nonzero": 2.95246555795e-07,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.08360445665e-05,
+              "max_rel_error_nonzero": 2.95249217525e-05,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00108358947909,
+              "max_rel_error_nonzero": 0.00295509145385,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 172.519515368,
+            "h_m": 85484.3831761,
+            "r_m": 6456484.38318,
+            "theta_rad": 0.181756977155,
+            "v_mps": 6496.87505676,
+            "gamma_rad": 0.080416411608,
+            "source_segment": "segment0",
+            "u_l_star": 17.2657711108,
+            "active_set": "UPPER_SATURATED",
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 30.4446203591
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              0.08032976683,
+              6475.8793816
+            ],
+            [
+              -1.55348312952e-10,
+              0.0,
+              1.54382522023e-07,
+              -8.0832296256e-05
+            ],
+            [
+              7.97216440381e-06,
+              0.0,
+              -1.78573829528e-05,
+              -9.52108065162
+            ],
+            [
+              -3.27286695995e-09,
+              0.0,
+              3.84073296121e-07,
+              3.72715385509e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 4.38203642261e-07,
+              "max_rel_error_nonzero": 1.29098464055e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 4.02997102356e-08,
+              "max_rel_error_nonzero": 1.39161185294e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.13177520689e-07,
+              "max_rel_error_nonzero": 8.38160508163e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.07929181468e-05,
+              "max_rel_error_nonzero": 1.67996096444e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00107931316688,
+              "max_rel_error_nonzero": 1.66667693104e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        }
+      ],
+      "summary": {
+        "n_samples": 4,
+        "best_max_abs_error": 1.82787118774e-11,
+        "best_max_rel_error_nonzero": 8.38160508163e-11
+      }
+    },
+    "sanger_vac": {
+      "samples": [
+        {
+          "sample": {
+            "time_s": 287.467001223,
+            "h_m": 125495.511772,
+            "r_m": 6496495.51177,
+            "theta_rad": 0.296206059259,
+            "v_mps": 6437.38341395,
+            "gamma_rad": 0.026786824618,
+            "source_segment": "segment1",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 56.3352436637
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              0.0267836213235,
+              6435.0740314
+            ],
+            [
+              -1.52473813342e-10,
+              0.0,
+              1.53873923665e-07,
+              -2.65399151529e-05
+            ],
+            [
+              7.77939961608e-08,
+              0.0,
+              0.0,
+              -9.43126836709
+            ],
+            [
+              2.98562573091e-10,
+              0.0,
+              3.81462966579e-07,
+              1.2714259595e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 2.70665623248e-09,
+              "max_rel_error_nonzero": 3.39230541774e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 2.70665623248e-09,
+              "max_rel_error_nonzero": 1.91349492328e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.06716470327e-07,
+              "max_rel_error_nonzero": 1.67203705719e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.07252089947e-05,
+              "max_rel_error_nonzero": 1.66667997017e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00107251228292,
+              "max_rel_error_nonzero": 1.66666659071e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 400.137488551,
+            "h_m": 125495.511772,
+            "r_m": 6496495.51177,
+            "theta_rad": 0.407700152897,
+            "v_mps": 6437.38341395,
+            "gamma_rad": -0.026786824618,
+            "source_segment": "segment1",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 56.3352436637
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0267836213235,
+              6435.0740314
+            ],
+            [
+              -1.52473813342e-10,
+              0.0,
+              1.53873923665e-07,
+              2.65399151529e-05
+            ],
+            [
+              -7.77939961608e-08,
+              0.0,
+              0.0,
+              -9.43126836709
+            ],
+            [
+              2.98562573091e-10,
+              0.0,
+              3.81462966579e-07,
+              -1.2714259595e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 1.3940189092e-07,
+              "max_rel_error_nonzero": 3.39444276407e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 1.69175109477e-08,
+              "max_rel_error_nonzero": 1.91135757695e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.08138010546e-07,
+              "max_rel_error_nonzero": 1.68044703167e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.07250671135e-05,
+              "max_rel_error_nonzero": 1.66665792207e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00107251228292,
+              "max_rel_error_nonzero": 1.6666665926e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 442.388921298,
+            "h_m": 115479.067846,
+            "r_m": 6486479.06785,
+            "theta_rad": 0.449610866458,
+            "v_mps": 6452.06946828,
+            "gamma_rad": -0.046779694,
+            "source_segment": "segment1",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 42.2514327478
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              -0.0467626342226,
+              6445.01109549
+            ],
+            [
+              -1.5318125646e-10,
+              0.0,
+              1.53998189031e-07,
+              4.65145668965e-05
+            ],
+            [
+              -1.36453951957e-07,
+              0.0,
+              0.0,
+              -9.4534604218
+            ],
+            [
+              2.98583919259e-10,
+              0.0,
+              3.81085433696e-07,
+              -2.20762710855e-05
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 5.62326022191e-07,
+              "max_rel_error_nonzero": 3.99051916423e-10,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 2.23135430133e-08,
+              "max_rel_error_nonzero": 3.43798670029e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 1.05584149424e-07,
+              "max_rel_error_nonzero": 1.65148230692e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 1.0741555343e-05,
+              "max_rel_error_nonzero": 1.66664778088e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.00107416846276,
+              "max_rel_error_nonzero": 1.66666659209e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        },
+        {
+          "sample": {
+            "time_s": 768.120299469,
+            "h_m": 101875.374408,
+            "r_m": 6472875.37441,
+            "theta_rad": 0.763784302684,
+            "v_mps": 5960.16129462,
+            "gamma_rad": 0.00898697075396,
+            "source_segment": "segment3",
+            "u_l_star": null,
+            "active_set": null,
+            "distance_to_0": null,
+            "distance_to_1": null,
+            "distance_to_nearest_event_s": 13.3376678367
+          },
+          "analytic_matrix": [
+            [
+              0.0,
+              0.0,
+              0.00898684978137,
+              5959.92060811
+            ],
+            [
+              -1.4224793934e-10,
+              0.0,
+              1.54484608402e-07,
+              -8.27500471263e-06
+            ],
+            [
+              2.63894269373e-08,
+              0.0,
+              0.0,
+              -9.50325074738
+            ],
+            [
+              3.50411633426e-10,
+              0.0,
+              4.22004551143e-07,
+              6.05476451034e-06
+            ]
+          ],
+          "theta_column_analytic_norm": 0.0,
+          "fd_plateau_multiplier": 0.1,
+          "fd_sweep": {
+            "mult_0.001": {
+              "max_abs_error": 5.26097210241e-08,
+              "max_rel_error_nonzero": 3.38358769511e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.01": {
+              "max_abs_error": 9.97806637315e-09,
+              "max_rel_error_nonzero": 3.38358769511e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_0.1": {
+              "max_abs_error": 9.91503839032e-08,
+              "max_rel_error_nonzero": 1.66402654331e-11,
+              "theta_column_residual": 0.0
+            },
+            "mult_1": {
+              "max_abs_error": 9.93323919829e-06,
+              "max_rel_error_nonzero": 1.66667783034e-09,
+              "theta_column_residual": 0.0
+            },
+            "mult_10": {
+              "max_abs_error": 0.000993320058114,
+              "max_rel_error_nonzero": 1.66666659639e-07,
+              "theta_column_residual": 0.0
+            }
+          },
+          "frozen_gamma_dot_residual": null
+        }
+      ],
+      "summary": {
+        "n_samples": 4,
+        "best_max_abs_error": 9.91503839032e-08,
+        "best_max_rel_error_nonzero": 1.65148230692e-11
+      }
+    }
+  },
+  "structural_invariants": {
+    "theta_column_zero_analytic": true,
+    "entry_capture_eq_sanger_atm": true,
+    "qeg_interior_row4_zero": true,
+    "vac_aero_independent": true
+  },
+  "qeg_acceptance_notes": [
+    "QEG interior samples verified 0 < u_L* < 1 (interior only)",
+    "RTI / clipping boundary states excluded from smooth acceptance",
+    "frozen gamma_dot residual ~ FP roundoff at interior samples"
+  ],
+  "reference_status": "production research integrators (PRODUCTION_SOLVER_CONFIG) + E0.1 dense output"
+}
