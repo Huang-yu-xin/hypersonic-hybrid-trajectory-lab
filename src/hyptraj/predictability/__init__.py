@@ -14,9 +14,12 @@ G1 adds the continuous-mode Jacobians (``jacobian``), the numerical FD
 oracle, and the minimal variational algebra (``stm``).  G2 extends
 ``stm`` with the 20-D augmented continuous STM integrator and activates
 ``perturbation`` for the fixed-time nonlinear flow-map validation (FD
-sweep + smooth-flow gate).  G2 performs NO saltation, NO hybrid STM,
-NO FTLE production.  Placeholder modules that remain empty for the
-G4-G6 layers: ``ftle``, ``metrics``, ``observability``.
+sweep + smooth-flow gate).  G3 adds ``saltation`` (event-time gradient +
+transverse hybrid saltation for the three frozen hybrid switches, with
+event-local nonlinear validation).  G3 performs NO full hybrid STM, NO
+chained continuous-STMs across switches (G4), NO FTLE.  Placeholder
+modules that remain empty for the G4-G6 layers: ``ftle``, ``metrics``,
+``observability``.
 """
 
 from hyptraj.predictability.protocol import machine_readable_protocol

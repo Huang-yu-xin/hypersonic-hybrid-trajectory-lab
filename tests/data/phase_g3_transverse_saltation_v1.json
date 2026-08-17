@@ -1,0 +1,5880 @@
+{
+  "schema_version": "phase-g3-transverse-saltation-v1",
+  "status": "pre-freeze (G3 accept-time audit)",
+  "starting_g2r_commit": "a3c6dfd1339624a8e6558d6ee9b4049d8e40f733",
+  "state_order": [
+    "r",
+    "theta",
+    "v",
+    "gamma"
+  ],
+  "saltation_convention": "Xi = I + (f^+ - f^-) n^T / (n^T f^-)  (identity reset, DR=I)",
+  "event_time_convention": "q_e = - n^T / (n^T f^-);  dt = q_e @ dx",
+  "determinant_lemma": "det(Xi) = (n^T f^+) / (n^T f^-)",
+  "local_fd_base_step": [
+    100.0,
+    1e-05,
+    1.0,
+    0.0001
+  ],
+  "local_fd_multipliers": [
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1,
+    0.3,
+    1.0
+  ],
+  "solver_policy": {
+    "production": {
+      "method": "DOP853",
+      "rtol": 1e-09,
+      "atol": [
+        0.0001,
+        1e-11,
+        1e-07,
+        1e-11
+      ],
+      "max_step": 20.0
+    },
+    "REF-0.1": {
+      "method": "DOP853",
+      "rtol": 1e-12,
+      "atol": [
+        1e-07,
+        1e-14,
+        1e-10,
+        1e-14
+      ],
+      "max_step": 0.1
+    },
+    "REF-0.05": {
+      "method": "DOP853",
+      "rtol": 1e-12,
+      "atol": [
+        1e-07,
+        1e-14,
+        1e-10,
+        1e-14
+      ],
+      "max_step": 0.05
+    }
+  },
+  "eligibility": [
+    "qian_capture",
+    "sanger_atmosphere_entry",
+    "sanger_atmosphere_exit"
+  ],
+  "excluded_events_no_saltation": [
+    "qian_rti",
+    "sanger_atmospheric_pullout",
+    "sanger_srti",
+    "sanger_vac_apogee",
+    "synthetic_initial_entry"
+  ],
+  "grazing_anchors_excluded": true,
+  "grazing_threshold_none_frozen": true,
+  "events": {
+    "qian_capture": {
+      "event": "qian_capture",
+      "event_index": 0,
+      "event_resolution": "SOLVER_EVENT",
+      "mode_before": "ENTRY_CAPTURE",
+      "mode_after": "QEG_GLIDE",
+      "time": 93.42878534679936,
+      "state": [
+        6417040.88571716,
+        0.10115546506514657,
+        6810.79556747249,
+        1.2031255982800082e-17
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "f_minus": [
+        8.194242491878167e-14,
+        0.0010613607874358003,
+        -12.260027103208284,
+        0.005041856945198507
+      ],
+      "f_plus": [
+        8.194242491878167e-14,
+        0.0010613607874358003,
+        -12.260027103208284,
+        2.168404344971009e-19
+      ],
+      "denominator": 0.005041856945198507,
+      "abs_denominator": 0.005041856945198507,
+      "event_time_gradient": [
+        -0.0,
+        -0.0,
+        -0.0,
+        -198.33962186339426
+      ],
+      "saltation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "determinant": 0.0,
+      "determinant_lemma_identity": 4.30080497828491e-17,
+      "metadata": {
+        "capture_u_l_star": 0.06636810709816705,
+        "capture_active_set": "INTERIOR",
+        "distance_to_0": 0.06636810709816705,
+        "distance_to_1": 0.9336318929018329
+      },
+      "reference": {
+        "production": {
+          "time": 93.42878537129322,
+          "state": [
+            6417040.885709159,
+            0.10115546509146774,
+            6810.795567469476,
+            -2.42861286636753e-17
+          ],
+          "denominator": 0.005041856950953797,
+          "q": [
+            -0.0,
+            -0.0,
+            -0.0,
+            -198.33962163698916
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "det": 0.0
+        },
+        "ref_0p1": {
+          "time": 93.42878534679936,
+          "state": [
+            6417040.88571716,
+            0.10115546506514657,
+            6810.79556747249,
+            1.2031255982800082e-17
+          ],
+          "denominator": 0.005041856945198507,
+          "q": [
+            -0.0,
+            -0.0,
+            -0.0,
+            -198.33962186339426
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "det": 0.0
+        },
+        "ref_0p05": {
+          "time": 93.42878534678539,
+          "state": [
+            6417040.885717173,
+            0.1011554650651306,
+            6810.795567472454,
+            -2.0891220611080064e-17
+          ],
+          "denominator": 0.005041856945189079,
+          "q": [
+            -0.0,
+            -0.0,
+            -0.0,
+            -198.33962186376516
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "det": 0.0
+        }
+      },
+      "reference_convergence": {
+        "state_max_abs_diff_01_05": 1.303851604e-08,
+        "xi_max_abs_diff_01_05": 0.0,
+        "q_max_abs_diff_01_05": 3.709033081e-10,
+        "status": "PASS"
+      },
+      "event_time_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": -1.9833961635242262e-05,
+              "tau_minus": 1.9833962737427913e-05,
+              "fd_dt_dx": -198.33962186335086,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 4.339995030022692e-11,
+              "material_relative_error": 2.1881634084246914e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": -5.950188157982389e-05,
+              "tau_minus": 5.950189153767496e-05,
+              "fd_dt_dx": -198.33962186249806,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 8.961933417594992e-10,
+              "material_relative_error": 4.51847862439079e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": -0.00019833956650595216,
+              "tau_minus": 0.00019833967719533823,
+              "fd_dt_dx": -198.3396218506452,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 1.2749069355777465e-08,
+              "material_relative_error": 6.427898387624407e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "tau_plus": -0.0005950183671243907,
+              "tau_minus": 0.000595019363367041,
+              "fd_dt_dx": -198.33962174857197,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 1.1482228501336067e-07,
+              "material_relative_error": 5.789175351581749e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "tau_plus": -0.0019833906711665527,
+              "tau_minus": 0.0019834017405796238,
+              "fd_dt_dx": -198.33962058730881,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 1.2760854417592782e-06,
+              "material_relative_error": 6.433840247200722e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "tau_plus": -0.005950138498987229,
+              "tau_minus": 0.005950238123732867,
+              "fd_dt_dx": -198.33961037866825,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 1.1484726002208845e-05,
+              "material_relative_error": 5.790434555793855e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "tau_plus": -0.019833395955321225,
+              "tau_minus": 0.01983450289573446,
+              "fd_dt_dx": -198.33949425527842,
+              "analytic_dt_dx": -198.33962186339426,
+              "absolute_error": 0.000127608115832345,
+              "material_relative_error": 6.433818650730042e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "event_time_plateau": {
+        "material_multiplier": 0.001,
+        "material_rel_error": 2.188163408e-13,
+        "abs_multiplier": 0.001,
+        "min_abs_residual": 4.33999503e-11
+      },
+      "saltation_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.9999999962747097,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 3.725290298461914e-09,
+              "material_relative_error": 3.725290298461914e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "fd_column": [
+                0.0,
+                0.9999999994736442,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.26355847796367e-10,
+              "material_relative_error": 5.26355847796367e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000002037268,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.0372681319713593e-10,
+              "material_relative_error": 2.0372681319713593e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                4.547473508864641e-06,
+                -4.244813433358606e-13
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 4.547473508864641e-06,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.9999999993791183,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 6.208816794028849e-10,
+              "material_relative_error": 6.208816794028849e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "fd_column": [
+                0.0,
+                0.9999999999362369,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 6.376310590638923e-11,
+              "material_relative_error": 6.376310590638923e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999005619,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 9.943812440127431e-11,
+              "material_relative_error": 9.943812440127431e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                -1.2705803935594347e-12
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.2705803935594347e-12,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                1.0000000000287557,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.8755664516211255e-11,
+              "material_relative_error": 2.8755664516211255e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000218279,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.1827872842550278e-11,
+              "material_relative_error": 2.1827872842550278e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                6.9388939039072276e-12,
+                4.5474735088646407e-07,
+                -4.964137831310292e-14
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 4.5474735088646407e-07,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.9999999999824962,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.7503776206240218e-11,
+              "material_relative_error": 1.7503776206240218e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999915115,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 8.488543201679022e-12,
+              "material_relative_error": 8.488543201679022e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                2.3129646346357427e-12,
+                -6.063298011819521e-07,
+                -1.42921072511408e-13
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 6.063298011819521e-07,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                1.0000000000009999,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.000000000003638,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 3.637978807091713e-12,
+              "material_relative_error": 3.637978807091713e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                4.85722573273506e-12,
+                -7.366907084360718e-06,
+                4.803793658399506e-17
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 7.366907084360718e-06,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                1.000000000001,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000006064,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 6.064038160502605e-13,
+              "material_relative_error": 6.064038160502605e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "fd_column": [
+                3.104408582051595e-05,
+                4.6953182083105574e-11,
+                -6.607479008380324e-05,
+                -7.611395126787155e-17
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 6.607479008380324e-05,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.9999999999996122,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 3.878009025015672e-13,
+              "material_relative_error": 3.878009025015672e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "fd_column": [
+                0.0004516914486885071,
+                5.235395450498004e-10,
+                -0.0007340167940128595,
+                -1.8895984808893515e-16
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 0.0007340167940128595,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "saltation_plateau": {
+        "material_multiplier": 1.0,
+        "material_rel_error": 3.878009025e-13,
+        "abs_multiplier": 0.003,
+        "min_abs_residual": 6.208816794e-10
+      },
+      "classifications_at_1e-2": {
+        "event_time": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ],
+        "saltation": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ]
+      }
+    },
+    "sanger_atmosphere_exit[2]": {
+      "event": "sanger_atmosphere_exit",
+      "event_index": 2,
+      "event_resolution": "SOLVER_EVENT",
+      "mode_before": "SANGER_ATM",
+      "mode_after": "SANGER_VAC",
+      "time": 202.96413575419479,
+      "state": [
+        6471000.0,
+        0.21221951595175864,
+        6474.788280841739,
+        0.0666137734271201
+      ],
+      "normal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "f_minus": [
+        430.9911681088341,
+        0.0009983662488410655,
+        -0.6412891137398888,
+        -0.00046316434718864585
+      ],
+      "f_plus": [
+        430.9911681088341,
+        0.0009983662488410655,
+        -0.6329715882471605,
+        -0.00046701815296512465
+      ],
+      "denominator": 430.9911681088341,
+      "abs_denominator": 430.9911681088341,
+      "event_time_gradient": [
+        -0.0023202331602012773,
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      "saltation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.929859846e-05,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -8.941727956e-09,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "determinant": 1.0,
+      "determinant_lemma_identity": 1.0,
+      "metadata": {
+        "mode_before": "SANGER_ATM",
+        "mode_after": "SANGER_VAC",
+        "f_minus_metadata_abs_err": 0.0,
+        "f_plus_metadata_abs_err": 0.0,
+        "normal_metadata_match": true
+      },
+      "reference": {
+        "production": {
+          "time": 202.96413572759334,
+          "state": [
+            6471000.0,
+            0.21221951592443558,
+            6474.788280737389,
+            0.0666137734854327
+          ],
+          "denominator": 430.9911684786123,
+          "q": [
+            -0.0023202331582105828,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.929859844186804e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.941727947745458e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p1": {
+          "time": 202.96413575419479,
+          "state": [
+            6471000.0,
+            0.21221951595175864,
+            6474.788280841739,
+            0.0666137734271201
+          ],
+          "denominator": 430.9911681088341,
+          "q": [
+            -0.0023202331602012773,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.9298598459047784e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.94172795556135e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p05": {
+          "time": 202.96413575429392,
+          "state": [
+            6471000.0,
+            0.21221951595186322,
+            6474.788280842108,
+            0.06661377342692759
+          ],
+          "denominator": 430.99116810761484,
+          "q": [
+            -0.002320233160207841,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.9298598459104698e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.941727955587148e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        }
+      },
+      "reference_convergence": {
+        "state_max_abs_diff_01_05": 3.692548489e-10,
+        "xi_max_abs_diff_01_05": 5.691383779e-17,
+        "q_max_abs_diff_01_05": 6.563759952e-15,
+        "status": "PASS"
+      },
+      "event_time_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "tau_plus": -0.00023202312454154525,
+              "tau_minus": 0.00023202350472430148,
+              "fd_dt_dx": -0.0023202331463292336,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 1.3872043704704629e-11,
+              "material_relative_error": 5.978728320347446e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "tau_plus": -0.0006960682410487646,
+              "tau_minus": 0.0006960716528134691,
+              "fd_dt_dx": -0.002320233156437056,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 3.76422113965158e-12,
+              "material_relative_error": 1.622346065998401e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "tau_plus": -0.002320214204908897,
+              "tau_minus": 0.0023202521140579958,
+              "fd_dt_dx": -0.002320233159483446,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 7.178311764444167e-13,
+              "material_relative_error": 3.093788972407177e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "tau_plus": -0.006960528897846271,
+              "tau_minus": 0.006960870079759732,
+              "fd_dt_dx": -0.0023202331629343337,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 2.7330564027205906e-12,
+              "material_relative_error": 1.1779231715158753e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "tau_plus": -0.023200436456819712,
+              "tau_minus": 0.023204227364093454,
+              "fd_dt_dx": -0.0023202331910456586,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 3.0844381302547186e-11,
+              "material_relative_error": 1.3293655927179093e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "tau_plus": -0.06958994405036797,
+              "tau_minus": 0.06962406222243948,
+              "fd_dt_dx": -0.002320233437880124,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 2.77678846929974e-10,
+              "material_relative_error": 1.1967713059746362e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "tau_plus": -0.23183407860945032,
+              "tau_minus": 0.2322131704498564,
+              "fd_dt_dx": -0.0023202362452965338,
+              "analytic_dt_dx": -0.0023202331602012773,
+              "absolute_error": 3.0850952565178447e-09,
+              "material_relative_error": 1.329648808333649e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "event_time_plateau": {
+        "material_multiplier": 0.01,
+        "material_rel_error": 3.093788972e-10,
+        "abs_multiplier": 0.01,
+        "min_abs_residual": 7.178311764e-13
+      },
+      "saltation_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.9999999962747097,
+                -1.3877787807814457e-16,
+                1.9298599909234326e-05,
+                -8.941727913658326e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 3.725290298461914e-09,
+              "material_relative_error": 3.725290298461914e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "fd_column": [
+                0.0,
+                0.9999999994736442,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.26355847796367e-10,
+              "material_relative_error": 5.26355847796367e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000002037268,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.0372681319713593e-10,
+              "material_relative_error": 2.0372681319713593e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000287557
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 2.8755664516211255e-11,
+              "material_relative_error": 2.8755664516211255e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.9999999978269141,
+                0.0,
+                1.929859687758532e-05,
+                -8.94172795991762e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 2.1730859334212482e-09,
+              "material_relative_error": 2.1730859334212482e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "fd_column": [
+                0.0,
+                1.0000000003988299,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 3.988298580281935e-10,
+              "material_relative_error": 3.988298580281935e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999005619,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 9.943812440127431e-11,
+              "material_relative_error": 9.943812440127431e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999824962
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.7503776206240218e-11,
+              "material_relative_error": 1.7503776206240218e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.9999999995343387,
+                -1.3877787807814457e-17,
+                1.9298598544992274e-05,
+                -8.941727983047265e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 4.656612873077393e-10,
+              "material_relative_error": 4.656612873077393e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                1.0000000000287557,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.8755664516211255e-11,
+              "material_relative_error": 2.8755664516211255e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000218279,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.1827872842550278e-11,
+              "material_relative_error": 2.1827872842550278e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000009999
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "fd_column": [
+                1.0,
+                -4.625929269271485e-18,
+                1.9298598848157173e-05,
+                -8.941728237473375e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 3.8910938883409026e-13,
+              "material_relative_error": 3.8910938883409026e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                1.0000000000287554,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.875544247160633e-11,
+              "material_relative_error": 2.875544247160633e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999915115,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 8.488543201679022e-12,
+              "material_relative_error": 8.488543201679022e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.000000000001
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "fd_column": [
+                1.0000000003725291,
+                -2.3592239273284576e-17,
+                1.929860450218257e-05,
+                -8.941731091671734e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 3.725291186640334e-10,
+              "material_relative_error": 3.725291186640334e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                1.0000000000009999,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.000000000003638,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 3.637978807091713e-12,
+              "material_relative_error": 3.637978807091713e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999996122
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 3.878009025015672e-13,
+              "material_relative_error": 3.878009025015672e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "fd_column": [
+                1.0000000036321581,
+                -2.0539125955565397e-16,
+                1.929865287214246e-05,
+                -8.941756176467085e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 3.632158129818208e-09,
+              "material_relative_error": 3.632158129818208e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                1.000000000001,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000006064,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 6.064038160502605e-13,
+              "material_relative_error": 6.064038160502605e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000000748
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 7.482903185973555e-14,
+              "material_relative_error": 7.482903185973555e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "fd_column": [
+                1.0000000402377918,
+                -2.2831736501416346e-15,
+                1.929920287693676e-05,
+                -8.942041523421485e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459047784e-05,
+                -8.94172795556135e-09
+              ],
+              "absolute_error": 4.0237791765207476e-08,
+              "material_relative_error": 4.0237791765207476e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                1.000000000001,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000000286
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 2.864375403532904e-14,
+              "material_relative_error": 2.864375403532904e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "saltation_plateau": {
+        "material_multiplier": 0.03,
+        "material_rel_error": 2.875544247e-11,
+        "abs_multiplier": 0.03,
+        "min_abs_residual": 2.875544247e-11
+      },
+      "classifications_at_1e-2": {
+        "event_time": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ],
+        "saltation": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ]
+      }
+    },
+    "sanger_atmosphere_entry[4]": {
+      "event": "sanger_atmosphere_entry",
+      "event_index": 4,
+      "event_resolution": "SOLVER_EVENT",
+      "mode_before": "SANGER_VAC",
+      "mode_after": "SANGER_ATM",
+      "time": 484.6403538549058,
+      "state": [
+        6471000.0,
+        0.4916866960509702,
+        6474.788280841731,
+        -0.06661377342713914
+      ],
+      "normal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "f_minus": [
+        -430.9911681089565,
+        0.000998366248841063,
+        0.6329715882473411,
+        -0.0004670181529651271
+      ],
+      "f_plus": [
+        -430.9911681089565,
+        0.000998366248841063,
+        0.6246540627546128,
+        -0.0004631643471886483
+      ],
+      "denominator": -430.9911681089565,
+      "abs_denominator": 430.9911681089565,
+      "event_time_gradient": [
+        0.002320233160200618,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "saltation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.929859846e-05,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -8.941727956e-09,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "determinant": 1.0,
+      "determinant_lemma_identity": 1.0,
+      "metadata": {
+        "mode_before": "SANGER_VAC",
+        "mode_after": "SANGER_ATM",
+        "f_minus_metadata_abs_err": 0.0,
+        "f_plus_metadata_abs_err": 0.0,
+        "normal_metadata_match": true
+      },
+      "reference": {
+        "production": {
+          "time": 484.6403540462832,
+          "state": [
+            6471000.0,
+            0.4916866962314883,
+            6474.788280737391,
+            -0.0666137734854332
+          ],
+          "denominator": -430.99116847861563,
+          "q": [
+            0.002320233158210565,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.9298598441867886e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.941727947745387e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p1": {
+          "time": 484.6403538549058,
+          "state": [
+            6471000.0,
+            0.4916866960509702,
+            6474.788280841731,
+            -0.06661377342713914
+          ],
+          "denominator": -430.9911681089565,
+          "q": [
+            0.002320233160200618,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.9298598459042302e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.941727955558811e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p05": {
+          "time": 484.64035385434164,
+          "state": [
+            6471000.0,
+            0.4916866960504446,
+            6474.788280842139,
+            -0.06661377342696931
+          ],
+          "denominator": -430.9911681078865,
+          "q": [
+            0.0023202331602063786,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.9298598459092535e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -8.941727955581512e-09,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        }
+      },
+      "reference_convergence": {
+        "state_max_abs_diff_01_05": 4.083631211e-10,
+        "xi_max_abs_diff_01_05": 5.02324419e-17,
+        "q_max_abs_diff_01_05": 5.760582983e-15,
+        "status": "PASS"
+      },
+      "event_time_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "tau_plus": 0.00023202312470946675,
+              "tau_minus": -0.0002320235068278037,
+              "fd_dt_dx": 0.0023202331576863524,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 2.5142657053556228e-12,
+              "material_relative_error": 1.0836263132875094e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0006960682285682554,
+              "tau_minus": -0.000696071667773551,
+              "fd_dt_dx": 0.0023202331605696775,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 3.6905938374798275e-13,
+              "material_relative_error": 1.5906133490311473e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0023202140532285658,
+              "tau_minus": -0.0023202522669198,
+              "fd_dt_dx": 0.0023202331600741827,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 1.2643532054656959e-13,
+              "material_relative_error": 5.449250649259638e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "tau_plus": 0.0069605275296355995,
+              "tau_minus": -0.006960871449676852,
+              "fd_dt_dx": 0.002320233163218742,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 3.0181239452087283e-12,
+              "material_relative_error": 1.300784764643122e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "tau_plus": 0.023200421273057884,
+              "tau_minus": -0.023204242586689138,
+              "fd_dt_dx": 0.002320233192987351,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 3.278673296400192e-11,
+              "material_relative_error": 1.4130792338631617e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "tau_plus": 0.06958980771032831,
+              "tau_minus": -0.06962419955467318,
+              "fd_dt_dx": 0.0023202334544166914,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 2.9421607337931643e-10,
+              "material_relative_error": 1.2680452914218207e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "tau_plus": 0.2318325765216287,
+              "tau_minus": -0.23221470934716393,
+              "fd_dt_dx": 0.002320236429343963,
+              "analytic_dt_dx": 0.002320233160200618,
+              "absolute_error": 3.2691433449194562e-09,
+              "material_relative_error": 1.4089719089424577e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "event_time_plateau": {
+        "material_multiplier": 0.01,
+        "material_rel_error": 5.449250649e-11,
+        "abs_multiplier": 0.01,
+        "min_abs_residual": 1.264353205e-13
+      },
+      "saltation_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "fd_column": [
+                1.0000000009313226,
+                -2.7755575615628914e-16,
+                1.9298599909234326e-05,
+                -8.941727983047265e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 9.313225746154785e-10,
+              "material_relative_error": 9.313225746154785e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "fd_column": [
+                0.0,
+                0.9999999994736442,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.26355847796367e-10,
+              "material_relative_error": 5.26355847796367e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000002037268,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.0372681319713593e-10,
+              "material_relative_error": 2.0372681319713593e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000287557
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 2.8755664516211255e-11,
+              "material_relative_error": 2.8755664516211255e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "fd_column": [
+                1.0000000009313226,
+                -9.251858538542972e-17,
+                1.9298598393409826e-05,
+                -8.94172795991762e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 9.313225746154785e-10,
+              "material_relative_error": 9.313225746154785e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "fd_column": [
+                0.0,
+                0.999999999473644,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.263559588186695e-10,
+              "material_relative_error": 5.263559588186695e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999005619,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 9.943812440127431e-11,
+              "material_relative_error": 9.943812440127431e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999824962
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.7503776206240218e-11,
+              "material_relative_error": 1.7503776206240218e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.9999999995343387,
+                0.0,
+                1.9298598090244923e-05,
+                -8.941727983047265e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 4.656612873077393e-10,
+              "material_relative_error": 4.656612873077393e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                1.0000000000287557,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.8755664516211255e-11,
+              "material_relative_error": 2.8755664516211255e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000218279,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.1827872842550278e-11,
+              "material_relative_error": 2.1827872842550278e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000009999
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                1.9298599151322076e-05,
+                -8.941728228221516e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 6.922797736810555e-13,
+              "material_relative_error": 6.922797736810555e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                1.0000000000287554,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.875544247160633e-11,
+              "material_relative_error": 2.875544247160633e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999915115,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 8.488543201679022e-12,
+              "material_relative_error": 8.488543201679022e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.000000000001
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "fd_column": [
+                0.999999999627471,
+                1.9428902930940238e-17,
+                1.9298605730000416e-05,
+                -8.941730995221108e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 3.725290076417309e-10,
+              "material_relative_error": 3.725290076417309e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                0.9999999999732444,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.6755597737349035e-11,
+              "material_relative_error": 2.6755597737349035e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.000000000003638,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 3.637978807091713e-12,
+              "material_relative_error": 3.637978807091713e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999996122
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 3.878009025015672e-13,
+              "material_relative_error": 3.878009025015672e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "fd_column": [
+                0.9999999963057538,
+                1.7300975467075356e-16,
+                1.9298663801237126e-05,
+                -8.941755307254976e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 3.6942462422473454e-09,
+              "material_relative_error": 3.6942462422473454e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.9999999999917482,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 8.251843652828939e-12,
+              "material_relative_error": 8.251843652828939e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000006064,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 6.064038160502605e-13,
+              "material_relative_error": 6.064038160502605e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000000748
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 7.482903185973555e-14,
+              "material_relative_error": 7.482903185973555e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "fd_column": [
+                0.9999999588821084,
+                1.918187830796114e-15,
+                1.929932447637839e-05,
+                -8.942031867395505e-09
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                1.9298598459042302e-05,
+                -8.941727955558811e-09
+              ],
+              "absolute_error": 4.1117891647068916e-08,
+              "material_relative_error": 4.1117891647068916e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                1.000000000001,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.000088900582341e-12,
+              "material_relative_error": 1.000088900582341e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000000286
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 2.864375403532904e-14,
+              "material_relative_error": 2.864375403532904e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "saltation_plateau": {
+        "material_multiplier": 0.03,
+        "material_rel_error": 2.875544247e-11,
+        "abs_multiplier": 0.03,
+        "min_abs_residual": 2.875544247e-11
+      },
+      "classifications_at_1e-2": {
+        "event_time": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ],
+        "saltation": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ]
+      }
+    },
+    "sanger_atmosphere_exit[6]": {
+      "event": "sanger_atmosphere_exit",
+      "event_index": 6,
+      "event_resolution": "SOLVER_EVENT",
+      "mode_before": "SANGER_ATM",
+      "mode_after": "SANGER_VAC",
+      "time": 748.1137978791545,
+      "state": [
+        6471000.0,
+        0.745358676816505,
+        5963.151745350634,
+        0.02245911898378354
+      ],
+      "normal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "f_minus": [
+        133.91587577494028,
+        0.000921286951914944,
+        -0.22060400228460744,
+        -0.0006694122653346766
+      ],
+      "f_plus": [
+        133.91587577494028,
+        0.000921286951914944,
+        -0.2135490396364783,
+        -0.0006729615441134515
+      ],
+      "denominator": 133.91587577494028,
+      "abs_denominator": 133.91587577494028,
+      "event_time_gradient": [
+        -0.007467374530564287,
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      "saltation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          5.268204839e-05,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -2.650379395e-08,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "determinant": 1.0,
+      "determinant_lemma_identity": 1.0,
+      "metadata": {
+        "mode_before": "SANGER_ATM",
+        "mode_after": "SANGER_VAC",
+        "f_minus_metadata_abs_err": 0.0,
+        "f_plus_metadata_abs_err": 0.0,
+        "normal_metadata_match": true
+      },
+      "reference": {
+        "production": {
+          "time": 748.1137977144123,
+          "state": [
+            6471000.0,
+            0.7453586766539705,
+            5963.151745043284,
+            0.02245911923309924
+          ],
+          "denominator": 133.91587725437046,
+          "q": [
+            -0.007467374448068772,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.2682047805288626e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.6503793660330214e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p1": {
+          "time": 748.1137978791545,
+          "state": [
+            6471000.0,
+            0.745358676816505,
+            5963.151745350634,
+            0.02245911898378354
+          ],
+          "denominator": 133.91587577494028,
+          "q": [
+            -0.007467374530564287,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.268204839272185e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.6503793954495614e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p05": {
+          "time": 748.1137978794314,
+          "state": [
+            6471000.0,
+            0.7453586768168059,
+            5963.151745351732,
+            0.02245911898319421
+          ],
+          "denominator": 133.91587577145157,
+          "q": [
+            -0.007467374530758823,
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.2682048394113784e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.6503793955190935e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        }
+      },
+      "reference_convergence": {
+        "state_max_abs_diff_01_05": 1.097760105e-09,
+        "xi_max_abs_diff_01_05": 1.39193263e-15,
+        "q_max_abs_diff_01_05": 1.945362274e-13,
+        "status": "PASS"
+      },
+      "event_time_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "tau_plus": -0.0007467291321606925,
+              "tau_minus": 0.0007467457673150477,
+              "fd_dt_dx": -0.007467374497378701,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 3.3185585356088065e-11,
+              "material_relative_error": 4.4440767260645666e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "tau_plus": -0.00224013749022949,
+              "tau_minus": 0.0022402872349402297,
+              "fd_dt_dx": -0.007467374541949533,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.1385246044548492e-11,
+              "material_relative_error": 1.5246651949688859e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "tau_plus": -0.0074665428142471745,
+              "tau_minus": 0.007468206617687333,
+              "fd_dt_dx": -0.007467374715967254,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.8540296728430938e-10,
+              "material_relative_error": 2.482840073515089e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "tau_plus": -0.022394641467315488,
+              "tau_minus": 0.022409615728072794,
+              "fd_dt_dx": -0.00746737619923138,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.6686670933907521e-09,
+              "material_relative_error": 2.2346101518824663e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "tau_plus": -0.07459073989536666,
+              "tau_minus": 0.07475712148647105,
+              "fd_dt_dx": -0.007467393069091885,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.853852759844954e-08,
+              "material_relative_error": 2.4826031589242705e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "tau_plus": -0.223277487251152,
+              "tau_minus": 0.224774995939146,
+              "fd_dt_dx": -0.007467541386504966,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.6685594067967352e-07,
+              "material_relative_error": 2.2344659424369962e-05,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "tau_plus": -0.7385987991641053,
+              "tau_minus": 0.755247191272594,
+              "fd_dt_dx": -0.007469229952183496,
+              "analytic_dt_dx": -0.007467374530564287,
+              "absolute_error": 1.8554216192094228e-06,
+              "material_relative_error": 0.0002484704110681876,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": -0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "event_time_plateau": {
+        "material_multiplier": 0.003,
+        "material_rel_error": 1.524665195e-09,
+        "abs_multiplier": 0.003,
+        "min_abs_residual": 1.138524604e-11
+      },
+      "saltation_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.9999999962747097,
+                0.0,
+                5.2682048590213526e-05,
+                -2.6503793847110213e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 3.725290298461914e-09,
+              "material_relative_error": 3.725290298461914e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "fd_column": [
+                0.0,
+                1.0000000050247593,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.024759275329416e-09,
+              "material_relative_error": 5.024759275329416e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000002037268,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.0372681319713593e-10,
+              "material_relative_error": 2.0372681319713593e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999940611
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 5.93891602562735e-12,
+              "material_relative_error": 5.93891602562735e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.9999999993791183,
+                0.0,
+                5.2682048590213526e-05,
+                -2.650379401480015e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 6.208816794028849e-10,
+              "material_relative_error": 6.208816794028849e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "fd_column": [
+                0.0,
+                1.0000000013240158,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.324015785897359e-09,
+              "material_relative_error": 1.324015785897359e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999005619,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 9.943812440127431e-11,
+              "material_relative_error": 9.943812440127431e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.000000000005626
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 5.625944154985518e-12,
+              "material_relative_error": 5.625944154985518e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "fd_column": [
+                1.0000000004656613,
+                0.0,
+                5.268204995445558e-05,
+                -2.6503794841106765e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 4.656612873077393e-10,
+              "material_relative_error": 4.656612873077393e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.999999999473644,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.263559588186695e-10,
+              "material_relative_error": 5.263559588186695e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000218279,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.1827872842550278e-11,
+              "material_relative_error": 2.1827872842550278e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000009999
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "fd_column": [
+                1.0000000013969839,
+                -7.401486830834377e-17,
+                5.2682061626304254e-05,
+                -2.6503801951738293e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 1.3969838619232178e-09,
+              "material_relative_error": 1.3969838619232178e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.9999999998437183,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.5628165428438479e-10,
+              "material_relative_error": 1.5628165428438479e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999915115,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 8.488543201679022e-12,
+              "material_relative_error": 8.488543201679022e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999998436
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.5643042416968456e-13,
+              "material_relative_error": 1.5643042416968456e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "fd_column": [
+                1.0000000158324838,
+                -7.93809462606987e-16,
+                5.268219529170892e-05,
+                -2.650388279644422e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 1.5832483768463135e-08,
+              "material_relative_error": 1.5832483768463135e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                1.0000000000287554,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.875544247160633e-11,
+              "material_relative_error": 2.875544247160633e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.000000000003638,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 3.637978807091713e-12,
+              "material_relative_error": 3.637978807091713e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999591
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 4.085620730620576e-14,
+              "material_relative_error": 4.085620730620576e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "fd_column": [
+                1.000000142150869,
+                -7.151686650293717e-15,
+                5.268337004054047e-05,
+                -2.6504593569262138e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 1.4215086907576335e-07,
+              "material_relative_error": 1.4215086907576335e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.9999999999917482,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 8.251843652828939e-12,
+              "material_relative_error": 8.251843652828939e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000006064,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 6.064038160502605e-13,
+              "material_relative_error": 6.064038160502605e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999593
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 4.0745185003743245e-14,
+              "material_relative_error": 4.0745185003743245e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "fd_column": [
+                1.0000015805708244,
+                -7.951472813516603e-14,
+                5.269674294140714e-05,
+                -2.651268443431762e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.268204839272185e-05,
+                -2.6503793954495614e-08
+              ],
+              "absolute_error": 1.580570824444294e-06,
+              "material_relative_error": 1.580570824444294e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.9999999999954489,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 4.551137244845904e-12,
+              "material_relative_error": 4.551137244845904e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999939
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 6.106226635438361e-15,
+              "material_relative_error": 6.106226635438361e-15,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "saltation_plateau": {
+        "material_multiplier": 0.01,
+        "material_rel_error": 5.263559588e-10,
+        "abs_multiplier": 0.01,
+        "min_abs_residual": 5.263559588e-10
+      },
+      "classifications_at_1e-2": {
+        "event_time": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ],
+        "saltation": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ]
+      }
+    },
+    "sanger_atmosphere_entry[8]": {
+      "event": "sanger_atmosphere_entry",
+      "event_index": 8,
+      "event_resolution": "SOLVER_EVENT",
+      "mode_before": "SANGER_VAC",
+      "mode_after": "SANGER_ATM",
+      "time": 814.8021363362164,
+      "state": [
+        6471000.0,
+        0.806769521369292,
+        5963.151745350631,
+        -0.022459118983799688
+      ],
+      "normal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "f_minus": [
+        -133.91587577503648,
+        0.0009212869519149432,
+        0.21354903963663183,
+        -0.0006729615441134523
+      ],
+      "f_plus": [
+        -133.91587577503648,
+        0.0009212869519149432,
+        0.2064940769885027,
+        -0.0006694122653346775
+      ],
+      "denominator": -133.91587577503648,
+      "abs_denominator": 133.91587577503648,
+      "event_time_gradient": [
+        0.007467374530558922,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "saltation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          5.268204839e-05,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -2.650379395e-08,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "determinant": 1.0,
+      "determinant_lemma_identity": 1.0,
+      "metadata": {
+        "mode_before": "SANGER_VAC",
+        "mode_after": "SANGER_ATM",
+        "f_minus_metadata_abs_err": 0.0,
+        "f_plus_metadata_abs_err": 0.0,
+        "normal_metadata_match": true
+      },
+      "reference": {
+        "production": {
+          "time": 814.8021368979796,
+          "state": [
+            6471000.0,
+            0.8067695218716394,
+            5963.151745043285,
+            -0.022459119233096014
+          ],
+          "denominator": -133.91587725435124,
+          "q": [
+            0.007467374448069843,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.268204780529618e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.650379366033402e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p1": {
+          "time": 814.8021363362164,
+          "state": [
+            6471000.0,
+            0.806769521369292,
+            5963.151745350631,
+            -0.022459118983799688
+          ],
+          "denominator": -133.91587577503648,
+          "q": [
+            0.007467374530558922,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.2682048392684006e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.6503793954476576e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        },
+        "ref_0p05": {
+          "time": 814.8021363347871,
+          "state": [
+            6471000.0,
+            0.8067695213680335,
+            5963.151745351756,
+            -0.022459118983206922
+          ],
+          "denominator": -133.91587577152788,
+          "q": [
+            0.007467374530754568,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "xi": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              5.268204839408417e-05,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.6503793955176642e-08,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "det": 1.0
+        }
+      },
+      "reference_convergence": {
+        "state_max_abs_diff_01_05": 1.125044946e-09,
+        "xi_max_abs_diff_01_05": 1.400165791e-15,
+        "q_max_abs_diff_01_05": 1.956455831e-13,
+        "status": "PASS"
+      },
+      "event_time_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0007467290890870583,
+              "tau_minus": -0.0007467458125625234,
+              "fd_dt_dx": 0.007467374508247908,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 2.231101414729153e-11,
+              "material_relative_error": 2.9877989989637744e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "tau_plus": 0.00224013709654904,
+              "tau_minus": -0.0022402876280928816,
+              "fd_dt_dx": 0.007467374541069869,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.0510947147379657e-11,
+              "material_relative_error": 1.4075826924664683e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "tau_plus": 0.007466538444822753,
+              "tau_minus": -0.007468210992817484,
+              "fd_dt_dx": 0.007467374718820119,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.882611965625669e-10,
+              "material_relative_error": 2.5211163012132436e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "tau_plus": 0.022394602173404884,
+              "tau_minus": -0.02240965514251814,
+              "fd_dt_dx": 0.007467376219320504,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.688761581963849e-09,
+              "material_relative_error": 2.2615198622392491e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "tau_plus": 0.07459030498353433,
+              "tau_minus": -0.07475756107321326,
+              "fd_dt_dx": 0.00746739330283738,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.8772278458263625e-08,
+              "material_relative_error": 2.513906110031225e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "tau_plus": 0.2232736144203851,
+              "tau_minus": -0.22477899497326195,
+              "fd_dt_dx": 0.0074675434898941176,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.6895933519552736e-07,
+              "material_relative_error": 2.2626337343076992e-05,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "tau_plus": 0.7385573165720263,
+              "tau_minus": -0.755293355773484,
+              "fd_dt_dx": 0.007469253361727551,
+              "analytic_dt_dx": 0.007467374530558922,
+              "absolute_error": 1.878831168629011e-06,
+              "material_relative_error": 0.0002516053213803893,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "tau_plus": 0.0,
+              "tau_minus": 0.0,
+              "fd_dt_dx": 0.0,
+              "analytic_dt_dx": 0.0,
+              "absolute_error": 0.0,
+              "material_relative_error": null,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "event_time_plateau": {
+        "material_multiplier": 0.003,
+        "material_rel_error": 1.407582692e-09,
+        "abs_multiplier": 0.003,
+        "min_abs_residual": 1.051094715e-11
+      },
+      "saltation_fd": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.1,
+              "fd_column": [
+                1.0000000009313226,
+                5.551115123125783e-16,
+                5.2682048590213526e-05,
+                -2.6503793881804683e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 9.313225746154785e-10,
+              "material_relative_error": 9.313225746154785e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-08,
+              "fd_column": [
+                0.0,
+                1.0000000050247593,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.024759275329416e-09,
+              "material_relative_error": 5.024759275329416e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.001,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000002037268,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.0372681319713593e-10,
+              "material_relative_error": 2.0372681319713593e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999940611
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 5.93891602562735e-12,
+              "material_relative_error": 5.93891602562735e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "columns": {
+            "col_0": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.9999999993791183,
+                0.0,
+                5.2682050106038034e-05,
+                -2.650379401480015e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 6.208816794028849e-10,
+              "material_relative_error": 6.208816794028849e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-08,
+              "fd_column": [
+                0.0,
+                1.0000000013240158,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.324015785897359e-09,
+              "material_relative_error": 1.324015785897359e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.003,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999005619,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 9.943812440127431e-11,
+              "material_relative_error": 9.943812440127431e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.000000000005626
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 5.625944154985518e-12,
+              "material_relative_error": 5.625944154985518e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "columns": {
+            "col_0": {
+              "epsilon": 1.0,
+              "fd_column": [
+                1.0,
+                0.0,
+                5.268205040920293e-05,
+                -2.650379480814702e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 2.016518923413438e-12,
+              "material_relative_error": 2.016518923413438e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000001e-07,
+              "fd_column": [
+                0.0,
+                0.999999999473644,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 5.263559588186695e-10,
+              "material_relative_error": 5.263559588186695e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.01,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000218279,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 2.1827872842550278e-11,
+              "material_relative_error": 2.1827872842550278e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0000000000009999
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 9.99866855977416e-13,
+              "material_relative_error": 9.99866855977416e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "columns": {
+            "col_0": {
+              "epsilon": 3.0,
+              "fd_column": [
+                0.9999999984477957,
+                7.401486830834377e-17,
+                5.268206647694266e-05,
+                -2.6503801622719075e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 1.5522042540183634e-09,
+              "material_relative_error": 1.5522042540183634e-09,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3.0000000000000004e-07,
+              "fd_column": [
+                0.0,
+                0.9999999998437183,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 1.5628165428438479e-10,
+              "material_relative_error": 1.5628165428438479e-10,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.03,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.9999999999915115,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 8.488543201679022e-12,
+              "material_relative_error": 8.488543201679022e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999998436
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 1.5643042416968456e-13,
+              "material_relative_error": 1.5643042416968456e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "columns": {
+            "col_0": {
+              "epsilon": 10.0,
+              "fd_column": [
+                0.9999999842140823,
+                8.271161533457416e-16,
+                5.268224726933113e-05,
+                -2.650387918145397e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 1.5785917684141282e-08,
+              "material_relative_error": 1.5785917684141282e-08,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1.0000000000000002e-06,
+              "fd_column": [
+                0.0,
+                1.0000000000287554,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 2.875544247160633e-11,
+              "material_relative_error": 2.875544247160633e-11,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.1,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.000000000003638,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 3.637978807091713e-12,
+              "material_relative_error": 3.637978807091713e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999591
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 4.085620730620576e-14,
+              "material_relative_error": 4.085620730620576e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "columns": {
+            "col_0": {
+              "epsilon": 30.0,
+              "fd_column": [
+                0.9999998579267413,
+                7.50140690305064e-15,
+                5.268383861221082e-05,
+                -2.6504561033424688e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 1.4207325871318233e-07,
+              "material_relative_error": 1.4207325871318233e-07,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 3e-06,
+              "fd_column": [
+                0.0,
+                0.9999999999917482,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 8.251843652828939e-12,
+              "material_relative_error": 8.251843652828939e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 0.3,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0000000000006064,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 6.064038160502605e-13,
+              "material_relative_error": 6.064038160502605e-13,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 3e-05,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999593
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 4.0745185003743245e-14,
+              "material_relative_error": 4.0745185003743245e-14,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "columns": {
+            "col_0": {
+              "epsilon": 100.0,
+              "fd_column": [
+                0.9999984200391918,
+                8.3384410487497e-14,
+                5.270195356388285e-05,
+                -2.651232273748194e-08
+              ],
+              "analytic_column": [
+                1.0,
+                0.0,
+                5.2682048392684006e-05,
+                -2.6503793954476576e-08
+              ],
+              "absolute_error": 1.5799608081845662e-06,
+              "material_relative_error": 1.5799608081845662e-06,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_1": {
+              "epsilon": 1e-05,
+              "fd_column": [
+                0.0,
+                0.9999999999954489,
+                0.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              "absolute_error": 4.551137244845904e-12,
+              "material_relative_error": 4.551137244845904e-12,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_2": {
+              "epsilon": 1.0,
+              "fd_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              "absolute_error": 0.0,
+              "material_relative_error": 0.0,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            },
+            "col_3": {
+              "epsilon": 0.0001,
+              "fd_column": [
+                0.0,
+                0.0,
+                0.0,
+                0.9999999999999939
+              ],
+              "analytic_column": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ],
+              "absolute_error": 6.106226635438361e-15,
+              "material_relative_error": 6.106226635438361e-15,
+              "classification_plus": "TRANSVERSE_LOCAL_VALID",
+              "classification_minus": "TRANSVERSE_LOCAL_VALID"
+            }
+          }
+        }
+      },
+      "saltation_plateau": {
+        "material_multiplier": 0.01,
+        "material_rel_error": 5.263559588e-10,
+        "abs_multiplier": 0.01,
+        "min_abs_residual": 5.263559588e-10
+      },
+      "classifications_at_1e-2": {
+        "event_time": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ],
+        "saltation": [
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID",
+          "TRANSVERSE_LOCAL_VALID"
+        ]
+      }
+    }
+  },
+  "acceptance_status": "PENDING_VALIDATION_CHECK"
+}
