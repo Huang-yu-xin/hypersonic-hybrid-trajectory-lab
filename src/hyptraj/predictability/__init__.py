@@ -16,10 +16,13 @@ oracle, and the minimal variational algebra (``stm``).  G2 extends
 ``perturbation`` for the fixed-time nonlinear flow-map validation (FD
 sweep + smooth-flow gate).  G3 adds ``saltation`` (event-time gradient +
 transverse hybrid saltation for the three frozen hybrid switches, with
-event-local nonlinear validation).  G3 performs NO full hybrid STM, NO
-chained continuous-STMs across switches (G4), NO FTLE.  Placeholder
-modules that remain empty for the G4-G6 layers: ``ftle``, ``metrics``,
-``observability``.
+event-local nonlinear validation).  G4 adds ``hybrid_stm`` (chaining the
+validated continuous STMs and saltations into the fixed-time
+topology-preserving hybrid STM with global event-time gradients) and
+``hybrid_validation`` (the independent full-nonlinear comparator with the
+hybrid topology gate).  G4 performs NO G5 predictability ranking, NO
+FTLE.  Placeholder modules that remain empty for the G5-G6 layers:
+``ftle``, ``metrics``, ``observability``.
 """
 
 from hyptraj.predictability.protocol import machine_readable_protocol
@@ -45,6 +48,11 @@ from hyptraj.predictability.stm import (
     stm_strict_reference_config,
     stm_companion_reference_config,
 )
+from hyptraj.predictability.hybrid_stm import (
+    build_hybrid_stm,
+    build_split_tail,
+    qian_no_saltation_negative_control,
+)
 
 __all__ = [
     "machine_readable_protocol",
@@ -66,4 +74,7 @@ __all__ = [
     "stm_production_like_config",
     "stm_strict_reference_config",
     "stm_companion_reference_config",
+    "build_hybrid_stm",
+    "build_split_tail",
+    "qian_no_saltation_negative_control",
 ]

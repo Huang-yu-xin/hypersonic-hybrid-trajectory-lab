@@ -304,6 +304,36 @@ def _qian_capture_linearization(
         raise RuntimeError("Qian research trajectory has no capture event.")
     state = np.asarray(cap.state, dtype=float)
     t = float(cap.time_s)
+    return linearize_qian_capture_event(
+        env, vehicle, ctl, state, t, mode_after=mode_after
+    )
+
+
+def linearize_qian_capture_event(
+    env,
+    vehicle,
+    control,
+    capture_state: np.ndarray,
+    t_capture: float,
+    mode_after="QEG_GLIDE",
+) -> HybridLocalLinearization:
+    """Event-local linearization of the frozen Qian Capture (no integration).
+
+    Minimal G4 adapter: given the EXACT capture state/time (from a frozen
+    research trajectory), computes f_minus / f_plus / normal and the
+    event-time gradient / saltation / active-set audit via the frozen
+    primitives -- identical formulas and semantics to
+    :func:`extract_qian_capture` (G3 unchanged; no trajectory re-run).
+    """
+    from hyptraj.modes.continuous_glide import ENTRY_CAPTURE, QEG_GLIDE
+    from hyptraj.models.dynamics import atmospheric_dynamics
+
+    k_val = float(control.value) if isinstance(control, ConstantKControl) \
+        else float(control)
+    ctl = control if isinstance(control, ConstantKControl) \
+        else ConstantKControl(k_val)
+    state = np.asarray(capture_state, dtype=float)
+    t = float(t_capture)
 
     def _mode_rhs(name, x):
         if name == ENTRY_CAPTURE:
@@ -352,6 +382,15 @@ def _qian_capture_linearization(
             "distance_to_1": d1,
         },
     )
+
+
+def linearize_sanger_event_record(event, env, vehicle, control):
+    """Event-local linearization of a frozen Sanger ATM<->VAC event record.
+
+    Public alias of ``_sanger_switch_linearization`` for G4 (no new
+    physics; reuses the stored / recomputed f_minus, f_plus, normal).
+    """
+    return _sanger_switch_linearization(event, env, vehicle, control)
 
 
 def extract_qian_capture(

@@ -1,0 +1,1730 @@
+{
+  "schema_version": "phase-g4-hybrid-stm-v1",
+  "status": "pre-freeze (G4 accept-time audit)",
+  "starting_g3_commit": "a7119c07aae8f13031e2323ea76aad9e673e4c59",
+  "state_order": [
+    "r",
+    "theta",
+    "v",
+    "gamma"
+  ],
+  "initial_discrete_mode_semantics": {
+    "qian_initial_mode": "ENTRY_CAPTURE",
+    "sanger_initial_mode": "SANGER_ATM",
+    "sanger_synthetic_initial_entry_saltation": false,
+    "note": "continuous-state derivative conditional on the frozen initial discrete-mode rule"
+  },
+  "matrix_multiplication_convention": "Phi_H = C_{N+1} Xi_N C_N ... Xi_1 C_1; incremental Phi_global=I; C@; Phi_minus; eta=q@Phi_minus; Xi@; ... C_final@",
+  "global_event_time_convention": "eta_k = q_k @ Phi_k^-",
+  "fd_policy": {
+    "base_step": [
+      100.0,
+      1e-05,
+      1.0,
+      0.0001
+    ],
+    "note": "FD validation perturbation scale; NOT canonical scientific scaling"
+  },
+  "endpoints": {
+    "qian_T600": {
+      "model": "qian",
+      "T": 600.0,
+      "topology_signature": [
+        "qian_capture"
+      ],
+      "n_true_switches": 1,
+      "endpoint_mode": "QEG_GLIDE",
+      "terminal_margin_s": 123.0379655,
+      "event_margins_s": [
+        506.5712147
+      ],
+      "phi_production": [
+        [
+          -0.04620989797,
+          0.0,
+          3.946709528,
+          115753.3727
+        ],
+        [
+          1.12382836e-07,
+          1.0,
+          0.0001071856969,
+          1.995422572
+        ],
+        [
+          -0.005859749365,
+          0.0,
+          1.158766057,
+          29019.21714
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "phi_ref_01": [
+        [
+          -0.04620989691,
+          0.0,
+          3.946709524,
+          115753.3733
+        ],
+        [
+          1.123828508e-07,
+          1.0,
+          0.0001071856969,
+          1.995422579
+        ],
+        [
+          -0.00585974912,
+          0.0,
+          1.158766056,
+          29019.21727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "phi_ref_05": [
+        [
+          -0.04620989691,
+          0.0,
+          3.946709524,
+          115753.3733
+        ],
+        [
+          1.123828508e-07,
+          1.0,
+          0.0001071856969,
+          1.995422579
+        ],
+        [
+          -0.00585974912,
+          0.0,
+          1.158766056,
+          29019.21727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reference_convergence": {
+        "phi_max_abs_diff_01_05": 2.7671922e-07,
+        "phi_material_rel_diff_01_05": 2.307414221e-11,
+        "event_time_max_diff_01_05": 1.396927019e-11,
+        "eta_max_diff_01_05": 1.197122401e-09,
+        "status": "PASS"
+      },
+      "factors": [
+        {
+          "kind": "CONTINUOUS",
+          "mode": "ENTRY_CAPTURE",
+          "event": null,
+          "t_start": 0.0,
+          "t_end": 93.42878535,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 9.313225746e-10
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "qian_capture",
+          "t_start": 93.42878535,
+          "t_end": 93.42878535,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "QEG_GLIDE",
+          "event": null,
+          "t_start": 93.42878535,
+          "t_end": 600.0,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": null
+        }
+      ],
+      "event_cumulatives": [
+        {
+          "event": "qian_capture",
+          "index": 0,
+          "time": 93.42878535,
+          "denominator": 0.005041856945,
+          "eta": [
+            0.001322835083,
+            0.0,
+            -0.004627251488,
+            696.7769274
+          ]
+        }
+      ],
+      "structural_invariants": {
+        "theta_column": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_target": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_residual": 0.0,
+        "qian_gamma_row": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "qian_gamma_row_target": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "fd_sweep": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.01101969321,
+          "material_rel_error": 1.294299786e-06,
+          "per_column_abs": [
+            3.3527677044398185e-08,
+            0.0003410605131648481,
+            3.879374150805859e-07,
+            0.011019693207344972
+          ]
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.002950145412,
+          "material_rel_error": 1.401653728e-06,
+          "per_column_abs": [
+            3.6632085628762745e-08,
+            0.00021221543041368324,
+            2.3271698568194665e-07,
+            0.002950145411887206
+          ]
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.004656612873,
+          "material_rel_error": 1.382653374e-06,
+          "per_column_abs": [
+            3.585598348093688e-08,
+            0.004656612873077393,
+            2.482390288882641e-07,
+            0.001087500262656249
+          ]
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.001552204291,
+          "material_rel_error": 1.315214403e-06,
+          "per_column_abs": [
+            3.414855875849554e-08,
+            0.0015522042910257974,
+            2.9480515761903803e-07,
+            0.0004666185413952917
+          ]
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.0002493099455,
+          "material_rel_error": 1.213137788e-06,
+          "per_column_abs": [
+            3.166490317868531e-08,
+            5.0022208597511045e-06,
+            2.8549193187288324e-07,
+            0.00024930994550231844
+          ]
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.0005764410707,
+          "material_rel_error": 5.757307004e-07,
+          "per_column_abs": [
+            1.521166641260674e-08,
+            3.7895612573872006e-07,
+            2.9325295347604197e-07,
+            0.0005764410707342904
+          ]
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.006195172766,
+          "material_rel_error": 5.757034091e-07,
+          "per_column_abs": [
+            1.820276408076582e-08,
+            7.730704965069889e-07,
+            2.9853044791749994e-07,
+            0.006195172765728785
+          ]
+        },
+        "mult_3": {
+          "multiplier": 3.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.05557163937,
+          "material_rel_error": 5.604316152e-06,
+          "per_column_abs": [
+            1.16646535909537e-07,
+            1.8947806286936003e-07,
+            1.659722013158671e-07,
+            0.05557163936828147
+          ]
+        },
+        "mult_10": {
+          "multiplier": 10.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.6172820031,
+          "material_rel_error": 6.281471197e-05,
+          "per_column_abs": [
+            1.3086650808291633e-06,
+            9.313225746154785e-06,
+            1.2795856481062629e-06,
+            0.6172820030697039
+          ]
+        }
+      },
+      "fd_plateau": {
+        "multiplier": 1.0,
+        "material_rel_error": 5.757034091e-07
+      },
+      "reference_grade_fd": {
+        "multiplier": 1.0,
+        "max_abs_error": 0.006166400901,
+        "material_rel_error": 6.293324347e-07,
+        "per_column_abs": [
+          1.311761411e-08,
+          2.273736754e-07,
+          1.028611107e-08,
+          0.006166400901
+        ],
+        "classification_plus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ],
+        "classification_minus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ]
+      },
+      "global_event_time_fd": {
+        "switch_0": {
+          "col_0": {
+            "fd": 0.001322835085,
+            "eta": 0.001322835083,
+            "rel": 1.59293122e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 0.0,
+            "eta": 0.0,
+            "abs": 0.0,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": -0.004627251421,
+            "eta": -0.004627251488,
+            "rel": 1.464331303e-08,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": 696.7769321,
+            "eta": 696.7769274,
+            "rel": 6.808760972e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        }
+      },
+      "max_phi_abs": 115753.3733
+    },
+    "sanger_T600": {
+      "model": "sanger",
+      "T": 600.0,
+      "topology_signature": [
+        "sanger_atmosphere_exit",
+        "sanger_atmosphere_entry"
+      ],
+      "n_true_switches": 2,
+      "endpoint_mode": "SANGER_ATM",
+      "terminal_margin_s": 519.5459838,
+      "event_margins_s": [
+        397.0358642,
+        115.3596461
+      ],
+      "phi_production": [
+        [
+          -0.3413532597,
+          0.0,
+          -28.80887214,
+          243192.6738
+        ],
+        [
+          1.087055028e-07,
+          1.0,
+          9.96462249e-05,
+          0.4361837238
+        ],
+        [
+          0.02536360789,
+          0.0,
+          4.001185749,
+          -6284.125782
+        ],
+        [
+          -1.085144777e-05,
+          0.0,
+          -0.001213363827,
+          4.618541816
+        ]
+      ],
+      "phi_ref_01": [
+        [
+          -0.3413532693,
+          0.0,
+          -28.80887319,
+          243192.6779
+        ],
+        [
+          1.087055034e-07,
+          1.0,
+          9.964622498e-05,
+          0.4361837235
+        ],
+        [
+          0.02536360782,
+          0.0,
+          4.00118574,
+          -6284.125731
+        ],
+        [
+          -1.085144773e-05,
+          0.0,
+          -0.001213363823,
+          4.618541789
+        ]
+      ],
+      "phi_ref_05": [
+        [
+          -0.3413532694,
+          0.0,
+          -28.80887319,
+          243192.6779
+        ],
+        [
+          1.087055034e-07,
+          1.0,
+          9.964622498e-05,
+          0.4361837235
+        ],
+        [
+          0.02536360782,
+          0.0,
+          4.00118574,
+          -6284.125731
+        ],
+        [
+          -1.085144773e-05,
+          0.0,
+          -0.001213363823,
+          4.618541789
+        ]
+      ],
+      "reference_convergence": {
+        "phi_max_abs_diff_01_05": 1.092749881e-05,
+        "phi_material_rel_diff_01_05": 1.049836508e-10,
+        "event_time_max_diff_01_05": 5.641709322e-10,
+        "eta_max_diff_01_05": 5.183665053e-09,
+        "status": "PASS"
+      },
+      "factors": [
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_ATM",
+          "event": null,
+          "t_start": 0.0,
+          "t_end": 202.9641358,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 1.862645149e-09
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_exit",
+          "t_start": 202.9641358,
+          "t_end": 202.9641358,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_VAC",
+          "event": null,
+          "t_start": 202.9641358,
+          "t_end": 484.6403539,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 8.381903172e-09
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_entry",
+          "t_start": 484.6403539,
+          "t_end": 484.6403539,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_ATM",
+          "event": null,
+          "t_start": 484.6403539,
+          "t_end": 600.0,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": null
+        }
+      ],
+      "event_cumulatives": [
+        {
+          "event": "sanger_atmosphere_exit",
+          "index": 2,
+          "time": 202.9641358,
+          "denominator": 430.9911681,
+          "eta": [
+            0.0009000918317,
+            0.0,
+            -0.01957797461,
+            1601.689454
+          ]
+        },
+        {
+          "event": "sanger_atmosphere_entry",
+          "index": 4,
+          "time": 484.6403539,
+          "denominator": -430.9911681,
+          "eta": [
+            0.002936225252,
+            0.0,
+            0.2914389765,
+            -2035.718426
+          ]
+        }
+      ],
+      "structural_invariants": {
+        "theta_column": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_target": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_residual": 0.0
+      },
+      "fd_sweep": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.1396983862,
+          "material_rel_error": 3.471221897e-07,
+          "per_column_abs": [
+            1.0986381654420896e-07,
+            0.13969838619232178,
+            1.442047778965616e-06,
+            0.046979253966128454
+          ]
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.03104408582,
+          "material_rel_error": 4.673585058e-07,
+          "per_column_abs": [
+            1.5953435389404191e-07,
+            0.031044085820515946,
+            6.659456346369552e-07,
+            0.016661121975630522
+          ]
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.04656612873,
+          "material_rel_error": 3.192045493e-06,
+          "per_column_abs": [
+            1.0896151650396924e-06,
+            0.04656612873077392,
+            2.140539709927225e-06,
+            0.008900100510800257
+          ]
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.008279218775,
+          "material_rel_error": 2.568357504e-06,
+          "per_column_abs": [
+            8.767172308132842e-07,
+            0.0031044085820515948,
+            5.151816033333034e-06,
+            0.008279218774987385
+          ]
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.05136840991,
+          "material_rel_error": 1.85215938e-06,
+          "per_column_abs": [
+            2.9037205989679293e-07,
+            0.0041909515857696525,
+            5.3358624700905466e-05,
+            0.05136840991326608
+          ]
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.4469011073,
+          "material_rel_error": 1.164339012e-05,
+          "per_column_abs": [
+            1.8149626365704385e-06,
+            0.00015522042910257974,
+            0.0003354329494875685,
+            0.446901107323356
+          ]
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 4.945221739,
+          "material_rel_error": 0.0001319470582,
+          "per_column_abs": [
+            1.994170679264773e-05,
+            0.0002328306436538696,
+            0.003801246068452002,
+            4.945221739006229
+          ]
+        },
+        "mult_3": {
+          "multiplier": 3.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 44.48909599,
+          "material_rel_error": 0.001184932154,
+          "per_column_abs": [
+            0.0001798436430207606,
+            0.0006829698880513508,
+            0.03413656017464817,
+            44.489095990371425
+          ]
+        },
+        "mult_10": {
+          "multiplier": 10.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 493.9920263,
+          "material_rel_error": 0.013105735,
+          "per_column_abs": [
+            0.0019901142820019646,
+            0.00034924596548080444,
+            0.37756145758276105,
+            493.99202634592075
+          ]
+        }
+      },
+      "fd_plateau": {
+        "multiplier": 0.001,
+        "material_rel_error": 3.471221897e-07
+      },
+      "reference_grade_fd": {
+        "multiplier": 0.001,
+        "max_abs_error": 0.2696704214,
+        "material_rel_error": 2.242801753e-06,
+        "per_column_abs": [
+          2.761720463e-09,
+          0.04656612873,
+          1.308357996e-05,
+          0.2696704214
+        ],
+        "classification_plus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ],
+        "classification_minus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ]
+      },
+      "global_event_time_fd": {
+        "switch_0": {
+          "col_0": {
+            "fd": 0.0009000918341,
+            "eta": 0.0009000918317,
+            "rel": 2.73352879e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 0.0,
+            "eta": 0.0,
+            "abs": 0.0,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": -0.01957797419,
+            "eta": -0.01957797461,
+            "rel": 2.150031682e-08,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": 1601.689467,
+            "eta": 1601.689454,
+            "rel": 8.506702993e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        },
+        "switch_1": {
+          "col_0": {
+            "fd": 0.002936225241,
+            "eta": 0.002936225252,
+            "rel": 3.686279907e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 3.342393029e-05,
+            "eta": 0.0,
+            "abs": 3.342393029e-05,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": 0.2914389767,
+            "eta": 0.2914389765,
+            "rel": 4.63175747e-10,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": -2035.718423,
+            "eta": -2035.718426,
+            "rel": 1.790535571e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        }
+      },
+      "max_phi_abs": 243192.6779
+    },
+    "sanger_T900": {
+      "model": "sanger",
+      "T": 900.0,
+      "topology_signature": [
+        "sanger_atmosphere_exit",
+        "sanger_atmosphere_entry",
+        "sanger_atmosphere_exit",
+        "sanger_atmosphere_entry"
+      ],
+      "n_true_switches": 4,
+      "endpoint_mode": "SANGER_ATM",
+      "terminal_margin_s": 219.5459838,
+      "event_margins_s": [
+        697.0358642,
+        415.3596461,
+        151.8862021,
+        85.19786366
+      ],
+      "phi_production": [
+        [
+          1.486290862,
+          0.0,
+          200.6864769,
+          -1025294.543
+        ],
+        [
+          1.386277542e-07,
+          1.0,
+          0.0001632958718,
+          0.7317480817
+        ],
+        [
+          -0.002984724882,
+          0.0,
+          0.9198293263,
+          7566.843612
+        ],
+        [
+          1.399877078e-06,
+          0.0,
+          0.00024054466,
+          -0.3796675007
+        ]
+      ],
+      "phi_ref_01": [
+        [
+          1.486290864,
+          0.0,
+          200.686477,
+          -1025294.543
+        ],
+        [
+          1.386277541e-07,
+          1.0,
+          0.0001632958718,
+          0.7317480817
+        ],
+        [
+          -0.002984724872,
+          0.0,
+          0.9198293278,
+          7566.843601
+        ],
+        [
+          1.399877072e-06,
+          0.0,
+          0.0002405446592,
+          -0.3796674954
+        ]
+      ],
+      "phi_ref_05": [
+        [
+          1.486290864,
+          0.0,
+          200.686477,
+          -1025294.543
+        ],
+        [
+          1.386277541e-07,
+          1.0,
+          0.0001632958718,
+          0.7317480817
+        ],
+        [
+          -0.002984724872,
+          0.0,
+          0.9198293278,
+          7566.843601
+        ],
+        [
+          1.399877072e-06,
+          0.0,
+          0.0002405446592,
+          -0.3796674954
+        ]
+      ],
+      "reference_convergence": {
+        "phi_max_abs_diff_01_05": 2.57731881e-06,
+        "phi_material_rel_diff_01_05": 4.597409863e-11,
+        "event_time_max_diff_01_05": 1.429384611e-09,
+        "eta_max_diff_01_05": 8.752931535e-08,
+        "status": "PASS"
+      },
+      "factors": [
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_ATM",
+          "event": null,
+          "t_start": 0.0,
+          "t_end": 202.9641358,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 1.862645149e-09
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_exit",
+          "t_start": 202.9641358,
+          "t_end": 202.9641358,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_VAC",
+          "event": null,
+          "t_start": 202.9641358,
+          "t_end": 484.6403539,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 8.381903172e-09
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_entry",
+          "t_start": 484.6403539,
+          "t_end": 484.6403539,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_ATM",
+          "event": null,
+          "t_start": 484.6403539,
+          "t_end": 748.1137979,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 1.490116119e-08
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_exit",
+          "t_start": 748.1137979,
+          "t_end": 748.1137979,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_VAC",
+          "event": null,
+          "t_start": 748.1137979,
+          "t_end": 814.8021363,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": 3.725290298e-09
+        },
+        {
+          "kind": "SALTATION",
+          "mode": null,
+          "event": "sanger_atmosphere_entry",
+          "t_start": 814.8021363,
+          "t_end": 814.8021363,
+          "source": "G3:linearize_*",
+          "state_continuity_error": null
+        },
+        {
+          "kind": "CONTINUOUS",
+          "mode": "SANGER_ATM",
+          "event": null,
+          "t_start": 814.8021363,
+          "t_end": 900.0,
+          "source": "G2:integrate_continuous_stm",
+          "state_continuity_error": null
+        }
+      ],
+      "event_cumulatives": [
+        {
+          "event": "sanger_atmosphere_exit",
+          "index": 2,
+          "time": 202.9641358,
+          "denominator": 430.9911681,
+          "eta": [
+            0.0009000918317,
+            0.0,
+            -0.01957797461,
+            1601.689454
+          ]
+        },
+        {
+          "event": "sanger_atmosphere_entry",
+          "index": 4,
+          "time": 484.6403539,
+          "denominator": -430.9911681,
+          "eta": [
+            0.002936225252,
+            0.0,
+            0.2914389765,
+            -2035.718426
+          ]
+        },
+        {
+          "event": "sanger_atmosphere_exit",
+          "index": 6,
+          "time": 748.1137979,
+          "denominator": 133.9158758,
+          "eta": [
+            0.001090737807,
+            0.0,
+            0.1569242972,
+            1705.762527
+          ]
+        },
+        {
+          "event": "sanger_atmosphere_entry",
+          "index": 8,
+          "time": 814.8021363,
+          "denominator": -133.9158758,
+          "eta": [
+            0.00446172435,
+            0.0,
+            0.5433305843,
+            -4703.973268
+          ]
+        }
+      ],
+      "structural_invariants": {
+        "theta_column": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_target": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "theta_residual": 0.0
+      },
+      "fd_sweep": {
+        "mult_0.001": {
+          "multiplier": 0.001,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.4656612873,
+          "material_rel_error": 3.807230611e-07,
+          "per_column_abs": [
+            4.211067508030908e-07,
+            0.46566128730773926,
+            4.09295455483516e-06,
+            0.277009574463591
+          ]
+        },
+        "mult_0.003": {
+          "multiplier": 0.003,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.2173086007,
+          "material_rel_error": 5.068176678e-07,
+          "per_column_abs": [
+            7.532784691566263e-07,
+            0.21730860074361164,
+            4.0843789861355617e-07,
+            0.056714348145760596
+          ]
+        },
+        "mult_0.01": {
+          "multiplier": 0.01,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.218860805,
+          "material_rel_error": 3.354962433e-06,
+          "per_column_abs": [
+            4.9864500115681665e-06,
+            0.21886080503463742,
+            5.117409386912186e-06,
+            0.02380761713720858
+          ]
+        },
+        "mult_0.03": {
+          "multiplier": 0.03,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.01241763433,
+          "material_rel_error": 2.617974776e-06,
+          "per_column_abs": [
+            3.891071990169692e-06,
+            0.012417634328206379,
+            7.011098603015853e-06,
+            0.012010864447802305
+          ]
+        },
+        "mult_0.1": {
+          "multiplier": 0.1,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.03119930625,
+          "material_rel_error": 3.884653124e-07,
+          "per_column_abs": [
+            4.1722326482585004e-07,
+            0.031199306249618527,
+            7.571631715563854e-05,
+            0.03102536709047854
+          ]
+        },
+        "mult_0.3": {
+          "multiplier": 0.3,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 0.2389120877,
+          "material_rel_error": 1.835258739e-06,
+          "per_column_abs": [
+            2.7864246554543115e-07,
+            0.000620881716410319,
+            3.1861889311812774e-05,
+            0.2389120877487585
+          ]
+        },
+        "mult_1": {
+          "multiplier": 1.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 2.594392965,
+          "material_rel_error": 2.061524497e-05,
+          "per_column_abs": [
+            2.3100805182085793e-06,
+            0.001257285475730896,
+            0.0007132871788826378,
+            2.594392964732833
+          ]
+        },
+        "mult_3": {
+          "multiplier": 3.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 23.31520111,
+          "material_rel_error": 0.0001857382357,
+          "per_column_abs": [
+            2.286512100702076e-05,
+            0.002980232238769531,
+            0.006155222756632384,
+            23.315201110672206
+          ]
+        },
+        "mult_10": {
+          "multiplier": 10.0,
+          "n_valid_columns": 4,
+          "classification_plus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "classification_minus": [
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED",
+            "TOPOLOGY_PRESERVED"
+          ],
+          "max_abs_error": 260.3215708,
+          "material_rel_error": 0.002066362608,
+          "per_column_abs": [
+            0.00025457216619440004,
+            0.0017276033759117126,
+            0.06855052656166549,
+            260.321570778382
+          ]
+        }
+      },
+      "fd_plateau": {
+        "multiplier": 0.001,
+        "material_rel_error": 3.807230611e-07
+      },
+      "reference_grade_fd": {
+        "multiplier": 0.001,
+        "max_abs_error": 1.078064772,
+        "material_rel_error": 1.9573562e-06,
+        "per_column_abs": [
+          6.35310943e-07,
+          0.6053596735,
+          6.46289219e-05,
+          1.078064772
+        ],
+        "classification_plus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ],
+        "classification_minus": [
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED",
+          "TOPOLOGY_PRESERVED"
+        ]
+      },
+      "global_event_time_fd": {
+        "switch_0": {
+          "col_0": {
+            "fd": 0.0009000918341,
+            "eta": 0.0009000918317,
+            "rel": 2.73352879e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 0.0,
+            "eta": 0.0,
+            "abs": 0.0,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": -0.01957797419,
+            "eta": -0.01957797461,
+            "rel": 2.150031682e-08,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": 1601.689467,
+            "eta": 1601.689454,
+            "rel": 8.506702993e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        },
+        "switch_1": {
+          "col_0": {
+            "fd": 0.002936225241,
+            "eta": 0.002936225252,
+            "rel": 3.686279907e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 3.342393029e-05,
+            "eta": 0.0,
+            "abs": 3.342393029e-05,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": 0.2914389767,
+            "eta": 0.2914389765,
+            "rel": 4.63175747e-10,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": -2035.718423,
+            "eta": -2035.718426,
+            "rel": 1.790535571e-09,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        },
+        "switch_2": {
+          "col_0": {
+            "fd": 0.001090737577,
+            "eta": 0.001090737807,
+            "rel": 2.104213548e-07,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": -9.947598301e-05,
+            "eta": 0.0,
+            "abs": 9.947598301e-05,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": 0.1569242753,
+            "eta": 0.1569242972,
+            "rel": 1.400334104e-07,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": 1705.764066,
+            "eta": 1705.762527,
+            "rel": 9.020159405e-07,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        },
+        "switch_3": {
+          "col_0": {
+            "fd": 0.004461724553,
+            "eta": 0.00446172435,
+            "rel": 4.534364659e-08,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_1": {
+            "fd": 0.00013068302,
+            "eta": 0.0,
+            "abs": 0.00013068302,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ],
+            "tangent": true
+          },
+          "col_2": {
+            "fd": 0.5433306077,
+            "eta": 0.5433305843,
+            "rel": 4.303875348e-08,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          },
+          "col_3": {
+            "fd": -4703.974762,
+            "eta": -4703.973268,
+            "rel": 3.175615648e-07,
+            "cls": [
+              "TOPOLOGY_PRESERVED",
+              "TOPOLOGY_PRESERVED"
+            ]
+          }
+        }
+      },
+      "max_phi_abs": 1025294.543
+    }
+  },
+  "qian_no_saltation_negative_control": {
+    "correct_hybrid_error_vs_FD": 0.000156177688,
+    "naive_no_saltation_error_vs_FD": 8614285.008,
+    "correct_gamma_row": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "naive_gamma_row": [
+      -6.669545251e-06,
+      0.0,
+      2.332994005e-05,
+      -3.513049591
+    ],
+    "fd_gamma_row": [
+      -1.200944868e-18,
+      -9.609146197e-12,
+      -6.849805774e-17,
+      -2.818114991e-13
+    ]
+  },
+  "computational_scaling_audit": {
+    "qian_T600": {
+      "max_recovered_phi_diff_vs_identity": {
+        "identity": 0.0,
+        "A": 1.564185368e-07,
+        "B": 1.881999196e-07,
+        "C": 4.122557584e-07
+      },
+      "status": "PASS",
+      "max_recovered_phi_rel_vs_identity": {
+        "identity": 0.0,
+        "A": 1.3512969950138375e-12,
+        "B": 1.6258558034109282e-12,
+        "C": 3.5614702636898124e-12
+      },
+      "phi_scale": 115753.3733
+    },
+    "sanger_T600": {
+      "max_recovered_phi_diff_vs_identity": {
+        "identity": 0.0,
+        "A": 5.716574378e-07,
+        "B": 1.014472218e-06,
+        "C": 4.977919161e-07
+      },
+      "status": "PASS",
+      "max_recovered_phi_rel_vs_identity": {
+        "identity": 0.0,
+        "A": 2.350626228182883e-12,
+        "B": 4.171458019633001e-12,
+        "C": 2.046894970290673e-12
+      },
+      "phi_scale": 243192.6779
+    },
+    "sanger_T900": {
+      "max_recovered_phi_diff_vs_identity": {
+        "identity": 0.0,
+        "A": 4.97919973e-06,
+        "B": 6.948364899e-06,
+        "C": 3.06928996e-06
+      },
+      "status": "PASS",
+      "max_recovered_phi_rel_vs_identity": {
+        "identity": 0.0,
+        "A": 4.856355578637291e-12,
+        "B": 6.776938558290407e-12,
+        "C": 2.9935660804876825e-12
+      },
+      "phi_scale": 1025294.543
+    }
+  },
+  "scientific_canonical_scaling_status": "CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION",
+  "grazing_anchors_excluded": true,
+  "grazing_threshold_none_frozen": true
+}

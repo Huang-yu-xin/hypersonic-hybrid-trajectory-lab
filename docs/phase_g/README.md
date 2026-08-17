@@ -1,12 +1,13 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0/G1/G2/G2R COMPLETE / ACCEPTED**；**G3 COMPLETE**（2026-08-18）
+状态：**G0–G3 COMPLETE / ACCEPTED**；**G4 COMPLETE**（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
-G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 commit：见 git log（G3 accept 后创建）。
+G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 `a7119c0`；
+G4 commit：见 git log（G4 accept 后创建）。
 
-G0–G3 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
+G0–G4 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
 
 ## 1. Phase G 目标
@@ -32,15 +33,15 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G1** | continuous Jacobian `A_m = df_m/dx` + FD 验证 + minimal variational algebra | **COMPLETE / ACCEPTED** |
 | **G2** | 连续 mode STM / augmented 20-D variational integrator / 非线性 FD + semigroup + scaling audit | **COMPLETE / ACCEPTED** |
 | **G2R** | validation-gate corrective patch（双侧 ± gate + MODE_WINDOW_INVALID） | **COMPLETE / ACCEPTED** |
-| **G3** | event-local transverse hybrid saltation（q_e、Ξ、det lemma、局部非线性验证） | **COMPLETE**（`g3_transverse_saltation.md`） |
-| G4 | hybrid/global 轨迹 STM（连续 STM × saltation 组合） | PENDING（不实现） |
-| G5 | fixed-time 与 terminal predictability 指标（scaling audit） | PENDING |
+| **G3** | event-local transverse hybrid saltation（q_e、Ξ、det lemma、局部非线性验证） | **COMPLETE / ACCEPTED** |
+| **G4** | 固定时间 hybrid STM（连续 STM × saltation 链式组合 + 全局事件时间梯度 + 全轨迹 nonlinear FD） | **COMPLETE**（`g4_hybrid_stm.md`） |
+| G5 | fixed-time 与 terminal predictability 指标（scaling audit） | PENDING（不实现） |
 | G6 | grazing / transversality-loss 分析（B0–B4 anchors） | PENDING |
 | G7 | 最终报告 / 冻结 | PENDING |
 
-G0–G3 硬性禁止：full/global hybrid STM、saltation×continuous-STM 链式
-合成、production FTLE、Monte Carlo、optimization、gamma0-K 域重扫
-（G4–G6 范围）。
+G0–G4 硬性禁止：production FTLE、SVD predictability ranking、canonical
+scientific scaling freeze、grazing、Monte Carlo、optimization、gamma0-K
+域重扫（G5–G6 范围）。
 
 ## 3. 文档与代码索引
 
@@ -54,6 +55,9 @@ G0–G3 硬性禁止：full/global hybrid STM、saltation×continuous-STM 链式
 - `docs/phase_g/g3_transverse_saltation.md` —— **G3 横截混合 saltation 报告**
   （event-local 公式 / event 提取 / 局部同步协议 / ε 收敛 / reference
   收敛 / 逐事件结果 / G4 handoff）
+- `docs/phase_g/g4_hybrid_stm.md` —— **G4 混合 STM 验证报告**
+  （hybrid factorization · 乘法顺序 · 全局事件时间梯度 · topology gate ·
+  全轨迹 nonlinear FD · negative control · G5 handoff）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结
@@ -70,18 +74,25 @@ G0–G3 硬性禁止：full/global hybrid STM、saltation×continuous-STM 链式
   nonlinear FD / epsilon sweep / both-side smooth-flow gate / 归一化误差
 - `src/hyptraj/predictability/saltation.py` —— **G3** event-time gradient +
   transverse hybrid saltation（Ξ、q_e、det lemma、eligibility、事件提取、
-  局部同步 map + FD sweeps、local classification）
+  局部同步 map + FD sweeps、local classification；G4 adapter
+  `linearize_*`）
+- `src/hyptraj/predictability/hybrid_stm.py` —— **G4** 固定时间 hybrid STM
+  （factor 表示 + 链式传播 + 全局 eta + naive negative control）
+- `src/hyptraj/predictability/hybrid_validation.py` —— **G4** 独立全轨迹
+  nonlinear FD / topology gate / 双侧 pair gate / 全局事件时间 FD
 - `tests/test_predictability/test_phase_g0_protocol.py` —— G0 语义测试
 - `tests/test_predictability/test_phase_g1_jacobian.py` —— G1 Jacobian 测试
 - `tests/test_predictability/test_phase_g2_continuous_stm.py` —— G2 STM 测试
 - `tests/test_predictability/test_phase_g2r_gate_patch.py` —— G2R gate 补丁测试
 - `tests/test_predictability/test_phase_g3_saltation.py` —— G3 saltation 测试
+- `tests/test_predictability/test_phase_g4_hybrid_stm.py` —— G4 hybrid STM 测试
 - `tests/data/phase_g1_continuous_jacobian_v1.json` —— G1 snapshot
 - `tests/data/phase_g2_continuous_stm_v1.json` —— G2 snapshot
 - `tests/data/phase_g3_transverse_saltation_v1.json` —— G3 snapshot
+- `tests/data/phase_g4_hybrid_stm_v1.json` —— G4 snapshot
 
-未来 G4–G6 模块（`hybrid_stm.py` 不创建；`ftle.py` / `metrics.py` /
-`observability.py` 保持空占位），G3 未实现。
+未来 G5–G6 模块（`ftle.py` / `metrics.py` / `observability.py` 保持空
+占位），G4 未实现。
 
 ## 4. 与其他 Phase 的关系
 
@@ -119,8 +130,16 @@ G0–G3 硬性禁止：full/global hybrid STM、saltation×continuous-STM 链式
   Sanger 稀疏切变结构 + det=1；event-time 与 local synchronized map 的
   多 ε FD 收敛（material rel 1e-10–1e-13）与 reference self-stability
   全 PASS；无 grazing anchors、无 G4 scope leak。
-- 新增测试 `tests/test_predictability/test_phase_g3_saltation.py`
-  （34 tests）与 snapshot `tests/data/phase_g3_transverse_saltation_v1.json`；
-  完整 pytest 通过（含 G0–G2R 的 573 旧回归 + G3 新增）。
+- **G4** 把 G2 连续 STM × G3 saltation 串成固定时间 hybrid STM
+  `Phi_H(T,0) = C_{N+1} Xi_N C_N ... Xi_1 C_1`（incremental 乘法顺序
+  锁定）；Qian T=600（1-switch）、Sanger T=600（2-switch）、Sanger
+  T=900（4-switch）全轨迹 nonlinear FD material rel 2e-6–6e-7；全局
+  事件时间梯度 eta=q@Phi_minus 的 nonlinear FD 匹配到 1e-7–1e-9；
+  theta 全局列与 Qian 全局 gamma 行（=0）不变量；Qian no-saltation
+  negative control（naive 链失败 → saltation 必需）；computational
+  scaling 表示不变性（1e-12 相对）；无 grazing/G5 scope leak。
+- 新增测试 `tests/test_predictability/test_phase_g4_hybrid_stm.py`
+  （30 tests）与 snapshot `tests/data/phase_g4_hybrid_stm_v1.json`；
+  完整 pytest 通过（含 G0–G3 的 607 旧回归 + G4 新增）。
 
-**Phase G0–G3 = COMPLETE；等待人工验收后再进入 G4。**
+**Phase G0–G4 = COMPLETE；等待人工验收后再进入 G5。**

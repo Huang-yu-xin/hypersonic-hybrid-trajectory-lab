@@ -421,12 +421,19 @@ def test_g3_snapshot_acceptance_levels():
 
 
 def test_no_g4_scope_leak():
-    # saltation module must not chain continuous STMs or build a hybrid STM.
+    """Saltation module must not chain continuous STMs or build a hybrid STM.
+
+    ``hybrid_stm.py`` was activated by G4 (guarded by
+    ``test_phase_g4_hybrid_stm.py``); the G3 saltation module itself must
+    remain an event-local layer (no chaining primitives).
+    """
     src = (Path(__file__).resolve().parents[2] / "src" / "hyptraj" /
            "predictability" / "saltation.py").read_text(encoding="utf-8")
     assert "hybrid_stm" not in src
     assert "integrate_continuous_stm" not in src
     assert "variational_rhs" not in src
-    # no hybrid_stm module created for G4
-    assert not (Path(__file__).resolve().parents[2] / "src" / "hyptraj" /
-                "predictability" / "hybrid_stm.py").exists()
+    # G4 owns the chaining module (created and tested by test_phase_g4_*).
+    hybrid = (Path(__file__).resolve().parents[2] / "src" / "hyptraj" /
+              "predictability" / "hybrid_stm.py")
+    assert hybrid.exists()
+    assert "Phi_H" in hybrid.read_text(encoding="utf-8")
