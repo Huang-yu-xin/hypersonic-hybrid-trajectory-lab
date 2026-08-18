@@ -1,0 +1,2636 @@
+{
+ "artifact_sha256": {
+  "docs/phase_g/predictability_protocol.md": "011e99cebd5e076cac16a9fee3a84228219a4bc5422171dcd29a55bf6676d035",
+  "tests/data/phase_g1_continuous_jacobian_v1.json": "6d75694d79a0f58cd71e6a7495487278f8904ceb85a2da2686adb0d4c3728b51",
+  "tests/data/phase_g2_continuous_stm_v1.json": "2308b3cf0c925e1bccf298ad06d2cd791c3b19378cf5eb13754bbc7769961004",
+  "tests/data/phase_g3_transverse_saltation_v1.json": "e94849e7696360db670686a5654392d6bc0c9f61c499420ce9815b54d05b811f",
+  "tests/data/phase_g4_hybrid_stm_v1.json": "1e6dfc59dce81e52a7c97d1de8f2eefc9025b4fa7e0378b9594e4018d4a913f3",
+  "tests/data/phase_g5_predictability_metrics_v1.json": "1ff1815c9b15ff98e54485bf3df4e06640977bcc17d7b76d1db970f80ae94c81",
+  "tests/data/phase_g6_grazing_predictability_v1.json": "1c6b95d4e27ccfecca88d92b7bf4cf337e4cdc577a0b53ebd6984627d0eea153"
+ },
+ "branch": "feature/phase-g-predictability",
+ "canonical_scaling": {
+  "candidate": "A",
+  "ranking_scale_sensitive": true,
+  "scale_sensitivity_note": "Qian-vs-Sanger sigma_max/lambda_max ordering at T=600 flips under candidate B; all scientific claims must declare scale A and report the A/B/C audit.",
+  "scale_values": {
+   "gamma": 0.1,
+   "r": 100000.0,
+   "theta": 1.0,
+   "v": 7000.0
+  },
+  "status": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN"
+ },
+ "claim_boundaries": {
+  "finite_time_local_only": true,
+  "native_terminal_not_fair_cross_model_ranking": true,
+  "no_chaos_claim": true,
+  "no_gamma0K_rescan_in_phase_g": true,
+  "no_optimization": true,
+  "no_probabilistic_uncertainty": true,
+  "no_universal_numeric_grazing_threshold": true,
+  "observability_analysis_outside_scope": true
+ },
+ "conventions": {
+  "event_taxonomy": [
+   {
+    "classification": "TRUE_HYBRID_MODE_SWITCH",
+    "direction": 1,
+    "event": "qian_capture",
+    "mode_after": "QEG_GLIDE",
+    "mode_before": "ENTRY_CAPTURE",
+    "normal": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "notes": [
+     "x+ = x- but the vector field changes (u_L jumps 1 -> clip(u_L*,0,1));",
+     "state continuity does NOT remove the saltation need (G0 §7-§8);",
+     "G1 must derive f_minus/f_plus at analysis time from the frozen",
+     "RHS primitives (Qian metadata gap recorded in G0 audit)."
+    ],
+    "reset_is_identity": true,
+    "saltation": true,
+    "surface": "g_c = gamma",
+    "terminal_sensitivity": false
+   },
+   {
+    "classification": "RESEARCH_TERMINAL",
+    "direction": 1,
+    "event": "qian_rti",
+    "mode_after": null,
+    "mode_before": "QEG_GLIDE",
+    "normal": null,
+    "notes": [
+     "Research Terminal Interface = QEG feasibility loss (u_L* -> 1);",
+     "event-time and terminal-map sensitivity;",
+     "NO post-RTI research mode, NO RTI saltation for notation;",
+     "normal needs d(L_req-L)/dx: a genuine G1 derivative, deferred."
+    ],
+    "reset_is_identity": false,
+    "saltation": false,
+    "surface": "L_req - L = 0",
+    "terminal_sensitivity": true
+   },
+   {
+    "classification": "TRUE_HYBRID_MODE_SWITCH",
+    "direction": 1,
+    "event": "sanger_atmosphere_exit",
+    "mode_after": "SANGER_VAC",
+    "mode_before": "SANGER_ATM",
+    "normal": [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "notes": [
+     "x+ = x-, DR = I; f_ATM != f_VAC in general (D0 §16)."
+    ],
+    "reset_is_identity": true,
+    "saltation": true,
+    "surface": "G_h = h - h_atm",
+    "terminal_sensitivity": false
+   },
+   {
+    "classification": "TRUE_HYBRID_MODE_SWITCH",
+    "direction": -1,
+    "event": "sanger_atmosphere_entry",
+    "mode_after": "SANGER_ATM",
+    "mode_before": "SANGER_VAC",
+    "normal": [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "notes": [
+     "Same surface as the exit, opposite direction; DR = I."
+    ],
+    "reset_is_identity": true,
+    "saltation": true,
+    "surface": "G_h = h - h_atm",
+    "terminal_sensitivity": false
+   },
+   {
+    "classification": "DIAGNOSTIC",
+    "direction": 1,
+    "event": "sanger_atmospheric_pullout",
+    "mode_after": "SANGER_ATM",
+    "mode_before": "SANGER_ATM",
+    "normal": null,
+    "notes": [
+     "Atmospheric local minimum; NEVER a hybrid switch (G0 §6.5)."
+    ],
+    "reset_is_identity": true,
+    "saltation": false,
+    "surface": "gamma = 0",
+    "terminal_sensitivity": false
+   },
+   {
+    "classification": "DIAGNOSTIC",
+    "direction": -1,
+    "event": "sanger_vac_apogee",
+    "mode_after": "SANGER_VAC",
+    "mode_before": "SANGER_VAC",
+    "normal": null,
+    "notes": [
+     "VAC local maximum; NEVER a mode change (G0 §6.6)."
+    ],
+    "reset_is_identity": true,
+    "saltation": false,
+    "surface": "gamma = 0",
+    "terminal_sensitivity": false
+   },
+   {
+    "classification": "RESEARCH_TERMINAL",
+    "direction": -1,
+    "event": "sanger_srti",
+    "mode_after": null,
+    "mode_before": "SANGER_ATM",
+    "normal": null,
+    "notes": [
+     "Sanger Research Terminal Interface = skip-capability loss;",
+     "event-time and terminal-map sensitivity;",
+     "NO fake post-SRTI mode, NO fake SRTI saltation (G0 §6.7)."
+    ],
+    "reset_is_identity": false,
+    "saltation": false,
+    "surface": "gamma = 0",
+    "terminal_sensitivity": true
+   }
+  ],
+  "event_taxonomy_count": 7,
+  "event_time_convention": "delta t_e = - (n^T delta x^-) / (n^T f^-)",
+  "forbidden_claims": [
+   "raw dimensional STM norm = objective predictability",
+   "large Xi near grazing = physical infinity",
+   "grazing = chaos",
+   "larger FTLE always means worse trajectory",
+   "Sanger RTI/SRTI native endpoint directly comparable to Qian",
+   "diagnostic gamma crossing = hybrid switch",
+   "all nonlinear mismatch = STM failure"
+  ],
+  "ftle_definition": "lambda_max(T) = ln(sigma_max(S^-1 Phi(T) S)) / T (scaled STM only; no raw dimensional claim)",
+  "g0_status": {
+   "continuous_jacobian_implemented": false,
+   "g0_complete": true,
+   "g1_started": false,
+   "hybrid_stm_implemented": false,
+   "monte_carlo_performed": false,
+   "optimization_performed": false,
+   "production_ftle_computed": false,
+   "saltation_implemented": false,
+   "variational_solver_implemented": false
+  },
+  "grazing_anchors": {
+   "branches": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "count": 10,
+   "g6_reserved": true,
+   "parameters": [
+    {
+     "branch": "B0",
+     "parameter": [
+      -2.046875,
+      3.984375
+     ],
+     "side": "N_side"
+    },
+    {
+     "branch": "B0",
+     "parameter": [
+      -1.7421875,
+      4.875
+     ],
+     "side": "N1_side"
+    },
+    {
+     "branch": "B1",
+     "parameter": [
+      -3.2421875,
+      4.1953125
+     ],
+     "side": "N_side"
+    },
+    {
+     "branch": "B1",
+     "parameter": [
+      -7.296875,
+      2.234375
+     ],
+     "side": "N1_side"
+    },
+    {
+     "branch": "B2",
+     "parameter": [
+      -5.7265625,
+      3.703125
+     ],
+     "side": "N_side"
+    },
+    {
+     "branch": "B2",
+     "parameter": [
+      -4.03125,
+      4.82421875
+     ],
+     "side": "N1_side"
+    },
+    {
+     "branch": "B3",
+     "parameter": [
+      -6.125,
+      4.57421875
+     ],
+     "side": "N_side"
+    },
+    {
+     "branch": "B3",
+     "parameter": [
+      -8.0546875,
+      3.98046875
+     ],
+     "side": "N1_side"
+    },
+    {
+     "branch": "B4",
+     "parameter": [
+      -8.875,
+      4.69140625
+     ],
+     "side": "N_side"
+    },
+    {
+     "branch": "B4",
+     "parameter": [
+      -7.9296875,
+      4.8984375
+     ],
+     "side": "N1_side"
+    }
+   ]
+  },
+  "grazing_policy": {
+   "diagnostic": "n^T f^- = dh/dt = v sin(gamma)",
+   "regimes": [
+    "TRANSVERSE",
+    "GRAZING_ADJACENT",
+    "GRAZING_NONTRANSVERSE"
+   ],
+   "threshold_status": "DEFERRED to G6 numerical convergence study"
+  },
+  "perturbation_scope": "initial-state-only",
+  "perturbation_vector": [
+   "delta r_0",
+   "delta theta_0",
+   "delta v_0",
+   "delta gamma_0"
+  ],
+  "phase_f_parameter_jacobian_distinct": true,
+  "predictability_questions": {
+   "event_conditioned": "terminal state + event-time sensitivity (Qian@RTI, Sanger@SRTI); native RTI/SRTI amplification is descriptive",
+   "fixed_time": "compare x(T) for identical elapsed time via tilde_Phi(T); sigma_max / condition / singular vectors / FTLE"
+  },
+  "protocol_version": "phase-g-predictability-protocol-v1",
+  "reference_solver_policy": {
+   "phase_g_variational": {
+    "atol": [
+     1e-07,
+     1e-14,
+     1e-10,
+     1e-14
+    ],
+    "companion_max_step_s": 0.05,
+    "max_step_s": 0.1,
+    "method": "DOP853",
+    "rtol": 1e-12,
+    "status": "deferred -- independent Phase-G variational convergence audit required"
+   },
+   "production": {
+    "atol": [
+     0.0001,
+     1e-11,
+     1e-07,
+     1e-11
+    ],
+    "dense_output": true,
+    "max_step_s": 20.0,
+    "method": "DOP853",
+    "rtol": 1e-09,
+    "status": "frozen (Phase C) -- trajectory baseline ONLY"
+   }
+  },
+  "representative_cases": [
+   {
+    "K": 3.0,
+    "expected_regime": "QIAN_RTI",
+    "gamma0_deg": -5.0,
+    "key": "qian_baseline",
+    "model": "Qian",
+    "purpose": "Phase-G Qian fixed-time and RTI terminal predictability baseline"
+   },
+   {
+    "K": 3.0,
+    "expected_regime": "SRTI_N2",
+    "gamma0_deg": -5.0,
+    "key": "sanger_baseline",
+    "model": "Sanger",
+    "purpose": "Phase-G Sanger fixed-time and SRTI terminal predictability baseline"
+   },
+   {
+    "K": 1.125,
+    "expected_regime": "SRTI_N0",
+    "gamma0_deg": -1.25,
+    "key": "n0_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N0)"
+   },
+   {
+    "K": 2.375,
+    "expected_regime": "SRTI_N1",
+    "gamma0_deg": -4.5,
+    "key": "n1_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N1)"
+   },
+   {
+    "K": 2.5,
+    "expected_regime": "SRTI_N2",
+    "gamma0_deg": -8.75,
+    "key": "n2_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N2 deep)"
+   },
+   {
+    "K": 3.5,
+    "expected_regime": "SRTI_N3",
+    "gamma0_deg": -8.25,
+    "key": "n3_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N3)"
+   },
+   {
+    "K": 4.875,
+    "expected_regime": "SRTI_N4",
+    "gamma0_deg": -7.0,
+    "key": "n4_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N4)"
+   },
+   {
+    "K": 4.875,
+    "expected_regime": "SRTI_N5",
+    "gamma0_deg": -8.75,
+    "key": "n5_deep",
+    "model": "Sanger",
+    "purpose": "F4 reference-certified deep fixed-topology interior (N5)"
+   }
+  ],
+  "reset_convention": "R(x) = x,  DR = I  (state continuous at every Phase-G normal true mode switch)",
+  "saltation_convention": {
+   "general": "DR + (f^+ - DR f^-) n^T / (n^T f^-)",
+   "identity_reset": "I + (f^+ - f^-) n^T / (n^T f^-)",
+   "notes": [
+    "f_minus = vector field immediately before the event",
+    "f_plus  = vector field immediately after the event",
+    "n       = event-surface normal on the pre-event side"
+   ]
+  },
+  "scaling_status": {
+   "candidates": [
+    "A",
+    "B",
+    "C"
+   ],
+   "convention_status": "SCALING_CONVENTION_DEFINED",
+   "numeric_values_status": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN"
+  },
+  "scope_statement": "Phase G studies finite-time local predictability (fixed-time and event-conditioned), NOT asymptotic chaos analysis, NOT global stability proofs, NOT certified flight-envelope robustness, NOT probabilistic uncertainty, NOT optimization.",
+  "state_order": [
+   "r",
+   "theta",
+   "v",
+   "gamma"
+  ],
+  "state_units": {
+   "gamma": "rad",
+   "r": "m",
+   "theta": "rad",
+   "v": "m/s"
+  },
+  "stm_convention": {
+   "columns": "initial-perturbation",
+   "initial_value": "I",
+   "rows": "output-component"
+  },
+  "topology_gate": [
+   "TOPOLOGY_PRESERVED",
+   "TOPOLOGY_CHANGED",
+   "EVENT_ORDER_CHANGED",
+   "GRAZING_CROSSED",
+   "NUMERICAL_FAILURE"
+  ],
+  "validation_categories": [
+   "PHYSICS_SEMANTICS_ERROR",
+   "NUMERICAL_ERROR",
+   "TOPOLOGY_CHANGE",
+   "EVENT_ORDER_CHANGE",
+   "GRAZING_CROSSING",
+   "LINEARIZATION_BREAKDOWN",
+   "INVALID_ACCEPTANCE_DOMAIN"
+  ]
+ },
+ "corrective_history": {
+  "G2R": "centered FD two-sided gate; continuous mode-window gate",
+  "G4R": "endpoint-scoped terminal classification; success=False semantics; event multiplicity",
+  "G5R": "terminal-kind eligibility; exact-zero/nonfinite transversality guard; RTI trim convergence",
+  "G6R": "hard grazing topology contract; dual-reference lock; refined operational radius; paired FD plateau; four-column nonlinear validation",
+  "G6R2": "ERROR / LINEAR-PREDICTION normalization restored",
+  "note": "Corrective history is retained as successive validation hardening, not hidden failures."
+ },
+ "final_key_results": {
+  "continuous_modes_validated": [
+   "Qian ENTRY_CAPTURE",
+   "Qian QEG_GLIDE (strict interior)",
+   "Sanger SANGER_ATM",
+   "Sanger SANGER_VAC"
+  ],
+  "fixed_time": {
+   "qian": {
+    "T120": {
+     "T_s": 120.0,
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "dominant_input_scaled": [
+      0.1410078,
+      0.39084628,
+      0.89232198,
+      0.17640145
+     ],
+     "endpoint_mode": "QEG_GLIDE",
+     "lambda_max": 0.001102118592,
+     "nullity": 1,
+     "numerical_rank": 3,
+     "sigma_max": 1.141398461,
+     "topology_signature": [
+      "qian_capture"
+     ]
+    },
+    "T300": {
+     "T_s": 300.0,
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "dominant_input_scaled": [
+      0.0084501001,
+      0.34432205,
+      0.90046252,
+      0.26559023
+     ],
+     "endpoint_mode": "QEG_GLIDE",
+     "lambda_max": 0.001142868635,
+     "nullity": 1,
+     "numerical_rank": 3,
+     "sigma_max": 1.408972324,
+     "topology_signature": [
+      "qian_capture"
+     ]
+    },
+    "T60": {
+     "T_s": 60.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      -0.52321213,
+      0.013063932,
+      0.82621557,
+      0.20843759
+     ],
+     "endpoint_mode": "ENTRY_CAPTURE",
+     "lambda_max": 0.0136565294,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 2.269119258,
+     "topology_signature": []
+    },
+    "T600": {
+     "T_s": 600.0,
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "dominant_input_scaled": [
+      -0.035739757,
+      0.43859443,
+      0.85414118,
+      0.27712891
+     ],
+     "endpoint_mode": "QEG_GLIDE",
+     "lambda_max": 0.0007918693566,
+     "nullity": 1,
+     "numerical_rank": 3,
+     "sigma_max": 1.608209766,
+     "topology_signature": [
+      "qian_capture"
+     ]
+    }
+   },
+   "sanger": {
+    "T120": {
+     "T_s": 120.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      0.463288,
+      0.01584347,
+      0.52208472,
+      0.71591952
+     ],
+     "endpoint_mode": "SANGER_ATM",
+     "lambda_max": 0.007349417618,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 2.415557512,
+     "topology_signature": []
+    },
+    "T300": {
+     "T_s": 300.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      0.20278744,
+      0.019665995,
+      0.96997632,
+      -0.13280227
+     ],
+     "endpoint_mode": "SANGER_VAC",
+     "lambda_max": 0.004760570095,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 4.171063455,
+     "topology_signature": [
+      "sanger_atmosphere_exit"
+     ]
+    },
+    "T60": {
+     "T_s": 60.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      -0.52321213,
+      0.013063932,
+      0.82621557,
+      0.20843759
+     ],
+     "endpoint_mode": "SANGER_ATM",
+     "lambda_max": 0.0136565294,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 2.269119258,
+     "topology_signature": []
+    },
+    "T600": {
+     "T_s": 600.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      0.12648329,
+      9.3576145e-05,
+      0.99050759,
+      -0.053820894
+     ],
+     "endpoint_mode": "SANGER_ATM",
+     "lambda_max": 0.007421421004,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 85.87155237,
+     "topology_signature": [
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry"
+     ]
+    },
+    "T900": {
+     "T_s": 900.0,
+     "condition_status": "FINITE",
+     "dominant_input_scaled": [
+      0.091537536,
+      0.0023314215,
+      0.99489085,
+      -0.042516363
+     ],
+     "endpoint_mode": "SANGER_ATM",
+     "lambda_max": 0.003439057549,
+     "nullity": 0,
+     "numerical_rank": 4,
+     "sigma_max": 22.0905915,
+     "topology_signature": [
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry",
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry"
+     ]
+    }
+   }
+  },
+  "grazing": {
+   "contract_audit": {
+    "anchors": [
+     {
+      "K": 3.984375,
+      "N": 0,
+      "branch": "B0",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N0",
+      "gamma0_deg": -2.046875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.080928,
+      "phase_f_reference_phi_ref01_m": -0.080928,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.875,
+      "N": 0,
+      "branch": "B0",
+      "contract_ok": true,
+      "entry_denominator": -0.4790348657921598,
+      "entry_ordinal": 0,
+      "exit_denominator": 0.4790348709897835,
+      "exit_incidence_abs_sin_gamma": 7.05881618149798e-05,
+      "expected_regime": "SRTI_N1",
+      "gamma0_deg": -1.7421875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.047965,
+      "phase_f_reference_phi_ref01_m": 0.047965,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 0,
+      "vac_clearance_m": 0.04796487744897604,
+      "vac_duration_s": 0.4005126202333713
+     },
+     {
+      "K": 4.1953125,
+      "N": 1,
+      "branch": "B1",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N1",
+      "gamma0_deg": -3.2421875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.128188,
+      "phase_f_reference_phi_ref01_m": -0.128188,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 2.234375,
+      "N": 1,
+      "branch": "B1",
+      "contract_ok": true,
+      "entry_denominator": -1.3292526602762305,
+      "entry_ordinal": 1,
+      "exit_denominator": 1.3292526614787397,
+      "exit_incidence_abs_sin_gamma": 0.0002524071966055927,
+      "expected_regime": "SRTI_N2",
+      "gamma0_deg": -7.296875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.169139,
+      "phase_f_reference_phi_ref01_m": 0.169139,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 1,
+      "vac_clearance_m": 0.16913880873471498,
+      "vac_duration_s": 0.5089741451092777
+     },
+     {
+      "K": 3.703125,
+      "N": 2,
+      "branch": "B2",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N2",
+      "gamma0_deg": -5.7265625,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.154892,
+      "phase_f_reference_phi_ref01_m": -0.154892,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.82421875,
+      "N": 2,
+      "branch": "B2",
+      "contract_ok": true,
+      "entry_denominator": -0.8663246245569052,
+      "entry_ordinal": 2,
+      "exit_denominator": 0.8663246236034875,
+      "exit_incidence_abs_sin_gamma": 0.00014099507561980714,
+      "expected_regime": "SRTI_N3",
+      "gamma0_deg": -4.03125,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.102113,
+      "phase_f_reference_phi_ref01_m": 0.102113,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 2,
+      "vac_clearance_m": 0.10211316403001547,
+      "vac_duration_s": 0.47147760408756767
+     },
+     {
+      "K": 4.57421875,
+      "N": 3,
+      "branch": "B3",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N3",
+      "gamma0_deg": -6.125,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.135172,
+      "phase_f_reference_phi_ref01_m": -0.135172,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 3.98046875,
+      "N": 3,
+      "branch": "B3",
+      "contract_ok": true,
+      "entry_denominator": -0.6412972854673972,
+      "entry_ordinal": 3,
+      "exit_denominator": 0.6412972796553333,
+      "exit_incidence_abs_sin_gamma": 0.0001293000395760285,
+      "expected_regime": "SRTI_N4",
+      "gamma0_deg": -8.0546875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.036027,
+      "phase_f_reference_phi_ref01_m": 0.036027,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 3,
+      "vac_clearance_m": 0.03602704592049122,
+      "vac_duration_s": 0.224713545595705
+     },
+     {
+      "K": 4.69140625,
+      "N": 4,
+      "branch": "B4",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N4",
+      "gamma0_deg": -8.875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.407857,
+      "phase_f_reference_phi_ref01_m": -0.407857,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.8984375,
+      "N": 4,
+      "branch": "B4",
+      "contract_ok": true,
+      "entry_denominator": -2.1881524438488014,
+      "entry_ordinal": 4,
+      "exit_denominator": 2.1881524450325474,
+      "exit_incidence_abs_sin_gamma": 0.00044142677468613623,
+      "expected_regime": "SRTI_N5",
+      "gamma0_deg": -7.9296875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.419125,
+      "phase_f_reference_phi_ref01_m": 0.419125,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 4,
+      "vac_clearance_m": 0.41912458650767803,
+      "vac_duration_s": 0.7661707364577524
+     }
+    ],
+    "dual_reference_stable_10of10": true,
+    "n1_side_extractions": 5,
+    "n_anchors": 10,
+    "n_side_absence_confirmations": 5
+   },
+   "controlled_family_scaling": {
+    "B0": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00004,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B1": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00005,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B2": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00004,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B3": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00002,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B4": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00009,
+     "H3_r2": 1.0,
+     "points_used": 7
+    }
+   },
+   "g6r2_normalization": {
+    "error_normalization": "ERROR_OVER_LINEAR_PREDICTION",
+    "old_error_normalization": "ERROR_OVER_NONLINEAR_INCREMENT",
+    "old_radii_g6r_nonlinear_denominator": {
+     "B0_a0.5": {
+      "r_1pct_refined": 0.04036072820425034,
+      "r_5pct_refined": 0.1936308890581131
+     },
+     "B0_a1": {
+      "r_1pct_refined": 0.040374467670917506,
+      "r_5pct_refined": 0.19370727241039276
+     },
+     "B3_a1": {
+      "r_1pct_refined": 0.03986378341913223,
+      "r_5pct_refined": 0.19118705689907078
+     },
+     "B4_a1": {
+      "r_1pct_refined": 0.0407324531674385,
+      "r_5pct_refined": 0.19487219750881196
+     }
+    },
+    "paired_fd_results_unchanged": true
+   },
+   "paired_fd": {
+    "B0": {
+     "four_column_pass": true,
+     "max_scaled_rel_error": 0.00010817849053557641,
+     "radial_plateau_pass": true
+    },
+    "B4": {
+     "four_column_pass": true,
+     "max_scaled_rel_error": 0.00010887121070424035,
+     "radial_plateau_pass": true
+    }
+   },
+   "radii_authority": {
+    "G6R2_linear_prediction_denominator": "FINAL_AUTHORITY",
+    "G6R_nonlinear_denominator": "SUPERSEDED",
+    "G6_coarse_grid": "HISTORICAL"
+   },
+   "refined_validity_radii_final_G6R2": {
+    "B0_a0.5": {
+     "d_exit": 0.23951743564407182,
+     "monotone_profile": true,
+     "phi_local_m": 0.011991219595074654,
+     "r_1pct_refined": {
+      "bracket_width": 4.1723251312242304e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.03997192591428757,
+      "refined_beta": 0.03997192591428757,
+      "refined_radius_m": 0.00047931214127627743,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.1848739296197891,
+      "refined_beta": 0.1848739296197891,
+      "refined_radius_m": 0.0022168638874752677,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B0_a1": {
+     "d_exit": 0.4790348709897835,
+     "monotone_profile": true,
+     "phi_local_m": 0.04796487744897604,
+     "r_1pct_refined": {
+      "bracket_width": 4.1723251312242304e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.039980112016201025,
+      "refined_beta": 0.039980112016201025,
+      "refined_radius_m": 0.0019176411732534165,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464455334602e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18495217263698582,
+      "refined_beta": 0.18495217263698582,
+      "refined_radius_m": 0.008871208294454884,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B3_a1": {
+     "d_exit": 0.6412972796553333,
+     "monotone_profile": true,
+     "phi_local_m": 0.03602704592049122,
+     "r_1pct_refined": {
+      "bracket_width": 4.172325138163124e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.03947364598512649,
+      "refined_beta": 0.03947364598512649,
+      "refined_radius_m": 0.001422118856555366,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18256950676441192,
+      "refined_beta": 0.18256950676441192,
+      "refined_radius_m": 0.0065774400038829004,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B4_a1": {
+     "d_exit": 2.1881524450325474,
+     "monotone_profile": true,
+     "phi_local_m": 0.41912458650767803,
+     "r_1pct_refined": {
+      "bracket_width": 4.172325138163124e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.0403433421254158,
+      "refined_beta": 0.0403433421254158,
+      "refined_radius_m": 0.016908886586652686,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18628928959369656,
+      "refined_beta": 0.18628928959369656,
+      "refined_radius_m": 0.07807842147176716,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    }
+   },
+   "threshold_decision": "NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED",
+   "topology_radii": {
+    "B0_N1_side": {
+     "centered_radius_rad": 9.2852259e-08,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 9.2852259e-08,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B0_N_side": {
+     "centered_radius_rad": 1.5070748e-07,
+     "eps_minus_rad": 1.5070748e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B1_N1_side": {
+     "centered_radius_rad": 5.9219136e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 5.9219136e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B1_N_side": {
+     "centered_radius_rad": 2.5310779e-07,
+     "eps_minus_rad": 2.5310779e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B2_N1_side": {
+     "centered_radius_rad": 2.2885718e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 2.2885718e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B2_N_side": {
+     "centered_radius_rad": 4.5075097e-07,
+     "eps_minus_rad": 4.5075097e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B3_N1_side": {
+     "centered_radius_rad": 1.5750012e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 1.5750012e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B3_N_side": {
+     "centered_radius_rad": 4.4318757e-07,
+     "eps_minus_rad": 4.4318757e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B4_N1_side": {
+     "centered_radius_rad": 2.0104461e-06,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 2.0104461e-06,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B4_N_side": {
+     "centered_radius_rad": 2.3802819e-06,
+     "eps_minus_rad": 2.3802819e-06,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    }
+   }
+  },
+  "hybrid_events_eligible_true_switches": [
+   "qian_capture",
+   "sanger_atmosphere_exit",
+   "sanger_atmosphere_entry"
+  ],
+  "native_terminal_warning": "Qian RTI and Sanger SRTI are different research terminals; native terminal metrics are DESCRIPTIVE, not a fair cross-model ranking.",
+  "scale_audit_T600": {
+   "qian_T600": {
+    "A": {
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "gap": 2.027505998,
+     "lambda_max": 0.0007918693566,
+     "rank": 3,
+     "raw_sigma_ANTI_EXAMPLE": [
+      119335.49,
+      1.0,
+      0.16434221,
+      0.0
+     ],
+     "scale_key": "A",
+     "sigma_max": 1.608209766,
+     "u1_abs_shares": [
+      0.16770414,
+      0.70535185,
+      0.68873369,
+      0.0
+     ],
+     "v1_abs_shares": [
+      0.035739757,
+      0.43859443,
+      0.85414118,
+      0.27712891
+     ]
+    },
+    "B": {
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "gap": 27.79097282,
+     "lambda_max": 0.005219128175,
+     "rank": 3,
+     "raw_sigma_ANTI_EXAMPLE": [
+      119335.49,
+      1.0,
+      0.16434221,
+      0.0
+     ],
+     "scale_key": "B",
+     "sigma_max": 22.90778719,
+     "u1_abs_shares": [
+      0.0051670903,
+      0.99094827,
+      0.13414479,
+      0.0
+     ],
+     "v1_abs_shares": [
+      0.045172921,
+      0.04325814,
+      0.47045986,
+      0.88020205
+     ]
+    },
+    "C": {
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "gap": 1.977963261,
+     "lambda_max": 0.0007209176142,
+     "rank": 3,
+     "raw_sigma_ANTI_EXAMPLE": [
+      119335.49,
+      1.0,
+      0.16434221,
+      0.0
+     ],
+     "scale_key": "C",
+     "sigma_max": 1.541183409,
+     "u1_abs_shares": [
+      0.088507382,
+      0.73485092,
+      0.67242886,
+      0.0
+     ],
+     "v1_abs_shares": [
+      0.060022003,
+      0.47680952,
+      0.86935837,
+      0.11517842
+     ]
+    }
+   },
+   "sanger_T600": {
+    "A": {
+     "condition_status": "FINITE",
+     "gap": 85.30628178,
+     "lambda_max": 0.007421421004,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      243273.86,
+      3.2557166,
+      1.0,
+      9.844416e-07
+     ],
+     "scale_key": "A",
+     "sigma_max": 85.87155237,
+     "u1_abs_shares": [
+      0.023916452,
+      0.0080355288,
+      0.046742676,
+      0.99858828
+     ],
+     "v1_abs_shares": [
+      0.12648329,
+      9.3576145e-05,
+      0.99050759,
+      0.053820894
+     ]
+    },
+    "B": {
+     "condition_status": "FINITE",
+     "gap": 2.398428571,
+     "lambda_max": 0.004919353719,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      243273.86,
+      3.2557166,
+      1.0,
+      9.844416e-07
+     ],
+     "scale_key": "B",
+     "sigma_max": 19.13678179,
+     "u1_abs_shares": [
+      0.023733465,
+      0.43653176,
+      0.24958221,
+      0.86405177
+     ],
+     "v1_abs_shares": [
+      0.54825722,
+      0.022811137,
+      0.82769549,
+      0.11753236
+     ]
+    },
+    "C": {
+     "condition_status": "FINITE",
+     "gap": 209.0902756,
+     "lambda_max": 0.008922855362,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      243273.86,
+      3.2557166,
+      1.0,
+      9.844416e-07
+     ],
+     "scale_key": "C",
+     "sigma_max": 211.391786,
+     "u1_abs_shares": [
+      0.0054249968,
+      0.0032078463,
+      0.01914621,
+      0.99979683
+     ],
+     "v1_abs_shares": [
+      0.22858645,
+      1.5174886e-05,
+      0.97327842,
+      0.021848305
+     ]
+    }
+   },
+   "sanger_T900": {
+    "A": {
+     "condition_status": "FINITE",
+     "gap": 21.7258262,
+     "lambda_max": 0.003439057549,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      1025322.5,
+      2.4008767,
+      0.99999999,
+      2.9669769e-07
+     ],
+     "scale_key": "A",
+     "sigma_max": 22.0905915,
+     "u1_abs_shares": [
+      0.64081231,
+      0.05150248,
+      0.04104149,
+      0.76486775
+     ],
+     "v1_abs_shares": [
+      0.091537536,
+      0.0023314215,
+      0.99489085,
+      0.042516363
+     ]
+    },
+    "B": {
+     "condition_status": "FINITE",
+     "gap": 6.291536957,
+     "lambda_max": 0.003224076695,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      1025322.5,
+      2.4008767,
+      0.99999999,
+      2.9669769e-07
+     ],
+     "scale_key": "B",
+     "sigma_max": 18.20450382,
+     "u1_abs_shares": [
+      0.08604973,
+      0.98721202,
+      0.060989487,
+      0.1195331
+     ],
+     "v1_abs_shares": [
+      0.090393715,
+      0.054228999,
+      0.91389941,
+      0.39201539
+     ]
+    },
+    "C": {
+     "condition_status": "FINITE",
+     "gap": 41.44322768,
+     "lambda_max": 0.004153136084,
+     "rank": 4,
+     "raw_sigma_ANTI_EXAMPLE": [
+      1025322.5,
+      2.4008767,
+      0.99999999,
+      2.9669769e-07
+     ],
+     "scale_key": "C",
+     "sigma_max": 42.00642048,
+     "u1_abs_shares": [
+      0.18521389,
+      0.026797702,
+      0.021346371,
+      0.98210082
+     ],
+     "v1_abs_shares": [
+      0.15225581,
+      0.000637943,
+      0.98829183,
+      0.0098500364
+     ]
+    }
+   }
+  },
+  "terminal": {
+   "qian": {
+    "condition_status": "STRUCTURAL_SINGULAR",
+    "denominator_nTf": 16.318332,
+    "nullity": 2,
+    "rank": 2,
+    "scaled_sigma_max": 1.915979961,
+    "terminal": "RTI",
+    "terminal_time_s": 723.03797
+   },
+   "sanger": {
+    "condition_status": "STRUCTURAL_SINGULAR",
+    "denominator_nTf": -0.0008719204,
+    "nullity": 1,
+    "rank": 3,
+    "scaled_sigma_max": 4.851141246,
+    "terminal": "SRTI",
+    "terminal_time_s": 1119.546
+   }
+  },
+  "terminal_eligible": [
+   "qian_rti (RTI)",
+   "sanger_srti (SRTI)"
+  ]
+ },
+ "final_tags": {
+  "names": [
+   "phase-g-v1.0",
+   "predictability-v1.0"
+  ],
+  "tag_target_policy": "both tags point to the same final G7 freeze commit"
+ },
+ "provenance": {
+  "accepted_stage_commits": {
+   "G0": "9db3a35a9e4d41df55c38b5747a6ec74bfa6f015",
+   "G1": "d1b3030c0988a380fcd389de7b7f10ae65185ade",
+   "G2": "74453782b4a1b0c008c18cef9d94d7786598e368",
+   "G2R": "a3c6dfd1339624a8e6558d6ee9b4049d8e40f733",
+   "G3": "a7119c07aae8f13031e2323ea76aad9e673e4c59",
+   "G4": "de17ac8508ce002d29a3fa4f02a6eeb779ad5e73",
+   "G4R": "01f33a5f6a5166be7b4ccc4db3473dec994c7aa4",
+   "G5": "bdc1265482dd81e19bddb4333f333ff8413c965d",
+   "G5R": "7a94ed10d841a2e8faa7bbc20a46be90d185cc28",
+   "G6": "3b92269a159d9b259051d0a950e52cc1647bd352",
+   "G6R": "9c7e80f92d34c2d5311560cb9640aa11eaf84703",
+   "G6R2": "d1ac723c6d0cf1ad50b4b679bbc3af8a0d889a45"
+  },
+  "note": "No self-referential final G7 SHA is recorded; the real final commit and tag targets are reported by the G7 shell audit after freeze.",
+  "starting_final_scientific_commit": "d1ac723c6d0cf1ad50b4b679bbc3af8a0d889a45",
+  "upstream_phase_f_commit": "96253f1ef7785764d8da3156d7d614d2b244b577"
+ },
+ "schema_version": "phase-g-final-freeze-v1",
+ "status": "PHASE G COMPLETE / FROZEN",
+ "title": "Phase G final freeze manifest — finite-time local predictability of hybrid trajectories",
+ "validation_summary": {
+  "G1_continuous_jacobian": {
+   "modes": {
+    "entry_capture": {
+     "best_max_abs_error": 2.40561348619e-09,
+     "best_max_rel_error_nonzero": 2.40494192909e-11,
+     "n_samples": 4
+    },
+    "qeg_interior": {
+     "best_max_abs_error": 6.32553565083e-10,
+     "best_max_rel_error_nonzero": 2.96211851827e-09,
+     "n_samples": 4
+    },
+    "sanger_atm": {
+     "best_max_abs_error": 1.82787118774e-11,
+     "best_max_rel_error_nonzero": 8.38160508163e-11,
+     "n_samples": 4
+    },
+    "sanger_vac": {
+     "best_max_abs_error": 9.91503839032e-08,
+     "best_max_rel_error_nonzero": 1.65148230692e-11,
+     "n_samples": 4
+    }
+   },
+   "structural_invariants": {
+    "entry_capture_eq_sanger_atm": true,
+    "qeg_interior_row4_zero": true,
+    "theta_column_zero_analytic": true,
+    "vac_aero_independent": true
+   }
+  },
+  "G2_continuous_stm": {
+   "g2r": {
+    "issue1_both_side_gate": "a centered-FD column is valid iff BOTH +eps and -eps are VALID_SMOOTH_FLOW",
+    "issue2_mode_window_detection": "MODE_WINDOW_INVALID detects frozen true-switch crossings (Qian capture gamma=0,+1; Sanger ATM exit / VAC entry h-h_atm); diagnostic events excluded"
+   },
+   "per_mode": {
+    "entry_capture": {
+     "fd_reference_agreement": {
+      "classifications_plus": [
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW"
+      ],
+      "max_rel_error_nonzero": 1.038796832e-06,
+      "multiplier": 0.03,
+      "validation_scaled_error": 2.511501857e-07
+     },
+     "qeg_gamma_row_invariant_present": false,
+     "reference_self_stability": {
+      "max_abs_phi_diff": 4.761386663e-08,
+      "max_rel_phi_diff_material": 8.186520231e-12,
+      "status": "PASS"
+     },
+     "semigroup": {
+      "max_abs_error": 2.898741513e-08,
+      "max_rel_error_material": 5.447528988e-12,
+      "status": "PASS"
+     },
+     "theta_invariant_present": true,
+     "window_s": [
+      23.3572,
+      79.4105
+     ]
+    },
+    "qeg_interior": {
+     "fd_reference_agreement": {
+      "classifications_plus": [
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW"
+      ],
+      "max_rel_error_nonzero": 2.625064275e-08,
+      "multiplier": 0.01,
+      "validation_scaled_error": 1.562693294e-08
+     },
+     "qeg_gamma_row_invariant_present": true,
+     "reference_self_stability": {
+      "max_abs_phi_diff": 1.571606845e-09,
+      "max_rel_phi_diff_material": 1.047871103e-14,
+      "status": "PASS"
+     },
+     "semigroup": {
+      "max_abs_error": 3.725290298e-09,
+      "max_rel_error_material": 7.179857556e-15,
+      "status": "PASS"
+     },
+     "theta_invariant_present": true,
+     "window_s": [
+      187.8702,
+      534.162
+     ]
+    },
+    "sanger_atm": {
+     "fd_reference_agreement": {
+      "classifications_plus": [
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW"
+      ],
+      "max_rel_error_nonzero": 3.232410428e-08,
+      "multiplier": 0.03,
+      "validation_scaled_error": 4.084336561e-07
+     },
+     "qeg_gamma_row_invariant_present": false,
+     "reference_self_stability": {
+      "max_abs_phi_diff": 1.028529368e-07,
+      "max_rel_phi_diff_material": 5.396729566e-12,
+      "status": "PASS"
+     },
+     "semigroup": {
+      "max_abs_error": 5.512265489e-08,
+      "max_rel_error_material": 1.092557594e-12,
+      "status": "PASS"
+     },
+     "theta_invariant_present": true,
+     "window_s": [
+      60.8892,
+      172.5208
+     ]
+    },
+    "sanger_vac": {
+     "fd_reference_agreement": {
+      "classifications_plus": [
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW",
+       "VALID_SMOOTH_FLOW"
+      ],
+      "max_rel_error_nonzero": 4.722871209e-09,
+      "multiplier": 0.1,
+      "validation_scaled_error": 4.195412419e-08
+     },
+     "qeg_gamma_row_invariant_present": false,
+     "reference_self_stability": {
+      "max_abs_phi_diff": 5.820766091e-10,
+      "max_rel_phi_diff_material": 2.947842412e-15,
+      "status": "PASS"
+     },
+     "semigroup": {
+      "max_abs_error": 4.656612873e-10,
+      "max_rel_error_material": 2.639864553e-15,
+      "status": "PASS"
+     },
+     "theta_invariant_present": true,
+     "window_s": [
+      287.467,
+      442.3893
+     ]
+    }
+   },
+   "representation_invariance": {
+    "entry_capture": {
+     "max_recovered_phi_diff_vs_identity": {
+      "A": 3.649620339e-08,
+      "B": 1.023290679e-07,
+      "C": 6.833579391e-08,
+      "identity": 0.0
+     },
+     "status": "PASS"
+    },
+    "qeg_interior": {
+     "max_recovered_phi_diff_vs_identity": {
+      "A": 6.286427379e-09,
+      "B": 3.026798368e-09,
+      "C": 5.12227416e-09,
+      "identity": 0.0
+     },
+     "status": "PASS"
+    },
+    "sanger_atm": {
+     "max_recovered_phi_diff_vs_identity": {
+      "A": 2.817250788e-08,
+      "B": 7.217749953e-08,
+      "C": 1.059961505e-07,
+      "identity": 0.0
+     },
+     "status": "PASS"
+    },
+    "sanger_vac": {
+     "max_recovered_phi_diff_vs_identity": {
+      "A": 1.862645149e-09,
+      "B": 2.793967724e-09,
+      "C": 1.513399184e-09,
+      "identity": 0.0
+     },
+     "status": "PASS"
+    }
+   },
+   "scientific_canonical_scaling_status": "CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION"
+  },
+  "G3_transverse_saltation": {
+   "eligible_true_switches": {
+    "qian_capture": {
+     "abs_denominator": 0.005041856945198507,
+     "event_time_fd_material_rel": 2.188163408e-13,
+     "mode_after": "QEG_GLIDE",
+     "mode_before": "ENTRY_CAPTURE",
+     "reference_converged": true,
+     "saltation_fd_material_rel": 3.878009025e-13,
+     "time_s": 93.42878534679936
+    },
+    "sanger_atmosphere_entry[4]": {
+     "abs_denominator": 430.9911681089565,
+     "event_time_fd_material_rel": 5.449250649e-11,
+     "mode_after": "SANGER_ATM",
+     "mode_before": "SANGER_VAC",
+     "reference_converged": true,
+     "saltation_fd_material_rel": 2.875544247e-11,
+     "time_s": 484.6403538549058
+    },
+    "sanger_atmosphere_entry[8]": {
+     "abs_denominator": 133.91587577503648,
+     "event_time_fd_material_rel": 1.407582692e-09,
+     "mode_after": "SANGER_ATM",
+     "mode_before": "SANGER_VAC",
+     "reference_converged": true,
+     "saltation_fd_material_rel": 5.263559588e-10,
+     "time_s": 814.8021363362164
+    },
+    "sanger_atmosphere_exit[2]": {
+     "abs_denominator": 430.9911681088341,
+     "event_time_fd_material_rel": 3.093788972e-10,
+     "mode_after": "SANGER_VAC",
+     "mode_before": "SANGER_ATM",
+     "reference_converged": true,
+     "saltation_fd_material_rel": 2.875544247e-11,
+     "time_s": 202.96413575419479
+    },
+    "sanger_atmosphere_exit[6]": {
+     "abs_denominator": 133.91587577494028,
+     "event_time_fd_material_rel": 1.524665195e-09,
+     "mode_after": "SANGER_VAC",
+     "mode_before": "SANGER_ATM",
+     "reference_converged": true,
+     "saltation_fd_material_rel": 5.263559588e-10,
+     "time_s": 748.1137978791545
+    }
+   },
+   "excluded_events_no_saltation": [
+    "qian_rti",
+    "sanger_atmospheric_pullout",
+    "sanger_srti",
+    "sanger_vac_apogee",
+    "synthetic_initial_entry"
+   ],
+   "grazing_threshold_none_frozen": true
+  },
+  "G4_hybrid_stm": {
+   "endpoints": {
+    "qian_T600": {
+     "T_s": 600.0,
+     "endpoint_mode": "QEG_GLIDE",
+     "fd_plateau_material_rel": 5.757034091e-07,
+     "n_true_switches": 1,
+     "ref_grade_fd_material_rel": 6.293324347e-07,
+     "reference_eta_max_diff": 1.197122401e-09,
+     "reference_event_time_max_diff": 1.396927019e-11,
+     "reference_phi_material_rel": 2.307414221e-11,
+     "reference_status": "PASS",
+     "structural_invariants": {
+      "qian_gamma_row": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "qian_gamma_row_target": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "theta_column": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ],
+      "theta_residual": 0.0,
+      "theta_target": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ]
+     },
+     "terminal_margin_s": 123.0379655,
+     "topology_signature": [
+      "qian_capture"
+     ]
+    },
+    "sanger_T600": {
+     "T_s": 600.0,
+     "endpoint_mode": "SANGER_ATM",
+     "fd_plateau_material_rel": 3.471221897e-07,
+     "n_true_switches": 2,
+     "ref_grade_fd_material_rel": 2.242801753e-06,
+     "reference_eta_max_diff": 5.183665053e-09,
+     "reference_event_time_max_diff": 5.641709322e-10,
+     "reference_phi_material_rel": 1.049836508e-10,
+     "reference_status": "PASS",
+     "structural_invariants": {
+      "theta_column": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ],
+      "theta_residual": 0.0,
+      "theta_target": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ]
+     },
+     "terminal_margin_s": 519.5459838,
+     "topology_signature": [
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry"
+     ]
+    },
+    "sanger_T900": {
+     "T_s": 900.0,
+     "endpoint_mode": "SANGER_ATM",
+     "fd_plateau_material_rel": 3.807230611e-07,
+     "n_true_switches": 4,
+     "ref_grade_fd_material_rel": 1.9573562e-06,
+     "reference_eta_max_diff": 8.752931535e-08,
+     "reference_event_time_max_diff": 1.429384611e-09,
+     "reference_phi_material_rel": 4.597409863e-11,
+     "reference_status": "PASS",
+     "structural_invariants": {
+      "theta_column": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ],
+      "theta_residual": 0.0,
+      "theta_target": [
+       0.0,
+       1.0,
+       0.0,
+       0.0
+      ]
+     },
+     "terminal_margin_s": 219.5459838,
+     "topology_signature": [
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry",
+      "sanger_atmosphere_exit",
+      "sanger_atmosphere_entry"
+     ]
+    }
+   },
+   "g4r": {
+    "endpoint_scoped_terminal": null,
+    "event_multiplicity": null,
+    "success_false_semantics": null
+   },
+   "qian_no_saltation_negative_control": {
+    "correct_gamma_row": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "correct_hybrid_error_vs_FD": 0.000156177688,
+    "fd_gamma_row": [
+     -1.200944868e-18,
+     -9.609146197e-12,
+     -6.849805774e-17,
+     -2.818114991e-13
+    ],
+    "naive_gamma_row": [
+     -6.669545251e-06,
+     0.0,
+     2.332994005e-05,
+     -3.513049591
+    ],
+    "naive_no_saltation_error_vs_FD": 8614285.008
+   }
+  },
+  "G5_metrics_terminal": {
+   "canonical_scaling_decision": {
+    "canonical_key": "A",
+    "decision": "FROZEN",
+    "rationale": "Candidate A selected: shared, terminal-independent, trajectory-characteristic metric geometry; numerically stable under REF-0.1 vs REF-0.05; does not embed a sensor/tolerance model.  NOT selected to obtain a preferred model ranking.  B and C retained as scale-sensitivity / robustness conventions.",
+    "scale_sensitivity_note": "The Qian-vs-Sanger sigma_max/lambda_max ordering at T600 is SCALE-SENSITIVE: it flips under Candidate B (Qian sigma_max > Sanger under B, but Sanger larger under A and C).  All scientific claims name the canonical scale A and report the A/B/C audit.",
+    "scale_values": {
+     "gamma": 0.1,
+     "r": 100000.0,
+     "theta": 1.0,
+     "v": 7000.0
+    },
+    "status_flag": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN"
+   },
+   "fixed_time_canonical": {
+    "qian": {
+     "T120": {
+      "T_s": 120.0,
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "dominant_input_scaled": [
+       0.1410078,
+       0.39084628,
+       0.89232198,
+       0.17640145
+      ],
+      "endpoint_mode": "QEG_GLIDE",
+      "lambda_max": 0.001102118592,
+      "nullity": 1,
+      "numerical_rank": 3,
+      "sigma_max": 1.141398461,
+      "topology_signature": [
+       "qian_capture"
+      ]
+     },
+     "T300": {
+      "T_s": 300.0,
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "dominant_input_scaled": [
+       0.0084501001,
+       0.34432205,
+       0.90046252,
+       0.26559023
+      ],
+      "endpoint_mode": "QEG_GLIDE",
+      "lambda_max": 0.001142868635,
+      "nullity": 1,
+      "numerical_rank": 3,
+      "sigma_max": 1.408972324,
+      "topology_signature": [
+       "qian_capture"
+      ]
+     },
+     "T60": {
+      "T_s": 60.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       -0.52321213,
+       0.013063932,
+       0.82621557,
+       0.20843759
+      ],
+      "endpoint_mode": "ENTRY_CAPTURE",
+      "lambda_max": 0.0136565294,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 2.269119258,
+      "topology_signature": []
+     },
+     "T600": {
+      "T_s": 600.0,
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "dominant_input_scaled": [
+       -0.035739757,
+       0.43859443,
+       0.85414118,
+       0.27712891
+      ],
+      "endpoint_mode": "QEG_GLIDE",
+      "lambda_max": 0.0007918693566,
+      "nullity": 1,
+      "numerical_rank": 3,
+      "sigma_max": 1.608209766,
+      "topology_signature": [
+       "qian_capture"
+      ]
+     }
+    },
+    "sanger": {
+     "T120": {
+      "T_s": 120.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       0.463288,
+       0.01584347,
+       0.52208472,
+       0.71591952
+      ],
+      "endpoint_mode": "SANGER_ATM",
+      "lambda_max": 0.007349417618,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 2.415557512,
+      "topology_signature": []
+     },
+     "T300": {
+      "T_s": 300.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       0.20278744,
+       0.019665995,
+       0.96997632,
+       -0.13280227
+      ],
+      "endpoint_mode": "SANGER_VAC",
+      "lambda_max": 0.004760570095,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 4.171063455,
+      "topology_signature": [
+       "sanger_atmosphere_exit"
+      ]
+     },
+     "T60": {
+      "T_s": 60.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       -0.52321213,
+       0.013063932,
+       0.82621557,
+       0.20843759
+      ],
+      "endpoint_mode": "SANGER_ATM",
+      "lambda_max": 0.0136565294,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 2.269119258,
+      "topology_signature": []
+     },
+     "T600": {
+      "T_s": 600.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       0.12648329,
+       9.3576145e-05,
+       0.99050759,
+       -0.053820894
+      ],
+      "endpoint_mode": "SANGER_ATM",
+      "lambda_max": 0.007421421004,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 85.87155237,
+      "topology_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ]
+     },
+     "T900": {
+      "T_s": 900.0,
+      "condition_status": "FINITE",
+      "dominant_input_scaled": [
+       0.091537536,
+       0.0023314215,
+       0.99489085,
+       -0.042516363
+      ],
+      "endpoint_mode": "SANGER_ATM",
+      "lambda_max": 0.003439057549,
+      "nullity": 0,
+      "numerical_rank": 4,
+      "sigma_max": 22.0905915,
+      "topology_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ]
+     }
+    }
+   },
+   "g5r_trim_convergence": {},
+   "native_terminal_comparison_warning": "Qian RTI and Sanger SRTI are different research terminals; native terminal metrics are DESCRIPTIVE, not a fair cross-model ranking.",
+   "reference_stability": {
+    "qian_T600": {
+     "lambda_max_diff": 4.6729114e-17,
+     "rank_a": 3,
+     "rank_b": 3,
+     "sigma_max_diff": 4.5075055e-14,
+     "status": "PASS",
+     "u1_alignment": 1.0,
+     "v1_alignment": 1.0
+    },
+    "sanger_T600": {
+     "lambda_max_diff": 2.0115853e-14,
+     "rank_a": 4,
+     "rank_b": 4,
+     "sigma_max_diff": 1.0364118e-09,
+     "status": "PASS",
+     "u1_alignment": 1.0,
+     "v1_alignment": 1.0
+    },
+    "sanger_T900": {
+     "lambda_max_diff": 5.5433089e-15,
+     "rank_a": 4,
+     "rank_b": 4,
+     "sigma_max_diff": 1.1020518e-10,
+     "status": "PASS",
+     "u1_alignment": 1.0,
+     "v1_alignment": 1.0
+    }
+   },
+   "scale_audit_T600": {
+    "qian_T600": {
+     "A": {
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "gap": 2.027505998,
+      "lambda_max": 0.0007918693566,
+      "rank": 3,
+      "raw_sigma_ANTI_EXAMPLE": [
+       119335.49,
+       1.0,
+       0.16434221,
+       0.0
+      ],
+      "scale_key": "A",
+      "sigma_max": 1.608209766,
+      "u1_abs_shares": [
+       0.16770414,
+       0.70535185,
+       0.68873369,
+       0.0
+      ],
+      "v1_abs_shares": [
+       0.035739757,
+       0.43859443,
+       0.85414118,
+       0.27712891
+      ]
+     },
+     "B": {
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "gap": 27.79097282,
+      "lambda_max": 0.005219128175,
+      "rank": 3,
+      "raw_sigma_ANTI_EXAMPLE": [
+       119335.49,
+       1.0,
+       0.16434221,
+       0.0
+      ],
+      "scale_key": "B",
+      "sigma_max": 22.90778719,
+      "u1_abs_shares": [
+       0.0051670903,
+       0.99094827,
+       0.13414479,
+       0.0
+      ],
+      "v1_abs_shares": [
+       0.045172921,
+       0.04325814,
+       0.47045986,
+       0.88020205
+      ]
+     },
+     "C": {
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "gap": 1.977963261,
+      "lambda_max": 0.0007209176142,
+      "rank": 3,
+      "raw_sigma_ANTI_EXAMPLE": [
+       119335.49,
+       1.0,
+       0.16434221,
+       0.0
+      ],
+      "scale_key": "C",
+      "sigma_max": 1.541183409,
+      "u1_abs_shares": [
+       0.088507382,
+       0.73485092,
+       0.67242886,
+       0.0
+      ],
+      "v1_abs_shares": [
+       0.060022003,
+       0.47680952,
+       0.86935837,
+       0.11517842
+      ]
+     }
+    },
+    "sanger_T600": {
+     "A": {
+      "condition_status": "FINITE",
+      "gap": 85.30628178,
+      "lambda_max": 0.007421421004,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       243273.86,
+       3.2557166,
+       1.0,
+       9.844416e-07
+      ],
+      "scale_key": "A",
+      "sigma_max": 85.87155237,
+      "u1_abs_shares": [
+       0.023916452,
+       0.0080355288,
+       0.046742676,
+       0.99858828
+      ],
+      "v1_abs_shares": [
+       0.12648329,
+       9.3576145e-05,
+       0.99050759,
+       0.053820894
+      ]
+     },
+     "B": {
+      "condition_status": "FINITE",
+      "gap": 2.398428571,
+      "lambda_max": 0.004919353719,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       243273.86,
+       3.2557166,
+       1.0,
+       9.844416e-07
+      ],
+      "scale_key": "B",
+      "sigma_max": 19.13678179,
+      "u1_abs_shares": [
+       0.023733465,
+       0.43653176,
+       0.24958221,
+       0.86405177
+      ],
+      "v1_abs_shares": [
+       0.54825722,
+       0.022811137,
+       0.82769549,
+       0.11753236
+      ]
+     },
+     "C": {
+      "condition_status": "FINITE",
+      "gap": 209.0902756,
+      "lambda_max": 0.008922855362,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       243273.86,
+       3.2557166,
+       1.0,
+       9.844416e-07
+      ],
+      "scale_key": "C",
+      "sigma_max": 211.391786,
+      "u1_abs_shares": [
+       0.0054249968,
+       0.0032078463,
+       0.01914621,
+       0.99979683
+      ],
+      "v1_abs_shares": [
+       0.22858645,
+       1.5174886e-05,
+       0.97327842,
+       0.021848305
+      ]
+     }
+    },
+    "sanger_T900": {
+     "A": {
+      "condition_status": "FINITE",
+      "gap": 21.7258262,
+      "lambda_max": 0.003439057549,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       1025322.5,
+       2.4008767,
+       0.99999999,
+       2.9669769e-07
+      ],
+      "scale_key": "A",
+      "sigma_max": 22.0905915,
+      "u1_abs_shares": [
+       0.64081231,
+       0.05150248,
+       0.04104149,
+       0.76486775
+      ],
+      "v1_abs_shares": [
+       0.091537536,
+       0.0023314215,
+       0.99489085,
+       0.042516363
+      ]
+     },
+     "B": {
+      "condition_status": "FINITE",
+      "gap": 6.291536957,
+      "lambda_max": 0.003224076695,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       1025322.5,
+       2.4008767,
+       0.99999999,
+       2.9669769e-07
+      ],
+      "scale_key": "B",
+      "sigma_max": 18.20450382,
+      "u1_abs_shares": [
+       0.08604973,
+       0.98721202,
+       0.060989487,
+       0.1195331
+      ],
+      "v1_abs_shares": [
+       0.090393715,
+       0.054228999,
+       0.91389941,
+       0.39201539
+      ]
+     },
+     "C": {
+      "condition_status": "FINITE",
+      "gap": 41.44322768,
+      "lambda_max": 0.004153136084,
+      "rank": 4,
+      "raw_sigma_ANTI_EXAMPLE": [
+       1025322.5,
+       2.4008767,
+       0.99999999,
+       2.9669769e-07
+      ],
+      "scale_key": "C",
+      "sigma_max": 42.00642048,
+      "u1_abs_shares": [
+       0.18521389,
+       0.026797702,
+       0.021346371,
+       0.98210082
+      ],
+      "v1_abs_shares": [
+       0.15225581,
+       0.000637943,
+       0.98829183,
+       0.0098500364
+      ]
+     }
+    }
+   },
+   "terminal": {
+    "qian": {
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "denominator_nTf": 16.318332,
+     "nullity": 2,
+     "rank": 2,
+     "scaled_sigma_max": 1.915979961,
+     "terminal": "RTI",
+     "terminal_time_s": 723.03797
+    },
+    "sanger": {
+     "condition_status": "STRUCTURAL_SINGULAR",
+     "denominator_nTf": -0.0008719204,
+     "nullity": 1,
+     "rank": 3,
+     "scaled_sigma_max": 4.851141246,
+     "terminal": "SRTI",
+     "terminal_time_s": 1119.546
+    }
+   }
+  },
+  "G6_grazing": {
+   "contract_audit": {
+    "anchors": [
+     {
+      "K": 3.984375,
+      "N": 0,
+      "branch": "B0",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N0",
+      "gamma0_deg": -2.046875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.080928,
+      "phase_f_reference_phi_ref01_m": -0.080928,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.875,
+      "N": 0,
+      "branch": "B0",
+      "contract_ok": true,
+      "entry_denominator": -0.4790348657921598,
+      "entry_ordinal": 0,
+      "exit_denominator": 0.4790348709897835,
+      "exit_incidence_abs_sin_gamma": 7.05881618149798e-05,
+      "expected_regime": "SRTI_N1",
+      "gamma0_deg": -1.7421875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.047965,
+      "phase_f_reference_phi_ref01_m": 0.047965,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 0,
+      "vac_clearance_m": 0.04796487744897604,
+      "vac_duration_s": 0.4005126202333713
+     },
+     {
+      "K": 4.1953125,
+      "N": 1,
+      "branch": "B1",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N1",
+      "gamma0_deg": -3.2421875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.128188,
+      "phase_f_reference_phi_ref01_m": -0.128188,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 2.234375,
+      "N": 1,
+      "branch": "B1",
+      "contract_ok": true,
+      "entry_denominator": -1.3292526602762305,
+      "entry_ordinal": 1,
+      "exit_denominator": 1.3292526614787397,
+      "exit_incidence_abs_sin_gamma": 0.0002524071966055927,
+      "expected_regime": "SRTI_N2",
+      "gamma0_deg": -7.296875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.169139,
+      "phase_f_reference_phi_ref01_m": 0.169139,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 1,
+      "vac_clearance_m": 0.16913880873471498,
+      "vac_duration_s": 0.5089741451092777
+     },
+     {
+      "K": 3.703125,
+      "N": 2,
+      "branch": "B2",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N2",
+      "gamma0_deg": -5.7265625,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.154892,
+      "phase_f_reference_phi_ref01_m": -0.154892,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.82421875,
+      "N": 2,
+      "branch": "B2",
+      "contract_ok": true,
+      "entry_denominator": -0.8663246245569052,
+      "entry_ordinal": 2,
+      "exit_denominator": 0.8663246236034875,
+      "exit_incidence_abs_sin_gamma": 0.00014099507561980714,
+      "expected_regime": "SRTI_N3",
+      "gamma0_deg": -4.03125,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.102113,
+      "phase_f_reference_phi_ref01_m": 0.102113,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 2,
+      "vac_clearance_m": 0.10211316403001547,
+      "vac_duration_s": 0.47147760408756767
+     },
+     {
+      "K": 4.57421875,
+      "N": 3,
+      "branch": "B3",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N3",
+      "gamma0_deg": -6.125,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.135172,
+      "phase_f_reference_phi_ref01_m": -0.135172,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 3.98046875,
+      "N": 3,
+      "branch": "B3",
+      "contract_ok": true,
+      "entry_denominator": -0.6412972854673972,
+      "entry_ordinal": 3,
+      "exit_denominator": 0.6412972796553333,
+      "exit_incidence_abs_sin_gamma": 0.0001293000395760285,
+      "expected_regime": "SRTI_N4",
+      "gamma0_deg": -8.0546875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.036027,
+      "phase_f_reference_phi_ref01_m": 0.036027,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 3,
+      "vac_clearance_m": 0.03602704592049122,
+      "vac_duration_s": 0.224713545595705
+     },
+     {
+      "K": 4.69140625,
+      "N": 4,
+      "branch": "B4",
+      "contract_ok": true,
+      "expected_regime": "SRTI_N4",
+      "gamma0_deg": -8.875,
+      "has_excursion": false,
+      "phase_f_reference_phi_ref005_m": -0.407857,
+      "phase_f_reference_phi_ref01_m": -0.407857,
+      "reference_dual_stable": true,
+      "side": "N_side"
+     },
+     {
+      "K": 4.8984375,
+      "N": 4,
+      "branch": "B4",
+      "contract_ok": true,
+      "entry_denominator": -2.1881524438488014,
+      "entry_ordinal": 4,
+      "exit_denominator": 2.1881524450325474,
+      "exit_incidence_abs_sin_gamma": 0.00044142677468613623,
+      "expected_regime": "SRTI_N5",
+      "gamma0_deg": -7.9296875,
+      "has_excursion": true,
+      "phase_f_reference_phi_ref005_m": 0.419125,
+      "phase_f_reference_phi_ref01_m": 0.419125,
+      "reference_dual_stable": true,
+      "side": "N1_side",
+      "target_exit_ordinal": 4,
+      "vac_clearance_m": 0.41912458650767803,
+      "vac_duration_s": 0.7661707364577524
+     }
+    ],
+    "dual_reference_stable_10of10": true,
+    "n1_side_extractions": 5,
+    "n_anchors": 10,
+    "n_side_absence_confirmations": 5
+   },
+   "controlled_family_scaling": {
+    "B0": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00004,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B1": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00005,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B2": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00004,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B3": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00002,
+     "H3_r2": 1.0,
+     "points_used": 7
+    },
+    "B4": {
+     "H1_Phi_vs_d_slope": 2.0,
+     "H1_r2": 1.0,
+     "H3_pair_norm_vs_d_slope": -1.00009,
+     "H3_r2": 1.0,
+     "points_used": 7
+    }
+   },
+   "g6r2_normalization": {
+    "error_normalization": "ERROR_OVER_LINEAR_PREDICTION",
+    "old_error_normalization": "ERROR_OVER_NONLINEAR_INCREMENT",
+    "old_radii_g6r_nonlinear_denominator": {
+     "B0_a0.5": {
+      "r_1pct_refined": 0.04036072820425034,
+      "r_5pct_refined": 0.1936308890581131
+     },
+     "B0_a1": {
+      "r_1pct_refined": 0.040374467670917506,
+      "r_5pct_refined": 0.19370727241039276
+     },
+     "B3_a1": {
+      "r_1pct_refined": 0.03986378341913223,
+      "r_5pct_refined": 0.19118705689907078
+     },
+     "B4_a1": {
+      "r_1pct_refined": 0.0407324531674385,
+      "r_5pct_refined": 0.19487219750881196
+     }
+    },
+    "paired_fd_results_unchanged": true
+   },
+   "paired_fd": {
+    "B0": {
+     "four_column_pass": true,
+     "max_scaled_rel_error": 0.00010817849053557641,
+     "radial_plateau_pass": true
+    },
+    "B4": {
+     "four_column_pass": true,
+     "max_scaled_rel_error": 0.00010887121070424035,
+     "radial_plateau_pass": true
+    }
+   },
+   "radii_authority": {
+    "G6R2_linear_prediction_denominator": "FINAL_AUTHORITY",
+    "G6R_nonlinear_denominator": "SUPERSEDED",
+    "G6_coarse_grid": "HISTORICAL"
+   },
+   "refined_validity_radii_final_G6R2": {
+    "B0_a0.5": {
+     "d_exit": 0.23951743564407182,
+     "monotone_profile": true,
+     "phi_local_m": 0.011991219595074654,
+     "r_1pct_refined": {
+      "bracket_width": 4.1723251312242304e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.03997192591428757,
+      "refined_beta": 0.03997192591428757,
+      "refined_radius_m": 0.00047931214127627743,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.1848739296197891,
+      "refined_beta": 0.1848739296197891,
+      "refined_radius_m": 0.0022168638874752677,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B0_a1": {
+     "d_exit": 0.4790348709897835,
+     "monotone_profile": true,
+     "phi_local_m": 0.04796487744897604,
+     "r_1pct_refined": {
+      "bracket_width": 4.1723251312242304e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.039980112016201025,
+      "refined_beta": 0.039980112016201025,
+      "refined_radius_m": 0.0019176411732534165,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464455334602e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18495217263698582,
+      "refined_beta": 0.18495217263698582,
+      "refined_radius_m": 0.008871208294454884,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B3_a1": {
+     "d_exit": 0.6412972796553333,
+     "monotone_profile": true,
+     "phi_local_m": 0.03602704592049122,
+     "r_1pct_refined": {
+      "bracket_width": 4.172325138163124e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.03947364598512649,
+      "refined_beta": 0.03947364598512649,
+      "refined_radius_m": 0.001422118856555366,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18256950676441192,
+      "refined_beta": 0.18256950676441192,
+      "refined_radius_m": 0.0065774400038829004,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    },
+    "B4_a1": {
+     "d_exit": 2.1881524450325474,
+     "monotone_profile": true,
+     "phi_local_m": 0.41912458650767803,
+     "r_1pct_refined": {
+      "bracket_width": 4.172325138163124e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.03,
+      "radius_over_phi": 0.0403433421254158,
+      "refined_beta": 0.0403433421254158,
+      "refined_radius_m": 0.016908886586652686,
+      "upper_fail_beta": 0.1,
+      "upper_fail_reason": "E>tau"
+     },
+     "r_5pct_refined": {
+      "bracket_width": 5.960464483090178e-09,
+      "classification": "MONOTONE_REFINED_RADIUS",
+      "lower_pass_beta": 0.1,
+      "radius_over_phi": 0.18628928959369656,
+      "refined_beta": 0.18628928959369656,
+      "refined_radius_m": 0.07807842147176716,
+      "upper_fail_beta": 0.2,
+      "upper_fail_reason": "E>tau"
+     }
+    }
+   },
+   "threshold_decision": "NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED",
+   "topology_radii": {
+    "B0_N1_side": {
+     "centered_radius_rad": 9.2852259e-08,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 9.2852259e-08,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B0_N_side": {
+     "centered_radius_rad": 1.5070748e-07,
+     "eps_minus_rad": 1.5070748e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B1_N1_side": {
+     "centered_radius_rad": 5.9219136e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 5.9219136e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B1_N_side": {
+     "centered_radius_rad": 2.5310779e-07,
+     "eps_minus_rad": 2.5310779e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B2_N1_side": {
+     "centered_radius_rad": 2.2885718e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 2.2885718e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B2_N_side": {
+     "centered_radius_rad": 4.5075097e-07,
+     "eps_minus_rad": 4.5075097e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B3_N1_side": {
+     "centered_radius_rad": 1.5750012e-07,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 1.5750012e-07,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B3_N_side": {
+     "centered_radius_rad": 4.4318757e-07,
+     "eps_minus_rad": 4.4318757e-07,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    },
+    "B4_N1_side": {
+     "centered_radius_rad": 2.0104461e-06,
+     "eps_minus_rad": 0.05,
+     "eps_plus_rad": 2.0104461e-06,
+     "plus_class": "GRAZING_CROSSED"
+    },
+    "B4_N_side": {
+     "centered_radius_rad": 2.3802819e-06,
+     "eps_minus_rad": 2.3802819e-06,
+     "eps_plus_rad": 0.05,
+     "plus_class": "LOWER_BOUND_ONLY"
+    }
+   }
+  }
+ },
+ "validity_radius_authority_chain": {
+  "G6R2_linear_prediction_denominator": "FINAL_AUTHORITY",
+  "G6R_nonlinear_denominator": "SUPERSEDED",
+  "G6_coarse_grid": "HISTORICAL"
+ }
+}

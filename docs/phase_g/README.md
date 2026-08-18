@@ -1,16 +1,17 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0–G5R COMPLETE / ACCEPTED**；**G6 COMPLETE / ACCEPTED**；
-**G6R corrective revision COMPLETE**；
-**G6R2 normalization fix COMPLETE**（G6R2 accept 待定）（2026-08-18）
+状态：**Phase G COMPLETE / FROZEN**（2026-08-19）
+G0–G6R2 全部 **COMPLETE / ACCEPTED**；**G7 final synthesis / freeze
+COMPLETE / FROZEN**。
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
-G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 `a7119c0`；
-G4 `de17ac8`；G4R `01f33a5`；G5 `bdc1265`；G5R `7a94ed1`；G6 commit：
-见 git log（G6 accept 后创建）；G6R commit：见 git log（G6R 修正）。
+acceptance chain：G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；
+G3 `a7119c0`；G4 `de17ac8`；G4R `01f33a5`；G5 `bdc1265`；G5R `7a94ed1`；
+G6 `3b92269`；G6R `9c7e80f`；G6R2 `d1ac723`；G7（final freeze commit）。
 
-G0–G6 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
+**最终 tags**：`phase-g-v1.0` 与 `predictability-v1.0` 于最终 G7 freeze
+commit 创建并指向该 commit（Phase-F tag convention = annotated）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
 
 ## 1. Phase G 目标
@@ -42,9 +43,9 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE / ACCEPTED** |
 | **G5R** | terminal-sensitivity contract guard（eligibility + transversality exact-zero）+ RTI strict-interior trim convergence audit | **COMPLETE / ACCEPTED** |
 | **G6** | grazing transversality-loss & linearization validity（B0–B4 anchors · controlled grazing families · paired excursion factor · validity/topology radius · threshold decision） | **COMPLETE / ACCEPTED**（`g6_grazing_predictability.md`） |
-| **G6R** | grazing validation-contract & operational-radius corrective patch（硬拓扑契约 · refined operational radii (bracket+bisection) · paired radial plateau + 全 4-column FD · 事件方向分类 · dual-reference 锁） | **COMPLETE** |
-| **G6R2** | linearization-error NORMALIZATION contract fix（`ERROR/LINEAR-PREDICTION`（protocol）取代 `ERROR/NONLINEAR-INCREMENT`；refined radii 按 frozen 定义重算；paired FD 不变） | **COMPLETE**（G6R2 accept 待定） |
-| G7 | 最终报告 / 冻结 | PENDING |
+| **G6R** | grazing validation-contract & operational-radius corrective patch（硬拓扑契约 · refined operational radii (bracket+bisection) · paired radial plateau + 全 4-column FD · 事件方向分类 · dual-reference 锁） | **COMPLETE / ACCEPTED** |
+| **G6R2** | linearization-error NORMALIZATION contract fix（`ERROR/LINEAR-PREDICTION`（protocol）取代 `ERROR/NONLINEAR-INCREMENT`；refined radii 按 frozen 定义重算；paired FD 不变） | **COMPLETE / ACCEPTED** |
+| **G7** | final synthesis / regression / freeze（final report `phase_g_final_report.md`；freeze manifest `phase_g_final_freeze_v1.json`；manifest generator；final regression；final tags） | **COMPLETE / FROZEN** |
 
 G0–G5 硬性禁止：grazing / B0-B4 / near-boundary 分析、Monte Carlo、
 optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
@@ -71,7 +72,18 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
   有效域报告**（10 anchors · controlled families · 二次 tangency H1 ·
   paired factor H3 · validity/topology radius · threshold decision ·
   **G6R §13b corrective validation**：硬拓扑契约 · refined operational
-  radii · paired plateau + 4-column FD）
+  radii · paired plateau + 4-column FD · **G6R2 §13c normalization correction**）
+- `docs/phase_g/phase_g_final_report.md` —— **G7 最终科学报告**
+  （finite-time local predictability，snapshot-sourced，evidence hierarchy，
+  claim boundaries，corrective history，final acceptance table）
+- `tests/data/phase_g_final_freeze_v1.json` —— **G7 final freeze manifest**
+  （schema `phase-g-final-freeze-v1`；SHA-256 锁定 G1–G6 snapshots +
+  protocol；authority chain；final tags policy）
+- `scripts/build_phase_g_final_manifest.py` —— G7 确定性 freeze manifest 生成器
+  （README/HASH/SUMMARIZE/FREEZE only；二次运行无 diff）
+- **最终 tags**：`phase-g-v1.0` / `predictability-v1.0`（annotated，指向
+  最终 G7 freeze commit）—— tags 在 final G7 freeze commit 之后创建并指向
+  该 commit（`tag_target_policy`，见 manifest）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结
@@ -205,6 +217,17 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
   阈值结论 **RETAINED AFTER PROTOCOL-CORRECT NORMALIZATION**
   （`NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED`）。
 
-**Phase G0–G5R = COMPLETE / ACCEPTED；G6 = COMPLETE / ACCEPTED；
-G6R corrective = COMPLETE；G6R2 normalization fix = COMPLETE（G6R2 accept
-待定）；等待人工验收后再进入 G7（G7 = PENDING）。**
+**G7 final freeze**：`docs/phase_g/phase_g_final_report.md` 综合全部已验收
+artifacts（final scientific report）；`phase_g_final_freeze_v1.json` 机器可读
+freeze manifest（SHA-256 锁定 protocol + G1–G6 snapshots；
+`NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED` 锁定；G6R2 final radius authority
+锁定；commit chain / canonical scale A / claim boundaries 锁定）；确定性生成器
+`scripts/build_phase_g_final_manifest.py`（二次运行无 diff）。最终 tags
+`phase-g-v1.0` + `predictability-v1.0` 在 post-commit full regression PASS
+后创建，均指向最终 G7 freeze commit（annotated，Phase-F convention 镜像）。
+G6 coarse（0.03/0.10）与 G6R nonlinear-denominator（0.040/0.193）为历史/
+superseded；**FINAL AUTHORITY = G6R2（0.040 / 0.185）**。
+
+**Phase G COMPLETE / FROZEN。**（Phase G roadmap 全部 COMPLETE/ACCEPTED；
+G7 = COMPLETE/FROZEN。Phase-F frozen tags 未移动；`pyproject.toml` 本地环境
+注释不属 Phase-G freeze。）
