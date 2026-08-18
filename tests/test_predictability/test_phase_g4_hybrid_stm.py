@@ -430,13 +430,16 @@ def test_snapshot_scaling_invariance_pass():
 # 10. Scope guards: no G5/G6 leak
 # ---------------------------------------------------------------------------
 def test_no_g5_g6_scope_leak():
+    """G4 layers must not perform G5 metrics / G6 grazing analysis.
+
+    ``ftle``/``metrics``/``terminal_sensitivity`` were activated by G5
+    (their content is guarded by ``test_phase_g5_*.py``); only the G6+
+    placeholder ``observability`` stays empty here.
+    """
     src_root = Path(__file__).resolve().parents[2] / "src" / "hyptraj" / "predictability"
     for mod in ("hybrid_stm", "hybrid_validation"):
         src = (src_root / f"{mod}.py").read_text(encoding="utf-8")
         for token in ("ftle", "singular_value", "sigma_max", "lyap"):
             assert token not in src, (mod, token)
-    for mod in ("ftle", "metrics", "observability"):
-        assert (src_root / f"{mod}.py").read_text(encoding="utf-8").strip() == ""
-    # no scientific canonical scaling freeze anywhere in G4
-    assert "CANONICAL_SCALE_NUMERIC_VALUES_PENDING" in SNAPSHOT[
-        "scientific_canonical_scaling_status"]
+    # G5 owns the metrics layer; G6+ placeholder still empty.
+    assert (src_root / "observability.py").read_text(encoding="utf-8").strip() == ""

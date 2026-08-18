@@ -20,9 +20,11 @@ event-local nonlinear validation).  G4 adds ``hybrid_stm`` (chaining the
 validated continuous STMs and saltations into the fixed-time
 topology-preserving hybrid STM with global event-time gradients) and
 ``hybrid_validation`` (the independent full-nonlinear comparator with the
-hybrid topology gate).  G4 performs NO G5 predictability ranking, NO
-FTLE.  Placeholder modules that remain empty for the G5-G6 layers:
-``ftle``, ``metrics``, ``observability``.
+hybrid topology gate).  G5 activates ``ftle`` (scaled-SVD / FTLE / rank /
+condition / unit-invariance) and ``metrics`` (fixed-time predictability
+result), and adds ``terminal_sensitivity`` (RTI / SRTI event-time and
+terminal-state sensitivity).  G5 performs NO grazing analysis.  The G6+
+placeholder module ``observability`` remains empty.
 """
 
 from hyptraj.predictability.protocol import machine_readable_protocol
@@ -53,6 +55,22 @@ from hyptraj.predictability.hybrid_stm import (
     build_split_tail,
     qian_no_saltation_negative_control,
 )
+from hyptraj.predictability.ftle import (
+    canonicalize_svd_signs,
+    finite_time_metrics,
+    numerical_rank,
+    scaled_svd,
+)
+from hyptraj.predictability.metrics import (
+    FixedTimePredictabilityResult,
+    compute_fixed_time_metrics,
+)
+from hyptraj.predictability.terminal_sensitivity import (
+    TerminalSensitivityResult,
+    build_terminal_sensitivity,
+    qian_rti_terminal_normal,
+    srti_terminal_normal,
+)
 
 __all__ = [
     "machine_readable_protocol",
@@ -77,4 +95,14 @@ __all__ = [
     "build_hybrid_stm",
     "build_split_tail",
     "qian_no_saltation_negative_control",
+    "canonicalize_svd_signs",
+    "finite_time_metrics",
+    "numerical_rank",
+    "scaled_svd",
+    "FixedTimePredictabilityResult",
+    "compute_fixed_time_metrics",
+    "TerminalSensitivityResult",
+    "build_terminal_sensitivity",
+    "qian_rti_terminal_normal",
+    "srti_terminal_normal",
 ]

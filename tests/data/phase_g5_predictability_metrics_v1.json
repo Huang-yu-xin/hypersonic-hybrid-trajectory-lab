@@ -1,0 +1,1027 @@
+{
+  "schema_version": "phase-g5-predictability-metrics-v1",
+  "status": "pre-freeze (G5 accept-time audit)",
+  "starting_g4r_commit": "01f33a5f6a5166be7b4ccc4db3473dec994c7aa4",
+  "state_order": [
+    "r",
+    "theta",
+    "v",
+    "gamma"
+  ],
+  "scientific_metrics_definition": {
+    "scaled_stm": "tilde_Phi = S^-1 Phi_H S",
+    "sigma_max": "sigma_1 of SVD(tilde_Phi)",
+    "lambda_max": "FTLE = (1/T) ln sigma_1",
+    "rank_tolerance": "sigma_max * max(m,n) * eps_machine (SVD rank, not grazing)",
+    "condition_policy": "STRUCTURAL_SINGULAR for numerical-zero sigma_min"
+  },
+  "canonical_scaling_decision": {
+    "decision": "FROZEN",
+    "canonical_key": "A",
+    "scale_values": {
+      "r": 100000.0,
+      "theta": 1.0,
+      "v": 7000.0,
+      "gamma": 0.1
+    },
+    "rationale": "Candidate A selected: shared, terminal-independent, trajectory-characteristic metric geometry; numerically stable under REF-0.1 vs REF-0.05; does not embed a sensor/tolerance model.  NOT selected to obtain a preferred model ranking.  B and C retained as scale-sensitivity / robustness conventions.",
+    "scale_sensitivity_note": "The Qian-vs-Sanger sigma_max/lambda_max ordering at T600 is SCALE-SENSITIVE: it flips under Candidate B (Qian sigma_max > Sanger under B, but Sanger larger under A and C).  All scientific claims name the canonical scale A and report the A/B/C audit.",
+    "status_flag": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN"
+  },
+  "common_horizons_s": [
+    60.0,
+    120.0,
+    300.0,
+    600.0
+  ],
+  "sanger_stress_horizon_s": 900.0,
+  "scale_audit": {
+    "qian_T600": {
+      "A": {
+        "scale_key": "A",
+        "sigma_max": 1.608209766,
+        "lambda_max": 0.0007918693566,
+        "rank": 3,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "v1_abs_shares": [
+          0.035739757,
+          0.43859443,
+          0.85414118,
+          0.27712891
+        ],
+        "u1_abs_shares": [
+          0.16770414,
+          0.70535185,
+          0.68873369,
+          0.0
+        ],
+        "gap": 2.027505998,
+        "raw_sigma_ANTI_EXAMPLE": [
+          119335.49,
+          1.0,
+          0.16434221,
+          0.0
+        ]
+      },
+      "B": {
+        "scale_key": "B",
+        "sigma_max": 22.90778719,
+        "lambda_max": 0.005219128175,
+        "rank": 3,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "v1_abs_shares": [
+          0.045172921,
+          0.04325814,
+          0.47045986,
+          0.88020205
+        ],
+        "u1_abs_shares": [
+          0.0051670903,
+          0.99094827,
+          0.13414479,
+          0.0
+        ],
+        "gap": 27.79097282,
+        "raw_sigma_ANTI_EXAMPLE": [
+          119335.49,
+          1.0,
+          0.16434221,
+          0.0
+        ]
+      },
+      "C": {
+        "scale_key": "C",
+        "sigma_max": 1.541183409,
+        "lambda_max": 0.0007209176142,
+        "rank": 3,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "v1_abs_shares": [
+          0.060022003,
+          0.47680952,
+          0.86935837,
+          0.11517842
+        ],
+        "u1_abs_shares": [
+          0.088507382,
+          0.73485092,
+          0.67242886,
+          0.0
+        ],
+        "gap": 1.977963261,
+        "raw_sigma_ANTI_EXAMPLE": [
+          119335.49,
+          1.0,
+          0.16434221,
+          0.0
+        ]
+      }
+    },
+    "sanger_T600": {
+      "A": {
+        "scale_key": "A",
+        "sigma_max": 85.87155237,
+        "lambda_max": 0.007421421004,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.12648329,
+          9.3576145e-05,
+          0.99050759,
+          0.053820894
+        ],
+        "u1_abs_shares": [
+          0.023916452,
+          0.0080355288,
+          0.046742676,
+          0.99858828
+        ],
+        "gap": 85.30628178,
+        "raw_sigma_ANTI_EXAMPLE": [
+          243273.86,
+          3.2557166,
+          1.0,
+          9.844416e-07
+        ]
+      },
+      "B": {
+        "scale_key": "B",
+        "sigma_max": 19.13678179,
+        "lambda_max": 0.004919353719,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.54825722,
+          0.022811137,
+          0.82769549,
+          0.11753236
+        ],
+        "u1_abs_shares": [
+          0.023733465,
+          0.43653176,
+          0.24958221,
+          0.86405177
+        ],
+        "gap": 2.398428571,
+        "raw_sigma_ANTI_EXAMPLE": [
+          243273.86,
+          3.2557166,
+          1.0,
+          9.844416e-07
+        ]
+      },
+      "C": {
+        "scale_key": "C",
+        "sigma_max": 211.391786,
+        "lambda_max": 0.008922855362,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.22858645,
+          1.5174886e-05,
+          0.97327842,
+          0.021848305
+        ],
+        "u1_abs_shares": [
+          0.0054249968,
+          0.0032078463,
+          0.01914621,
+          0.99979683
+        ],
+        "gap": 209.0902756,
+        "raw_sigma_ANTI_EXAMPLE": [
+          243273.86,
+          3.2557166,
+          1.0,
+          9.844416e-07
+        ]
+      }
+    },
+    "sanger_T900": {
+      "A": {
+        "scale_key": "A",
+        "sigma_max": 22.0905915,
+        "lambda_max": 0.003439057549,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.091537536,
+          0.0023314215,
+          0.99489085,
+          0.042516363
+        ],
+        "u1_abs_shares": [
+          0.64081231,
+          0.05150248,
+          0.04104149,
+          0.76486775
+        ],
+        "gap": 21.7258262,
+        "raw_sigma_ANTI_EXAMPLE": [
+          1025322.5,
+          2.4008767,
+          0.99999999,
+          2.9669769e-07
+        ]
+      },
+      "B": {
+        "scale_key": "B",
+        "sigma_max": 18.20450382,
+        "lambda_max": 0.003224076695,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.090393715,
+          0.054228999,
+          0.91389941,
+          0.39201539
+        ],
+        "u1_abs_shares": [
+          0.08604973,
+          0.98721202,
+          0.060989487,
+          0.1195331
+        ],
+        "gap": 6.291536957,
+        "raw_sigma_ANTI_EXAMPLE": [
+          1025322.5,
+          2.4008767,
+          0.99999999,
+          2.9669769e-07
+        ]
+      },
+      "C": {
+        "scale_key": "C",
+        "sigma_max": 42.00642048,
+        "lambda_max": 0.004153136084,
+        "rank": 4,
+        "condition_status": "FINITE",
+        "v1_abs_shares": [
+          0.15225581,
+          0.000637943,
+          0.98829183,
+          0.0098500364
+        ],
+        "u1_abs_shares": [
+          0.18521389,
+          0.026797702,
+          0.021346371,
+          0.98210082
+        ],
+        "gap": 41.44322768,
+        "raw_sigma_ANTI_EXAMPLE": [
+          1025322.5,
+          2.4008767,
+          0.99999999,
+          2.9669769e-07
+        ]
+      }
+    }
+  },
+  "fixed_time_canonical": {
+    "qian": {
+      "T60": {
+        "horizon_s": 60.0,
+        "topology_signature": [],
+        "endpoint_mode": "ENTRY_CAPTURE",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          2.2691193,
+          1.0072829,
+          0.97378922,
+          0.44593226
+        ],
+        "sigma_max": 2.269119258,
+        "lambda_max": 0.0136565294,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 5.088484248,
+        "v1_scaled": [
+          -0.52321213,
+          0.013063932,
+          0.82621557,
+          0.20843759
+        ],
+        "u1_scaled": [
+          -0.19976355,
+          0.029643619,
+          0.34967182,
+          0.9148472
+        ],
+        "v1_physical": [
+          -52321.2,
+          0.0130639,
+          5783.51,
+          0.0208438
+        ],
+        "scaled_column_norms": [
+          1.4402,
+          1.0,
+          1.92838,
+          0.719577
+        ],
+        "scaled_row_norms": [
+          0.996935,
+          1.00212,
+          0.984762,
+          2.08393
+        ],
+        "singular_gap_1_2": 2.252712882,
+        "svd_reconstruction_error": 1.554312234e-15
+      },
+      "T120": {
+        "horizon_s": 120.0,
+        "topology_signature": [
+          "qian_capture"
+        ],
+        "endpoint_mode": "QEG_GLIDE",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          1.1413985,
+          0.97259146,
+          0.11220333,
+          0.0
+        ],
+        "sigma_max": 1.141398461,
+        "lambda_max": 0.001102118592,
+        "numerical_rank": 3,
+        "nullity": 1,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "condition_number": null,
+        "v1_scaled": [
+          0.1410078,
+          0.39084628,
+          0.89232198,
+          0.17640145
+        ],
+        "u1_scaled": [
+          0.22816274,
+          0.44611135,
+          0.86540536,
+          0.0
+        ],
+        "v1_physical": [
+          14100.8,
+          0.390846,
+          6246.25,
+          0.0176401
+        ],
+        "scaled_column_norms": [
+          0.198776,
+          1.0,
+          1.0812,
+          0.229807
+        ],
+        "scaled_row_norms": [
+          0.303083,
+          1.00844,
+          1.07355,
+          0.0
+        ],
+        "singular_gap_1_2": 1.173564139,
+        "svd_reconstruction_error": 2.220446049e-16
+      },
+      "T300": {
+        "horizon_s": 300.0,
+        "topology_signature": [
+          "qian_capture"
+        ],
+        "endpoint_mode": "QEG_GLIDE",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          1.4089723,
+          0.93272677,
+          0.055295243,
+          0.0
+        ],
+        "sigma_max": 1.408972324,
+        "lambda_max": 0.001142868635,
+        "numerical_rank": 3,
+        "nullity": 1,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "condition_number": null,
+        "v1_scaled": [
+          0.0084501001,
+          0.34432205,
+          0.90046252,
+          0.26559023
+        ],
+        "u1_scaled": [
+          0.19810394,
+          0.48514024,
+          0.85170052,
+          0.0
+        ],
+        "v1_physical": [
+          845.01,
+          0.344322,
+          6303.24,
+          0.026559
+        ],
+        "scaled_column_norms": [
+          0.0542714,
+          1.0,
+          1.30281,
+          0.397461
+        ],
+        "scaled_row_norms": [
+          0.303083,
+          1.06417,
+          1.27825,
+          0.0
+        ],
+        "singular_gap_1_2": 1.510594926,
+        "svd_reconstruction_error": 6.723337843e-16
+      },
+      "T600": {
+        "horizon_s": 600.0,
+        "topology_signature": [
+          "qian_capture"
+        ],
+        "endpoint_mode": "QEG_GLIDE",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          1.6082098,
+          0.79319606,
+          0.029330163,
+          0.0
+        ],
+        "sigma_max": 1.608209766,
+        "lambda_max": 0.0007918693566,
+        "numerical_rank": 3,
+        "nullity": 1,
+        "condition_status": "STRUCTURAL_SINGULAR",
+        "condition_number": null,
+        "v1_scaled": [
+          -0.035739757,
+          0.43859443,
+          0.85414118,
+          0.27712891
+        ],
+        "u1_scaled": [
+          0.16770414,
+          0.70535185,
+          0.68873369,
+          -0.0
+        ],
+        "v1_physical": [
+          -3573.98,
+          0.438594,
+          5978.99,
+          0.0277129
+        ],
+        "scaled_column_norms": [
+          0.0962763,
+          1.0,
+          1.40784,
+          0.474422
+        ],
+        "scaled_row_norms": [
+          0.303083,
+          1.26605,
+          1.23353,
+          0.0
+        ],
+        "singular_gap_1_2": 2.027505998,
+        "svd_reconstruction_error": 3.330669074e-16
+      }
+    },
+    "sanger": {
+      "T60": {
+        "horizon_s": 60.0,
+        "topology_signature": [],
+        "endpoint_mode": "SANGER_ATM",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          2.2691193,
+          1.0072829,
+          0.97378922,
+          0.44593226
+        ],
+        "sigma_max": 2.269119258,
+        "lambda_max": 0.0136565294,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 5.088484248,
+        "v1_scaled": [
+          -0.52321213,
+          0.013063932,
+          0.82621557,
+          0.20843759
+        ],
+        "u1_scaled": [
+          -0.19976355,
+          0.029643619,
+          0.34967182,
+          0.9148472
+        ],
+        "v1_physical": [
+          -52321.2,
+          0.0130639,
+          5783.51,
+          0.0208438
+        ],
+        "scaled_column_norms": [
+          1.4402,
+          1.0,
+          1.92838,
+          0.719577
+        ],
+        "scaled_row_norms": [
+          0.996935,
+          1.00212,
+          0.984762,
+          2.08393
+        ],
+        "singular_gap_1_2": 2.252712882,
+        "svd_reconstruction_error": 1.554312234e-15
+      },
+      "T120": {
+        "horizon_s": 120.0,
+        "topology_signature": [],
+        "endpoint_mode": "SANGER_ATM",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          2.4155575,
+          1.1416252,
+          0.98281603,
+          0.32029907
+        ],
+        "sigma_max": 2.415557512,
+        "lambda_max": 0.007349417618,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 7.54156893,
+        "v1_scaled": [
+          0.463288,
+          0.01584347,
+          0.52208472,
+          0.71591952
+        ],
+        "u1_scaled": [
+          -0.17606101,
+          0.038270813,
+          0.26915222,
+          -0.94609458
+        ],
+        "v1_physical": [
+          46328.8,
+          0.0158435,
+          3654.59,
+          0.071592
+        ],
+        "scaled_column_norms": [
+          1.26395,
+          1.0,
+          1.56983,
+          1.77336
+        ],
+        "scaled_row_norms": [
+          0.917155,
+          1.00845,
+          1.05201,
+          2.28952
+        ],
+        "singular_gap_1_2": 2.115893716,
+        "svd_reconstruction_error": 1.554312234e-15
+      },
+      "T300": {
+        "horizon_s": 300.0,
+        "topology_signature": [
+          "sanger_atmosphere_exit"
+        ],
+        "endpoint_mode": "SANGER_VAC",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          4.1710635,
+          1.0015762,
+          0.69499906,
+          0.29667662
+        ],
+        "sigma_max": 4.171063455,
+        "lambda_max": 0.004760570095,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 14.05929287,
+        "v1_scaled": [
+          0.20278744,
+          0.019665995,
+          0.96997632,
+          -0.13280227
+        ],
+        "u1_scaled": [
+          0.52198368,
+          0.082028113,
+          0.24004496,
+          0.81436039
+        ],
+        "v1_physical": [
+          20278.7,
+          0.019666,
+          6789.83,
+          -0.0132802
+        ],
+        "scaled_column_norms": [
+          0.937905,
+          1.0,
+          4.04653,
+          0.847308
+        ],
+        "scaled_row_norms": [
+          2.25728,
+          1.05436,
+          1.04516,
+          3.41652
+        ],
+        "singular_gap_1_2": 4.164499438,
+        "svd_reconstruction_error": 3.552713679e-15
+      },
+      "T600": {
+        "horizon_s": 600.0,
+        "topology_signature": [
+          "sanger_atmosphere_exit",
+          "sanger_atmosphere_entry"
+        ],
+        "endpoint_mode": "SANGER_ATM",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          85.871552,
+          1.0066264,
+          0.24528467,
+          0.036774261
+        ],
+        "sigma_max": 85.87155237,
+        "lambda_max": 0.007421421004,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 2335.099302,
+        "v1_scaled": [
+          0.12648329,
+          9.3576145e-05,
+          0.99050759,
+          -0.053820894
+        ],
+        "u1_scaled": [
+          -0.023916452,
+          0.0080355288,
+          0.046742676,
+          -0.99858828
+        ],
+        "v1_physical": [
+          12648.3,
+          9.35761e-05,
+          6933.55,
+          -0.00538209
+        ],
+        "scaled_column_norms": [
+          10.8629,
+          1.0,
+          85.0564,
+          4.62602
+        ],
+        "scaled_row_norms": [
+          2.05971,
+          1.22007,
+          4.01856,
+          85.7503
+        ],
+        "singular_gap_1_2": 85.30628178,
+        "svd_reconstruction_error": 4.263256415e-14
+      },
+      "T900": {
+        "horizon_s": 900.0,
+        "topology_signature": [
+          "sanger_atmosphere_exit",
+          "sanger_atmosphere_entry",
+          "sanger_atmosphere_exit",
+          "sanger_atmosphere_entry"
+        ],
+        "endpoint_mode": "SANGER_ATM",
+        "scale_key": "A",
+        "scale_values": {
+          "r": 100000.0,
+          "theta": 1.0,
+          "v": 7000.0,
+          "gamma": 0.1
+        },
+        "singular_values": [
+          22.090592,
+          1.0167895,
+          0.61255567,
+          0.053083621
+        ],
+        "sigma_max": 22.0905915,
+        "lambda_max": 0.003439057549,
+        "numerical_rank": 4,
+        "nullity": 0,
+        "condition_status": "FINITE",
+        "condition_number": 416.1470349,
+        "v1_scaled": [
+          0.091537536,
+          0.0023314215,
+          0.99489085,
+          -0.042516363
+        ],
+        "u1_scaled": [
+          0.64081231,
+          0.05150248,
+          0.04104149,
+          0.76486775
+        ],
+        "v1_physical": [
+          9153.75,
+          0.00233142,
+          6964.24,
+          -0.00425164
+        ],
+        "scaled_column_norms": [
+          2.04224,
+          1.0,
+          21.9778,
+          1.1011
+        ],
+        "scaled_row_norms": [
+          14.1636,
+          1.52058,
+          0.92714,
+          16.9005
+        ],
+        "singular_gap_1_2": 21.7258262
+      }
+    }
+  },
+  "reference_stability": {
+    "qian_T600": {
+      "sigma_max_diff": 4.5075055e-14,
+      "lambda_max_diff": 4.6729114e-17,
+      "v1_alignment": 1.0,
+      "u1_alignment": 1.0,
+      "rank_a": 3,
+      "rank_b": 3,
+      "status": "PASS"
+    },
+    "sanger_T600": {
+      "sigma_max_diff": 1.0364118e-09,
+      "lambda_max_diff": 2.0115853e-14,
+      "v1_alignment": 1.0,
+      "u1_alignment": 1.0,
+      "rank_a": 4,
+      "rank_b": 4,
+      "status": "PASS"
+    },
+    "sanger_T900": {
+      "sigma_max_diff": 1.1020518e-10,
+      "lambda_max_diff": 5.5433089e-15,
+      "v1_alignment": 1.0,
+      "u1_alignment": 1.0,
+      "rank_a": 4,
+      "rank_b": 4,
+      "status": "PASS"
+    }
+  },
+  "terminal": {
+    "qian": {
+      "terminal": "RTI",
+      "terminal_kind": "RTI",
+      "terminal_time": 723.03797,
+      "terminal_state": [
+        6417040.0,
+        0.547904,
+        3192.53,
+        6.13242e-15
+      ],
+      "topology_signature": [
+        "qian_capture"
+      ],
+      "normal": [
+        1.07476,
+        0.0,
+        -6.05772,
+        -4.95587e-11
+      ],
+      "denominator": 16.318332,
+      "eta": [
+        0.00053834634,
+        0.0,
+        0.15028752,
+        2927.1129
+      ],
+      "J": [
+        [
+          -0.046209897,
+          0.0,
+          3.9467095,
+          115753.37
+        ],
+        [
+          2.5894428e-07,
+          1.0,
+          0.00020362407,
+          4.0018827
+        ],
+        [
+          -0.0081985306,
+          0.0,
+          0.7002227,
+          20536.89
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "tangency_residual": 2.695028253e-11,
+      "theta_t_residual": 0.0,
+      "theta_state_col_residual": 0.0,
+      "srti_gamma_row_residual": NaN,
+      "scaled_singular_values": [
+        1.91598,
+        0.45108766,
+        1.9972081e-17,
+        0.0
+      ],
+      "scaled_sigma_max": 1.915979961,
+      "rank": 2,
+      "nullity": 2,
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "scaled_event_time_norm_seconds": 1093.301727,
+      "fractional_event_time_sensitivity": 1.512094495,
+      "etaS": [
+        53.834634,
+        0.0,
+        1052.0126,
+        292.71129
+      ],
+      "reference_stability": {
+        "eta_max_diff_01_05": 9.516497812e-09,
+        "J_max_diff_01_05": 2.002780093e-07,
+        "sigma_max_diff_01_05": 1.149969009e-12,
+        "status": "PASS"
+      },
+      "refgrade_terminal_time_material_rel": 2.059942810953374e-08,
+      "refgrade_terminal_time_abs_floor": 5.2864379540551445e-06,
+      "refgrade_terminal_state_max_abs": 0.00015623502258677036,
+      "fd_classifications": {
+        "plus": [
+          "TOPOLOGY_PRESERVED"
+        ],
+        "minus": [
+          "TOPOLOGY_PRESERVED"
+        ]
+      }
+    },
+    "sanger": {
+      "terminal": "SRTI",
+      "terminal_kind": "srti",
+      "terminal_time": 1119.546,
+      "terminal_state": [
+        6457140.0,
+        1.07878,
+        5482.95,
+        -3.41812e-17
+      ],
+      "topology_signature": [
+        "sanger_atmosphere_exit",
+        "sanger_atmosphere_entry",
+        "sanger_atmosphere_exit",
+        "sanger_atmosphere_entry"
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "denominator": -0.0008719204,
+      "eta": [
+        0.0031644867,
+        -0.0,
+        0.46960765,
+        -2011.1499
+      ],
+      "J": [
+        [
+          0.12670532,
+          0.0,
+          16.664457,
+          -234464.66
+        ],
+        [
+          2.9903568e-06,
+          1.0,
+          0.00063543982,
+          -0.83355679
+        ],
+        [
+          -0.0025380855,
+          0.0,
+          1.1845227,
+          9277.4644
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "tangency_residual": 0.0,
+      "theta_t_residual": 0.0,
+      "theta_state_col_residual": 0.0,
+      "srti_gamma_row_residual": 0.0,
+      "scaled_singular_values": [
+        4.8511412,
+        0.34890448,
+        0.2832342,
+        0.0
+      ],
+      "scaled_sigma_max": 4.851141246,
+      "rank": 3,
+      "nullity": 1,
+      "condition_status": "STRUCTURAL_SINGULAR",
+      "scaled_event_time_norm_seconds": 3308.568119,
+      "fractional_event_time_sensitivity": 2.955276663,
+      "etaS": [
+        316.44867,
+        0.0,
+        3287.2536,
+        -201.11499
+      ],
+      "reference_stability": {
+        "eta_max_diff_01_05": 3.906961865e-09,
+        "J_max_diff_01_05": 1.633889042e-07,
+        "sigma_max_diff_01_05": 4.352962435e-12,
+        "status": "PASS"
+      },
+      "refgrade_terminal_time_material_rel": 1.4573933642393738e-08,
+      "refgrade_terminal_time_abs_floor": 2.080469130305573e-05,
+      "refgrade_terminal_state_max_abs": 0.0007848421228118241,
+      "fd_classifications": {
+        "plus": [
+          "TOPOLOGY_PRESERVED"
+        ],
+        "minus": [
+          "TOPOLOGY_PRESERVED"
+        ]
+      }
+    }
+  },
+  "native_terminal_comparison_warning": "Qian RTI and Sanger SRTI are different research terminals; native terminal metrics are DESCRIPTIVE, not a fair cross-model ranking.",
+  "grazing_anchors_excluded": true,
+  "grazing_threshold": null,
+  "acceptance_status": "PENDING_VALIDATION_CHECK"
+}

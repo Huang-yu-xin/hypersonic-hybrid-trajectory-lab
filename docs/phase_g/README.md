@@ -1,13 +1,13 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0–G3 COMPLETE / ACCEPTED**；**G4 COMPLETE**（2026-08-18）
+状态：**G0–G4/G4R COMPLETE / ACCEPTED**；**G5 COMPLETE**（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
 G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 `a7119c0`；
-G4 commit：见 git log（G4 accept 后创建）。
+G4 `de17ac8`；G4R `01f33a5`；G5 commit：见 git log（G5 accept 后创建）。
 
-G0–G4 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
+G0–G5 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
 
 ## 1. Phase G 目标
@@ -34,14 +34,14 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G2** | 连续 mode STM / augmented 20-D variational integrator / 非线性 FD + semigroup + scaling audit | **COMPLETE / ACCEPTED** |
 | **G2R** | validation-gate corrective patch（双侧 ± gate + MODE_WINDOW_INVALID） | **COMPLETE / ACCEPTED** |
 | **G3** | event-local transverse hybrid saltation（q_e、Ξ、det lemma、局部非线性验证） | **COMPLETE / ACCEPTED** |
-| **G4** | 固定时间 hybrid STM（连续 STM × saltation 链式组合 + 全局事件时间梯度 + 全轨迹 nonlinear FD） | **COMPLETE**（`g4_hybrid_stm.md`） |
-| G5 | fixed-time 与 terminal predictability 指标（scaling audit） | PENDING（不实现） |
+| **G4** | 固定时间 hybrid STM（连续 STM × saltation 链式组合 + 全局事件时间梯度 + 全轨迹 nonlinear FD） | **COMPLETE / ACCEPTED** |
+| **G4R** | hybrid topology-gate 纠正（endpoint-scoped terminal + multiplicity event-order） | **COMPLETE / ACCEPTED** |
+| **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE**（`g5_predictability_metrics.md`） |
 | G6 | grazing / transversality-loss 分析（B0–B4 anchors） | PENDING |
 | G7 | 最终报告 / 冻结 | PENDING |
 
-G0–G4 硬性禁止：production FTLE、SVD predictability ranking、canonical
-scientific scaling freeze、grazing、Monte Carlo、optimization、gamma0-K
-域重扫（G5–G6 范围）。
+G0–G5 硬性禁止：grazing / B0-B4 / near-boundary 分析、Monte Carlo、
+optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
 
 ## 3. 文档与代码索引
 
@@ -58,6 +58,9 @@ scientific scaling freeze、grazing、Monte Carlo、optimization、gamma0-K
 - `docs/phase_g/g4_hybrid_stm.md` —— **G4 混合 STM 验证报告**
   （hybrid factorization · 乘法顺序 · 全局事件时间梯度 · topology gate ·
   全轨迹 nonlinear FD · negative control · G5 handoff）
+- `docs/phase_g/g5_predictability_metrics.md` —— **G5 有限时可预测性指标与
+  终端敏感性报告**（scaled SVD/FTLE · canonical scale A freeze · A/B/C audit ·
+  T600 cross-model · RTI/SRTI terminal sensitivity）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结
@@ -90,9 +93,9 @@ scientific scaling freeze、grazing、Monte Carlo、optimization、gamma0-K
 - `tests/data/phase_g2_continuous_stm_v1.json` —— G2 snapshot
 - `tests/data/phase_g3_transverse_saltation_v1.json` —— G3 snapshot
 - `tests/data/phase_g4_hybrid_stm_v1.json` —— G4 snapshot
+- `tests/data/phase_g5_predictability_metrics_v1.json` —— G5 snapshot
 
-未来 G5–G6 模块（`ftle.py` / `metrics.py` / `observability.py` 保持空
-占位），G4 未实现。
+未来 G6 模块（`observability.py` 保持空占位），G5 未实现。
 
 ## 4. 与其他 Phase 的关系
 
@@ -136,10 +139,18 @@ scientific scaling freeze、grazing、Monte Carlo、optimization、gamma0-K
   T=900（4-switch）全轨迹 nonlinear FD material rel 2e-6–6e-7；全局
   事件时间梯度 eta=q@Phi_minus 的 nonlinear FD 匹配到 1e-7–1e-9；
   theta 全局列与 Qian 全局 gamma 行（=0）不变量；Qian no-saltation
-  negative control（naive 链失败 → saltation 必需）；computational
-  scaling 表示不变性（1e-12 相对）；无 grazing/G5 scope leak。
-- 新增测试 `tests/test_predictability/test_phase_g4_hybrid_stm.py`
-  （30 tests）与 snapshot `tests/data/phase_g4_hybrid_stm_v1.json`；
-  完整 pytest 通过（含 G0–G3 的 607 旧回归 + G4 新增）。
+  negative control；computational scaling 表示不变性。G4R 修正 topology
+  gate（endpoint-scoped terminal 分类 + multiplicity event-order）。
+- **G5** 在 G4 hybrid STM 上建立 scaled scientific metrics（`S^-1 Phi S`
+  SVD/FTLE/rank/condition/dominant directions + unit-system invariance）；
+  A/B/C scale audit 完成并 **冻结 Canonical A**（`CANONICAL_SCALE_NUMERIC_VALUES_FROZEN`；
+  ranking 在 scale B 下翻转 → 明确报告 scale-sensitive）；Qian T600 vs
+  Sanger T600 cross-model（λ_max 9×，限定描述）；Qian post-Capture rank
+  3 STRUCTURAL_SINGULAR；Qian RTI 与 Sanger SRTI 的 terminal-time /
+  terminal-state 敏感性（正常形 vs FD 3e-9、eta/J、tangency、ref-grade
+  FD material rel 1e-8、reference 稳定）；native-terminal 仅 descriptive。
+- 新增测试（metrics + terminal sensitivity 共 44 tests）与 snapshot
+  `tests/data/phase_g5_predictability_metrics_v1.json`；完整 pytest 通过
+  （含 G0–G4R 的 656 旧回归 + G5 新增）。
 
-**Phase G0–G4 = COMPLETE；等待人工验收后再进入 G5。**
+**Phase G0–G5 = COMPLETE；等待人工验收后再进入 G6。**

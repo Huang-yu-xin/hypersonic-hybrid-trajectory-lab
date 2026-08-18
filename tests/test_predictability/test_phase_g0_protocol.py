@@ -76,6 +76,7 @@ from hyptraj.predictability.scaling import (
     CANONICAL_SCALING_STATUS,
     SCALING_CANDIDATES,
     SCALING_CONVENTION_DEFINED,
+    CANONICAL_SCALE_NUMERIC_VALUES_FROZEN,
     CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION,
     canonical_candidate,
     finite_time_lyapunov_exponent,
@@ -582,9 +583,12 @@ def test_scaling_candidates_positive_and_complete():
 
 
 def test_scaling_status_flags():
+    # The CONVENTION was frozen at G0; the explicitly-deferred NUMERIC
+    # canonical scale was resolved (frozen = Candidate A) by G5 after the
+    # A/B/C audit (G5 §10) -- see test_phase_g5_metrics.py.
     assert CANONICAL_SCALING_STATUS == SCALING_CONVENTION_DEFINED
     assert CANONICAL_SCALE_NUMERIC_STATUS == (
-        CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION
+        CANONICAL_SCALE_NUMERIC_VALUES_FROZEN
     )
 
 
@@ -779,22 +783,22 @@ def test_g0_status_flags():
 
 
 def test_placeholder_g1_modules_stay_empty():
-    """Phase-stage guard (minimal G2 update).
+    """Phase-stage guard (minimal G5 update).
 
-    ``jacobian`` / ``stm`` were activated by G1 and ``perturbation`` by
-    G2; the remaining G4-G6 placeholder modules must still contain no
-    executable predictability logic.
+    ``jacobian``/``stm`` were activated by G1, ``perturbation`` by G2,
+    ``saltation`` by G3, ``hybrid_stm``/``hybrid_validation`` by G4, and
+    ``ftle``/``metrics``/``terminal_sensitivity`` by G5.  The remaining
+    G6+ placeholder module must still contain no executable logic.
     """
     import importlib.util
 
-    for mod in ("ftle", "metrics", "observability"):
+    for mod in ("observability",):
         spec = importlib.util.find_spec(f"hyptraj.predictability.{mod}")
         assert spec is not None, f"placeholder module {mod} missing"
         # Placeholders must contain no executable predictability logic.
         source = Path(spec.origin).read_text(encoding="utf-8")
         assert source.strip() == "", (
-            f"G4-G6 placeholder {mod} must remain empty (G1 scope: "
-            "jacobian/stm; G2 scope adds perturbation)"
+            f"G6+ placeholder {mod} must remain empty (activated through G5)"
         )
 
 

@@ -54,12 +54,13 @@ _MAX_ALT_M = 130_352.1211817   # Sanger max altitude
 
 
 # ---------------------------------------------------------------------------
-# Canonical-scaling status flags (G0 §11)
+# Canonical-scaling status flags (G0 §11, G5 §10)
 # ---------------------------------------------------------------------------
 SCALING_CONVENTION_DEFINED = "SCALING_CONVENTION_DEFINED"
 CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION = (
     "CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION"
 )
+CANONICAL_SCALE_NUMERIC_VALUES_FROZEN = "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN"
 
 
 @dataclass(frozen=True)
@@ -201,15 +202,21 @@ SCALING_CANDIDATES: tuple[ScalingCandidate, ...] = (
 # Canonical-scaling decision (G0 §11)
 # ---------------------------------------------------------------------------
 # The CONVENTION (form of S, scaled STM, all FTLE/singular-value work on
-# the scaled matrix) is frozen.  The NUMERIC canonical choice is NOT
-# force-frozen: G0 has no STM evidence to rank A/B/C fairly, so the
-# numeric selection is deferred to the G2/G5 scale-sensitivity audit.
+# the scaled matrix) is frozen.  The NUMERIC canonical value is FROZEN by
+# G5 (Candidate A) after the A/B/C scale audit on the real G4 hybrid STMs:
+# Candidate A is shared, terminal-independent, trajectory-characteristic,
+# numerically stable under REF-0.1 vs REF-0.05 (singular values / FTLE /
+# v1/u1 alignment), and does not embed an assumed sensor/tolerance model.
+# A was selected on scientific-convention grounds, NOT to obtain a
+# preferred model ranking (the Qian-vs-Sanger ordering is documented to be
+# scale-sensitive -- it flips under Candidate B).  B and C are retained
+# for scale-sensitivity / robustness reporting.
 PREFERRED_CANONICAL_CANDIDATE = "A"
 
 CANONICAL_SCALING_STATUS = SCALING_CONVENTION_DEFINED
 CANONICAL_SCALE_STATUS = SCALING_CONVENTION_DEFINED
 CANONICAL_SCALE_NUMERIC_STATUS = (
-    CANONICAL_SCALE_NUMERIC_VALUES_PENDING_VALIDATION
+    CANONICAL_SCALE_NUMERIC_VALUES_FROZEN
 )
 
 
