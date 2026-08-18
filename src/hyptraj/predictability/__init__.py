@@ -71,6 +71,18 @@ from hyptraj.predictability.terminal_sensitivity import (
     qian_rti_terminal_normal,
     srti_terminal_normal,
 )
+from hyptraj.predictability.grazing import (
+    FrozenGrazingAnchor,
+    GrazingExcursion,
+    ControlledFamilyPoint,
+    load_frozen_grazing_anchors,
+    extract_branch_excursion,
+    controlled_local_grazing_family,
+    build_excursion_factor,
+    local_grazing_excursion_map,
+    directional_topology_radius,
+    fit_loglog_scaling,
+)
 
 __all__ = [
     "machine_readable_protocol",
@@ -105,4 +117,14 @@ __all__ = [
     "build_terminal_sensitivity",
     "qian_rti_terminal_normal",
     "srti_terminal_normal",
+    "FrozenGrazingAnchor",
+    "GrazingExcursion",
+    "ControlledFamilyPoint",
+    "load_frozen_grazing_anchors",
+    "extract_branch_excursion",
+    "controlled_local_grazing_family",
+    "build_excursion_factor",
+    "local_grazing_excursion_map",
+    "directional_topology_radius",
+    "fit_loglog_scaling",
 ]
