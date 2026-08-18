@@ -496,14 +496,39 @@ def test_h0_done_but_h1_and_production_not_started():
     assert status["optimization_performed"] is False
 
 
-def test_production_engine_placeholders_not_started():
-    """sampling.py / propagation.py must remain empty production placeholders."""
+def test_h0_production_status_is_historical_freeze_state():
+    """H1 §6: 'no production propagation at H0' is a H0-freeze-time record.
+
+    H1 ACTIVATES ``propagation.py``, so the H0 lifecycle assertion can no
+    longer inspect the current file emptiness of propagation.py (that would
+    be the same temporal mistake as the stale Phase-G0 live-tag test).  The
+    H0 manifest's flags are historical freeze-state metadata: at H0 freeze
+    time no production propagation / Monte-Carlo / topology probability had
+    been performed.  Those flags intentionally stay ``false``.
+    """
+    assert PHASE_H0_DONE is True
+    assert H1_STARTED is False
+    assert PRODUCTION_COVARIANCE_PROPAGATION_COMPUTED is False
+    assert MONTE_CARLO_PERFORMED is False
+    assert TOPOLOGY_PROBABILITY_COMPUTED is False
+    status = MANIFEST["h0_status"]
+    for key in ("production_covariance_propagation_computed",
+                "monte_carlo_performed", "topology_probability_computed",
+                "uncertainty_map_generated", "gamma0_k_rescanned",
+                "optimization_performed"):
+        assert status[key] is False, key
+
+
+def test_sampling_engine_remains_not_started():
+    """H1 §7, §57: sampling.py is still an empty production placeholder.
+
+    H1 activates only ``propagation.py``; the H2 nonlinear Monte-Carlo
+    sampling engine is NOT started.  ``sampling.py`` must contain no
+    production random-sampling machinery (no RNG draws, no MC runner).
+    """
     sampling_src = (REPO / "src/hyptraj/uncertainty/sampling.py").read_text(
         encoding="utf-8")
-    propagation_src = (REPO / "src/hyptraj/uncertainty/propagation.py").read_text(
-        encoding="utf-8")
-    combined = sampling_src + propagation_src
-    # no Monte-Carlo runner / no real trajectory propagation / no RNG draw
-    for marker in ("solve_ivp", "def sample", "def propagate", "default_rng",
-                   "normal("):
-        assert marker not in combined, marker
+    for marker in ("solve_ivp", "def sample", "default_rng",
+                   "multivariate_normal", "normal("):
+        assert marker not in sampling_src, marker
+    assert sampling_src.strip() == ""    # remains an empty placeholder

@@ -14,6 +14,24 @@ See ``docs/phase_h/h0_uncertainty_risk_protocol.md`` for the authoritative
 protocol and the frozen scope / claim boundaries.
 """
 
+from hyptraj.uncertainty.propagation import (
+    CovarianceSpectrum,
+    FixedTimeLinearUncertaintyResult,
+    TerminalLinearUncertaintyResult,
+    covariance_spectrum,
+    compute_fixed_time_case,
+    compute_terminal_case,
+    fixed_time_alpha_kernel,
+    fixed_time_covariance,
+    frozen_numerical_rank,
+    physical_covariance_coefficient,
+    physical_marginal_std_per_alpha,
+    require_correlation_matrix,
+    require_gradient,
+    require_linear_map,
+    terminal_alpha_kernels,
+    terminal_time_std_per_alpha,
+)
 from hyptraj.uncertainty.protocol import (
     ALPHA_ROLE_NOTE,
     ALPHA_STATUS,
@@ -71,6 +89,22 @@ from hyptraj.uncertainty.protocol import (
 
 __all__ = [
     "ALPHA_ROLE_NOTE",
+    "CovarianceSpectrum",
+    "FixedTimeLinearUncertaintyResult",
+    "TerminalLinearUncertaintyResult",
+    "covariance_spectrum",
+    "compute_fixed_time_case",
+    "compute_terminal_case",
+    "fixed_time_alpha_kernel",
+    "fixed_time_covariance",
+    "frozen_numerical_rank",
+    "physical_covariance_coefficient",
+    "physical_marginal_std_per_alpha",
+    "require_correlation_matrix",
+    "require_gradient",
+    "require_linear_map",
+    "terminal_alpha_kernels",
+    "terminal_time_std_per_alpha",
     "ALPHA_STATUS",
     "CANONICAL_SCALE_KEY",
     "CANONICAL_SCALE_STATUS",

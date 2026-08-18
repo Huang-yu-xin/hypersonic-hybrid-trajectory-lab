@@ -1,7 +1,7 @@
 # Phase H — Topology-Aware Uncertainty & Risk Propagation
 
-状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / READY FOR REVIEW · H1 PENDING**
-（2026-08-19；H0 科学协议经人工验收通过，H0R 完成跨阶段回归契约修正，等待人工验收后进入 H1）。
+状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / ACCEPTED · H1 COMPLETE / READY FOR REVIEW · H2 PENDING**
+（2026-08-19；H0/H0R 经人工验收通过，H1 完成固定拓扑线性不确定性传播，等待人工验收后进入 H2）。
 
 分支：`feature/phase-h-uncertainty-risk`
 上游冻结基线：`phase-g-v1.0` = `predictability-v1.0` =
@@ -39,9 +39,9 @@ interception analysis、robust optimization、control redesign。
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | **H0** | Uncertainty / Risk Protocol Freeze（random-variable semantics · covariance convention · canonical-A scaling · synthetic family · linear formulas · topology RV · mixture · MC / RNG / CI protocol · grazing validity inheritance · risk taxonomy · claim boundaries · machine-readable schema） | **COMPLETE / ACCEPTED** |
-| **H0R** | Frozen-State / Regression Contract Corrective Patch（修正 stale Phase-G0 live-tag absence 测试 → final-freeze manifest lifecycle semantics；`phase_h0_done = true`、`h1_started = false`；机器可读 manifest 仅 lifecycle 字段变更） | **COMPLETE / READY FOR REVIEW** |
-| **H1** | fixed-topology linear uncertainty：`P(T) = Phi P0 Phi^T`、terminal-time variance、terminal-state covariance、rank / eigenspectrum | PENDING |
-| **H2** | nonlinear Monte-Carlo validation（Qian/Sanger baseline T600 + deep fixed-topology Sanger cases；linear covariance vs nonlinear MC） | future |
+| **H0R** | Frozen-State / Regression Contract Corrective Patch（修正 stale Phase-G0 live-tag absence 测试 → final-freeze manifest lifecycle semantics；`phase_h0_done = true`、`h1_started = false`；机器可读 manifest 仅 lifecycle 字段变更） | **COMPLETE / ACCEPTED** |
+| **H1** | fixed-topology linear uncertainty：`P(T) = Phi P0 Phi^T`、terminal-time variance、terminal-state covariance、rank / eigenspectrum（per-alpha response coefficients；linear kernel `K_x = tilde Phi tilde Phi^T`；G5 SVD closure） | **COMPLETE / READY FOR REVIEW** |
+| **H2** | nonlinear Monte-Carlo validation（Qian/Sanger baseline T600 + deep fixed-topology Sanger cases；linear covariance vs nonlinear MC） | PENDING |
 | **H3** | grazing / topology-transition risk（B0–B4 topology probability、`P(N)` / `P(N+1)`、uncertainty amplitude vs topology transition、linearization breakdown）—— Phase H 核心创新阶段 | future |
 | **H4** | topology-conditioned mixture uncertainty（within-topology covariance + between-topology separation；mixture mean/covariance；non-Gaussian output diagnostics） | future |
 | **H5** | cross-model common-time uncertainty synthesis（Qian vs Sanger，same T / same input law / same canonical A；不做 optimization） | future |
@@ -62,8 +62,21 @@ interception analysis、robust optimization、control redesign。
   linear & terminal algebra / topology probability semantics / mixture /
   Gaussian semantics / risk boundary / MC protocol / representative
   cases / no-production guard）。
-- `src/hyptraj/uncertainty/distributions.py` / `propagation.py` /
-  `sampling.py` —— **H0 保持空占位**（H1/H2 生产引擎尚未启动）。
+- `docs/phase_h/h1_fixed_topology_linear_uncertainty.md` —— **H1 权威文档**
+  （fixed-topology linear uncertainty；per-alpha coefficients；G5 SVD closure）。
+- `src/hyptraj/uncertainty/propagation.py` —— **H1 生产模块**
+  （fixed-time / terminal linear covariance kernels、spectrum / rank /
+  physical marginals；纯线性代数，无 RNG、无 trajectory integration）。
+- `scripts/run_phase_h1_linear_uncertainty.py` —— **H1 确定性生成器**
+  （读取 frozen G4/G5 artifacts，计算 kernels 与 G5 cross-check，写出
+  `tests/data/phase_h1_linear_uncertainty_v1.json`；可重复）。
+- `tests/data/phase_h1_linear_uncertainty_v1.json` —— **H1 machine-readable
+  snapshot**（`schema_version = phase-h1-linear-uncertainty-v1`）。
+- `tests/test_uncertainty/test_phase_h1_linear_uncertainty.py` —— H1 测试
+  （kernel / alpha-scaling / SVD / rank / direction / marginals / terminal
+  identities + 冻结回归 vs G5）。
+- `src/hyptraj/uncertainty/distributions.py` / `sampling.py` —— **保持空占位**
+  （H2 sampling engine 未启动）。
 - `src/hyptraj/risk/interception_geometry.py` / `survival.py` —— 保持空占位，
   Phase H 不激活。
 
@@ -107,5 +120,6 @@ interception analysis、robust optimization、control redesign。
 - MC RNG / sequential sample-count / Wilson-CI / common-random-numbers /
   nonphysical-sample 规则冻结（**不产生任何生产 sample**）；
 - risk taxonomy 冻结（仅统计研究风险）；
-- **H1 NOT STARTED / PENDING**；生产 covariance propagation / Monte Carlo /
-  topology probability / uncertainty maps 均未执行。
+- **H1 COMPLETE / READY FOR REVIEW**：固定拓扑线性 covariance 传播已完成
+  （per-alpha response coefficients、G5 SVD closure 全部 PASS）；sampling /
+  **Monte Carlo / topology probability / uncertainty maps 仍未执行**（H2 未启动）。

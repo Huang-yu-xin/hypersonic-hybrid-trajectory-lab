@@ -1,0 +1,1117 @@
+{
+ "alpha_status": "PENDING_NUMERICAL_AUDIT",
+ "canonical_scale": {
+  "key": "A",
+  "status": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN",
+  "values": {
+   "gamma": 0.1,
+   "r": 100000.0,
+   "theta": 1.0,
+   "v": 7000.0
+  }
+ },
+ "claim_boundaries": {
+  "alpha_numeric_not_frozen": true,
+  "canonical_A_only_for_primary_result": true,
+  "first_order_only": true,
+  "fixed_topology_conditioned": true,
+  "interpretation": "Under the frozen canonical-A isotropic dimensionless input covariance, linear models conditioned on the nominal frozen topology only.  NOT a nonlinear truth, NOT a topology-transition probability, NOT a real-world calibrated uncertainty, NOT yet nonlinear-MC validated for any finite alpha (H1 §37, §61, §64).",
+  "monte_carlo_not_performed": true,
+  "native_terminal_not_fair_cross_model_ranking": true,
+  "no_real_world_calibration": true,
+  "scaling_sensitivity_inherited": true,
+  "topology_probability_not_computed": true
+ },
+ "fixed_time": {
+  "qian_T600": {
+   "G5_sigma_closure": "PASS",
+   "G5_sigma_crosscheck_error": 2.25e-10,
+   "G5_sigma_max": 1.608209766,
+   "G5_u1_scaled_closure": 1.000000003306,
+   "R": [
+    [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "descriptive_stress_case": false,
+   "eigenvalue_classification": [
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE",
+    "ZERO"
+   ],
+   "endpoint_mode": "QEG_GLIDE",
+   "fair_cross_model_comparison": true,
+   "horizon_s": 600.0,
+   "kernel_ref_01": [
+    [
+     0.0918591267,
+     0.2298634668,
+     0.3719869219,
+     0.0
+    ],
+    [
+     0.2298634668,
+     1.6028933191,
+     0.9512035537,
+     0.0
+    ],
+    [
+     0.3719869219,
+     0.9512035537,
+     1.5216064523,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "kernel_ref_05": [
+    [
+     0.0918591267,
+     0.2298634668,
+     0.3719869219,
+     0.0
+    ],
+    [
+     0.2298634668,
+     1.6028933191,
+     0.9512035537,
+     0.0
+    ],
+    [
+     0.3719869219,
+     0.9512035537,
+     1.5216064523,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "model": "qian",
+   "nullity": 1,
+   "phi_ref_01": [
+    [
+     -0.0462098969,
+     0.0,
+     3.946709524,
+     115753.3733
+    ],
+    [
+     1.124e-07,
+     1.0,
+     0.0001071857,
+     1.995422579
+    ],
+    [
+     -0.0058597491,
+     0.0,
+     1.158766056,
+     29019.21727
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "phi_ref_05": [
+    [
+     -0.0462098969,
+     0.0,
+     3.946709524,
+     115753.3733
+    ],
+    [
+     1.124e-07,
+     1.0,
+     0.0001071857,
+     1.995422579
+    ],
+    [
+     -0.0058597491,
+     0.0,
+     1.158766056,
+     29019.21727
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "phi_source": "phase_g4_hybrid_stm_v1",
+   "physical_marginal_std_per_alpha": {
+    "gamma": 0.0,
+    "r": 30308.2706089015,
+    "theta": 1.2660542323,
+    "v": 8634.7389168104
+   },
+   "physical_marginal_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+   },
+   "principal_directions": [
+    [
+     -0.1677041406,
+     0.1705853403,
+     0.9709665097,
+     0.0
+    ],
+    [
+     -0.7053518493,
+     -0.7088521958,
+     0.0027079897,
+     0.0
+    ],
+    [
+     -0.6887336858,
+     0.6844188821,
+     -0.2392001336,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "production_kernel_error": {
+    "material_rel_diff": 8.51e-10,
+    "max_abs_diff": 1.364e-09,
+    "sigma_max_diff": 2.39e-10
+   },
+   "rank": 3,
+   "raw_eigenvalues": [
+    2.5863386526,
+    0.629159987,
+    0.0008602585,
+    0.0
+   ],
+   "reference_kernel_error": {
+    "material_rel_diff": 0.0,
+    "max_abs_diff": 0.0,
+    "principal_direction_alignment": 1.0,
+    "rank_01": 3,
+    "rank_05": 3,
+    "sigma_max_diff": 0.0,
+    "sigma_rms_diff": 0.0
+   },
+   "reference_stability_status": "PASS",
+   "scaled_phi": [
+    [
+     -0.0462098969,
+     0.0,
+     0.2762696667,
+     0.1157533733
+    ],
+    [
+     0.0112382851,
+     1.0,
+     0.7502998783,
+     0.1995422579
+    ],
+    [
+     -0.0837107017,
+     0.0,
+     1.158766056,
+     0.4145602467
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "sigma_max_per_alpha": 1.6082097664,
+   "sigma_rms_per_alpha": 1.7934210041,
+   "topology_signature": [
+    "qian_capture"
+   ]
+  },
+  "sanger_T600": {
+   "G5_sigma_closure": "PASS",
+   "G5_sigma_crosscheck_error": 3.01e-10,
+   "G5_sigma_max": 85.87155237,
+   "G5_u1_scaled_closure": 0.999999998556,
+   "R": [
+    [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "descriptive_stress_case": false,
+   "eigenvalue_classification": [
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE"
+   ],
+   "endpoint_mode": "SANGER_ATM",
+   "fair_cross_model_comparison": true,
+   "horizon_s": 600.0,
+   "kernel_ref_01": [
+    [
+     4.242425488,
+     -1.3997438042,
+     -8.2143928789,
+     176.1100308046
+    ],
+    [
+     -1.3997438042,
+     1.4885598688,
+     2.7909444245,
+     -59.1609989331
+    ],
+    [
+     -8.2143928789,
+     2.7909444245,
+     16.1488348439,
+     -344.1890869899
+    ],
+    [
+     176.1100308046,
+     -59.1609989331,
+     -344.1890869899,
+     7353.118504223
+    ]
+   ],
+   "kernel_ref_05": [
+    [
+     4.2424254881,
+     -1.3997438042,
+     -8.2143928789,
+     176.1100308057
+    ],
+    [
+     -1.3997438042,
+     1.4885598688,
+     2.7909444245,
+     -59.1609989331
+    ],
+    [
+     -8.2143928789,
+     2.7909444245,
+     16.1488348439,
+     -344.1890869899
+    ],
+    [
+     176.1100308057,
+     -59.1609989331,
+     -344.1890869899,
+     7353.118504223
+    ]
+   ],
+   "model": "sanger",
+   "nullity": 0,
+   "phi_ref_01": [
+    [
+     -0.3413532693,
+     0.0,
+     -28.80887319,
+     243192.6779
+    ],
+    [
+     1.087e-07,
+     1.0,
+     9.96462e-05,
+     0.4361837235
+    ],
+    [
+     0.0253636078,
+     0.0,
+     4.00118574,
+     -6284.125731
+    ],
+    [
+     -1.08514e-05,
+     0.0,
+     -0.0012133638,
+     4.618541789
+    ]
+   ],
+   "phi_ref_05": [
+    [
+     -0.3413532694,
+     0.0,
+     -28.80887319,
+     243192.6779
+    ],
+    [
+     1.087e-07,
+     1.0,
+     9.96462e-05,
+     0.4361837235
+    ],
+    [
+     0.0253636078,
+     0.0,
+     4.00118574,
+     -6284.125731
+    ],
+    [
+     -1.08514e-05,
+     0.0,
+     -0.0012133638,
+     4.618541789
+    ]
+   ],
+   "phi_source": "phase_g4_hybrid_stm_v1",
+   "physical_marginal_std_per_alpha": {
+    "gamma": 8.5750326555,
+    "r": 205971.4904540365,
+    "theta": 1.2200655182,
+    "v": 28129.929032109
+   },
+   "physical_marginal_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+   },
+   "principal_directions": [
+    [
+     0.0239164519,
+     0.0182419498,
+     -0.6236918685,
+     -0.7810913441
+    ],
+    [
+     -0.0080355288,
+     0.9995460854,
+     0.0290352523,
+     -8.64976e-05
+    ],
+    [
+     -0.0467426756,
+     0.0223602345,
+     -0.7808382371,
+     0.6225807495
+    ],
+    [
+     0.9985882815,
+     0.0086529914,
+     -0.0213788391,
+     0.0478488777
+    ]
+   ],
+   "production_kernel_error": {
+    "material_rel_diff": 6.621e-09,
+    "max_abs_diff": 4.8681378e-05,
+    "sigma_max_diff": 2.82098e-07
+   },
+   "rank": 4,
+   "raw_eigenvalues": [
+    7373.9235108665,
+    1.0132966395,
+    0.0601645713,
+    0.0013523463
+   ],
+   "reference_kernel_error": {
+    "material_rel_diff": 0.0,
+    "max_abs_diff": 1.085e-09,
+    "principal_direction_alignment": 1.0,
+    "rank_01": 4,
+    "rank_05": 4,
+    "sigma_max_diff": 0.0,
+    "sigma_rms_diff": 0.0
+   },
+   "reference_stability_status": "PASS",
+   "scaled_phi": [
+    [
+     -0.3413532693,
+     0.0,
+     -2.0166211233,
+     0.2431926779
+    ],
+    [
+     0.0108705503,
+     1.0,
+     0.6975235749,
+     0.0436183724
+    ],
+    [
+     0.3623372546,
+     0.0,
+     4.00118574,
+     -0.0897732247
+    ],
+    [
+     -10.85144773,
+     0.0,
+     -84.93546761,
+     4.618541789
+    ]
+   ],
+   "sigma_max_per_alpha": 85.8715523958,
+   "sigma_rms_per_alpha": 85.877810431,
+   "topology_signature": [
+    "sanger_atmosphere_exit",
+    "sanger_atmosphere_entry"
+   ]
+  },
+  "sanger_T900": {
+   "G5_sigma_closure": "PASS",
+   "G5_sigma_crosscheck_error": 2.32e-10,
+   "G5_sigma_max": 22.0905915,
+   "G5_u1_scaled_closure": 1.000000000493,
+   "R": [
+    [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "descriptive_stress_case": true,
+   "eigenvalue_classification": [
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE"
+   ],
+   "endpoint_mode": "SANGER_ATM",
+   "fair_cross_model_comparison": false,
+   "horizon_s": 900.0,
+   "kernel_ref_01": [
+    [
+     200.6080934806,
+     16.0035022628,
+     12.74760561,
+     239.0127905725
+    ],
+    [
+     16.0035022628,
+     2.3121582747,
+     1.0587492633,
+     19.2387995024
+    ],
+    [
+     12.74760561,
+     1.0587492633,
+     0.8595891973,
+     15.3874717886
+    ],
+    [
+     239.0127905725,
+     19.2387995024,
+     15.3874717886,
+     285.626295265
+    ]
+   ],
+   "kernel_ref_05": [
+    [
+     200.6080934806,
+     16.0035022628,
+     12.74760561,
+     239.0127905725
+    ],
+    [
+     16.0035022628,
+     2.3121582747,
+     1.0587492633,
+     19.2387995024
+    ],
+    [
+     12.74760561,
+     1.0587492633,
+     0.8595891973,
+     15.3874717886
+    ],
+    [
+     239.0127905725,
+     19.2387995024,
+     15.3874717886,
+     285.626295265
+    ]
+   ],
+   "model": "sanger",
+   "nullity": 0,
+   "phi_ref_01": [
+    [
+     1.486290864,
+     0.0,
+     200.686477,
+     -1025294.543
+    ],
+    [
+     1.386e-07,
+     1.0,
+     0.0001632959,
+     0.7317480817
+    ],
+    [
+     -0.0029847249,
+     0.0,
+     0.9198293278,
+     7566.843601
+    ],
+    [
+     1.3999e-06,
+     0.0,
+     0.0002405447,
+     -0.3796674954
+    ]
+   ],
+   "phi_ref_05": [
+    [
+     1.486290864,
+     0.0,
+     200.686477,
+     -1025294.543
+    ],
+    [
+     1.386e-07,
+     1.0,
+     0.0001632959,
+     0.7317480817
+    ],
+    [
+     -0.0029847249,
+     0.0,
+     0.9198293278,
+     7566.843601
+    ],
+    [
+     1.3999e-06,
+     0.0,
+     0.0002405447,
+     -0.3796674954
+    ]
+   ],
+   "phi_source": "phase_g4_hybrid_stm_v1",
+   "physical_marginal_std_per_alpha": {
+    "gamma": 1.6900482102,
+    "r": 1416361.8657695,
+    "theta": 1.5205782698,
+    "v": 6489.9823318869
+   },
+   "physical_marginal_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+   },
+   "principal_directions": [
+    [
+     -0.64081231,
+     -0.1378009572,
+     -0.7267622348,
+     0.2053950669
+    ],
+    [
+     -0.0515024797,
+     0.9884599167,
+     -0.1424501969,
+     -0.0015585759
+    ],
+    [
+     -0.0410414902,
+     0.0422359245,
+     0.2974869727,
+     0.952907773
+    ],
+    [
+     -0.7648677493,
+     0.0466263451,
+     0.6025164699,
+     -0.2231080758
+    ]
+   ],
+   "production_kernel_error": {
+    "material_rel_diff": 6.675e-09,
+    "max_abs_diff": 1.906693e-06,
+    "sigma_max_diff": 3.8564e-08
+   },
+   "rank": 4,
+   "raw_eigenvalues": [
+    487.9942330466,
+    1.0338608453,
+    0.3752244549,
+    0.0028178708
+   ],
+   "reference_kernel_error": {
+    "material_rel_diff": 0.0,
+    "max_abs_diff": 0.0,
+    "principal_direction_alignment": 1.0,
+    "rank_01": 4,
+    "rank_05": 4,
+    "sigma_max_diff": 0.0,
+    "sigma_rms_diff": 0.0
+   },
+   "reference_stability_status": "PASS",
+   "scaled_phi": [
+    [
+     1.486290864,
+     0.0,
+     14.04805339,
+     -1.025294543
+    ],
+    [
+     0.0138627754,
+     1.0,
+     1.1430711026,
+     0.0731748082
+    ],
+    [
+     -0.0426389267,
+     0.0,
+     0.9198293278,
+     0.1080977657
+    ],
+    [
+     1.399877072,
+     0.0,
+     16.838126144,
+     -0.3796674954
+    ]
+   ],
+   "sigma_max_per_alpha": 22.0905915051,
+   "sigma_rms_per_alpha": 22.1225255389,
+   "topology_signature": [
+    "sanger_atmosphere_exit",
+    "sanger_atmosphere_entry",
+    "sanger_atmosphere_exit",
+    "sanger_atmosphere_entry"
+   ]
+  }
+ },
+ "h2_handoff": {
+  "alpha_not_chosen_at_h1": true,
+  "linear_prediction_kernel": "H2 will validate the linear prediction kernel / per-alpha coefficients against nonlinear Monte-Carlo (mean / covariance / principal spreads) and monitor the topology-preservation fraction (H1 §62)."
+ },
+ "input_family": "Z0 = S_A^-1 delta X0 ~ N(0, alpha^2 R); canonical R = I => tilde P0 = alpha^2 I (H0 §12, H1 §8).",
+ "protocol_version": "phase-h-uncertainty-risk-protocol-v1",
+ "reporting_normalization": "PER_ALPHA_RESPONSE_COEFFICIENTS",
+ "schema_version": "phase-h1-linear-uncertainty-v1",
+ "source_artifacts": {
+  "consumption_rule": "H1 consumes frozen Phase-G derivatives (G4 hybrid STM, G5 terminal eta/J); it does not redefine or repair them.",
+  "phase_g4_hybrid_stm_v1.json": "phase-g4-hybrid-stm-v1",
+  "phase_g5_predictability_metrics_v1.json": "phase-g5-predictability-metrics-v1"
+ },
+ "starting_h0r_commit": "4f9463f75cbf62b0a83312a67ea43fa173f77c12",
+ "state_order": [
+  "r",
+  "theta",
+  "v",
+  "gamma"
+ ],
+ "terminal": {
+  "qian_RTI": {
+   "G5_eta_closure": "PASS",
+   "G5_eta_crosscheck_error": 1.853e-09,
+   "G5_eta_norm": 1093.301727,
+   "G5_rank": 2,
+   "G5_terminal_sigma_closure": "PASS",
+   "G5_terminal_sigma_crosscheck_error": 5.144e-09,
+   "G5_terminal_sigma_max": 1.915979961,
+   "J": [
+    [
+     -0.046209897,
+     0.0,
+     3.9467095,
+     115753.37
+    ],
+    [
+     2.589e-07,
+     1.0,
+     0.0002036241,
+     4.0018827
+    ],
+    [
+     -0.0081985306,
+     0.0,
+     0.7002227,
+     20536.89
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "J_scaled": [
+    [
+     -0.046209897,
+     0.0,
+     0.276269665,
+     0.11575337
+    ],
+    [
+     0.025894428,
+     1.0,
+     1.42536849,
+     0.40018827
+    ],
+    [
+     -0.1171218657,
+     0.0,
+     0.7002227,
+     0.2933841429
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "R": [
+    [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "eigenvalue_classification": [
+    "POSITIVE",
+    "POSITIVE",
+    "NUMERIC_ZERO",
+    "ZERO"
+   ],
+   "eta": [
+    0.0005383463,
+    0.0,
+    0.15028752,
+    2927.1129
+   ],
+   "eta_scaled": [
+    53.834634,
+    0.0,
+    1052.01264,
+    292.71129
+   ],
+   "model": "qian",
+   "nullity": 2,
+   "physical_marginal_std_per_alpha": {
+    "gamma": 0.0,
+    "r": 30308.2703311027,
+    "theta": 1.7867558605,
+    "v": 5377.2741420613
+   },
+   "physical_marginal_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+   },
+   "rank": 2,
+   "rank_matches_g5": true,
+   "raw_eigenvalues": [
+    3.6709791732,
+    0.2034800733,
+    0.0,
+    0.0
+   ],
+   "reference_status": "PASS",
+   "scaled_state_time_correlation": [
+    0.9718523248,
+    0.8282926735,
+    0.9718523243,
+    null
+   ],
+   "scaled_state_time_cross_cov_per_alpha2": [
+    322.0338049909,
+    1618.0393099463,
+    816.2147693621,
+    0.0
+   ],
+   "terminal_kind": "RTI",
+   "terminal_sigma_max_per_alpha": 1.9159799511,
+   "terminal_sigma_rms_per_alpha": 1.9683646122,
+   "terminal_state_kernel": [
+    [
+     0.091859125,
+     0.4389126373,
+     0.2328226833,
+     0.0
+    ],
+    [
+     0.4389126373,
+     3.1924965051,
+     1.1124514614,
+     0.0
+    ],
+    [
+     0.2328226833,
+     1.1124514614,
+     0.5901036163,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "terminal_time": 723.03797,
+   "terminal_time_std_per_alpha": 1093.301724974
+  },
+  "sanger_SRTI": {
+   "G5_eta_closure": "PASS",
+   "G5_eta_crosscheck_error": 4.391e-09,
+   "G5_eta_norm": 3308.568119,
+   "G5_rank": 3,
+   "G5_terminal_sigma_closure": "PASS",
+   "G5_terminal_sigma_crosscheck_error": 1.367e-09,
+   "G5_terminal_sigma_max": 4.851141246,
+   "J": [
+    [
+     0.12670532,
+     0.0,
+     16.664457,
+     -234464.66
+    ],
+    [
+     2.9904e-06,
+     1.0,
+     0.0006354398,
+     -0.83355679
+    ],
+    [
+     -0.0025380855,
+     0.0,
+     1.1845227,
+     9277.4644
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "J_scaled": [
+    [
+     0.12670532,
+     0.0,
+     1.16651199,
+     -0.23446466
+    ],
+    [
+     0.29903568,
+     1.0,
+     4.44807874,
+     -0.083355679
+    ],
+    [
+     -0.0362583643,
+     0.0,
+     1.1845227,
+     0.1325352057
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "R": [
+    [
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "eigenvalue_classification": [
+    "POSITIVE",
+    "POSITIVE",
+    "POSITIVE",
+    "ZERO"
+   ],
+   "eta": [
+    0.0031644867,
+    -0.0,
+    0.46960765,
+    -2011.1499
+   ],
+   "eta_scaled": [
+    316.44867,
+    0.0,
+    3287.25355,
+    -201.11499
+   ],
+   "model": "sanger",
+   "nullity": 1,
+   "physical_marginal_std_per_alpha": {
+    "gamma": 0.0,
+    "r": 119656.9320064232,
+    "theta": 4.5696580818,
+    "v": 8347.2594035968
+   },
+   "physical_marginal_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+   },
+   "rank": 3,
+   "rank_matches_g5": true,
+   "raw_eigenvalues": [
+    23.533571453,
+    0.1217343342,
+    0.0802216114,
+    0.0
+   ],
+   "reference_status": "PASS",
+   "scaled_state_time_correlation": [
+    0.9906388067,
+    0.9744911573,
+    0.9772755426,
+    null
+   ],
+   "scaled_state_time_cross_cov_per_alpha2": [
+    3921.8707679922,
+    14733.3561485116,
+    3855.6977229041,
+    0.0
+   ],
+   "terminal_kind": "srti",
+   "terminal_sigma_max_per_alpha": 4.8511412526,
+   "terminal_sigma_rms_per_alpha": 4.8719120886,
+   "terminal_state_kernel": [
+    [
+     1.4317781377,
+     5.2461705551,
+     1.3460909824,
+     0.0
+    ],
+    [
+     5.2461705551,
+     20.8817749844,
+     5.2469601322,
+     0.0
+    ],
+    [
+     1.3460909824,
+     5.2469601322,
+     1.4219742765,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "terminal_time": 1119.546,
+   "terminal_time_std_per_alpha": 3308.5681044729
+  }
+ },
+ "upstream_phase_f_commit": "96253f1ef7785764d8da3156d7d614d2b244b577",
+ "upstream_phase_g_commit": "6fb75c4a5f7b6460a5c9503c99fe2b2b2c96854c"
+}
