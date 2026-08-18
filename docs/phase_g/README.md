@@ -1,13 +1,13 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0–G4/G4R COMPLETE / ACCEPTED**；**G5 COMPLETE**（2026-08-18）
+状态：**G0–G4/G4R COMPLETE / ACCEPTED**；**G5 COMPLETE / ACCEPTED**；**G5R COMPLETE**（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
 G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 `a7119c0`；
-G4 `de17ac8`；G4R `01f33a5`；G5 commit：见 git log（G5 accept 后创建）。
+G4 `de17ac8`；G4R `01f33a5`；G5 `bdc1265`；G5R commit：见 git log（G5R accept 后创建）。
 
-G0–G5 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
+G0–G5R **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
 
 ## 1. Phase G 目标
@@ -36,7 +36,8 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G3** | event-local transverse hybrid saltation（q_e、Ξ、det lemma、局部非线性验证） | **COMPLETE / ACCEPTED** |
 | **G4** | 固定时间 hybrid STM（连续 STM × saltation 链式组合 + 全局事件时间梯度 + 全轨迹 nonlinear FD） | **COMPLETE / ACCEPTED** |
 | **G4R** | hybrid topology-gate 纠正（endpoint-scoped terminal + multiplicity event-order） | **COMPLETE / ACCEPTED** |
-| **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE**（`g5_predictability_metrics.md`） |
+| **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE / ACCEPTED** |
+| **G5R** | terminal-sensitivity contract guard（eligibility + transversality exact-zero）+ RTI strict-interior trim convergence audit | **COMPLETE**（g5 doc §14） |
 | G6 | grazing / transversality-loss 分析（B0–B4 anchors） | PENDING |
 | G7 | 最终报告 / 冻结 | PENDING |
 
@@ -60,7 +61,7 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
   全轨迹 nonlinear FD · negative control · G5 handoff）
 - `docs/phase_g/g5_predictability_metrics.md` —— **G5 有限时可预测性指标与
   终端敏感性报告**（scaled SVD/FTLE · canonical scale A freeze · A/B/C audit ·
-  T600 cross-model · RTI/SRTI terminal sensitivity）
+  T600 cross-model · RTI/SRTI terminal sensitivity · §14 G5R contract + trim audit）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结

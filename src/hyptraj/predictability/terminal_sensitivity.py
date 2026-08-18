@@ -49,6 +49,32 @@ from hyptraj.predictability.scaling import canonical_candidate
 
 _STATE_DIM = 4
 
+# Expected frozen terminal kinds per model (G5R §1).
+EXPECTED_TERMINAL_KIND = {
+    "qian": "RTI",
+    "sanger": "srti",
+}
+TERMINAL_NAME = {
+    "qian": "RTI",
+    "sanger": "SRTI",
+}
+
+
+class TerminalSensitivityEligibilityError(RuntimeError):
+    """The actual frozen research terminal is NOT the expected research
+    terminal (e.g. Qian ended with GROUND/MAX_TIME/SOLVER_FAILURE instead
+    of RTI, or Sanger with ground/censor/failure/grazing instead of srti).
+    Terminal sensitivity is only defined on the expected branch; no
+    eta / J / terminal-SVD is computed on a wrong terminal."""
+
+
+class NonTransverseTerminalError(RuntimeError):
+    """The terminal event has an EXACT-ZERO or NONFINITE transversality
+    denominator ``n^T f^-``; the standard first-order terminal event-time
+    linearization is undefined.  Only exact-zero / nonfinite are rejected
+    -- a small FINITE denominator is never threshold-rejected here (G6
+    owns the near-grazing validity domain)."""
+
 
 class TerminalGate(Enum):
     TOPOLOGY_PRESERVED = "TOPOLOGY_PRESERVED"
@@ -56,6 +82,47 @@ class TerminalGate(Enum):
     EVENT_ORDER_CHANGED = "EVENT_ORDER_CHANGED"
     GRAZING_CROSSED = "GRAZING_CROSSED"
     NUMERICAL_FAILURE = "NUMERICAL_FAILURE"
+
+
+def validate_terminal_transversality(denominator) -> float:
+    """Terminal transversality policy (G5R §5-§7).
+
+    Escalate the scalar denominator to float and reject ONLY
+    non-finite / exact-zero values with ``NonTransverseTerminalError``.
+    A small finite denominator (e.g. 1e-12) is ACCEPTED -- no
+    grazing / transversality numerical threshold is defined here (G6).
+    """
+    denom = float(denominator)
+    if not np.isfinite(denom):
+        raise NonTransverseTerminalError(
+            f"Terminal denominator n^T f^- is not finite ({denom}).")
+    if denom == 0.0:
+        raise NonTransverseTerminalError(
+            "Terminal denominator n^T f^- is exactly zero: standard "
+            "first-order terminal event-time linearization is undefined "
+            "(near-grazing validity is G6, not thresholded here).")
+    return denom
+
+
+def terminal_event_time_gradient(normal, phi_preterminal, f_minus) -> np.ndarray:
+    """``eta_e = -n^T Phi_e^- / (n^T f_e^-)`` with transversality guard.
+
+    Concentrates shape / finite / exact-zero-denominator checking and the
+    frozen event-time formula in one helper (G5R §8), so future G6 never
+    re-implements an unchecked division.  Only exact-zero / nonfinite
+    denominators are rejected.
+    """
+    normal = np.asarray(normal, dtype=float)
+    phi_preterminal = np.asarray(phi_preterminal, dtype=float)
+    f_minus = np.asarray(f_minus, dtype=float)
+    if normal.shape != (_STATE_DIM,) or phi_preterminal.shape != (
+            _STATE_DIM, _STATE_DIM) or f_minus.shape != (_STATE_DIM,):
+        raise ValueError("terminal_event_time_gradient received wrong shapes.")
+    if not (np.all(np.isfinite(normal)) and np.all(np.isfinite(phi_preterminal))
+            and np.all(np.isfinite(f_minus))):
+        raise ValueError("terminal sensitivity inputs must be finite.")
+    denom = validate_terminal_transversality(float(normal @ f_minus))
+    return -normal @ phi_preterminal / denom
 
 
 def _terminal_kind_and_time(result):
@@ -232,6 +299,27 @@ def _qeg_trim_time(collector, capture_time: float, rti_time: float,
     return lo
 
 
+def check_terminal_eligibility(model: str, frozen_terminal_kind: str,
+                               terminal_time: float) -> None:
+    """G5R eligibility contract (Issue 1) as a pure helper.
+
+    Terminal sensitivity is only defined when the actual frozen
+    ``terminal_kind`` equals the expected research terminal (Qian ``RTI``,
+    Sanger ``srti``).  Raises ``TerminalSensitivityEligibilityError``
+    otherwise -- no eta / J / terminal-SVD is ever computed on a wrong
+    terminal.  Reads only frozen structured metadata.
+    """
+    expected = EXPECTED_TERMINAL_KIND.get(model)
+    if expected is None:
+        raise ValueError(f"model must be 'qian' or 'sanger'; got {model!r}.")
+    if str(frozen_terminal_kind) != expected:
+        raise TerminalSensitivityEligibilityError(
+            f"{TERMINAL_NAME[model]} terminal sensitivity requires "
+            f"terminal_kind == {expected!r}, but the frozen trajectory "
+            f"ended with terminal_kind = {frozen_terminal_kind!r} at "
+            f"t = {terminal_time:.6f} s.")
+
+
 def build_terminal_sensitivity(
     model: str,
     x0: np.ndarray,
@@ -241,12 +329,30 @@ def build_terminal_sensitivity(
     research_solver=None,
     stm_solver=None,
     scale_key: str | None = None,
+    *,
+    qian_trim_u_eps: float = 1e-9,
 ) -> TerminalSensitivityResult:
-    """Analytic terminal sensitivity for Qian RTI / Sanger SRTI (G5 §30-§37)."""
+    """Analytic terminal sensitivity for Qian RTI / Sanger SRTI (G5 §30-§37).
+
+    G5R eligibility contract: the terminal sensitivity is ONLY defined
+    when the actual frozen ``terminal_kind`` equals the expected research
+    terminal (Qian ``RTI``, Sanger ``srti``); otherwise
+    ``TerminalSensitivityEligibilityError`` is raised and no eta / J /
+    terminal-SVD is produced.  ``model`` must be exactly ``"qian"`` or
+    ``"sanger"``.
+    """
     from hyptraj.analysis.comparison_validation import REFERENCE_SOLVER_CONFIG
     from hyptraj.modes.continuous_glide import QEG_GLIDE, continuous_glide_rhs
     from hyptraj.modes.sanger_hybrid import sanger_atm_rhs
     from hyptraj.predictability.stm import stm_strict_reference_config
+
+    if model not in EXPECTED_TERMINAL_KIND:
+        raise ValueError(
+            f"model must be 'qian' or 'sanger'; got {model!r}.")
+    if not (np.isfinite(qian_trim_u_eps) and 0.0 < qian_trim_u_eps < 1.0):
+        raise ValueError(
+            f"qian_trim_u_eps must satisfy 0 < u_eps < 1 finite; "
+            f"got {qian_trim_u_eps!r}.")
 
     research_solver = research_solver or REFERENCE_SOLVER_CONFIG
     stm_solver = stm_solver or stm_strict_reference_config()
@@ -274,32 +380,39 @@ def build_terminal_sensitivity(
         traj = integrate_qian_research_trajectory(
             env, vehicle, research_ic, ctl,
             solver=research_solver, dense_output_collector=collector)
-        terminal_name = "RTI"
         initial_mode = "ENTRY_CAPTURE"
-    else:
+    elif model == "sanger":
         sanger = integrate_sanger_research_trajectory(
             env, vehicle, research_ic, ctl,
             solver=research_solver, dense_output_collector=collector)
         traj = sanger
-        terminal_name = "SRTI"
         initial_mode = "SANGER_ATM"
+    else:  # pragma: no cover -- guarded above
+        raise ValueError(f"model must be 'qian' or 'sanger'; got {model!r}.")
 
+    terminal_name = TERMINAL_NAME[model]
     frozen_kind, t_e, x_e = _terminal_kind_and_time(traj)
+
+    # G5R eligibility guard (Issue 1): only the expected research terminal
+    # may enter the terminal-sensitivity algebra.
+    check_terminal_eligibility(model, frozen_kind, t_e)
     events = _terminal_events(traj)
     switches = true_switch_events_before(t_e, events)
     sig = tuple(sw["kind"] for sw in switches)
 
     # preterminal hybrid STM (no terminal saltation); the QIAN last QEG
     # factor is trimmed to a strict-interior neighbourhood of the RTI
-    # clipping boundary (u_L* <= 1 - 1e-9); the omitted boundary interval
-    # contributes ~ O(1e-9) to the preterminal flow STM.
+    # clipping boundary (u_L* <= 1 - qian_trim_u_eps).  The omitted
+    # boundary contribution is bounded by the trim-sensitivity convergence
+    # audit (G5R §9-§14): ``Phi(t_eps,0) -> Phi^-_RTI`` as u_eps -> 0.
     pre_terminal_time = t_e
     if model == "qian":
         capture_time = next((sw["time"] for sw in switches
                              if sw["kind"] == "qian_capture"), None)
         if capture_time is not None:
             pre_terminal_time = _qeg_trim_time(collector, capture_time, t_e,
-                                               env, vehicle, k)
+                                               env, vehicle, k,
+                                               u_eps=qian_trim_u_eps)
     phi_pre = build_split_tail(model, 0.0, x0, initial_mode, pre_terminal_time,
                                events, env, vehicle, k, stm_solver=stm_solver)
 
@@ -307,12 +420,14 @@ def build_terminal_sensitivity(
     if model == "qian":
         normal = qian_rti_terminal_normal(x_e, env, vehicle, k)
         f_minus = continuous_glide_rhs(QEG_GLIDE, t_e, x_e, env, vehicle, ctl)
-    else:
+    elif model == "sanger":
         normal = srti_terminal_normal()
         f_minus = sanger_atm_rhs(t_e, x_e, env, vehicle, ctl)
+    else:  # pragma: no cover -- guarded above
+        raise ValueError(f"model must be 'qian' or 'sanger'; got {model!r}.")
 
-    denom = float(normal @ f_minus)
-    eta = -normal @ phi_pre / denom
+    denom = validate_terminal_transversality(float(normal @ f_minus))
+    eta = terminal_event_time_gradient(normal, phi_pre, f_minus)
     J = phi_pre + np.outer(f_minus, eta)
     # n^T J_e = 0 is a 4-component row identity; report the max absolute.
     tangency = float(np.max(np.abs(normal @ J)))
@@ -466,3 +581,134 @@ def terminal_fd_sweep(
             }
         out[f"mult_{mult:g}"] = rec
     return out
+
+# ---------------------------------------------------------------------------
+# Qian RTI strict-interior trim convergence audit (G5R §9-§14)
+# ---------------------------------------------------------------------------
+def qian_rti_trim_audit(
+    x0: np.ndarray,
+    env: EnvironmentParams,
+    vehicle: VehicleParams,
+    k=3.0,
+    research_solver=None,
+    stm_solver=None,
+    scale_key: str | None = None,
+    u_eps_list=(1e-6, 1e-7, 1e-8, 1e-9, 1e-10),
+    default_u_eps: float = 1e-9,
+) -> dict:
+    """Convergence evidence for the RTI strict-interior trim (G5R §10-§14).
+
+    The scientific object is ``Phi^-_RTI = lim_{t -> t_RTI-} Phi(t, 0)``.
+    build_terminal_sensitivity computes ``Phi(t_eps, 0)`` with
+    ``u_L*(t_eps) = 1 - eps_u``; this audit verifies convergence as
+    ``eps_u -> 0`` by comparing Phi / eta / J / scaled sigma_max at each
+    ``u_eps`` relative to the default (1e-9).  ``build_split_tail`` is the
+    only per-u_eps cost (the research trajectory is integrated once).
+    """
+    from hyptraj.analysis.comparison_validation import REFERENCE_SOLVER_CONFIG
+    from hyptraj.modes.continuous_glide import QEG_GLIDE, continuous_glide_rhs
+    from hyptraj.predictability.metrics import scale_values_by_key
+    from hyptraj.predictability.stm import stm_strict_reference_config
+
+    research_solver = research_solver or REFERENCE_SOLVER_CONFIG
+    stm_solver = stm_solver or stm_strict_reference_config()
+    scale_key = scale_key or canonical_candidate().key
+    scales = scale_values_by_key(scale_key)
+    x0 = np.asarray(x0, dtype=float)
+    ctl = ConstantKControl(k)
+
+    from hyptraj.simulation.dense_output import DenseOutputCollector
+    from hyptraj.simulation.qian_research_trajectory import (
+        integrate_qian_research_trajectory,
+    )
+
+    collector = DenseOutputCollector()
+    traj = integrate_qian_research_trajectory(
+        env, vehicle, InitialCondition(
+            altitude=float(x0[0] - env.earth_radius),
+            velocity=float(x0[2]),
+            flight_path_angle_deg=float(np.rad2deg(x0[3])),
+            range_angle=float(x0[1])),
+        ctl, solver=research_solver, dense_output_collector=collector)
+    frozen_kind, t_rti, x_e = _terminal_kind_and_time(traj)
+    if frozen_kind != "RTI":
+        raise TerminalSensitivityEligibilityError(
+            f"Qian RTI trim audit requires terminal_kind == 'RTI'; got "
+            f"{frozen_kind!r} at t = {t_rti:.6f} s.")
+    events = _terminal_events(traj)
+    switches = true_switch_events_before(t_rti, events)
+    cap_t = next((sw["time"] for sw in switches
+                  if sw["kind"] == "qian_capture"), None)
+    if cap_t is None:
+        raise RuntimeError("Qian capture not found for the trim audit.")
+    f_minus = continuous_glide_rhs(QEG_GLIDE, t_rti, x_e, env, vehicle, ctl)
+    normal = qian_rti_terminal_normal(x_e, env, vehicle, k)
+    denom = validate_terminal_transversality(float(normal @ f_minus))
+    S = np.diag([float(scales[v]) for v in ("r", "theta", "v", "gamma")])
+    S_inv = np.diag(1.0 / np.diag(S))
+
+    from hyptraj.predictability.ftle import numerical_rank
+
+    results = {}
+    for eps_u in u_eps_list:
+        t_trim = _qeg_trim_time(collector, cap_t, t_rti, env, vehicle, k,
+                                u_eps=eps_u)
+        phi_pre = build_split_tail("qian", 0.0, x0, "ENTRY_CAPTURE", t_trim,
+                                   events, env, vehicle, k, stm_solver=stm_solver)
+        eta = terminal_event_time_gradient(normal, phi_pre, f_minus)
+        J = phi_pre + np.outer(f_minus, eta)
+        J_tilde = S_inv @ J @ S
+        sigma = np.linalg.svd(J_tilde, compute_uv=False)
+        results[eps_u] = {
+            "u_eps": eps_u,
+            "trim_time": t_trim,
+            "t_rti_minus_trim": t_rti - t_trim,
+            "phi_pre": phi_pre,
+            "eta": eta,
+            "J": J,
+            "sigma_max": float(sigma[0]) if sigma.size else 0.0,
+        }
+
+    def mat_rel(a, b, key):
+        da = results[a][key]
+        db = results[b][key]
+        if isinstance(da, np.ndarray) and da.ndim == 2:
+            m = np.abs(db) >= 1e-8 * np.max(np.abs(db), initial=1e-300)
+            denom = np.maximum(np.abs(db[m]), 1e-300) if m.any() else 1e-300
+            return float(np.max(np.abs(da[m] - db[m]) / denom)) if m.any() else 0.0
+        # vector
+        m = np.abs(db) >= 1e-8 * np.max(np.abs(db), initial=1e-300)
+        denom = np.maximum(np.abs(db[m]), 1e-300) if m.any() else 1e-300
+        return float(np.max(np.abs(da[m] - db[m]) / denom)) if m.any() else 0.0
+
+    rep = {}
+    for eps_u in u_eps_list:
+        r = results[eps_u]
+        rep[eps_u] = {
+            "trim_time": r["trim_time"],
+            "t_rti_minus_trim": r["t_rti_minus_trim"],
+            "phi_material_rel_vs_default": mat_rel(eps_u, default_u_eps, "phi_pre"),
+            "eta_material_rel_vs_default": mat_rel(eps_u, default_u_eps, "eta"),
+            "J_material_rel_vs_default": mat_rel(eps_u, default_u_eps, "J"),
+            "sigma_max_rel_vs_default": (
+                abs(r["sigma_max"] - results[default_u_eps]["sigma_max"])
+                / results[default_u_eps]["sigma_max"]
+                if results[default_u_eps]["sigma_max"] > 0 else None),
+            "sigma_max": r["sigma_max"],
+        }
+    # consecutive-pair convergence in the accepted tail: prefer the
+    # (1e-8, 1e-9) pair when present, else the two smallest u_eps supplied.
+    avail = sorted(u_eps_list)
+    if len(avail) >= 2 and 1e-8 in avail and 1e-9 in avail:
+        pair_a, pair_b = 1e-8, 1e-9
+    else:
+        pair_a, pair_b = avail[-2], avail[-1]
+    tail_rel = mat_rel(pair_a, pair_b, "phi_pre")
+    return {
+        "u_eps_list": list(u_eps_list),
+        "default_u_eps": default_u_eps,
+        "terminal_time": t_rti,
+        "per_u_eps": rep,
+        "consecutive_phi_material_rel_1e-8_vs_1e-9": tail_rel,
+        "converged_below_reference_budget": bool(tail_rel < 1e-8),
+    }

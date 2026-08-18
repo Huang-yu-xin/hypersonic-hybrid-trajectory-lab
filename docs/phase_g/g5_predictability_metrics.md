@@ -184,3 +184,69 @@ topology-changing epsilon threshold / grazing-adjacent FTLE interpretation
 `finite_time_metrics`。
 
 **G5 = COMPLETE；等待人工验收后再进入 G6。**
+---
+
+## 14. G5R — corrective patch（terminal contract & RTI trim convergence）
+
+状态：**COMPLETE**（2026-08-18；commit "修正 Phase G5 终端敏感性契约与 RTI 极限验证"）。
+G5 科学结果（scaled SVD/FTLE、A/B/C audit、canonical A freeze、fixed-time
+Qian/Sanger metrics、T600 comparison、canonical scale、Qian RTI 与 Sanger
+SRTI 数值敏感性、native-terminal limitation）全部保留；本轮只补
+terminal-sensitivity infrastructure 的 defensive scientific contract 与
+RTI trim 的 convergence evidence。
+
+### Terminal eligibility contract（G5R §1-§4）
+
+```
+Qian  terminal sensitivity 只在 frozen terminal_kind == "RTI" 时定义
+Sanger terminal sensitivity 只在 frozen terminal_kind == "srti" 时定义
+```
+
+`build_terminal_sensitivity` 现在先验证实际 frozen terminal kind；不匹配
+（GROUND / MAX_TIME / SOLVER_FAILURE / grazing_or_unresolved …）→
+`TerminalSensitivityEligibilityError`（不计算 eta / J / terminal-SVD）。
+`model` 必须精确为 "qian"/"sanger"，异常字符串 → `ValueError`。只读 frozen
+structured metadata，不解析文本。G5 现有数值不变（baseline 均为 RTI/srti）。
+
+### Terminal transversality contract（G5R §5-§8）
+
+标准一阶 terminal event-time 公式要求有限非零 `n^T f^-`。`validate_
+terminal_transversality` / `terminal_event_time_gradient` 只拒绝：
+
+```
+nonfinite denominator（NaN/inf）-> NonTransverseTerminalError
+exact-zero denominator          -> NonTransverseTerminalError
+```
+
+**任何 small finite denominator（如 1e-12）不被 threshold 拒绝** ——
+G5R **没有冻结任何 grazing / transversality numerical threshold**；near-grazing
+validity 属于 G6。
+
+### Qian RTI interior-limit audit（G5R §9-§14）
+
+科学对象为 `Phi^-_RTI = lim_{u_L*->1-} Phi(t,0)`（RTI 是 QEG clipping
+boundary，G1 Jacobian 仅定义于严格 interior）。`build_terminal_sensitivity`
+计算 `Phi(t_eps,0)`，`u_L*(t_eps) = 1 - u_eps`（keyword-only
+`qian_trim_u_eps`，guard `0 < u_eps < 1`）。`qian_rti_trim_audit` 提供
+convergence evidence（REF-0.1）：
+
+| u_eps | t_RTI−t_trim [s] | Phi rel vs 1e-9 | eta rel vs 1e-9 | J rel vs 1e-9 | σ_max rel vs 1e-9 |
+|---|---|---|---|---|---|
+| 1e-6 | 4.95e-4 | 8.6e-7 | 1.8e-6 | 4.0e-7 | 1.5e-7 |
+| 1e-7 | 4.95e-5 | 8.5e-8 | 1.8e-7 | 4.0e-8 | 1.4e-8 |
+| 1e-8 | 4.95e-6 | 7.7e-9 | 1.6e-8 | 3.6e-9 | 1.3e-9 |
+| **1e-9（default）** | 4.95e-7 | 0（基准） | 0 | 0 | 0 |
+| 1e-10 | 4.95e-8 | 7.7e-10 | 1.6e-9 | 3.6e-10 | 1.3e-10 |
+
+consecutive-pair `1e-8 vs 1e-9` Phi material rel = **7.7e-9 < reference
+budget** → strict-interior-limit 近似在 G5 terminal-sensitivity 误差预算内
+**numerically converged**；default `qian_trim_u_eps = 1e-9` 由 audit 支持而
+保留。文档措辞：不再声称 "boundary contribution O(1e-9)"，改为
+"strict-interior limit evaluated at u_eps=1e-9; trim-sensitivity audit
+demonstrates convergence below the G5 numerical error budget"。
+
+Qian terminal FD / Sanger SRTI FD 全部保留（TOPOLOGY_PRESERVED，
+terminal-time material rel 1.5e-8–2.1e-8），canonical scale / metrics /
+A/B/C audit 不变。
+
+**G5 + G5R = COMPLETE；等人工验收后再进入 G6。**

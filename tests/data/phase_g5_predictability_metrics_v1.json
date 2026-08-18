@@ -922,6 +922,66 @@
         "minus": [
           "TOPOLOGY_PRESERVED"
         ]
+      },
+      "rti_trim_audit": {
+        "u_eps_list": [
+          1e-06,
+          1e-07,
+          1e-08,
+          1e-09,
+          1e-10
+        ],
+        "default_u_eps": 1e-09,
+        "terminal_time": 723.0379655,
+        "consecutive_phi_material_rel_1e-8_vs_1e-9": 7.739265364e-09,
+        "converged_below_reference_budget": true,
+        "per_u_eps": {
+          "1e-06": {
+            "trim_time": 723.037470239,
+            "t_rti_minus_trim": 0.0004952359521,
+            "phi_material_rel_vs_default": 8.590586426e-07,
+            "eta_material_rel_vs_default": 1.777119491e-06,
+            "J_material_rel_vs_default": 4.005919456e-07,
+            "sigma_max_rel_vs_default": 1.457526011e-07,
+            "sigma_max": 1.915979681
+          },
+          "1e-07": {
+            "trim_time": 723.037915952,
+            "t_rti_minus_trim": 4.952358597e-05,
+            "phi_material_rel_vs_default": 8.513191744e-08,
+            "eta_material_rel_vs_default": 1.761107024e-07,
+            "J_material_rel_vs_default": 3.969828125e-08,
+            "sigma_max_rel_vs_default": 1.444394576e-08,
+            "sigma_max": 1.915979933
+          },
+          "1e-08": {
+            "trim_time": 723.037960523,
+            "t_rti_minus_trim": 4.952358722e-06,
+            "phi_material_rel_vs_default": 7.739265364e-09,
+            "eta_material_rel_vs_default": 1.601006129e-08,
+            "J_material_rel_vs_default": 3.60893472e-09,
+            "sigma_max_rel_vs_default": 1.313086094e-09,
+            "sigma_max": 1.915979958
+          },
+          "1e-09": {
+            "trim_time": 723.03796498,
+            "t_rti_minus_trim": 4.95235895e-07,
+            "phi_material_rel_vs_default": 0.0,
+            "eta_material_rel_vs_default": 0.0,
+            "J_material_rel_vs_default": 0.0,
+            "sigma_max_rel_vs_default": 0.0,
+            "sigma_max": 1.915979961
+          },
+          "1e-10": {
+            "trim_time": 723.037965426,
+            "t_rti_minus_trim": 4.952369181e-08,
+            "phi_material_rel_vs_default": 7.739263271e-10,
+            "eta_material_rel_vs_default": 1.60100621e-09,
+            "J_material_rel_vs_default": 3.608933166e-10,
+            "sigma_max_rel_vs_default": 1.313084239e-10,
+            "sigma_max": 1.915979961
+          }
+        }
       }
     },
     "sanger": {
@@ -1023,5 +1083,12 @@
   "native_terminal_comparison_warning": "Qian RTI and Sanger SRTI are different research terminals; native terminal metrics are DESCRIPTIVE, not a fair cross-model ranking.",
   "grazing_anchors_excluded": true,
   "grazing_threshold": null,
-  "acceptance_status": "PENDING_VALIDATION_CHECK"
+  "acceptance_status": "PENDING_VALIDATION_CHECK",
+  "g5r": {
+    "terminal_kind_guard": true,
+    "exact_zero_transversality_guard": true,
+    "small_denominator_threshold_frozen": false,
+    "qian_rti_trim_convergence_audited": true,
+    "default_qian_trim_u_eps": 1e-09
+  }
 }
