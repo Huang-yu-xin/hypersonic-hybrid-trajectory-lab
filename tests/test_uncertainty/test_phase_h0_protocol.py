@@ -519,16 +519,26 @@ def test_h0_production_status_is_historical_freeze_state():
         assert status[key] is False, key
 
 
-def test_sampling_engine_remains_not_started():
-    """H1 §7, §57: sampling.py is still an empty production placeholder.
+def test_monte_carlo_sampling_history_is_freeze_time_record():
+    """H2 §6: 'MC not performed at H0/H1' is a HISTORICAL freeze record.
 
-    H1 activates only ``propagation.py``; the H2 nonlinear Monte-Carlo
-    sampling engine is NOT started.  ``sampling.py`` must contain no
-    production random-sampling machinery (no RNG draws, no MC runner).
+    H2 ACTIVATES ``sampling.py`` (the nonlinear Monte-Carlo validation
+    engine), so the H0 stage-local assertion can no longer inspect the
+    current emptiness of sampling.py (the same temporal mistake as the
+    stale Phase-G0 live-tag test).  The H0 manifest's status flags and the
+    H1 snapshot's claim boundaries record, as historical metadata, that
+    Monte-Carlo had NOT yet been performed when H0/H1 were frozen.  Those
+    flags intentionally stay unchanged: the H0/H1 artifacts are frozen.
     """
-    sampling_src = (REPO / "src/hyptraj/uncertainty/sampling.py").read_text(
-        encoding="utf-8")
-    for marker in ("solve_ivp", "def sample", "default_rng",
-                   "multivariate_normal", "normal("):
-        assert marker not in sampling_src, marker
-    assert sampling_src.strip() == ""    # remains an empty placeholder
+    # H0 protocol manifest: production Monte-Carlo flags were false at freeze.
+    assert PRODUCTION_COVARIANCE_PROPAGATION_COMPUTED is False
+    assert MONTE_CARLO_PERFORMED is False
+    assert MANIFEST["h0_status"]["monte_carlo_performed"] is False
+    assert MANIFEST["h0_status"]["topology_probability_computed"] is False
+    # H1 snapshot (frozen): Monte Carlo was NOT performed at H1 freeze time.
+    h1 = json.loads(
+        (REPO / "tests/data/phase_h1_linear_uncertainty_v1.json").read_text(
+            encoding="utf-8"))
+    assert h1["claim_boundaries"]["monte_carlo_not_performed"] is True
+    assert h1["claim_boundaries"]["topology_probability_not_computed"] is True
+    assert h1["alpha_status"] == "PENDING_NUMERICAL_AUDIT"
