@@ -68,9 +68,12 @@ from hyptraj.predictability.scaling import (
 )
 
 # ---------------------------------------------------------------------------
-# Status flags (H0 §0, §58) -- production engines are NOT started in H0.
+# Status flags (H0 §0, §58) -- production engines are NOT started in H0/H0R.
 # ---------------------------------------------------------------------------
-PHASE_H0_DONE = False                      # flipped by the H0 freeze manifest
+# H0 was accepted by human review and locked by the H0R lifecycle patch:
+# the protocol freeze is COMPLETE / ACCEPTED (phase_h0_done = true), while
+# H1 and every production engine remain NOT started (all flags false).
+PHASE_H0_DONE = True
 H1_STARTED = False
 PRODUCTION_COVARIANCE_PROPAGATION_COMPUTED = False
 MONTE_CARLO_PERFORMED = False

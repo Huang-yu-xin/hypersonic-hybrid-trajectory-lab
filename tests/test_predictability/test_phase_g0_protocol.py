@@ -111,6 +111,15 @@ PHASE_F_SNAPSHOT = json.loads(
         encoding="utf-8"
     )
 )
+# Phase-G final-freeze manifest: the committed test authority for the G0/G7
+# lifecycle contract.  "G0 did not create the final Phase-G tags" is
+# historical stage-local provenance, verified from this manifest rather
+# than from the current live git tag list (see H0R / the lifecycle test).
+PHASE_G_FINAL_FREEZE = json.loads(
+    (DATA_DIR / "phase_g_final_freeze_v1.json").read_text(
+        encoding="utf-8"
+    )
+)
 
 
 @pytest.fixture(scope="module")
@@ -450,18 +459,25 @@ def test_frozen_tags_present():
         assert tag in tags, f"frozen tag {tag} is missing"
 
 
-def test_no_g0_final_tag_created():
-    import shutil
-
-    if shutil.which("git") is None:
-        pytest.skip("git not available")
-    import subprocess
-
-    tags = subprocess.run(
-        ["git", "tag", "--list"], capture_output=True, text=True, check=True
-    ).stdout.split()
-    assert "phase-g-v1.0" not in tags
-    assert "predictability-v1.0" not in tags
+def test_g0_final_tag_lifecycle_is_historical_not_live_state():
+    # G0's stage-local requirement was "G0 did not create the final
+    # Phase-G tags".  After G7 legitimately created phase-g-v1.0 /
+    # predictability-v1.0, that requirement can no longer be checked against
+    # the CURRENT live git tag list (which now correctly contains them), so
+    # it is verified from the committed final-freeze manifest instead --
+    # no runtime git dependency, matching the G7 final-freeze test policy.
+    g0 = PHASE_G_FINAL_FREEZE["conventions"]["g0_status"]
+    # G0 completed as a protocol stage; G1 was NOT started at G0
+    # (no final-stage work performed at G0).
+    assert g0["g0_complete"] is True
+    assert g0["g1_started"] is False
+    # The final freeze manifest defines the Phase-G final tags and their
+    # target policy (the live tag TARGETS are verified by the G7 shell
+    # audit, not by this committed test authority).
+    ft = PHASE_G_FINAL_FREEZE["final_tags"]
+    assert ft["names"] == ["phase-g-v1.0", "predictability-v1.0"]
+    assert ft["tag_target_policy"] == \
+        "both tags point to the same final G7 freeze commit"
 
 
 # ---------------------------------------------------------------------------

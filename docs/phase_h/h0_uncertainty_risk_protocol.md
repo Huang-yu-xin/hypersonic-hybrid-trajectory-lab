@@ -7,7 +7,13 @@
 >
 > 原则：**Phase H consumes frozen Phase-G derivatives. It does not redefine them.**
 
-状态：**COMPLETE / READY FOR REVIEW**。等待人工验收；**不得自动进入 H1**。
+状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / READY FOR REVIEW · H1 PENDING**。
+等待人工验收；**不得自动进入 H1**。
+
+（H0R 为 Frozen-State / Regression Contract Corrective Patch：修正 stale
+Phase-G0 live-tag absence 测试为 final-freeze manifest lifecycle 语义，
+并将 `phase_h0_done` 置 `true`（`h1_started` 仍 `false`），使跨阶段回归契约
+与冻结 lifecycle 一致。**Phase-G tag 与任何 Phase-G 科学 artifact 均未改变**。）
 
 ---
 
@@ -399,8 +405,17 @@ FREEZE BLOCKER**，不得直接修 frozen source。
   `tests/test_uncertainty/test_phase_h0_protocol.py`、
   `tests/data/phase_h_uncertainty_protocol_v1.json`。
 - 修改：`src/hyptraj/uncertainty/__init__.py`（light re-export）。
+- 修改：`src/hyptraj/uncertainty/protocol.py`（H0R：`PHASE_H0_DONE = True`，
+  科学字段不变）、`tests/data/phase_h_uncertainty_protocol_v1.json`（H0R：
+  重新生成，仅 `phase_h0_done` 一行变更）、
+  `tests/test_uncertainty/test_phase_h0_protocol.py`（H0R：断言
+  `phase_h0_done == true`，锁定 H0-DONE / production-flags-false 区分）、
+  `tests/test_predictability/test_phase_g0_protocol.py`（H0R：仅 repository
+  lifecycle test correction —— stale live-tag absence 断言改为
+  final-freeze manifest lifecycle 断言，非 Phase-G scientific change）、
+  `docs/phase_h/README.md` / 本文档（H0R：状态与 provenance 更新）。
 - `distributions.py / propagation.py / sampling.py` 保持空占位。
-- **NO OTHER FILES**（root README 不更新）。
+- **NO OTHER FILES**（root README 不更新；`src/hyptraj/risk/*` 不变）。
 
 H0 semantic tests 覆盖：upstream freeze（不依赖 git runtime）、state
 order、initial-state-only scope、covariance validation（symmetric PSD /
@@ -417,8 +432,11 @@ MC protocol、representative cases、no-production guard。
 | 项目 | 状态 |
 |---|---|
 | branch 精确基于 `phase-g-v1.0` | ✅ |
-| Phase-G 回归（基线 808→807 passed + 1 个 pre-existing 时态 tag-check；见 §22） | ✅（如实记录） |
+| Phase-G 回归（H0R 修正后 full pytest **ALL PASS**，0 failed / 0 errors；历史基线见 §22） | ✅ |
 | Phase-G / Phase-F tags 未移动 | ✅ |
+| **stale G0 live-tag absence 测试 resolved**（→ final-freeze manifest lifecycle 语义，无运行时 git 依赖） | ✅ |
+| **`phase_h0_done = true` / `h1_started = false`** 同时成立 | ✅ |
+| **H0 科学协议（除 lifecycle status 外）bitwise 不变**（machine-readable JSON diff 仅 `phase_h0_done` 一行） | ✅ |
 | initial-state RV scope 冻结 | ✅ |
 | covariance convention 冻结 | ✅ |
 | canonical-A normalization 冻结 | ✅ |
@@ -434,36 +452,109 @@ MC protocol、representative cases、no-production guard。
 | interception/survival scope excluded | ✅ |
 | machine-readable protocol | ✅ |
 | semantic tests | ✅（40 passed） |
-| full regression | ✅（见 §22） |
+| full regression | ✅（ALL PASS，见 §22） |
 | Phase A–G frozen science untouched | ✅ |
 | H1 scope leak absent | ✅ |
 
-## 22. Baseline regression note（H0 §4 处理记录）
+## 22. Cross-stage regression & stale-G0 resolution（H0 §4 → H0R）
 
-基线 `pytest -q` 实测为 **`1 failed, 807 passed`**（非规范所述的 808）。
+### 22.1 H0-observed baseline（历史记录，不重写）
+
+H0 checkout 时 `pytest -q` 实测为 **`1 failed, 847 passed`**（848 collected）。
 
 唯一失败：`tests/test_predictability/test_phase_g0_protocol.py::
-test_no_g0_final_tag_created`，该 Phase-G0 测试断言 final Phase-G tag
-**不存在**（`assert "phase-g-v1.0" not in tags` / `predictability-v1.0`）。
-G0 编写时（commit `9db3a35`）该断言成立；Phase G 完成并创建 final
-tags 后该测试 inherently stale，与 frozen Phase-G 状态矛盾。最后一次
-修改该 test 文件的是 G5 commit `bdc1265`，Phase G 最终冻结未更新它。
+test_no_g0_final_tag_created`。该 Phase-G0 测试把 G0 时点的 stage-local
+要求（"G0 不得创建 final tags"）写成了当前 live repository 不变式
+（`assert "phase-g-v1.0" not in current tags`）。G0 编写时（commit
+`9db3a35`）该断言成立；**G7 合法创建** `phase-g-v1.0` /
+`predictability-v1.0` 后，该断言 inherently stale，与 frozen Phase-G
+lifecycle 矛盾。最后一次修改该 test 文件的是 G5 commit `bdc1265`，
+Phase G 最终冻结未更新它。
 
-处理：
-- 该失败是 **pre-existing、repo-state-dependent**（仅取决于本地 git tag
-  是否存在），**非 H0 引入的回归**；
-- 按 H0 §61 规定，**不修改任何 frozen Phase-G test/source**（修改 frozen
-  test 也被 §4 禁止）；也**不删除/移动 Phase-G tags**（§62 禁止）；
-- 作为 **upstream Phase-G freeze inconsistency** 在 Deviations 如实记录。
-- H0 新增 40 个语义测试全部通过；full regression 在 807+1 基线上 +
-  40 = **848 项，其中 847 passed + 1 pre-existing 时态 tag-check**
-  （以最终 `pytest -q` 实测数为准）。
+当时处理（H0，受 §4/§61/§62 硬约束）：不修改任何 frozen Phase-G
+test/source，不删除/移动 Phase-G tags，作为上游 Phase-G freeze
+inconsistency 如实记录。
 
-## 23. H0 status & next
+### 22.2 H0R corrective resolution
+
+H0R 将该时态测试修正为 **historical / final-freeze manifest lifecycle
+语义**（`test_g0_final_tag_lifecycle_is_historical_not_live_state`）：
 
 ```text
-H1 NOT STARTED
+The Phase-G0 test `test_no_g0_final_tag_created` encoded a stage-local
+G0 requirement as a permanent live-repository invariant.
+
+After G7 legitimately created phase-g-v1.0 / predictability-v1.0,
+the assertion became stale.
+
+H0R replaces the live-tag absence assertion with historical/final-freeze
+manifest semantics.
+
+No Phase-G tag or scientific artifact was changed.
+```
+
+- 新测试读取 `tests/data/phase_g_final_freeze_v1.json`（committed test
+  authority）：断言 `conventions.g0_status.g0_complete == true`、
+  `g0_status.g1_started == false`（G0 为完成 stage，G1 未启动），以及
+  `final_tags.names == ["phase-g-v1.0", "predictability-v1.0"]`、
+  `final_tags.tag_target_policy == "both tags point to the same final G7
+  freeze commit"`（与 G7 final-freeze test policy 一致）。
+- **不再调用 `subprocess git tag --list` 断言 final tags 不存在**（无运行时
+  git 依赖；G7 shell audit 已在其时点验证 tag targets）。
+
+provenance 记录原则（H0R §15）：不声称 "Phase G had 808 passed after tags
+were created"。准确记录：
+
+```text
+G7 post-commit full pytest passed before final tag creation.
+
+After the legitimate final tags were created, one G0 stage-local
+live-tag absence test became stale.
+
+H0R makes that temporal test compatible with the final frozen lifecycle.
+```
+
+### 22.3 H0R targeted & full regression
+
+- targeted：`test_phase_g0_protocol.py` + `test_phase_g7_final_freeze.py` +
+  `test_phase_h0_protocol.py` —— 全部 PASS（真实数量见最终报告）。
+- full `pytest -q` —— **ALL PASS（0 failed / 0 errors）**，report 真实数量
+  （预计 **848 passed**，无测试增删；以最终实测为准）。不再出现
+  "PASS (847 + 1 pre-existing)" 表述。
+
+## 23. H0R completion-flag freeze & status
+
+H0 人工验收后将 `src/hyptraj/uncertainty/protocol.py` 中
+`PHASE_H0_DONE` 置 `true`（H0R），其余 production flags 全部保持 `false`：
+
+```text
+phase_h0_done = true        (H0 COMPLETE / ACCEPTED)
+h1_started = false          (H1 NOT STARTED / PENDING)
+production_covariance_propagation_computed = false
+monte_carlo_performed = false
+topology_probability_computed = false
+uncertainty_map_generated = false
+gamma0_k_rescanned = false
+optimization_performed = false
+```
+
+`tests/data/phase_h_uncertainty_protocol_v1.json` 已按
+`machine_readable_protocol()` 逐项重新生成：机器可读 diff 仅 `phase_h0_done`
+一行由 `false → true`，**所有科学字段 bitwise 不变**（state order /
+randomized & non-randomized scope / covariance tolerances / canonical-A /
+distribution kinds / synthetic family / `alpha = PENDING_NUMERICAL_AUDIT` /
+linear & terminal formulas / topology RV / `p_topo` / mixture law / G6R2
+grazing inheritance / `rho_lin` / `rho_topo` /
+`NO_UNIVERSAL_NUMERIC_GRAZING_THRESHOLD_SUPPORTED` / RNG seed 2026 /
+sequential sample-size / Wilson 95% / common-random-numbers / risk taxonomy /
+claim boundaries / representative cases 全部不变）。
+
+```text
+H0 COMPLETE / ACCEPTED
+H0R COMPLETE
+H1 NOT STARTED / PENDING
 production covariance propagation NOT performed
+terminal uncertainty production NOT performed
 Monte Carlo NOT performed
 topology probability NOT computed
 uncertainty maps NOT generated
@@ -473,6 +564,8 @@ robust optimization NOT performed
 interception analysis NOT performed
 survival/evasion analysis NOT performed
 Phase-G tags NOT moved
+Phase-F tags NOT moved
+no Phase-H final tag created
 ```
 
 **等待人工验收后再进入 H1。**

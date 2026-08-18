@@ -94,7 +94,7 @@
     "h1_started": false,
     "monte_carlo_performed": false,
     "optimization_performed": false,
-    "phase_h0_done": false,
+    "phase_h0_done": true,
     "production_covariance_propagation_computed": false,
     "topology_probability_computed": false,
     "uncertainty_map_generated": false

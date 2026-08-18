@@ -1,7 +1,7 @@
 # Phase H — Topology-Aware Uncertainty & Risk Propagation
 
-状态：**Phase H0 — Uncertainty / Risk Protocol Freeze COMPLETE / READY FOR REVIEW**
-（2026-08-19；等待人工验收后进入 H1）。
+状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / READY FOR REVIEW · H1 PENDING**
+（2026-08-19；H0 科学协议经人工验收通过，H0R 完成跨阶段回归契约修正，等待人工验收后进入 H1）。
 
 分支：`feature/phase-h-uncertainty-risk`
 上游冻结基线：`phase-g-v1.0` = `predictability-v1.0` =
@@ -38,8 +38,9 @@ interception analysis、robust optimization、control redesign。
 
 | 阶段 | 内容 | 状态 |
 |---|---|---|
-| **H0** | Uncertainty / Risk Protocol Freeze（random-variable semantics · covariance convention · canonical-A scaling · synthetic family · linear formulas · topology RV · mixture · MC / RNG / CI protocol · grazing validity inheritance · risk taxonomy · claim boundaries · machine-readable schema） | **COMPLETE / READY FOR REVIEW** |
-| **H1** | fixed-topology linear uncertainty：`P(T) = Phi P0 Phi^T`、terminal-time variance、terminal-state covariance、rank / eigenspectrum | future |
+| **H0** | Uncertainty / Risk Protocol Freeze（random-variable semantics · covariance convention · canonical-A scaling · synthetic family · linear formulas · topology RV · mixture · MC / RNG / CI protocol · grazing validity inheritance · risk taxonomy · claim boundaries · machine-readable schema） | **COMPLETE / ACCEPTED** |
+| **H0R** | Frozen-State / Regression Contract Corrective Patch（修正 stale Phase-G0 live-tag absence 测试 → final-freeze manifest lifecycle semantics；`phase_h0_done = true`、`h1_started = false`；机器可读 manifest 仅 lifecycle 字段变更） | **COMPLETE / READY FOR REVIEW** |
+| **H1** | fixed-topology linear uncertainty：`P(T) = Phi P0 Phi^T`、terminal-time variance、terminal-state covariance、rank / eigenspectrum | PENDING |
 | **H2** | nonlinear Monte-Carlo validation（Qian/Sanger baseline T600 + deep fixed-topology Sanger cases；linear covariance vs nonlinear MC） | future |
 | **H3** | grazing / topology-transition risk（B0–B4 topology probability、`P(N)` / `P(N+1)`、uncertainty amplitude vs topology transition、linearization breakdown）—— Phase H 核心创新阶段 | future |
 | **H4** | topology-conditioned mixture uncertainty（within-topology covariance + between-topology separation；mixture mean/covariance；non-Gaussian output diagnostics） | future |
@@ -81,12 +82,18 @@ interception analysis、robust optimization、control redesign。
   N0–N5 deep controls、B0–B4 10 dual-reference extremal anchors
   —— **全部复用 frozen source，不重新选点**。
 
-## 5. H0 验收要点（详见 `h0_uncertainty_risk_protocol.md` §64）
+## 5. H0 验收要点（详见 `h0_uncertainty_risk_protocol.md` §21–§23）
 
-- Phase-G 808 回归（基线：807 passed + 1 个 pre-existing 的 Phase-G0
-  时态 tag-check 测试 `test_no_g0_final_tag_created` 因 final Phase-G tag
-  已存在而失败 —— H0 不修改任何 frozen test/source，作为上游 Phase-G
-  freeze 不一致如实记录）；
+- **H0 科学协议 ACCEPTED**（人工验收通过）；H0R 修正 lifecycle / regression
+  契约后 full pytest **ALL PASS**（0 failed / 0 errors，真实数量见最终报告）；
+- 跨阶段回归基线记录（H0G 如实记录，不重写历史）：G7 最终 commit 后的 full
+  pytest 在 final tags 创建前通过；Phase-G final tags 合法创建后，仅一个
+  G0 stage-local live-tag absence 测试（`test_no_g0_final_tag_created`）
+  变 stale——H0R 将该时态测试改为 **historical / final-freeze manifest
+  lifecycle 断言**（`test_g0_final_tag_lifecycle_is_historical_not_live_state`，
+  不再依赖运行时 git tag 状态）。**Phase-G tag 与任何科学 artifact 均未改变**；
+- **`phase_h0_done = true`、`h1_started = false`** 同时成立（machine-readable
+  manifest 同步更新，科学字段 bitwise 不变；`alpha` 仍 `PENDING_NUMERICAL_AUDIT`）；
 - Phase-G / Phase-F tags 未移动；
 - initial-state-only RV scope 冻结；
 - `P0` covariance convention（(4,4) finite symmetric PSD）冻结；
@@ -100,5 +107,5 @@ interception analysis、robust optimization、control redesign。
 - MC RNG / sequential sample-count / Wilson-CI / common-random-numbers /
   nonphysical-sample 规则冻结（**不产生任何生产 sample**）；
 - risk taxonomy 冻结（仅统计研究风险）；
-- **H1 NOT STARTED**；生产 covariance propagation / Monte Carlo /
+- **H1 NOT STARTED / PENDING**；生产 covariance propagation / Monte Carlo /
   topology probability / uncertainty maps 均未执行。

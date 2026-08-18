@@ -20,13 +20,16 @@ from hyptraj.uncertainty.protocol import (
     DEFAULT_FAIR_HORIZON_S,
     FORBIDDEN_CLAIMS,
     G6R2_VALIDITY_RADIUS_OVER_PHI,
+    GAMMA0_K_RE_SCANNED,
     H1_STARTED,
     MONTE_CARLO_PERFORMED,
     MONTE_CARLO_RNG_POLICY,
     NON_RANDOMIZED_QUANTITIES,
     NO_UNIVERSAL_NUMERIC_GRAZING_THRESHOLD_SUPPORTED,
+    OPTIMIZATION_PERFORMED,
     PAIRED_COMMON_RANDOM_NUMBERS,
     PHASE_F_COMMIT,
+    PHASE_H0_DONE,
     PHASE_F_TAG,
     PHASE_G_COMMIT,
     PHASE_G_TAG,
@@ -38,6 +41,7 @@ from hyptraj.uncertainty.protocol import (
     SYNTHETIC_FAMILY_LABEL,
     TOPOLOGY_PROBABILITY_COMPUTED,
     TOPOLOGY_TRANSITION_PROBABILITY_DEFINITION,
+    UNCERTAINTY_MAP_GENERATED,
     CovarianceValidationResult,
     MixedComponent,
     RiskMetricKind,
@@ -101,7 +105,11 @@ def test_protocol_manifest_matches_code():
 def test_schema_version_and_h0_flags():
     assert MANIFEST["protocol_version"] == "phase-h-uncertainty-risk-protocol-v1"
     assert MANIFEST["schema_version"] == "phase-h-uncertainty-risk-protocol-v1"
-    assert MANIFEST["h0_status"]["phase_h0_done"] is False
+    # H0 was accepted (H0R lifecycle patch): the protocol freeze is DONE,
+    # but H1 must still be NOT started.
+    assert PHASE_H0_DONE is True
+    assert MANIFEST["h0_status"]["phase_h0_done"] is True
+    assert H1_STARTED is False
     assert MANIFEST["h0_status"]["h1_started"] is False
 
 
@@ -466,15 +474,26 @@ def test_representative_cases_reuse_frozen_set():
 # ---------------------------------------------------------------------------
 # 16. H0 no-production-computation guard (H0 §0, §52, §58)
 # ---------------------------------------------------------------------------
-def test_h1_not_started():
+def test_h0_done_but_h1_and_production_not_started():
+    # H0R lifecycle contract: H0 COMPLETE / ACCEPTED does NOT mean H1 or
+    # any production engine has started.  phase_h0_done=true and every
+    # production flag=false must hold simultaneously (H0R §8, §12).
+    assert PHASE_H0_DONE is True
     assert H1_STARTED is False
     assert PRODUCTION_COVARIANCE_PROPAGATION_COMPUTED is False
     assert MONTE_CARLO_PERFORMED is False
     assert TOPOLOGY_PROBABILITY_COMPUTED is False
+    assert UNCERTAINTY_MAP_GENERATED is False
+    assert GAMMA0_K_RE_SCANNED is False
+    assert OPTIMIZATION_PERFORMED is False
     status = MANIFEST["h0_status"]
+    assert status["phase_h0_done"] is True
+    assert status["h1_started"] is False
     assert status["production_covariance_propagation_computed"] is False
     assert status["monte_carlo_performed"] is False
     assert status["topology_probability_computed"] is False
+    assert status["gamma0_k_rescanned"] is False
+    assert status["optimization_performed"] is False
 
 
 def test_production_engine_placeholders_not_started():
