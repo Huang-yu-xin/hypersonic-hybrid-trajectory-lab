@@ -1,11 +1,13 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
-状态：**G0–G5R COMPLETE / ACCEPTED**；**G6 COMPLETE**（2026-08-18）
+状态：**G0–G5R COMPLETE / ACCEPTED**；**G6 COMPLETE / ACCEPTED**；
+**G6R corrective revision COMPLETE**（G6R accept 待定）（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
 G0 `9db3a35`；G1 `d1b3030`；G2 `7445378`；G2R `a3c6dfd`；G3 `a7119c0`；
-G4 `de17ac8`；G4R `01f33a5`；G5 `bdc1265`；G5R `7a94ed1`；G6 commit：见 git log（G6 accept 后创建）。
+G4 `de17ac8`；G4R `01f33a5`；G5 `bdc1265`；G5R `7a94ed1`；G6 commit：
+见 git log（G6 accept 后创建）；G6R commit：见 git log（G6R 修正）。
 
 G0–G6 **不创建 final tag**（不创建 `phase-g-v1.0` / `predictability-v1.0`）。
 Phase A–F 全部 frozen tags 未移动、未删除、未重写。
@@ -38,8 +40,8 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G4R** | hybrid topology-gate 纠正（endpoint-scoped terminal + multiplicity event-order） | **COMPLETE / ACCEPTED** |
 | **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE / ACCEPTED** |
 | **G5R** | terminal-sensitivity contract guard（eligibility + transversality exact-zero）+ RTI strict-interior trim convergence audit | **COMPLETE / ACCEPTED** |
-| **G6** | grazing transversality-loss & linearization validity（B0–B4 anchors · controlled grazing families · paired excursion factor · validity/topology radius · threshold decision） | **COMPLETE**（`g6_grazing_predictability.md`） |
-| G6 | grazing / transversality-loss 分析（B0–B4 anchors） | PENDING |
+| **G6** | grazing transversality-loss & linearization validity（B0–B4 anchors · controlled grazing families · paired excursion factor · validity/topology radius · threshold decision） | **COMPLETE / ACCEPTED**（`g6_grazing_predictability.md`） |
+| **G6R** | grazing validation-contract & operational-radius corrective patch（硬拓扑契约 · refined operational radii (bracket+bisection) · paired radial plateau + 全 4-column FD · 事件方向分类 · dual-reference 锁） | **COMPLETE**（G6R accept 待定） |
 | G7 | 最终报告 / 冻结 | PENDING |
 
 G0–G5 硬性禁止：grazing / B0-B4 / near-boundary 分析、Monte Carlo、
@@ -65,7 +67,9 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
   T600 cross-model · RTI/SRTI terminal sensitivity · §14 G5R contract + trim audit）
 - `docs/phase_g/g6_grazing_predictability.md` —— **G6 擦掠横截性丧失与线性化
   有效域报告**（10 anchors · controlled families · 二次 tangency H1 ·
-  paired factor H3 · validity/topology radius · threshold decision）
+  paired factor H3 · validity/topology radius · threshold decision ·
+  **G6R §13b corrective validation**：硬拓扑契约 · refined operational
+  radii · paired plateau + 4-column FD）
 - `src/hyptraj/predictability/protocol.py` —— machine-readable 协议负载
   （`machine_readable_protocol()`，schema `phase-g-predictability-protocol-v1`）
 - `src/hyptraj/predictability/event_metadata.py` —— 事件分类学元数据冻结
@@ -94,12 +98,17 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
 - `tests/test_predictability/test_phase_g2r_gate_patch.py` —— G2R gate 补丁测试
 - `tests/test_predictability/test_phase_g3_saltation.py` —— G3 saltation 测试
 - `tests/test_predictability/test_phase_g4_hybrid_stm.py` —— G4 hybrid STM 测试
+- `tests/test_predictability/test_phase_g6r_grazing_contract.py` —— G6R 验证契约测试
+  （硬拓扑契约 · dual-reference 锁 · refined radii · plateau + 4-column FD · 方向分类）
 - `tests/data/phase_g1_continuous_jacobian_v1.json` —— G1 snapshot
 - `tests/data/phase_g2_continuous_stm_v1.json` —— G2 snapshot
 - `tests/data/phase_g3_transverse_saltation_v1.json` —— G3 snapshot
 - `tests/data/phase_g4_hybrid_stm_v1.json` —— G4 snapshot
 - `tests/data/phase_g5_predictability_metrics_v1.json` —— G5 snapshot
 - `tests/data/phase_g6_grazing_predictability_v1.json` —— G6 snapshot
+  （G6R 增量块 `g6r`：contract audit · refined_validity_radii ·
+  paired_fd · threshold_reauth）
+- `scripts/run_phase_g6_grazing.py` —— G6/G6R snapshot deterministic 生成器
 
 `observability.py` 保持空占位；G7 final report/freeze 属 G7。
 
@@ -158,5 +167,25 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
 - 新增测试（metrics + terminal sensitivity 共 44 tests）与 snapshot
   `tests/data/phase_g5_predictability_metrics_v1.json`；完整 pytest 通过
   （含 G0–G4R 的 656 旧回归 + G5 新增）。
+- **G6 (+G6R)** 在 5 条 frozen Sanger grazing branches（B0–B4，10 双参考
+  extremal anchors）上研究 `d = v sinγ → 0` 时线化描述的 conditioning /
+  validity / topology：exact `||qS_A||=s_r/|d|` 与 scaled-Xi 恒等式（机器
+  精度）；controlled grazing family（alpha 减半 → clearance /4，二次 tangency
+  H1）；paired `P = Xi_entry C_VAC Xi_exit`（~1/|d| 放大，H3）；validity
+  radius（E_lin vs synchronized M(0)）；actual-anchor gamma 方向 topology
+  radius；terminal descriptive 对比；阈值决策证据化
+  `NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED`。**G6R corrective revision**
+  （`g6_grazing_predictability.md` §13b）：`extract_branch_excursion` 硬拓扑
+  契约（`GrazingTopologyContractError`，10/10 audit）；dual-reference 锁
+  （10/10）；refined operational radii（bracket + deterministic bisection，
+  r_1%/φ≈0.040、r_5%/φ≈0.193，scale-free 一致）；paired radial plateau
+  FD（β∈[1e-4,3e-2]，两侧 valid）+ 全 4-column FD（B0 strong / B4 mild，
+  `four_column_pass`）；事件方向分类（`WRONG_EXIT_DIRECTION` /
+  `WRONG_ENTRY_DIRECTION` / `NONPHYSICAL_STATE` / `VAC_EXCURSION_LOST` vs
+  `NUMERICAL_FAILURE`）。新增 snapshot `g6r` 增量块 + deterministic 生成器
+  `scripts/run_phase_g6_grazing.py`；新增 G6R 契约测试
+  `tests/test_predictability/test_phase_g6r_grazing_contract.py`。
 
-**Phase G0–G5 = COMPLETE；等待人工验收后再进入 G6。**
+**Phase G0–G5R = COMPLETE / ACCEPTED；G6 = COMPLETE / ACCEPTED；
+G6R corrective revision = COMPLETE（accept 待定）；等待人工验收后再进入
+G7（G7 = PENDING）。**

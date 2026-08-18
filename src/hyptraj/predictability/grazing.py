@@ -58,6 +58,16 @@ from hyptraj.predictability.ftle import (
 
 _STATE_DIM = 4
 
+
+class GrazingTopologyContractError(RuntimeError):
+    """The actual frozen trajectory topology contradicts the Phase-F
+    expected grazing-branch contract (e.g. an N-side anchor that contains
+    the target newly-created exit/apogee/entry ordinal, or an N+1 anchor
+    missing one, or a regime mismatch against the Phase-F expected
+    SRTI_N/SRTI_{N+1}).  This is a phase-F source-of-truth mismatch, NOT a
+    G6 numerical-tolerance issue; the caller hard-stops."""
+
+
 # Canonical scientific scaling (G5 frozen Candidate A) -- G6 must not change it.
 def _canonical_scales():
     return scale_values_by_key(canonical_candidate().key)
@@ -72,7 +82,10 @@ class FrozenGrazingAnchor:
     side: str              # "N_side" | "N1_side"
     gamma0_deg: float
     K: float
-    phase_f_reference_phi_m: float     # REF-0.1 Phi_N clearance [m]
+    phase_f_reference_phi_m: float        # REF-0.1 Phi_N clearance [m]
+    phase_f_reference_phi_ref01: float    # REF-0.1 Phi_N [m]
+    phase_f_reference_phi_ref005: float   # REF-0.05 Phi_N [m]
+    reference_dual_stable: bool           # Phase-F dual-reference flag
     expected_regime: str    # SRTI_N / SRTI_{N+1}
 
 
@@ -150,12 +163,17 @@ def load_frozen_grazing_anchors(snapshot_path=None) -> tuple[FrozenGrazingAnchor
         n = int(branch[1:])
         side = a["side"]  # "N_side" | "N1_side"
         gamma0_deg, K = a["parameter"]
-        ref = a["reference_phi"]["REF-0.1"]
+        ref01 = a["reference_phi"]["REF-0.1"]
+        ref005 = a["reference_phi"]["REF-0.05"]
+        dual = bool(a["reference_dual_stable"])
         regime = f"SRTI_N{n}" if side == "N_side" else f"SRTI_N{n + 1}"
         out.append(FrozenGrazingAnchor(
             branch=branch, N=n, side=side,
             gamma0_deg=float(gamma0_deg), K=float(K),
-            phase_f_reference_phi_m=float(ref),
+            phase_f_reference_phi_m=float(ref01),
+            phase_f_reference_phi_ref01=float(ref01),
+            phase_f_reference_phi_ref005=float(ref005),
+            reference_dual_stable=dual,
             expected_regime=regime))
     return tuple(out)
 
@@ -238,6 +256,16 @@ def extract_branch_excursion(
     ordinal_map, _ = _kind_ordinals(events)
     n = anchor.N
 
+    # Hard regime guard (G6R Issue 1 §3): the ACTUAL frozen regime must
+    # equal the Phase-F expected SRTI_N / SRTI_{N+1}; mismatch is a
+    # Phase-F source-of-truth mismatch (HARD STOP).
+    actual_regime, _ = sanger_anchor_topology(result)
+    if actual_regime != anchor.expected_regime:
+        raise GrazingTopologyContractError(
+            f"{anchor.branch} {anchor.side}: actual frozen regime "
+            f"{actual_regime!r} != expected {anchor.expected_regime!r} "
+            "(Phase-F source-of-truth mismatch).")
+
     def find(kind, ordinal):
         for ev in events:
             k, o = ordinal_map[id(ev)]
@@ -245,11 +273,22 @@ def extract_branch_excursion(
                 return ev
         return None
 
+    def fail(msg):
+        raise GrazingTopologyContractError(
+            f"{anchor.branch} {anchor.side} "
+            f"(expected {anchor.expected_regime}): {msg}")
+
     if anchor.side == "N_side":
-        # For SRTI_N there are N exits (kind-ordinals 0..N-1): exit ordinal
-        # N must NOT exist.
-        exit_N = find("exit", n)
-        apogee_N = find("apogee", n)
+        # For SRTI_N there are N exits (kind-ordinals 0..N-1): exit /
+        # apogee / entry ordinal N MUST NOT exist (hard absence guard).
+        for kind, ev in (("exit", find("exit", n)),
+                         ("apogee", find("apogee", n)),
+                         ("entry", find("entry", n))):
+            if ev is not None:
+                raise GrazingTopologyContractError(
+                    f"{anchor.branch} {anchor.side} expected no "
+                    f"{kind}-ordinal-N (newly-created excursion absent), but "
+                    f"found {kind} ordinal {n} at t = {ev.time:.6f} s.")
         return GrazingExcursion(
             branch=anchor.branch, N=n, has_excursion=False,
             exit_time=None, exit_state=None, exit_ordinal=None,
@@ -261,22 +300,34 @@ def extract_branch_excursion(
         )
 
     exit_N = find("exit", n)
-    if exit_N is None:
-        raise RuntimeError(
-            f"{anchor.branch} {anchor.side}: expected exit ordinal {n} "
-            "not found.")
-    x_exit = np.asarray(exit_N.state, dtype=float)
     apogee_N = find("apogee", n)
     entry_N = find("entry", n)
-    if apogee_N is None or entry_N is None:
-        raise RuntimeError(
-            f"{anchor.branch} {anchor.side}: missing apogee/entry ordinal {n}.")
+    if exit_N is None:
+        fail(f"expected newly-created exit ordinal {n} not found.")
+    if apogee_N is None:
+        fail(f"expected newly-created VAC apogee ordinal {n} not found.")
+    if entry_N is None:
+        fail(f"expected matching atmosphere entry ordinal {n} not found.")
+    x_exit = np.asarray(exit_N.state, dtype=float)
     x_apo = np.asarray(apogee_N.state, dtype=float)
     x_entry = np.asarray(entry_N.state, dtype=float)
     vac_duration = float(entry_N.time - exit_N.time)
     clearance = float(x_apo[0] - env.earth_radius - env.atmosphere_boundary)
     d_exit = float(x_exit[2] * np.sin(x_exit[3]))
     d_entry = float(x_entry[2] * np.sin(x_entry[3]))
+    # chronological + sign + positivity hard guards (G6R §2)
+    if not (exit_N.time < apogee_N.time < entry_N.time):
+        fail("wrong chronology "
+             f"(t_exit={exit_N.time:.6f} < t_apo={apogee_N.time:.6f} < "
+             f"t_entry={entry_N.time:.6f} violated).")
+    if not d_exit > 0.0:
+        fail(f"exit denominator d_exit = {d_exit} must be > 0.")
+    if not d_entry < 0.0:
+        fail(f"entry denominator d_entry = {d_entry} must be < 0.")
+    if not vac_duration > 0.0:
+        fail(f"VAC duration = {vac_duration} must be > 0.")
+    if not clearance > 0.0:
+        fail(f"apogee clearance = {clearance} must be > 0.")
     return GrazingExcursion(
         branch=anchor.branch, N=n, has_excursion=True,
         exit_time=float(exit_N.time), exit_state=x_exit, exit_ordinal=n,
@@ -342,17 +393,57 @@ def grazing_event_metrics(
 # ---------------------------------------------------------------------------
 # Local VAC excursion reconstruction (G6 §19-§20)
 # ---------------------------------------------------------------------------
+class VacExcursionFailure(RuntimeError):
+    """Structured VAC-excursion reconstruction failure (G6R Issue 5).
+
+    Carries a ``status`` from ``PairedExcursionClass`` so the caller can
+    distinguish a topology loss (``VAC_EXCURSION_LOST`` /
+    ``VAC_APOGEE_NOT_FOUND`` / ``NONPHYSICAL_STATE`` /
+    ``WRONG_ENTRY_DIRECTION``) from a pure integrator failure
+    (``NUMERICAL_FAILURE``) instead of string-matching messages."""
+
+    def __init__(self, status: str, message: str):
+        super().__init__(message)
+        self.status = status
+
+
+def _nonphysical_state(x_start, env) -> str | None:
+    """Return an ``NONPHYSICAL_STATE`` reason if ``x_start`` is not a
+    physical Sanger flight state, else ``None`` (G6R Issue 5)."""
+    x = np.asarray(x_start, dtype=float)
+    if not np.all(np.isfinite(x)):
+        return "non-finite state"
+    if float(x[0]) <= float(env.earth_radius):
+        return f"radius {x[0]:.6g} <= R_E {env.earth_radius:.6g}"
+    if float(x[2]) <= 0.0:
+        return f"velocity {x[2]:.6g} <= 0"
+    return None
+
+
 def _run_vac_excursion(x_start, env, vehicle, cfg, horizon=5000.0):
     """From an exit state, VAC flow to apogee (gamma,+->-), then to
     atmosphere entry (h-h_atm, downward).  Returns (apogee_state,
     entry_state, t_apo, t_entry, clearance, d_entry).  Dense-root based;
-    never attaches an entry event at t=0."""
+    never attaches an entry event at t=0.  Raises ``VacExcursionFailure``
+    (never bare ``RuntimeError``) so failures carry a structured status."""
     from scipy.integrate import solve_ivp
     from hyptraj.modes.sanger_hybrid import sanger_vac_rhs
     from hyptraj.simulation.sanger_events import (
         atmosphere_interface_value,
-        make_vacuum_apogee_event,
     )
+
+    st = PairedExcursionClass
+    bad = _nonphysical_state(x_start, env)
+    if bad is not None:
+        raise VacExcursionFailure(st.NONPHYSICAL_STATE, bad)
+    x0 = np.asarray(x_start, dtype=float)
+    # A valid short VAC excursion starts ascending; gamma<=0 means the
+    # apogee (up->down) topology can never fire -> excursion topology lost.
+    if float(x0[3]) <= 0.0:
+        raise VacExcursionFailure(
+            st.VAC_EXCURSION_LOST,
+            f"gamma = {float(x0[3]):.6g} <= 0 at excursion start: "
+            "ascending short-VAC topology lost.")
 
     def ev_apo(t, s, *a):
         return float(s[3])
@@ -369,11 +460,18 @@ def _run_vac_excursion(x_start, env, vehicle, cfg, horizon=5000.0):
     ms = getattr(cfg, "max_step", 0.1)
     sol = solve_ivp(
         lambda t, s: sanger_vac_rhs(t, np.asarray(s), env, vehicle),
-        (0.0, horizon), np.asarray(x_start, dtype=float),
+        (0.0, horizon), x0,
         method="DOP853", rtol=rtol, atol=atol, max_step=ms,
         dense_output=True, events=[ev_apo])
-    if not sol.success or sol.t_events[0].size == 0:
-        raise RuntimeError("VAC apogee not found in local excursion.")
+    if not sol.success:
+        raise VacExcursionFailure(
+            st.NUMERICAL_FAILURE, f"VAC apogee integrator failed: {sol.message}")
+    if sol.t_events[0].size == 0:
+        # No up->down turnover within the horizon: escape / non-terminating
+        # topology, NOT an integrator error.
+        raise VacExcursionFailure(
+            st.VAC_APOGEE_NOT_FOUND,
+            "no VAC apogee (up->down gamma turnover) within the horizon.")
     t_apo = float(sol.t_events[0][0])
     x_apo = np.asarray(sol.y[:, -1], dtype=float)
     sol2 = solve_ivp(
@@ -381,12 +479,26 @@ def _run_vac_excursion(x_start, env, vehicle, cfg, horizon=5000.0):
         (t_apo, t_apo + horizon), x_apo,
         method="DOP853", rtol=rtol, atol=atol, max_step=ms,
         dense_output=True, events=[ev_entry])
-    if not sol2.success or sol2.t_events[0].size == 0:
-        raise RuntimeError("VAC entry not found after apogee.")
+    if not sol2.success:
+        raise VacExcursionFailure(
+            st.NUMERICAL_FAILURE, f"VAC entry integrator failed: {sol2.message}")
+    if sol2.t_events[0].size == 0:
+        # Re-entry (downward) never found within the horizon: the excursion
+        # left the atmosphere and did not return -> topology lost.
+        raise VacExcursionFailure(
+            st.VAC_EXCURSION_LOST,
+            "no atmosphere re-entry found after apogee within the horizon.")
     t_entry = float(sol2.t_events[0][0])
     x_entry = np.asarray(sol2.y[:, -1], dtype=float)
     clearance = float(x_apo[0] - env.earth_radius - env.atmosphere_boundary)
     d_entry = float(x_entry[2] * np.sin(x_entry[3]))
+    # The entry event fires downward (direction -1); require the
+    # reconstructed denominator to agree (wrong orientation = bad root).
+    if d_entry >= 0.0:
+        raise VacExcursionFailure(
+            st.WRONG_ENTRY_DIRECTION,
+            f"reconstructed entry denominator d_entry = {d_entry:.6g} >= 0 "
+            "(entry must be descending into the atmosphere).")
     return x_apo, x_entry, t_apo, t_entry, clearance, d_entry
 
 
@@ -547,9 +659,18 @@ def build_excursion_factor(
 # Local paired grazing-excursion nonlinear map (G6 §34-§37)
 # ---------------------------------------------------------------------------
 class PairedExcursionClass:
+    """Paired ``M_excursion`` outcome classes (G6 §36, G6R Issue 5).
+
+    Topology/direction loss (``EXIT_NO_LOCAL_ROOT``, ``WRONG_EXIT_DIRECTION``,
+    ``WRONG_ENTRY_DIRECTION``, ``VAC_APOGEE_NOT_FOUND``, ``VAC_EXCURSION_LOST``,
+    ``NONPHYSICAL_STATE``) is deliberately separated from pure numerical
+    failure (``NUMERICAL_FAILURE``): a lost excursion is a topology
+    statement, not a solver defect."""
+
     PAIR_LOCAL_VALID = "PAIR_LOCAL_VALID"
     EXIT_NO_LOCAL_ROOT = "EXIT_NO_LOCAL_ROOT"
     WRONG_EXIT_DIRECTION = "WRONG_EXIT_DIRECTION"
+    WRONG_ENTRY_DIRECTION = "WRONG_ENTRY_DIRECTION"
     VAC_EXCURSION_LOST = "VAC_EXCURSION_LOST"
     VAC_APOGEE_NOT_FOUND = "VAC_APOGEE_NOT_FOUND"
     ENTRY_NO_ROOT = "ENTRY_NO_ROOT"
@@ -593,15 +714,27 @@ def local_grazing_excursion_map(
     (apogee checks) -> (identity reset) -> ATM flow sync to the nominal
     vacation duration ``nominal_vac_duration``.  ``DM_excursion(0) =
     P_excursion`` (validated by FD).
+
+    G6R Issue 5 routing: outcome classes separate topology/direction loss
+    (``EXIT_NO_LOCAL_ROOT``, ``WRONG_EXIT_DIRECTION``,
+    ``WRONG_ENTRY_DIRECTION``, ``NONPHYSICAL_STATE``,
+    ``VAC_APOGEE_NOT_FOUND``, ``VAC_EXCURSION_LOST``) from integrator
+    failure (``NUMERICAL_FAILURE``); ``_run_vac_excursion`` now raises with
+    a structured status instead of a bare ``RuntimeError``.
     """
     from hyptraj.modes.sanger_hybrid import sanger_atm_rhs, sanger_vac_rhs
     from hyptraj.predictability.saltation import (
         local_event_crossing_time,
     )
 
+    st = PairedExcursionClass
     ctl = ConstantKControl(k)
     x_e = np.asarray(exit_state, dtype=float)
     x_pert = x_e + np.asarray(delta_x, dtype=float)
+    # nonphysical-state guard (G6R Issue 5)
+    bad = _nonphysical_state(x_pert, env)
+    if bad is not None:
+        return None, st.NONPHYSICAL_STATE, {"reason": bad}
 
     def atm_rhs(s):
         return sanger_atm_rhs(0.0, np.asarray(s, dtype=float), env, vehicle, ctl)
@@ -612,21 +745,28 @@ def local_grazing_excursion_map(
     tau, x_exit_p, meta = local_event_crossing_time(
         atm_rhs, exit_surf, x_pert, cfg)
     if tau is None:
-        return None, PairedExcursionClass.EXIT_NO_LOCAL_ROOT, meta
-    # identity reset then VAC excursion
+        return None, st.EXIT_NO_LOCAL_ROOT, meta
+    # The crossing must be an upward-velocity ATM->VAC exit.
+    d_cross = float(x_exit_p[2] * np.sin(x_exit_p[3]))
+    if d_cross <= 0.0:
+        return None, st.WRONG_EXIT_DIRECTION, {
+            "reason": f"exit denominator d = {d_cross:.6g} <= 0 at crossing",
+            "tau_exit": tau}
+    # identity reset then VAC excursion (structured failures)
     try:
         x_apo, x_entry, _tA, t_entry, _clr, d_in = _run_vac_excursion(
             x_exit_p, env, vehicle, cfg)
-    except RuntimeError as e:
-        msg = str(e)
-        if "apogee" in msg:
-            return None, PairedExcursionClass.VAC_APOGEE_NOT_FOUND, {}
-        return None, PairedExcursionClass.VAC_EXCURSION_LOST, {}
+    except VacExcursionFailure as e:
+        return None, e.status, {"reason": str(e)}
+    # Defensive: the entry root must also be descending.
+    if d_in >= 0.0:
+        return None, st.WRONG_ENTRY_DIRECTION, {
+            "reason": f"entry denominator d = {d_in:.6g} >= 0", "tau_exit": tau}
     # sync ATM to the nominal vacation duration
     total = tau + float(t_entry)  # local elapsed at perturbed entry
     sync = nominal_vac_duration - total
     y_plus = _atm_flow_duration(x_entry, sync, env, vehicle, ctl, cfg)
-    return y_plus, PairedExcursionClass.PAIR_LOCAL_VALID, {
+    return y_plus, st.PAIR_LOCAL_VALID, {
         "tau_exit": tau, "vac_duration": float(t_entry), "sync": float(sync)}
 
 
@@ -656,6 +796,372 @@ def excursion_fd_sweep(
         fd = (mp - mm) / (2.0 * eps)
         out[eps] = {"fd": fd, "cls_plus": cp, "cls_minus": cm}
     return out
+
+
+# ---------------------------------------------------------------------------
+# G6R Issue 3/4: live paired FD -- radial derivative plateau + full 4-column
+# validation (canonical-A scaled errors)
+# ---------------------------------------------------------------------------
+def _canonical_scale_vector() -> np.ndarray:
+    """Canonical-A scale vector [[r],[theta],[v],[gamma]] (G5 frozen)."""
+    s = _canonical_scales()
+    return np.array([s[v] for v in ("r", "theta", "v", "gamma")], dtype=float)
+
+
+def _scaled_residual(fd, pcol, relative):
+    """Canonical-A scaled residual ``||S^-1 (fd - pcol)||`` (absolute) or
+    its scaled-relative form (divided by the scaled column norm)."""
+    svec = _canonical_scale_vector()
+    resid = float(np.linalg.norm((fd - pcol) / svec))
+    if relative:
+        norm_ref = float(np.linalg.norm(pcol / svec))
+        return resid / max(norm_ref, 1e-12)
+    return resid
+
+
+def paired_radial_fd_plateau(
+    exit_state: np.ndarray,
+    env: EnvironmentParams,
+    vehicle: VehicleParams,
+    k: float,
+    cfg,
+    nominal_vac_duration: float,
+    phi_local: float,
+    beta_grid=(1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2),
+    tolerance: float = 1e-2,
+) -> dict:
+    """Radial-column DERIVATIVE PLATEAU of the paired map at
+    clearance-normalized ``beta = dr/phi_local`` (G6R Issue 3).
+
+    Live centered FD of ``M_excursion`` along ``e_r`` at every ``beta`` in
+    [1e-4, 3e-2] (NOT ``beta = 0.5`` with a <50% tolerance).  The plateau
+    passes only when BOTH sides are ``PAIR_LOCAL_VALID`` at every beta AND
+    the canonical-A scaled-relative error vs ``P_excursion[:, 0]`` stays
+    below ``tolerance``.  This is the operational validity-domain
+    acceptance: the derivative tracks the analytic pair on a scale-free
+    plateau far from the grazing singularity.
+    """
+    st = PairedExcursionClass
+    from hyptraj.predictability.stm import stm_strict_reference_config
+    cfg2 = cfg if cfg is not None else stm_strict_reference_config()
+    fac = build_excursion_factor(exit_state, env, vehicle, k,
+                                 c_vac_config=cfg2)
+    pcol = np.asarray(fac.p_excursion[:, 0], dtype=float)
+
+    records = []
+    for beta in beta_grid:
+        eps = float(beta) * float(phi_local)
+        e = np.zeros(_STATE_DIM, dtype=float)
+        e[0] = 1.0
+        mp, cp, _ = local_grazing_excursion_map(
+            exit_state, eps * e, env, vehicle, k, cfg2, nominal_vac_duration)
+        mm, cm, _ = local_grazing_excursion_map(
+            exit_state, -eps * e, env, vehicle, k, cfg2, nominal_vac_duration)
+        rec = {"beta": float(beta), "dr_m": float(eps),
+               "cls_plus": cp, "cls_minus": cm}
+        if mp is None or mm is None:
+            rec["scaled_rel_error"] = None
+            rec["both_valid"] = False
+            records.append(rec)
+            continue
+        fd = (mp - mm) / (2.0 * eps)
+        rec["scaled_rel_error"] = _scaled_residual(fd, pcol, relative=True)
+        rec["both_valid"] = True
+        records.append(rec)
+    errs = [r["scaled_rel_error"] for r in records
+            if r["scaled_rel_error"] is not None]
+    both_valid = all(r["both_valid"] for r in records)
+    max_err = float(max(errs)) if errs else float("inf")
+    plateau_pass = bool(both_valid and max_err < float(tolerance))
+    return {
+        "plateau_beta_range": [float(beta_grid[0]), float(beta_grid[-1])],
+        "records": records,
+        "max_scaled_rel_error": max_err,
+        "both_sides_valid": both_valid,
+        "tolerance": float(tolerance),
+        "plateau_pass": plateau_pass,
+        "note": ("radial derivative plateau at clearance-normalized beta in "
+                 "[1e-4, 3e-2]; acceptance on plateau, not digit-sampled 0.5"),
+    }
+
+
+_PAIRED_FD_COLUMN_GRIDS = {
+    0: ("beta", (1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2),
+        1e-2),  # clearance-normalized, relative err
+    1: ("rad", (1e-7, 1e-6, 1e-5, 1e-4, 1e-3), 1e-3),   # theta
+    2: ("mps", (1e-4, 1e-3, 1e-2, 1e-1, 1.0), 1e-3),    # velocity
+    3: ("frac", (0.01, 0.03, 0.1, 0.3, 0.5), 1e-3),  # frac(gamma_exit); stays
+        # strictly INSIDE the incidence cone (|Δγ| < γ_exit): at frac=1.0
+        # the minus side starts at γ≈0 grazing-degenerate, so the exit
+        # crossing is direction-ambiguous (WRONG_EXIT_DIRECTION).
+}
+
+
+def paired_fd_validation(
+    exit_state: np.ndarray,
+    env: EnvironmentParams,
+    vehicle: VehicleParams,
+    k: float,
+    cfg,
+    nominal_vac_duration: float,
+    phi_local: float,
+    gamma_exit_rad: float,
+) -> dict:
+    """FULL 4-column paired-map FD validation (G6R Issue 4).
+
+    Per column a multi-epsilon sweep of live centered FD vs the analytic
+    ``P_excursion`` column in canonical-A scaled coordinates.  The radial
+    column (the naive-validity dimension) is swept on the
+    clearance-normalized plateau and accepted on its scaled-RELATIVE error;
+    the tangent columns are swept at physical scales (theta rad / v m/s)
+    and at fractions of the exit incidence for gamma, and accepted on the
+    ABSOLUTE scaled residual (their scaled columns can be tiny or dominated
+    by the small-incidence cone, so relative error is not well-posed).
+    ``column_pass`` requires every epsilon to have both sides
+    ``PAIR_LOCAL_VALID`` and the per-column metric below its tolerance.
+    """
+    st = PairedExcursionClass
+    from hyptraj.predictability.stm import stm_strict_reference_config
+    cfg2 = cfg if cfg is not None else stm_strict_reference_config()
+    fac = build_excursion_factor(exit_state, env, vehicle, k,
+                                 c_vac_config=cfg2)
+    pcol = np.asarray(fac.p_excursion, dtype=float)
+    phi = float(phi_local)
+    ge = float(gamma_exit_rad)
+
+    columns = {}
+    all_pass = True
+    for j in range(_STATE_DIM):
+        kind, grid_vals, tol = _PAIRED_FD_COLUMN_GRIDS[j]
+        if kind == "beta":
+            epsilons = [float(b) * phi for b in grid_vals]
+        elif kind == "frac":
+            epsilons = [float(f) * abs(ge) for f in grid_vals]
+        else:
+            epsilons = [float(v) for v in grid_vals]
+        records = []
+        for eps in epsilons:
+            e = np.zeros(_STATE_DIM, dtype=float)
+            e[j] = 1.0
+            mp, cp, _ = local_grazing_excursion_map(
+                exit_state, eps * e, env, vehicle, k, cfg2,
+                nominal_vac_duration)
+            mm, cm, _ = local_grazing_excursion_map(
+                exit_state, -eps * e, env, vehicle, k, cfg2,
+                nominal_vac_duration)
+            rec = {"eps": float(eps), "cls_plus": cp, "cls_minus": cm}
+            if mp is None or mm is None:
+                rec["scaled_rel_error"] = None
+                rec["abs_scaled_residual"] = None
+                rec["both_valid"] = False
+                records.append(rec)
+                continue
+            fd = (mp - mm) / (2.0 * eps)
+            rec["scaled_rel_error"] = _scaled_residual(
+                fd, pcol[:, j], relative=True)
+            rec["abs_scaled_residual"] = _scaled_residual(
+                fd, pcol[:, j], relative=False)
+            rec["both_valid"] = True
+            records.append(rec)
+        both_valid = all(r["both_valid"] for r in records)
+        met = "scaled_rel_error" if j == 0 else "abs_scaled_residual"
+        vals = [r[met] for r in records if r[met] is not None]
+        max_m = float(max(vals)) if vals else float("inf")
+        pass_col = bool(both_valid and max_m < float(tol))
+        all_pass = all_pass and pass_col
+        columns[j] = {
+            "direction": "e_r" if j == 0 else ("e_theta" if j == 1
+                                              else ("e_v" if j == 2 else "e_gamma")),
+            "epsilon_unit": kind,
+            "records": records,
+            "both_sides_valid": both_valid,
+            "metric": met,
+            "max_error": max_m,
+            "tolerance": float(tol),
+            "column_pass": pass_col,
+        }
+    return {"four_column_pass": bool(all_pass), "columns": columns}
+
+
+# ---------------------------------------------------------------------------
+# G6R Issue 2: refined operational validity radius (bracket + deterministic
+# bisection on the clearance-normalized beta coordinate; NOT grid-sampled
+# lower bounds)
+# ---------------------------------------------------------------------------
+_VALIDITY_BETA_GRID = (1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2,
+                       1e-1, 2e-1, 3e-1, 5e-1, 7e-1, 1.0, 1.5, 2.0)
+
+
+def _elin_probe(exit_state, eps, env, vehicle, k, cfg, nominal_vac_duration,
+                phi_local, pcol):
+    """Single radial linearization-error probe.
+
+    Returns a dict ``{E_pair, E_plus, E_minus, fd_scaled_norm, valid,
+    cls_plus, cls_minus}`` with ``E_pair = max(E_plus, E_minus)`` (G6 §36;
+    G6R Issue 2).  ``fd_scaled_norm`` is the canonical-A scaled norm of the
+    centered radial FD column (the derivative-plateau diagnostic used by
+    G6; ``||S^-1 FD||``).  A ``None`` map -> ``valid=False`` with the
+    failing side's class (topology-side failure)."""
+    st = PairedExcursionClass
+    e = np.zeros(_STATE_DIM, dtype=float)
+    e[0] = 1.0
+    M0, c0, _ = local_grazing_excursion_map(
+        exit_state, np.zeros(_STATE_DIM), env, vehicle, k, cfg,
+        nominal_vac_duration)
+    Mp, cp, _ = local_grazing_excursion_map(
+        exit_state, eps * e, env, vehicle, k, cfg, nominal_vac_duration)
+    Mm, cm, _ = local_grazing_excursion_map(
+        exit_state, -eps * e, env, vehicle, k, cfg, nominal_vac_duration)
+    fail = {"E_pair": None, "E_plus": None, "E_minus": None,
+            "fd_scaled_norm": None, "valid": False,
+            "cls_plus": cp, "cls_minus": cm}
+    if M0 is None or Mp is None or Mm is None:
+        return fail
+    svec = _canonical_scale_vector()
+    Ep = np.linalg.norm((Mp - (M0 + eps * pcol)) / svec) / \
+        max(np.linalg.norm((Mp - M0) / svec), 1e-15)
+    Em = np.linalg.norm((Mm - (M0 - eps * pcol)) / svec) / \
+        max(np.linalg.norm((Mm - M0) / svec), 1e-15)
+    fd = (Mp - Mm) / (2.0 * eps)
+    fail.update({
+        "E_pair": float(max(Ep, Em)), "E_plus": float(Ep),
+        "E_minus": float(Em),
+        "fd_scaled_norm": float(np.linalg.norm(fd / svec)),
+        "valid": True, "cls_plus": cp, "cls_minus": cm})
+    return fail
+
+
+def refined_operational_radius(
+    exit_state: np.ndarray,
+    env: EnvironmentParams,
+    vehicle: VehicleParams,
+    k: float,
+    cfg,
+    nominal_vac_duration: float,
+    phi_local: float,
+    taus=(0.01, 0.05),
+    grid=_VALIDITY_BETA_GRID,
+    max_bisections: int = 24,
+) -> dict:
+    """REFINED operational validity radius (G6R Issue 2).
+
+    ``r_tau = sup{ beta*phi_local : both sides PAIR_LOCAL_VALID and
+    E_pair(beta*phi_local) <= tau }`` on the clearance-normalized beta
+    coordinate.  Unlike G6 (which returned only the coarse grid sample
+    below the crossing), this brackets ``[beta_lo (PASS), beta_hi (FAIL)]``
+    and runs a deterministic bisection on the E_pair>tau predicate.  If the
+    validity profile is non-monotone (E_pair rises, falls, then rises
+    again, or a FAIL beta precedes a PASS beta) the profile is classified
+    ``NONMONOTONE_VALIDITY_PROFILE`` and no refined beta is claimed.
+    Returns per-tau: lower_pass_beta, upper_fail_beta, refined_beta,
+    refined_radius_m, radius_over_phi, bracket_width.
+    """
+    st = PairedExcursionClass
+    from hyptraj.predictability.stm import stm_strict_reference_config
+    cfg2 = cfg if cfg is not None else stm_strict_reference_config()
+    fac = build_excursion_factor(exit_state, env, vehicle, k,
+                                 c_vac_config=cfg2)
+    pcol = np.asarray(fac.p_excursion[:, 0], dtype=float)
+    phi = float(phi_local)
+
+    probes = []
+    for beta in grid:
+        eps = float(beta) * phi
+        probe = _elin_probe(
+            exit_state, eps, env, vehicle, k, cfg2,
+            nominal_vac_duration, phi, pcol)
+        probes.append({
+            "beta": float(beta),
+            "E_pair": probe["E_pair"],
+            "E_plus": probe["E_plus"],
+            "E_minus": probe["E_minus"],
+            "fd_scaled_norm": probe["fd_scaled_norm"],
+            "valid": probe["valid"],
+            "cls_plus": probe["cls_plus"],
+            "cls_minus": probe["cls_minus"]})
+
+    radii = {}
+    monotone_profile = True
+    for tau in taus:
+        t = float(tau)
+        # lower PASS = largest beta with E<=tau and both-side-valid.
+        lower = None
+        for p in probes:
+            if p["valid"] and p["E_pair"] is not None and p["E_pair"] <= t:
+                lower = p["beta"]
+        # upper FAIL = smallest beta > lower that either exceeds tau or
+        # loses topology.
+        upper = None
+        upper_reason = None
+        if lower is not None:
+            for p in probes:
+                if p["beta"] <= lower:
+                    continue
+                if not p["valid"] or p["E_pair"] is None or p["E_pair"] > t:
+                    upper = p["beta"]
+                    upper_reason = ("topology" if not p["valid"] else "E>tau")
+                    break
+        rec = {
+            "tau": t,
+            "lower_pass_beta": lower,
+            "upper_fail_beta": upper,
+            "upper_fail_reason": upper_reason,
+            "refined_beta": None,
+            "refined_radius_m": None,
+            "radius_over_phi": None,
+            "bracket_width": None,
+        }
+        if lower is None:
+            rec["classification"] = "NO_PASS_BOUND_IN_GRID"
+            radii[f"r_{int(t*100)}pct"] = rec
+            continue
+        if upper is None:
+            rec["classification"] = "CAP_EXTENDS_ABOVE_MAX_BETA"
+            radii[f"r_{int(t*100)}pct"] = rec
+            continue
+        # NONMONOTONE only when a probe at beta > upper_fail re-PASSES tau:
+        # the sup{r: E(r)<=tau} set is then non-contiguous and the
+        # refined crossing is not well-defined.  (Tiny-beta rounding-noise
+        # dips BELOW tau do not make the profile non-monotone.)
+        re_entrant = any(
+            p["valid"] and p["E_pair"] is not None and p["E_pair"] <= t
+            for p in probes if p["beta"] > upper)
+        if re_entrant:
+            rec["classification"] = "NONMONOTONE_VALIDITY_PROFILE"
+            radii[f"r_{int(t*100)}pct"] = rec
+            monotone_profile = False
+            continue
+        # deterministic bisection on E_pair<=tau && both-sides-valid
+        lo, hi = lower, upper
+        for _ in range(max_bisections):
+            mid = 0.5 * (lo + hi)
+            eps = mid * phi
+            probe = _elin_probe(
+                exit_state, eps, env, vehicle, k, cfg2,
+                nominal_vac_duration, phi, pcol)
+            if probe["valid"] and probe["E_pair"] is not None \
+                    and probe["E_pair"] <= t:
+                lo = mid
+            else:
+                hi = mid
+        refined = 0.5 * (lo + hi)
+        if upper_reason == "topology":
+            rec["classification"] = "TOPOLOGY_LIMITED_BELOW_TAU"
+        else:
+            rec["classification"] = "MONOTONE_REFINED_RADIUS"
+        rec.update({
+            "refined_beta": float(refined),
+            "refined_radius_m": float(refined * phi),
+            "radius_over_phi": float(refined),
+            "bracket_width": float(hi - lo),
+        })
+        radii[f"r_{int(t*100)}pct"] = rec
+    return {
+        "phi_local_m": phi,
+        "beta_probes": probes,
+        "monotone_profile": bool(monotone_profile),
+        "radii": radii,
+    }
 
 
 # ---------------------------------------------------------------------------

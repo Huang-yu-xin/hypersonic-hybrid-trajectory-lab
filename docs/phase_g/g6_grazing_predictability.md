@@ -1,11 +1,16 @@
 # G6 — Grazing Transversality Loss & Linearization Validity
 
 状态：**COMPLETE**（G6 accept，2026-08-18）
+本次修订：**G6R corrective revision**（G6R validation-contract &
+operational-radius corrective patch，2026-08-18，accept 待定）
 分支：`feature/phase-g-predictability`
-G6 起点：`7a94ed1`（G5R commit）
+G6 起点：`7a94ed1`（G5R commit）；G6R 起点：G6 freeze commit（同文件）
 Phase-F 依据：`tests/data/phase_f_gamma_k_sensitivity_v1.json`（B0–B4，10 双参考 extremal anchors）
 Machine-readable artifact：`tests/data/phase_g6_grazing_predictability_v1.json`
-（schema `phase-g6-grazing-predictability-v1`）
+（整体 schema `phase-g6-grazing-predictability-v1`；G6R 增量块 schema
+`phase-g6r-grazing-contract-v1`，见 `g6r`）
+生成器：`scripts/run_phase_g6_grazing.py`（deterministic；G6 冻结段
+preserved verbatim，G6R 段可复现重算）
 
 ## 1. 科学问题
 
@@ -126,6 +131,14 @@ ATM 同步到 nominal `T_vac`。`M_excursion(0)=x_e`、
 B0（最小 Phase-F T_N）、B3（最小正 Phi_N）、B4（较温和对照）；全 4-column
 FD 在至少一个 strong + 一个 mild case 上验证（r/e_r 列为主）。
 
+**G6R 修订（§13b）**：live paired FD 采用 **derivative plateau** 契约 —
+在 clearance-normalized `β ∈ [1e-4, 3e-2]`（两侧均 `PAIR_LOCAL_VALID`）
+接受 canonical-A scaled-relative error（实测 max ≈ 1.1e-4 ≪ 1e-2），
+**取代旧的 β=0.5 + <0.5 容差 smoke**；并升为 **全 4-column** 独立验证
+（B0 strong / B4 mild，multi-epsilon per column）。tangent 列用 absolute
+scaled residual（radial 列 relative；gamma 列线性域受 incidence cone 约束，
+扰动 grid 取 `|Δγ| < |γ_exit|`，frac ∈ [0.01, 0.5]）。
+
 ## 11. Linearization validity radius（G6 §29-§33）
 
 对 selected controlled points（B0 a=1/a=0.5、B3 a=1、B4 a=1），radial
@@ -134,14 +147,28 @@ FD 在至少一个 strong + 一个 mild case 上验证（r/e_r 列为主）。
 （**基准为 synchronized entry state M(0)，非 exit state**），按
 `||S_A^-1(ΔNL−ΔLIN)||₂/max(||S_A^-1 ΔLIN||₂, floor)`。实测：
 
-| point | φ [m] | d_exit | r_1%/φ | r_5%/φ |
+**G6 冻结表（coarse grid-sampled lower bounds，exactly 作为历史值保留）：**
+
+| point | φ [m] | d_exit | r_1%/φ (grid) | r_5%/φ (grid) |
 |---|---|---|---|---|
-| B0 a=1 | 0.048 | 0.479 | **0.03** | 0.10 |
+| B0 a=1 | 0.048 | 0.479 | 0.03 | 0.10 |
 | B0 a=0.5 | 0.012 | 0.240 | 0.03 | 0.10 |
 | B3 a=1 | 0.036 | 0.641 | 0.03 | 0.10 |
 | B4 a=1 | 0.419 | 2.19 | 0.03 | 0.10 |
 
-→ r_1% ≈ 0.03·φ、r_5% ≈ 0.10·φ（scale-free ratio 一致）；
+**G6R 精化表（refined operational radius，bracket [PASS, FAIL] +
+deterministic bisection 于 clearance-normalized β；见 §13b）：**
+
+| point | φ [m] | d_exit | r_1%/φ (refined) | r_5%/φ (refined) | r_1% bracket [lo,hi] |
+|---|---|---|---|---|---|
+| B0 a=1 | 0.048 | 0.479 | **0.0404** | 0.1937 | [0.03, 0.1] |
+| B0 a=0.5 | 0.012 | 0.240 | 0.0404 | 0.1936 | [0.03, 0.1] |
+| B3 a=1 | 0.036 | 0.641 | 0.0399 | 0.1912 | [0.03, 0.1] |
+| B4 a=1 | 0.419 | 2.19 | 0.0407 | 0.1949 | [0.03, 0.1] |
+
+→ 精化后 r_1% ≈ 0.040·φ、r_5% ≈ 0.193·φ（scale-free ratio 一致，
+跨 branch/alpha 展宽 < 0.001 与 < 0.004），**并取代粗暴的 grid
+lower sample（0.03/0.10）作为 operational validity radius**；
 **absolute validity radius 随 φ → 0（grazing 趋近）收缩 = first-order
 validity domain shrinkage 的直接证据（H4）**；同时维度化口径
 （|d|、gamma 方向拓扑半径 1.5e-7–2.4e-6 rad）跨 branch 变化，见 §14。
@@ -163,20 +190,69 @@ centered STM comparison 失效，非 STM error）。
 sigma_max、rank/nullity。N vs N+1 并排仅作
 **CROSS-TOPOLOGY DESCRIPTIVE CONTRAST（NOT A DERIVATIVE）**。
 
+## 13b. G6R corrective validation（validation-contract & operational-radius patch）
+
+G6R 是一次 **corrective revision**：不动 Phase-F frozen physics / G6
+frozen claims，只加固验证契约并精化 operational radius。逐项：
+
+1. **Issue 1 — 硬拓扑契约（HARD GUARD）**：`extract_branch_excursion`
+   现在对 Phase-F 来源 truth 的不一致 **raise `GrazingTopologyContractError`**
+   （source-of-truth 不匹配，不是 G6 数值容差问题，调用方 hard-stop）：
+   - N 侧：ordinal-N exit/apogee/entry 必须不存在（absence 确认）；
+   - N+1 侧：ordinal-N exit/apogee/entry 必须齐全、时序
+     `t_exit < t_apo < t_entry`、`d_exit>0`、`d_entry<0`、
+     `vac_duration>0`、`clearance>0`；
+   - 实际 frozen regime 必须等于 Phase-F 预期 `SRTI_N`/`SRTI_{N+1}`
+     （`sanger_anchor_topology` 内部校验）。契约审计 10/10 通过
+     （5 absence + 5 extraction），见 snapshot `g6r.contract_audit`。
+2. **Issue 5 — dual-reference 锁 + 事件方向分类**：loader 锁定
+   `reference_dual_stable`（10/10 True）与 REF-0.1/REF-0.05 `Phi_N`；
+   `PairedExcursionClass` 新增/强制 `WRONG_ENTRY_DIRECTION`，
+   `WRONG_EXIT_DIRECTION`（crossing 处 `d≤0`）、`NONPHYSICAL_STATE`
+   （非物理起点）、并把 `VAC_EXCURSION_LOST`/`VAC_APOGEE_NOT_FOUND`
+   （topology 丢失）与 `NUMERICAL_FAILURE`（integrator 缺陷）结构化分开
+   （`_run_vac_excursion` 抛 `VacExcursionFailure(status)`，不再字符串匹配）。
+   物理 kind-ordinals 保持精确（synthetic / pullout / SRTI 不入 excursion
+   ordinal map）。
+3. **Issue 2 — refined operational radius**：
+   `refined_operational_radius` 用 bracket（`lower_pass_beta` PASS /
+   `upper_fail_beta` FAIL，含 topology-limited 情形）+ **deterministic
+   bisection**（24 次）在 clearance-normalized β 上求
+   `r_τ = sup{r: 两侧 valid 且 E_pair(r) ≤ τ}`；报告
+   `lower_pass_beta / upper_fail_beta / refined_beta /
+   refined_radius_m / radius_over_phi / bracket_width`。NONMONOTONE 判定为
+   **τ-relative**（fail 之后出现 re-entrant pass ⇒
+   `NONMONOTONE_VALIDITY_PROFILE`），tiny-β 舍入噪声 dip（≪τ）不算。
+   精化结果：r_1%/φ ≈ 0.0399–0.0407、r_5%/φ ≈ 0.191–0.195（§11）。
+4. **Issue 3 — paired radial plateau FD**：`paired_radial_fd_plateau`
+   在 `β ∈ [1e-4, 3e-2]` 全网格两侧 `PAIR_LOCAL_VALID` 且
+   canonical-A scaled-relative error 保持 < 1e-2（实测 max ≈ 1.1e-4）；
+   `plateau_pass` 即 acceptance。
+5. **Issue 4 — full 4-column paired FD**：`paired_fd_validation` 在 B0
+   （strong）与 B4（mild）全 4 列 multi-epsilon 独立 FD；radial 列
+   scaled-relative、tangent 列 absolute scaled residual；全部
+   `four_column_pass=True`（snapshot `g6r.paired_fd`）。
+
+**规模声明**：G6R 只新增 predictability-layer 校验代码/测试/snapshot
+增量/文档；未改动 frozen 物理、未重扫 gamma0-K、未 refit B0–B4、
+未新增 Monte Carlo / uncertainty / 优化 / 渐近混沌声明。
+
 ## 14. Numeric grazing-threshold decision（evidence-based）
 
 ```
 FINAL: NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED
 ```
 
-理由：归一化 1%-validity radius 高度一致（r_1%/φ ≈ 0.03 跨 B0–B4 与
-alpha），这**正说明没有 universal 维度化阈值**：anchors 处的维度化
-`|d|` collapse 水平（0.48–2.19 m/s）与 gamma 方向拓扑保持半径
+理由：归一化 1%-validity radius 高度一致（**G6R 精化后** r_1%/φ ≈
+0.040 跨 B0–B4 与 alpha，r_5%/φ ≈ 0.193；原 G6 grid 值 0.03/0.10 仅为
+lower sample），这**正说明没有 universal 维度化阈值**：anchors 处的
+维度化 `|d|` collapse 水平（0.48–2.19 m/s）与 gamma 方向拓扑保持半径
 （1.5e-7–2.4e-6 rad，跨度 ~16×）均跨 branch 变化，不存在单个数值能把
-"grazing-adjacent" 与 "transverse" 分开。资格判定使用 continuous
+"grazing-adjacent" 与 "transverse" 分开。G6R 以精化 radius 重审计 →
+结论不变（snapshot `g6r.threshold_reauth`）。资格判定使用 continuous
 diagnostics（`|d|`、`|sinγ|`、φ clearance、validity radius、topology
 gate、REF stability）。**exact `n^Tf^- = 0` 仍为 GRAZING/NONTRANSVERSE**；
-小有限 denominator 从不自动拒绝。G6 未冻结任何 universal physics
+小有限 denominator 从不自动拒绝。G6/G6R 未冻结任何 universal physics
 threshold。
 
 ## 15. Claim boundaries / G7 handoff
@@ -190,4 +266,5 @@ bifurcation 曲线。
 
 G7 = final synthesis / final regression / final report / final freeze(tag)。
 
-**G6 = COMPLETE；等待人工验收后再进入 G7。**
+**G6 = COMPLETE / G6R corrective revision = COMPLETE（accept 待定）；
+等待人工验收后再进入 G7（G7 PENDING）。**

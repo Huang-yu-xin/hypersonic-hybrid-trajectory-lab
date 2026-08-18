@@ -75,6 +75,7 @@ from hyptraj.predictability.grazing import (
     FrozenGrazingAnchor,
     GrazingExcursion,
     ControlledFamilyPoint,
+    GrazingTopologyContractError,
     load_frozen_grazing_anchors,
     extract_branch_excursion,
     controlled_local_grazing_family,
@@ -82,6 +83,9 @@ from hyptraj.predictability.grazing import (
     local_grazing_excursion_map,
     directional_topology_radius,
     fit_loglog_scaling,
+    paired_radial_fd_plateau,
+    paired_fd_validation,
+    refined_operational_radius,
 )
 
 __all__ = [
@@ -120,6 +124,7 @@ __all__ = [
     "FrozenGrazingAnchor",
     "GrazingExcursion",
     "ControlledFamilyPoint",
+    "GrazingTopologyContractError",
     "load_frozen_grazing_anchors",
     "extract_branch_excursion",
     "controlled_local_grazing_family",
@@ -127,4 +132,7 @@ __all__ = [
     "local_grazing_excursion_map",
     "directional_topology_radius",
     "fit_loglog_scaling",
+    "paired_radial_fd_plateau",
+    "paired_fd_validation",
+    "refined_operational_radius",
 ]
