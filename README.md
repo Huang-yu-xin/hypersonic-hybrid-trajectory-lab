@@ -33,7 +33,12 @@ trajectories.
   phase-f-v1.0, gamma-k-sensitivity-v1.0; Qian single sampled topology,
   Sanger N0-N5 grazing-separated regimes, fixed-topology sensitivities,
   common-condition comparison surfaces — docs/phase_f/)
-- [ ] Predictability / STM / FTLE
+- [x] Phase G — Finite-time local predictability of hybrid trajectories
+  (COMPLETE / FROZEN, phase-g-v1.0, predictability-v1.0; continuous
+  variational dynamics + STM, hybrid saltation / event-time, whole hybrid
+  STM, scaled FTLE metrics with frozen canonical scale A, native RTI/SRTI
+  terminal sensitivity, grazing transversality-loss / validity analysis,
+  final synthesis & freeze manifest — docs/phase_g/)
 - [ ] Risk
 - [ ] Optimization
 
@@ -80,6 +85,66 @@ atmospheric-exposure / energy mechanism (E3), native / structural /
 aerodynamic diagnostics (E4), core figures (E5, 5/5 visual PASS),
 numerical / regression audit (E6, production numerics APPROVED) and
 the final report / freeze (E7).
+
+## Phase G — Finite-Time Local Predictability
+
+    Phase G — Finite-Time Local Predictability of Hybrid Trajectories: COMPLETE / FROZEN
+    Branch: feature/phase-g-predictability (upstream frozen baseline: phase-f-v1.0)
+    Acceptance chain: G0 -> G1 -> G2 -> G2R -> G3 -> G4 -> G4R -> G5 -> G5R -> G6 -> G6R -> G6R2 -> G7
+    Final tags: phase-g-v1.0, predictability-v1.0
+    Final report: docs/phase_g/phase_g_final_report.md
+    Freeze manifest: tests/data/phase_g_final_freeze_v1.json
+
+Phase G studies the **finite-time local predictability** of the frozen Qian
+and Sanger hybrid trajectories under *initial-state perturbations*
+`δx0 = [δr0, δθ0, δv0, δγ0]`. It is deliberately **finite-time, local,
+first-order and branch-conditioned** — it is not an asymptotic-chaos
+analysis, not a global-stability proof, and not an uncertainty
+propagation. What it establishes, stage by stage (G0–G6R2) and how it is
+frozen (G7):
+
+    - continuous variational dynamics       A_m = ∂f_m/∂x        (G1, FD-validated)
+    - continuous STM                      Φ(t, t0), rows=output, cols=initial perturbation (G2)
+    - hybrid event calculus               q_e = -n^T/(n^T f^-); Ξ = I + (f+-f-)n^T/(n^T f-) (G3)
+    - whole hybrid STM                    Φ_H(T,0) = C_{N+1} Ξ_N C_N ... Ξ_1 C_1 (G4)
+    - scaled finite-time metrics          S^-1 Φ_H S  (SVD / FTLE / rank / condition) (G5)
+    - native terminal sensitivity         η_T, J_T  (Qian RTI / Sanger SRTI, descriptive) (G5/G5R)
+    - grazing validity                    d = n^T f^- = v sin γ → 0 neighborhood (G6/G6R/G6R2)
+
+Key validated results (snapshot-sourced; see `docs/phase_g/phase_g_final_report.md`):
+
+    Canonical scale (frozen):        S_A = diag(10^5 m, 1 rad, 7×10^3 m/s, 0.1 rad)
+    Qian T=600 (capture):            σ_max ≈ 1.608, rank 3, STRUCTURAL_SINGULAR
+    Sanger T=600 (exit, entry):      σ_max ≈ 85.87, rank 4, FINITE
+    Cross-model warning:             worst-direction amplification at T=600 under
+                                     scale A is larger for Sanger (λ ≈ 9×), but the
+                                     ranking is scale-sensitive (reverses under scale B)
+    Qian RTI / Sanger SRTI:          descriptive terminal sensitivities, not a fair
+                                     cross-model endpoint ranking
+    Grazing condition:               ‖q S_A‖ = s_r / |d| and the scaled-Ξ identity hold
+                                     exactly (machine precision)
+    Quadratic tangency:              Φ_local ∝ |d_exit|² (H1 slope ≈ 2, R² ≈ 1, B0–B4)
+    Validity radius (G6R2 authority):r₁% ≈ 0.040·Φ_local, r₅% ≈ 0.185·Φ_local
+                                     (approx. across the tested controlled families)
+    Grazing threshold:               NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED
+                                     (dimensioned |d| and incidence vary by branch)
+
+Corrective-hardening history is retained as part of the scientific
+record: G2R (two-sided FD + mode-window gates), G4R (endpoint-scoped
+topology), G5R (terminal eligibility / exact-zero guard / RTI trim),
+G6R (hard grazing topology contract + refined radii + paired-FD plateau +
+four-column validation), G6R2 (protocol-correct `ERROR / LINEAR PREDICTION`
+error normalization — final validity-radius authority).
+
+See [docs/phase_g/](docs/phase_g/) — the frozen protocol
+(`predictability_protocol.md`, G0), per-phase reports (G1–G6), the final
+synthesis ([phase_g_final_report.md](docs/phase_g/phase_g_final_report.md))
+and the machine-readable freeze manifest
+(`tests/data/phase_g_final_freeze_v1.json`, SHA-256-locked to the accepted
+G1–G6 snapshots). Deterministic generators:
+`scripts/run_phase_g6_grazing.py` (G6/G6R/G6R2 scientific snapshot) and
+`scripts/build_phase_g_final_manifest.py` (freeze manifest; reproducible,
+no diff on re-run).
 
 ## Frozen Baselines
 
@@ -135,6 +200,14 @@ to the ground-continuation segment only.
 
     python experiments/02_qian_continuous_glide/plot_qian_glide.py
 
+Phase G freeze manifest reproduction (deterministic, no diff on re-run):
+
+    python scripts/build_phase_g_final_manifest.py
+
+(optional) Phase G6/G6R/G6R2 grazing snapshot regeneration:
+
+    python scripts/run_phase_g6_grazing.py
+
 Literal baseline reproduction:
 
     python experiments/01_baseline_dynamics/run_qian_baseline.py
@@ -142,7 +215,9 @@ Literal baseline reproduction:
 
 ## Repository Structure
 
-    src/hyptraj/      production library (models / controls / modes / simulation / metrics / ...)
+    src/hyptraj/      production library (models / controls / modes / simulation /
+                      predictability (Jacobians, STM, saltation, hybrid STM,
+                      FTLE metrics, terminal sensitivity, grazing validity) / ...)
     experiments/      runnable experiments (01 literal baseline, 02 approved Qian baseline, audit scripts)
     tests/            pytest suite (models, events, literal + Qian regressions)
     docs/             phase reports, model audits, research plan
