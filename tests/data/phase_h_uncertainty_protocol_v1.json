@@ -1,0 +1,371 @@
+{
+  "canonical_scale": {
+    "candidate": "A",
+    "status": "CANONICAL_SCALE_NUMERIC_VALUES_FROZEN",
+    "values": {
+      "gamma": 0.1,
+      "r": 100000.0,
+      "theta": 1.0,
+      "v": 7000.0
+    }
+  },
+  "claim_boundaries": [
+    "FTLE = probability",
+    "sigma_max = risk probability",
+    "distance to grazing = topology-change probability",
+    "covariance alone = complete hybrid uncertainty",
+    "Gaussian output assumption across a topology change",
+    "native RTI/SRTI terminal uncertainty = fair cross-model comparison",
+    "small variance = robust",
+    "large variance = unsafe",
+    "Monte-Carlo sample fraction without a CI = certified probability",
+    "synthetic uncertainty = real-world calibrated uncertainty"
+  ],
+  "covariance_convention": {
+    "repair_policy": "silent abs(eigenvalues) or arbitrary repair FORBIDDEN; materially non-PSD = INVALID_COVARIANCE",
+    "required": [
+      "finite",
+      "symmetric",
+      "positive-semidefinite"
+    ],
+    "roundoff_tolerance": {
+      "psd_absolute": 1e-12,
+      "psd_relative": 1e-10,
+      "symmetry_relative": 1e-08
+    },
+    "shape": [
+      4,
+      4
+    ]
+  },
+  "fair_comparison_convention": {
+    "canonical_input": "tilde P0 = alpha^2 I is a research comparison convention, not a real flight distribution (H0 §40).",
+    "default_horizon_s": 600.0,
+    "note": "Qian vs Sanger fixed-time uncertainty: same nominal initial state, same elapsed time (default T = 600 s, per G5), same physical P0 or same declared tilde P0, same canonical-A scaling, same law, same sample protocol.  Native RTI/SRTI endpoint dispersion are DESCRIPTIVE and never a fair cross-model ranking (H0 §21, §39)."
+  },
+  "future_phase_roadmap": [
+    {
+      "content": "uncertainty / risk protocol freeze",
+      "phase": "H0",
+      "status": "COMPLETE (this stage)"
+    },
+    {
+      "content": "fixed-topology linear uncertainty: P(T) = Phi P0 Phi^T, terminal-time variance, terminal-state covariance, rank / eigenspectrum",
+      "phase": "H1",
+      "status": "future"
+    },
+    {
+      "content": "nonlinear Monte-Carlo validation (Qian/Sanger baseline T600 + deep fixed-topology Sanger cases)",
+      "phase": "H2",
+      "status": "future"
+    },
+    {
+      "content": "grazing / topology-transition risk (B0-B4 topology probability)",
+      "phase": "H3",
+      "status": "future"
+    },
+    {
+      "content": "topology-conditioned mixture uncertainty (within-topology covariance + between-topology separation)",
+      "phase": "H4",
+      "status": "future"
+    },
+    {
+      "content": "cross-model common-time uncertainty synthesis",
+      "phase": "H5",
+      "status": "future"
+    },
+    {
+      "content": "final audit / regression / manifest / freeze / tags",
+      "phase": "H6",
+      "status": "future"
+    }
+  ],
+  "grazing_validity_inheritance": {
+    "g6r2_radius_over_phi": {
+      "r_1pct_over_phi": 0.04,
+      "r_5pct_over_phi": 0.185
+    },
+    "note": "G6R2: r_1% ~ 0.040 Phi_local and r_5% ~ 0.185 Phi_local near n^T f^- = v sin(gamma) -> 0, valid only for the tested controlled grazing families.  They are local linearization-validity diagnostics (rho_lin inputs), never probability / risk thresholds; no universal numeric grazing threshold is supported (H0 §29, §32, §45).",
+    "rho_lin": "rho_lin = characteristic uncertainty / validated linearization radius (no frozen cutoff)",
+    "rho_topo": "rho_topo,j = sigma_j / epsilon_topo,j (not a probability)"
+  },
+  "h0_status": {
+    "gamma0_k_rescanned": false,
+    "h1_started": false,
+    "monte_carlo_performed": false,
+    "optimization_performed": false,
+    "phase_h0_done": false,
+    "production_covariance_propagation_computed": false,
+    "topology_probability_computed": false,
+    "uncertainty_map_generated": false
+  },
+  "linear_fixed_time_formula": "P(T) = Phi_H(T,0) P0 Phi_H(T,0)^T ; scaled tilde P(T) = tilde Phi_H tilde P0 tilde Phi_H^T",
+  "misc_protocol": {
+    "common_random_numbers_note": "Qian/Sanger fair paired comparison reuses one standardized sample mapped to the same delta x0 in both models (H0 §49).",
+    "nonphysical_sample_policy": "Gaussian tails are unbounded: a sample producing r <= R_E, v <= 0 or another invalid initial state is CLASSIFIED (NONPHYSICAL_SAMPLE) and never silently clipped / repaired; protocol A (record the fraction) is preferred unless the amplitude is obviously excessive (H0 §47, §48).",
+    "paired_common_random_numbers": true,
+    "sampling_classification_separate": "sampling generates delta x0 only; propagation/classification decides topology / validity.  Sampling code never clips, projects, reroutes or repairs samples (H0 §47).",
+    "sigma_point_check_note": "+/- principal-axis sigma points (delta x_i = +- L e_i, L L^T = P0) are a deterministic sanity check BEFORE Monte Carlo -- they are not a Monte-Carlo run (H0 §50)."
+  },
+  "mixture_semantics": {
+    "components": [
+      "p_k",
+      "mu_k",
+      "P_k"
+    ],
+    "incompatible_terminals": "different terminal kinds are never blindly mixed; condition by terminal kind or use a common fixed-time endpoint",
+    "law_of_total_covariance": "mu = sum_k p_k mu_k ; P = sum_k p_k [P_k + (mu_k - mu)(mu_k - mu)^T]",
+    "note": "Regime A (P(Z = Z0) ~ 1, linearization valid): single covariance P(T) = Phi_H P0 Phi_H^T suffices.  Regime B (P(Z != Z0) materially nonzero): report p_k, mu_k, P_k and distinguish within-topology covariance from between-topology separation.  Terminal mixtures with different terminal kinds must be conditioned by terminal kind or compared at a common fixed time (H0 §28); incompatible semantics are never blindly mixed."
+  },
+  "monte_carlo_rng_policy": {
+    "generator": "numpy.random.Generator (via numpy.random.default_rng)",
+    "global_implicit_state": "FORBIDDEN (no global np.random state)",
+    "reproducibility_seed": 2026,
+    "seed_role": "REPRODUCIBILITY seed only; NOT a physical parameter"
+  },
+  "probability_ci_policy": {
+    "confidence": 0.95,
+    "method": "binomial Wilson interval",
+    "normal_approximation_note": "p +/- z sqrt(...) normal approximation avoided, especially near p ~ 0 or p ~ 1 (H0 §35)."
+  },
+  "protocol_version": "phase-h-uncertainty-risk-protocol-v1",
+  "random_variable_scope": {
+    "convention": "X0 = xbar0 + delta X0 with E[delta X0] = 0 and P0 = Cov[delta X0]. X0 ~ (xbar0, P0) does NOT imply Gaussian; the same covariance does not determine the probability distribution.",
+    "not_randomized": [
+      "K",
+      "mass",
+      "C_D",
+      "reference area",
+      "atmospheric density",
+      "scale height",
+      "Earth parameters",
+      "control law"
+    ],
+    "phase_f_parameter_response_distinct": true,
+    "randomized": [
+      "delta r_0",
+      "delta theta_0",
+      "delta v_0",
+      "delta gamma_0"
+    ]
+  },
+  "representative_cases": {
+    "deep_sanger_topology": [
+      "n0_deep",
+      "n1_deep",
+      "n2_deep",
+      "n3_deep",
+      "n4_deep",
+      "n5_deep"
+    ],
+    "grazing_anchors": {
+      "branches": [
+        "B0",
+        "B1",
+        "B2",
+        "B3",
+        "B4"
+      ],
+      "count": 10,
+      "parameters": [
+        {
+          "branch": "B0",
+          "parameter": [
+            -2.046875,
+            3.984375
+          ],
+          "side": "N_side"
+        },
+        {
+          "branch": "B0",
+          "parameter": [
+            -1.7421875,
+            4.875
+          ],
+          "side": "N1_side"
+        },
+        {
+          "branch": "B1",
+          "parameter": [
+            -3.2421875,
+            4.1953125
+          ],
+          "side": "N_side"
+        },
+        {
+          "branch": "B1",
+          "parameter": [
+            -7.296875,
+            2.234375
+          ],
+          "side": "N1_side"
+        },
+        {
+          "branch": "B2",
+          "parameter": [
+            -5.7265625,
+            3.703125
+          ],
+          "side": "N_side"
+        },
+        {
+          "branch": "B2",
+          "parameter": [
+            -4.03125,
+            4.82421875
+          ],
+          "side": "N1_side"
+        },
+        {
+          "branch": "B3",
+          "parameter": [
+            -6.125,
+            4.57421875
+          ],
+          "side": "N_side"
+        },
+        {
+          "branch": "B3",
+          "parameter": [
+            -8.0546875,
+            3.98046875
+          ],
+          "side": "N1_side"
+        },
+        {
+          "branch": "B4",
+          "parameter": [
+            -8.875,
+            4.69140625
+          ],
+          "side": "N_side"
+        },
+        {
+          "branch": "B4",
+          "parameter": [
+            -7.9296875,
+            4.8984375
+          ],
+          "side": "N1_side"
+        }
+      ]
+    },
+    "h1_h2_fixed_topology": [
+      {
+        "K": 3.0,
+        "gamma0_deg": -5.0,
+        "key": "qian_baseline"
+      },
+      {
+        "K": 3.0,
+        "gamma0_deg": -5.0,
+        "key": "sanger_baseline",
+        "regime": "SRTI_N2"
+      }
+    ],
+    "reuse_note": "all representative cases reused from the frozen Phase-G / Phase-F sets; no re-selection in H0 (H0 §41, §42)."
+  },
+  "risk_boundary": {
+    "active_module": "src/hyptraj/uncertainty/",
+    "inactive_placeholders": [
+      "src/hyptraj/risk/interception_geometry.py",
+      "src/hyptraj/risk/survival.py"
+    ],
+    "scope_statement": "Phase H first version studies model-prediction uncertainty around a nominal initial state: initial-state uncertainty propagation, terminal-time uncertainty, terminal-state uncertainty, hybrid topology-transition probability, linearization validity and branch-conditioned mixture statistics.  It does NOT study interception geometry, survival / evasion probability, defense penetration, target-hit probability, weapon effectiveness, engagement optimization or adversarial interception analysis."
+  },
+  "risk_taxonomy": {
+    "metrics": [
+      "TOPOLOGY_TRANSITION_RISK",
+      "LINEARIZATION_BREAKDOWN_RISK",
+      "TERMINAL_KIND_CHANGE_RISK",
+      "STATE_DISPERSION",
+      "TERMINAL_TIME_DISPERSION",
+      "NUMERICAL_FAILURE_RATE"
+    ],
+    "scope_note": "Phase-H 'risk' = statistical risk of the research model only: topology-transition / linearization-breakdown / terminal-kind-change / state dispersion / terminal-time dispersion / numerical-failure rate. NOT vehicle survival, interception, penetration, target-hit or mission success, and NOT optimization."
+  },
+  "sample_count_convergence_policy": {
+    "convergence_metrics": [
+      "sample_mean",
+      "sample_covariance",
+      "topology_probabilities",
+      "terminal_time_moments"
+    ],
+    "note": "Sample counts follow sequential convergence (256, 512, 1024, ...) on sample mean / sample covariance / topology probabilities / terminal-time moments; a bare N = 10000 is never frozen without statistical evidence (H0 §34).",
+    "sequential_sizes": [
+      256,
+      512,
+      1024,
+      2048,
+      4096
+    ]
+  },
+  "scaled_covariance_convention": {
+    "comparison_policy": "uncertainty comparison is meaningful only after the input distribution / covariance geometry is specified (G5 scaling-geometry caveat inherited, H0 §11).",
+    "covariance_note": "tilde P = S_A^-1 P S_A^-T  (dimensionless covariance)",
+    "state_note": "Z0 = S_A^-1 delta X0  (dimensionless perturbation)"
+  },
+  "schema_version": "phase-h-uncertainty-risk-protocol-v1",
+  "state_order": [
+    "r",
+    "theta",
+    "v",
+    "gamma"
+  ],
+  "state_units": {
+    "gamma": "rad",
+    "r": "m",
+    "theta": "rad",
+    "v": "m/s"
+  },
+  "statistical_error_taxonomy": [
+    "VALID_FIXED_TOPOLOGY_SAMPLE",
+    "TOPOLOGY_CHANGED",
+    "EVENT_ORDER_CHANGED",
+    "TERMINAL_KIND_CHANGED",
+    "LINEARIZATION_DOMAIN_EXCEEDED",
+    "NONPHYSICAL_SAMPLE",
+    "NUMERICAL_FAILURE",
+    "INVALID_COVARIANCE",
+    "INVALID_DISTRIBUTION",
+    "INSUFFICIENT_MONTE_CARLO_CONVERGENCE"
+  ],
+  "synthetic_distribution_family": {
+    "alpha_role": "alpha = synthetic dimensionless research uncertainty amplitude only; no real-world magnitude or probability calibration is frozen at H0.",
+    "alpha_status": "PENDING_NUMERICAL_AUDIT",
+    "canonical_correlation": "R = I  (canonical-A dimensionless geometry)",
+    "distribution_kinds": [
+      "GAUSSIAN",
+      "BOUNDED_ELLIPSOIDAL",
+      "DETERMINISTIC_SIGMA_POINTS",
+      "CUSTOM_SAMPLES"
+    ],
+    "label": "Z0 ~ N(0, alpha^2 R)"
+  },
+  "terminal_cross_covariance_formula": "Cov(X_T, t_T) = J_T P0 eta_T^T",
+  "terminal_native_semantics": "Qian RTI != Sanger SRTI; native terminal uncertainty is DESCRIPTIVE, never a fair performance comparison (H0 §21).",
+  "terminal_state_covariance_formula": "P_T = J_T P0 J_T^T",
+  "terminal_time_variance_formula": "sigma_tT^2 = eta_T P0 eta_T^T  (same terminal branch / kind, topology preserved)",
+  "topology_random_variable": {
+    "definition": "p_topo = P(Z != Z0); each p_k = P(Z = k) must come from an explicitly defined input distribution (by nonlinear sampling / a validated probabilistic approximation).  Distance / FTLE / |n^T f| / Phi_local alone never define a probability (H0 §24, §25, §45).",
+    "label": "Z = T(X0)",
+    "no_universal_threshold": true,
+    "sample_classification": [
+      "TOPOLOGY_PRESERVED",
+      "TOPOLOGY_CHANGED",
+      "EVENT_ORDER_CHANGED",
+      "TERMINAL_KIND_CHANGED",
+      "GRAZING_CROSSED",
+      "LINEARIZATION_INVALID",
+      "NONPHYSICAL_STATE",
+      "NUMERICAL_FAILURE"
+    ]
+  },
+  "upstream": {
+    "phase_f_commit": "96253f1ef7785764d8da3156d7d614d2b244b577",
+    "phase_f_tag": "phase-f-v1.0",
+    "phase_g_commit": "6fb75c4a5f7b6460a5c9503c99fe2b2b2c96854c",
+    "phase_g_tag": "phase-g-v1.0",
+    "upstream_consumed": "Phase H consumes frozen Phase-G derivatives; it does not redefine them."
+  }
+}
