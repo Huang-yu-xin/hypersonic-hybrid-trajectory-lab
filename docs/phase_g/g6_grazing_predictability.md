@@ -2,15 +2,18 @@
 
 状态：**COMPLETE**（G6 accept，2026-08-18）
 本次修订：**G6R corrective revision**（G6R validation-contract &
-operational-radius corrective patch，2026-08-18，accept 待定）
+operational-radius corrective patch）→ **G6R2 归一化修正**
+（linearization-error NORMALIZATION Contract Fix，2026-08-18，
+G6R2 accept 待定）
 分支：`feature/phase-g-predictability`
-G6 起点：`7a94ed1`（G5R commit）；G6R 起点：G6 freeze commit（同文件）
+G6 起点：`7a94ed1`（G5R commit）；G6R 起点：G6 freeze commit；G6R2 起点：G6R commit `9c7e80f`
 Phase-F 依据：`tests/data/phase_f_gamma_k_sensitivity_v1.json`（B0–B4，10 双参考 extremal anchors）
 Machine-readable artifact：`tests/data/phase_g6_grazing_predictability_v1.json`
 （整体 schema `phase-g6-grazing-predictability-v1`；G6R 增量块 schema
-`phase-g6r-grazing-contract-v1`，见 `g6r`）
+`phase-g6r-grazing-contract-v1`（`g6r`）；G6R2 增量块 schema
+`phase-g6r2-linearization-normalization-v1`（`g6r2`））
 生成器：`scripts/run_phase_g6_grazing.py`（deterministic；G6 冻结段
-preserved verbatim，G6R 段可复现重算）
+preserved verbatim，G6R/G6R2 段可复现重算）
 
 ## 1. 科学问题
 
@@ -156,18 +159,19 @@ scaled residual（radial 列 relative；gamma 列线性域受 incidence cone 约
 | B3 a=1 | 0.036 | 0.641 | 0.03 | 0.10 |
 | B4 a=1 | 0.419 | 2.19 | 0.03 | 0.10 |
 
-**G6R 精化表（refined operational radius，bracket [PASS, FAIL] +
-deterministic bisection 于 clearance-normalized β；见 §13b）：**
+**G6R/G6R2 精化表（refined operational radius，bracket [PASS, FAIL] +
+deterministic bisection 于 clearance-normalized β；误差按 frozen
+protocol `E = ERROR / LINEAR PREDICTION` 归一化，见 §13b、§13c）：**
 
 | point | φ [m] | d_exit | r_1%/φ (refined) | r_5%/φ (refined) | r_1% bracket [lo,hi] |
 |---|---|---|---|---|---|
-| B0 a=1 | 0.048 | 0.479 | **0.0404** | 0.1937 | [0.03, 0.1] |
-| B0 a=0.5 | 0.012 | 0.240 | 0.0404 | 0.1936 | [0.03, 0.1] |
-| B3 a=1 | 0.036 | 0.641 | 0.0399 | 0.1912 | [0.03, 0.1] |
-| B4 a=1 | 0.419 | 2.19 | 0.0407 | 0.1949 | [0.03, 0.1] |
+| B0 a=1 | 0.048 | 0.479 | **0.0400** | 0.1850 | [0.03, 0.1] |
+| B0 a=0.5 | 0.012 | 0.240 | 0.0400 | 0.1849 | [0.03, 0.1] |
+| B3 a=1 | 0.036 | 0.641 | 0.0395 | 0.1826 | [0.03, 0.1] |
+| B4 a=1 | 0.419 | 2.19 | 0.0403 | 0.1863 | [0.03, 0.1] |
 
-→ 精化后 r_1% ≈ 0.040·φ、r_5% ≈ 0.193·φ（scale-free ratio 一致，
-跨 branch/alpha 展宽 < 0.001 与 < 0.004），**并取代粗暴的 grid
+→ 精化后 r_1% ≈ 0.040·φ、r_5% ≈ 0.185·φ（scale-free ratio 一致，
+跨 branch/alpha 展宽 ≈ 0.0009 与 ≈ 0.0037），**并取代粗暴的 grid
 lower sample（0.03/0.10）作为 operational validity radius**；
 **absolute validity radius 随 φ → 0（grazing 趋近）收缩 = first-order
 validity domain shrinkage 的直接证据（H4）**；同时维度化口径
@@ -223,7 +227,8 @@ frozen claims，只加固验证契约并精化 operational radius。逐项：
    refined_radius_m / radius_over_phi / bracket_width`。NONMONOTONE 判定为
    **τ-relative**（fail 之后出现 re-entrant pass ⇒
    `NONMONOTONE_VALIDITY_PROFILE`），tiny-β 舍入噪声 dip（≪τ）不算。
-   精化结果：r_1%/φ ≈ 0.0399–0.0407、r_5%/φ ≈ 0.191–0.195（§11）。
+   精化结果（G6R2 protocol-correct 归一化）：r_1%/φ ≈ 0.0395–0.0403、
+   r_5%/φ ≈ 0.183–0.186（§11、§13c）。
 4. **Issue 3 — paired radial plateau FD**：`paired_radial_fd_plateau`
    在 `β ∈ [1e-4, 3e-2]` 全网格两侧 `PAIR_LOCAL_VALID` 且
    canonical-A scaled-relative error 保持 < 1e-2（实测 max ≈ 1.1e-4）；
@@ -237,23 +242,66 @@ frozen claims，只加固验证契约并精化 operational radius。逐项：
 增量/文档；未改动 frozen 物理、未重扫 gamma0-K、未 refit B0–B4、
 未新增 Monte Carlo / uncertainty / 优化 / 渐近混沌声明。
 
+## 13c. G6R2 normalization correction（linearization-error 归一化修正）
+
+**Root cause（不隐藏 provenance）**：frozen Phase-G protocol 定义
+
+```
+E_lin = ||S_A^-1 (Δx_NL − Δx_LIN)||₂ / max(||S_A^-1 Δx_LIN||₂, ε_floor)
+      = ERROR / LINEAR PREDICTION          （分母 = canonical-scaled LINEAR prediction norm）
+```
+
+G6R 初版 `_elin_probe` 误用了 **NONLINEAR increment norm**
+`||S_A^-1 (M(±εe_r) − M(0))||` 作为 denominator（两者渐近等价但不相同：
+`||Δx_NL|| = ||Δx_LIN||·(1+O(β))`）。G6R2 把归一化改回 frozen
+definition：显式实现 `scaled_linearization_error(nl, lin, scale_vec)`
+——**不再出现 `||S_A^-1 (Mp − M0)||` 作为 relative denominator**。
+
+- plus：`Δx_NL⁺ = M(+εe_r)−M(0)`，`Δx_LIN⁺ = +εP(:,r)`；
+  `E₊ = ||S⁻¹[ΔNL⁺−ΔLIN⁺]|| / max(||S⁻¹(εP(:,r))||, ε_floor)`；
+- minus：`Δx_NL⁻ = M(−εe_r)−M(0)`，`Δx_LIN⁻ = −εP(:,r)`；
+  `E₋ = ||S⁻¹[ΔNL⁻−ΔLIN⁻]|| / max(||S⁻¹(−εP(:,r))||, ε_floor)`；
+  两侧 denominator 理论相等（`||−εP||=||εP||`）；
+- `E_pair = max(E₊,E₋)`，仍要求 both sides `PAIR_LOCAL_VALID`；
+- `ε_floor = 1e-15` 仅为 0/0 数值归一化 guard，**不是** grazing /
+  validity / physics threshold；G6 threshold policy 不变。
+
+**重新计算（protocol-correct，真实重跑 generator，未手工乘 correction
+factor）**：
+
+| point | old G6R r₁%/φ (nonlin. denom.) | new r₁%/φ (protocol) | Δ | old r₅%/φ | new r₅%/φ | Δ |
+|---|---|---|---|---|---|---|
+| B0 a=1 | 0.04037 | **0.03998** | −1.0% | 0.19371 | 0.18495 | −4.5% |
+| B0 a=0.5 | 0.04036 | 0.03997 | −1.0% | 0.19363 | 0.18487 | −4.5% |
+| B3 a=1 | 0.03986 | 0.03947 | −1.0% | 0.19119 | 0.18257 | −4.5% |
+| B4 a=1 | 0.04073 | 0.04034 | −1.0% | 0.19487 | 0.18629 | −4.4% |
+
+变化与预期一致（§9：1% 系数小变 −1%；5% 稍大但仍温和 −4.5%）；全部
+仍 `MONOTONE_REFINED_RADIUS`、monotone=True、bracket 不变。旧值原样保存
+于 snapshot `g6r2.old_radii_g6r_nonlinear_denominator`（不覆盖历史）。
+**paired derivative FD 未受影响**：`paired_radial_fd_plateau` /
+`paired_fd_validation` 不经过 `_elin_probe`，B0/B4 plateau 与 4-column
+结果逐位不变（snapshot `g6r2.paired_fd_results_unchanged=true`）。
+
 ## 14. Numeric grazing-threshold decision（evidence-based）
 
 ```
 FINAL: NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED
 ```
 
-理由：归一化 1%-validity radius 高度一致（**G6R 精化后** r_1%/φ ≈
-0.040 跨 B0–B4 与 alpha，r_5%/φ ≈ 0.193；原 G6 grid 值 0.03/0.10 仅为
-lower sample），这**正说明没有 universal 维度化阈值**：anchors 处的
-维度化 `|d|` collapse 水平（0.48–2.19 m/s）与 gamma 方向拓扑保持半径
-（1.5e-7–2.4e-6 rad，跨度 ~16×）均跨 branch 变化，不存在单个数值能把
-"grazing-adjacent" 与 "transverse" 分开。G6R 以精化 radius 重审计 →
-结论不变（snapshot `g6r.threshold_reauth`）。资格判定使用 continuous
-diagnostics（`|d|`、`|sinγ|`、φ clearance、validity radius、topology
-gate、REF stability）。**exact `n^Tf^- = 0` 仍为 GRAZING/NONTRANSVERSE**；
-小有限 denominator 从不自动拒绝。G6/G6R 未冻结任何 universal physics
-threshold。
+理由：归一化 1%-validity radius 高度一致（**G6R/G6R2 精化后，protocol
+归一化 `E=ERROR/LINEAR PREDICTION`** r_1%/φ ≈ 0.040 跨 B0–B4 与 alpha，
+r_5%/φ ≈ 0.185；原 G6 grid 值 0.03/0.10 仅为 lower sample），这**正说明
+没有 universal 维度化阈值**：anchors 处的维度化 `|d|` collapse 水平
+（0.48–2.19 m/s）与 gamma 方向拓扑保持半径（1.5e-7–2.4e-6 rad，跨度
+~16×）均跨 branch 变化，不存在单个数值能把 "grazing-adjacent" 与
+"transverse" 分开。G6R 以精化 radius 重审计、G6R2 以 protocol-correct
+归一化重算 → 结论**RETAINED AFTER PROTOCOL-CORRECT NORMALIZATION**
+（snapshot `g6r.threshold_reauth` + `g6r2.threshold_decision_reaudited`）。
+资格判定使用 continuous diagnostics（`|d|`、`|sinγ|`、φ clearance、
+validity radius、topology gate、REF stability）。**exact `n^Tf^- = 0`
+仍为 GRAZING/NONTRANSVERSE**；小有限 denominator 从不自动拒绝。G6/G6R/G6R2
+未冻结任何 universal physics threshold。
 
 ## 15. Claim boundaries / G7 handoff
 
@@ -266,5 +314,5 @@ bifurcation 曲线。
 
 G7 = final synthesis / final regression / final report / final freeze(tag)。
 
-**G6 = COMPLETE / G6R corrective revision = COMPLETE（accept 待定）；
-等待人工验收后再进入 G7（G7 PENDING）。**
+**G6 = COMPLETE / ACCEPTED；G6R corrective = COMPLETE；G6R2 normalization
+fix = COMPLETE（G6R2 accept 待定）；等待人工验收后再进入 G7（G7 PENDING）。**

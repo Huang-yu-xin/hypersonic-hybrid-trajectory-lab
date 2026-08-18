@@ -1,7 +1,8 @@
 # Phase G — Finite-Time Local Predictability of Hybrid Trajectories
 
 状态：**G0–G5R COMPLETE / ACCEPTED**；**G6 COMPLETE / ACCEPTED**；
-**G6R corrective revision COMPLETE**（G6R accept 待定）（2026-08-18）
+**G6R corrective revision COMPLETE**；
+**G6R2 normalization fix COMPLETE**（G6R2 accept 待定）（2026-08-18）
 分支：`feature/phase-g-predictability`
 上游冻结基线：`phase-f-v1.0` = `gamma-k-sensitivity-v1.0` =
 `96253f1ef7785764d8da3156d7d614d2b244b577`（Phase F 最终冻结 commit）。
@@ -41,7 +42,8 @@ Phase G **不是**：asymptotic chaos 分析、全局稳定性证明、飞行包
 | **G5** | finite-time predictability metrics（scaled SVD/FTLE/rank）· canonical scale freeze（A）· RTI/SRTI terminal sensitivity | **COMPLETE / ACCEPTED** |
 | **G5R** | terminal-sensitivity contract guard（eligibility + transversality exact-zero）+ RTI strict-interior trim convergence audit | **COMPLETE / ACCEPTED** |
 | **G6** | grazing transversality-loss & linearization validity（B0–B4 anchors · controlled grazing families · paired excursion factor · validity/topology radius · threshold decision） | **COMPLETE / ACCEPTED**（`g6_grazing_predictability.md`） |
-| **G6R** | grazing validation-contract & operational-radius corrective patch（硬拓扑契约 · refined operational radii (bracket+bisection) · paired radial plateau + 全 4-column FD · 事件方向分类 · dual-reference 锁） | **COMPLETE**（G6R accept 待定） |
+| **G6R** | grazing validation-contract & operational-radius corrective patch（硬拓扑契约 · refined operational radii (bracket+bisection) · paired radial plateau + 全 4-column FD · 事件方向分类 · dual-reference 锁） | **COMPLETE** |
+| **G6R2** | linearization-error NORMALIZATION contract fix（`ERROR/LINEAR-PREDICTION`（protocol）取代 `ERROR/NONLINEAR-INCREMENT`；refined radii 按 frozen 定义重算；paired FD 不变） | **COMPLETE**（G6R2 accept 待定） |
 | G7 | 最终报告 / 冻结 | PENDING |
 
 G0–G5 硬性禁止：grazing / B0-B4 / near-boundary 分析、Monte Carlo、
@@ -100,6 +102,9 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
 - `tests/test_predictability/test_phase_g4_hybrid_stm.py` —— G4 hybrid STM 测试
 - `tests/test_predictability/test_phase_g6r_grazing_contract.py` —— G6R 验证契约测试
   （硬拓扑契约 · dual-reference 锁 · refined radii · plateau + 4-column FD · 方向分类）
+- `tests/test_predictability/test_phase_g6r2_normalization.py` —— G6R2 归一化
+  契约测试（synthetic denominator 区分两套定义 · ±symmetry · E=0 · O(ε) ·
+  真实 radius 重算 · paired FD unchanged）
 - `tests/data/phase_g1_continuous_jacobian_v1.json` —— G1 snapshot
 - `tests/data/phase_g2_continuous_stm_v1.json` —— G2 snapshot
 - `tests/data/phase_g3_transverse_saltation_v1.json` —— G3 snapshot
@@ -107,8 +112,10 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
 - `tests/data/phase_g5_predictability_metrics_v1.json` —— G5 snapshot
 - `tests/data/phase_g6_grazing_predictability_v1.json` —— G6 snapshot
   （G6R 增量块 `g6r`：contract audit · refined_validity_radii ·
-  paired_fd · threshold_reauth）
-- `scripts/run_phase_g6_grazing.py` —— G6/G6R snapshot deterministic 生成器
+  paired_fd · threshold_reauth；G6R2 增量块 `g6r2`：归一化 provenance ·
+  old-vs-new radii · paired_fd_results_unchanged · threshold reaudit）
+- `scripts/run_phase_g6_grazing.py` —— G6/G6R/G6R2 snapshot deterministic 生成器
+  （`linearization_error_denominator = canonical_scaled_linear_prediction_norm`）
 
 `observability.py` 保持空占位；G7 final report/freeze 属 G7。
 
@@ -185,7 +192,19 @@ optimization、gamma0-K 域重扫、asymptotic/chaos claims（G6 范围）。
   `NUMERICAL_FAILURE`）。新增 snapshot `g6r` 增量块 + deterministic 生成器
   `scripts/run_phase_g6_grazing.py`；新增 G6R 契约测试
   `tests/test_predictability/test_phase_g6r_grazing_contract.py`。
+- **G6R2** 修正 refined operational radius 的 **linearization-error 归一化**
+  （root cause：G6R 初版把 relative-error denominator 误用为
+  canonical-scaled **NONLINEAR increment norm**，而 frozen protocol 规定
+  `E = ERROR / LINEAR PREDICTION`，即分母
+  `||S⁻¹(±εP(:,r))||`）。显式实现 `scaled_linearization_error`（纯 helper，
+  independent unit-testable），`_elin_probe` 改走 protocol denominator；
+  **paired FD 逐位不变**（`g6r2.paired_fd_results_unchanged=true`）；真实
+  重跑 generator（未手工乘 factor）→ 1% 系数 −1.0%（0.040→0.040）、5% 系数
+  −4.5%（0.193→0.185）仍 scale-free uniform 且 `MONOTONE_REFINED_RADIUS`；
+  旧值原样存于 `g6r2.old_radii_g6r_nonlinear_denominator`（不覆盖历史）。
+  阈值结论 **RETAINED AFTER PROTOCOL-CORRECT NORMALIZATION**
+  （`NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED`）。
 
 **Phase G0–G5R = COMPLETE / ACCEPTED；G6 = COMPLETE / ACCEPTED；
-G6R corrective revision = COMPLETE（accept 待定）；等待人工验收后再进入
-G7（G7 = PENDING）。**
+G6R corrective = COMPLETE；G6R2 normalization fix = COMPLETE（G6R2 accept
+待定）；等待人工验收后再进入 G7（G7 = PENDING）。**

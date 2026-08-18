@@ -16,7 +16,11 @@ Phase-F anchor snapshot, G6R only):
     (bracket [PASS lower / FAIL upper] + deterministic bisection on the
     clearance-normalized beta coordinate; NONMONOTONE_VALIDITY_PROFILE
     detection) for the same four G6 cases B0 a=1 / B0 a=0.5 / B3 a=1 /
-    B4 a=1, replacing the G6 coarse grid-sampled lower bounds.
+    B4 a=1, replacing the G6 coarse grid-sampled lower bounds.  Per G6R2
+    the relative linearization error uses the frozen protocol denominator
+    ``ERROR / LINEAR PREDICTION`` (``scaled_linearization_error``), NOT the
+    nonlinear-increment norm; the old G6R (nonlinear-denominator) radii are
+    preserved verbatim in ``g6r2.old_radii_g6r_nonlinear_denominator``.
   * ``g6r.paired_fd_plateau`` -- radial-column derivative plateau at
     clearance-normalized beta in [1e-4, 3e-2], both sides
     PAIR_LOCAL_VALID, canonical-A scaled-relative error << 1e-2.
@@ -289,23 +293,38 @@ def main():
     }
     decision["validity_overview"] = validity_overview
     decision["reason"] += (
-        "  G6R RE-AUDIT (refined bracketed+bisected radii): r_1%/Phi_local "
-        "~ 0.0403-0.0408 and r_5%/Phi_local ~ 0.191-0.197 are scale-free "
+        "  G6R RE-AUDIT (refined bracketed+bisected radii, protocol-correct "
+        "ERROR/LINEAR-PREDICTION normalization): r_1%/Phi_local "
+        "~ 0.0395-0.0403 and r_5%/Phi_local ~ 0.183-0.186 are scale-free "
         "uniform across branches and alpha -> still no dimensionful "
         "universal cutoff is supported.  The refined radii are bracketed "
         "[PASS, FAIL] and bisected (deterministic), superseding the coarse "
-        "G6 grid-sampled lower bounds (0.03/0.10).")
+        "G6 grid-sampled lower bounds (0.03/0.10).  "
+        "G6R2 corrected the error normalization (old nonlinear-increment "
+        "denominator -> frozen linear-prediction denominator).")
     assert decision["outcome"] == \
         "NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED"
 
-    # ---- Assemble snapshot: frozen G6 sections + G6R additions ----
+    # ---- Assemble snapshot: frozen G6 sections + G6R/G6R2 additions ----
+    # G6R2 provenance: capture the previous G6R (nonlinear-denominator)
+    # refined radii from the committed snapshot before overwriting them.
+    old_cases = old.get("g6r", {}).get("refined_validity_radii", {})
+    old_radii = {
+        k: {t: v[t]["radius_over_phi"]
+            for t in ("r_1pct_refined", "r_5pct_refined")}
+        for k, v in old_cases.items()}
+
     g6r = {
         "schema_version": "phase-g6r-grazing-contract-v1",
         "rationale": (
             "G6R corrective patch: hardened extraction contract, refined "
             "operational radii (bracket+bisection), paired radial plateau "
             "and full 4-column paired-map FD validation, event-direction "
-            "class enforcement, dual-reference lock."),
+            "class enforcement, dual-reference lock.  G6R2 revised the "
+            "linearization-error NORMALIZATION to the frozen protocol "
+            "definition (see g6r2)."),
+        "linearization_error_denominator":
+            "canonical_scaled_linear_prediction_norm",
         "starting_g6r_commit": _git_head(),
         "frozen_sections_preserved": [
             "frozen_anchor_audit", "nplus_event_audit", "controlled_families",
@@ -330,9 +349,45 @@ def main():
         },
     }
 
+    # ---- G6R2 block: normalization-correction provenance ----
+    paired_fd_unchanged = True
+    for br, blk in paired_fd.items():
+        old_p = old.get("g6r", {}).get("paired_fd", {}).get(br, {})
+        if (old_p.get("radial_plateau", {}).get("plateau_pass")
+                != blk["radial_plateau"]["plateau_pass"]):
+            paired_fd_unchanged = False
+        if (old_p.get("four_column", {}).get("four_column_pass")
+                != blk["four_column"]["four_column_pass"]):
+            paired_fd_unchanged = False
+
+    g6r2 = {
+        "schema_version": "phase-g6r2-linearization-normalization-v1",
+        "rationale": (
+            "G6R2 minimal corrective patch: the G6R refined validity radii "
+            "initially normalized the relative linearization error by the "
+            "canonical-A scaled NONLINEAR increment norm.  The frozen "
+            "Phase-G protocol defines E = ERROR / LINEAR PREDICTION, i.e. "
+            "the denominator is ||S^-1 (eps P(:,r))||.  Re-generated with "
+            "the protocol-correct denominator; the two definitions are "
+            "asymptotically equivalent, so 1%/5% coefficients shift only "
+            "modestly, but the operational radii now match the frozen "
+            "protocol exactly."),
+        "error_normalization": "ERROR_OVER_LINEAR_PREDICTION",
+        "old_error_normalization": "ERROR_OVER_NONLINEAR_INCREMENT",
+        "epsilon_floor": 1e-15,
+        "epsilon_floor_role": (
+            "numerical normalization guard only (0/0); NOT a grazing / "
+            "validity / physics threshold; G6 threshold policy unchanged."),
+        "old_radii_g6r_nonlinear_denominator": old_radii,
+        "paired_fd_results_unchanged": bool(paired_fd_unchanged),
+        "threshold_decision_reaudited": True,
+        "threshold_after_reaudit": decision["outcome"],
+    }
+
     snapshot = dict(old)
-    snapshot["status"] = "G6 frozen + G6R corrective revision"
+    snapshot["status"] = "G6 frozen + G6R correction + G6R2 normalization fix"
     snapshot["g6r"] = g6r
+    snapshot["g6r2"] = g6r2
     snapshot["threshold_decision"] = decision
 
     out = Path(args.out)
@@ -354,6 +409,9 @@ def main():
         print("  %s: plateau_pass=%s max_rel=%.3e four_column_pass=%s"
               % (br, pl["plateau_pass"], pl["max_scaled_rel_error"],
                  fc["four_column_pass"]))
+    print(f"  G6R2: error_normalization={g6r2['error_normalization']}, "
+          f"paired_fd_unchanged={g6r2['paired_fd_results_unchanged']}, "
+          f"threshold_reaudited={g6r2['threshold_decision_reaudited']}")
 
 
 if __name__ == "__main__":

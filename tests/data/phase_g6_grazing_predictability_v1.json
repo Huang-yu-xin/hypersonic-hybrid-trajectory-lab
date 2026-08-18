@@ -1,6 +1,6 @@
 {
  "schema_version": "phase-g6-grazing-predictability-v1",
- "status": "G6 frozen + G6R corrective revision",
+ "status": "G6 frozen + G6R correction + G6R2 normalization fix",
  "starting_g5r_commit": "7a94ed10d841a2e8faa7bbc20a46be90d185cc28",
  "phase_f_source_snapshot": "phase-f-gamma-k-sensitivity-regression-v1",
  "canonical_scale": {
@@ -1558,45 +1558,45 @@
    "|d| (m/s)",
    "|sin gamma|"
   ],
-  "reason": "The normalized 1%-validity radius is scale-free uniform (r_1%/Phi_local ~ 0.03 across B0-B4 and alpha), which is exactly why no DIMENSIONFUL universal cutoff is supported: the dimensioned |d| collapse levels (0.48-2.19 m/s at the anchors) and the gamma-direction topology-preserving radii (1.5e-7 - 2.4e-6 rad, ~16x spread) both vary across branches with no single numeric value separating grazing-adjacent from transverse.  Qualification uses continuous diagnostics (|d|, |sin gamma|, Phi_local clearance, validity radius, topology gate, REF stability).  exact n^T f^- = 0 remains GRAZING/NONTRANSVERSE; small finite denominators are never auto-rejected.  G6R RE-AUDIT (refined bracketed+bisected radii): r_1%/Phi_local ~ 0.0403-0.0408 and r_5%/Phi_local ~ 0.191-0.197 are scale-free uniform across branches and alpha -> still no dimensionful universal cutoff is supported.  The refined radii are bracketed [PASS, FAIL] and bisected (deterministic), superseding the coarse G6 grid-sampled lower bounds (0.03/0.10).",
+  "reason": "The normalized 1%-validity radius is scale-free uniform (r_1%/Phi_local ~ 0.03 across B0-B4 and alpha), which is exactly why no DIMENSIONFUL universal cutoff is supported: the dimensioned |d| collapse levels (0.48-2.19 m/s at the anchors) and the gamma-direction topology-preserving radii (1.5e-7 - 2.4e-6 rad, ~16x spread) both vary across branches with no single numeric value separating grazing-adjacent from transverse.  Qualification uses continuous diagnostics (|d|, |sin gamma|, Phi_local clearance, validity radius, topology gate, REF stability).  exact n^T f^- = 0 remains GRAZING/NONTRANSVERSE; small finite denominators are never auto-rejected.  G6R RE-AUDIT (refined bracketed+bisected radii): r_1%/Phi_local ~ 0.0403-0.0408 and r_5%/Phi_local ~ 0.191-0.197 are scale-free uniform across branches and alpha -> still no dimensionful universal cutoff is supported.  The refined radii are bracketed [PASS, FAIL] and bisected (deterministic), superseding the coarse G6 grid-sampled lower bounds (0.03/0.10).  G6R RE-AUDIT (refined bracketed+bisected radii, protocol-correct ERROR/LINEAR-PREDICTION normalization): r_1%/Phi_local ~ 0.0395-0.0403 and r_5%/Phi_local ~ 0.183-0.186 are scale-free uniform across branches and alpha -> still no dimensionful universal cutoff is supported.  The refined radii are bracketed [PASS, FAIL] and bisected (deterministic), superseding the coarse G6 grid-sampled lower bounds (0.03/0.10).  G6R2 corrected the error normalization (old nonlinear-increment denominator -> frozen linear-prediction denominator).",
   "radii_overview": {
    "r_1pct_over_phi": {
-    "B0_a1": 0.040374467670917506,
-    "B0_a0.5": 0.04036072820425034,
-    "B3_a1": 0.03986378341913223,
-    "B4_a1": 0.0407324531674385
+    "B0_a1": 0.039980112016201025,
+    "B0_a0.5": 0.03997192591428757,
+    "B3_a1": 0.03947364598512649,
+    "B4_a1": 0.0403433421254158
    },
    "r_5pct_over_phi": {
-    "B0_a1": 0.19370727241039276,
-    "B0_a0.5": 0.1936308890581131,
-    "B3_a1": 0.19118705689907078,
-    "B4_a1": 0.19487219750881196
+    "B0_a1": 0.18495217263698582,
+    "B0_a0.5": 0.1848739296197891,
+    "B3_a1": 0.18256950676441192,
+    "B4_a1": 0.18628928959369656
    }
   },
   "validity_overview": {
    "B0_a1": {
     "d_exit": 0.4790348709897835,
     "phi_local_m": 0.04796487744897604,
-    "r_1pct_m": 0.0019365563939032033,
-    "r_5pct_m": 0.009291145582139906
+    "r_1pct_m": 0.0019176411732534165,
+    "r_5pct_m": 0.008871208294454884
    },
    "B0_a0.5": {
     "d_exit": 0.23951743564407182,
     "phi_local_m": 0.011991219595074654,
-    "r_1pct_m": 0.0004839743549142889,
-    "r_5pct_m": 0.002321870511085372
+    "r_1pct_m": 0.00047931214127627743,
+    "r_5pct_m": 0.0022168638874752677
    },
    "B3_a1": {
     "d_exit": 0.6412972796553333,
     "phi_local_m": 0.03602704592049122,
-    "r_1pct_m": 0.0014361743558055932,
-    "r_5pct_m": 0.0068879048783063905
+    "r_1pct_m": 0.001422118856555366,
+    "r_5pct_m": 0.0065774400038829004
    },
    "B4_a1": {
     "d_exit": 2.1881524450325474,
     "phi_local_m": 0.41912458650767803,
-    "r_1pct_m": 0.017071972591246022,
-    "r_5pct_m": 0.08167572920272338
+    "r_1pct_m": 0.016908886586652686,
+    "r_5pct_m": 0.07807842147176716
    }
   }
  },
@@ -1611,8 +1611,9 @@
  },
  "g6r": {
   "schema_version": "phase-g6r-grazing-contract-v1",
-  "rationale": "G6R corrective patch: hardened extraction contract, refined operational radii (bracket+bisection), paired radial plateau and full 4-column paired-map FD validation, event-direction class enforcement, dual-reference lock.",
-  "starting_g6r_commit": "3b92269a159d9b259051d0a950e52cc1647bd352",
+  "rationale": "G6R corrective patch: hardened extraction contract, refined operational radii (bracket+bisection), paired radial plateau and full 4-column paired-map FD validation, event-direction class enforcement, dual-reference lock.  G6R2 revised the linearization-error NORMALIZATION to the frozen protocol definition (see g6r2).",
+  "linearization_error_denominator": "canonical_scaled_linear_prediction_norm",
+  "starting_g6r_commit": "9c7e80f92d34c2d5311560cb9640aa11eaf84703",
   "frozen_sections_preserved": [
    "frozen_anchor_audit",
    "nplus_event_audit",
@@ -1808,9 +1809,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00026912176990530085,
-      "E_lin_plus": 0.00014520305653492854,
-      "E_lin_minus": 0.0002475566134466146,
-      "E_pair": 0.0002475566134466146
+      "E_lin_plus": 0.00014496314577936684,
+      "E_lin_minus": 0.0002476826996522055,
+      "E_pair": 0.0002476826996522055
      },
      {
       "beta": 0.0003,
@@ -1821,9 +1822,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00026913132269268793,
-      "E_lin_plus": 6.980081984371665e-05,
-      "E_lin_minus": 3.824922445119932e-05,
-      "E_pair": 6.980081984371665e-05
+      "E_lin_plus": 6.979795873704781e-05,
+      "E_lin_minus": 3.828617763296634e-05,
+      "E_pair": 6.979795873704781e-05
      },
      {
       "beta": 0.001,
@@ -1834,9 +1835,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002691360928622072,
-      "E_lin_plus": 0.00023887525059376017,
-      "E_lin_minus": 0.00024248840996781288,
-      "E_pair": 0.00024248840996781288
+      "E_lin_plus": 0.00023881808075315692,
+      "E_lin_minus": 0.00024254734750919278,
+      "E_pair": 0.00024254734750919278
      },
      {
       "beta": 0.003,
@@ -1847,9 +1848,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002691369921824092,
-      "E_lin_plus": 0.0007287261987567533,
-      "E_lin_minus": 0.0007380585806216932,
-      "E_pair": 0.0007380585806216932
+      "E_lin_plus": 0.0007281958616087265,
+      "E_lin_minus": 0.0007386033810928836,
+      "E_pair": 0.0007386033810928836
      },
      {
       "beta": 0.01,
@@ -1860,9 +1861,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002691391086006447,
-      "E_lin_plus": 0.002444468981711105,
-      "E_lin_minus": 0.002458602698448192,
-      "E_pair": 0.002458602698448192
+      "E_lin_plus": 0.002438512186761463,
+      "E_lin_minus": 0.0024646582079299387,
+      "E_pair": 0.0024646582079299387
      },
      {
       "beta": 0.03,
@@ -1873,9 +1874,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002691646862307363,
-      "E_lin_plus": 0.007302657919974062,
-      "E_lin_minus": 0.007410816977336336,
-      "E_pair": 0.007410816977336336
+      "E_lin_plus": 0.007249752163579443,
+      "E_lin_minus": 0.007466109142345855,
+      "E_pair": 0.007466109142345855
      },
      {
       "beta": 0.1,
@@ -1886,9 +1887,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00026946057724373834,
-      "E_lin_plus": 0.0239445953407979,
-      "E_lin_minus": 0.025153178614617848,
-      "E_pair": 0.025153178614617848
+      "E_lin_plus": 0.02338504472871232,
+      "E_lin_minus": 0.02580173869336819,
+      "E_pair": 0.02580173869336819
      },
      {
       "beta": 0.2,
@@ -1899,9 +1900,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002704522358962357,
-      "E_lin_plus": 0.04683999976735241,
-      "E_lin_minus": 0.05171790380630503,
-      "E_pair": 0.05171790380630503
+      "E_lin_plus": 0.044745625503828663,
+      "E_lin_minus": 0.05453657955228078,
+      "E_pair": 0.05453657955228078
      },
      {
       "beta": 0.3,
@@ -1912,9 +1913,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002721642545177769,
-      "E_lin_plus": 0.06881245639579157,
-      "E_lin_minus": 0.07996225541911094,
-      "E_pair": 0.07996225541911094
+      "E_lin_plus": 0.06438521252192247,
+      "E_lin_minus": 0.08690714379116457,
+      "E_pair": 0.08690714379116457
      },
      {
       "beta": 0.5,
@@ -1925,9 +1926,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0002782223658981418,
-      "E_lin_plus": 0.1103836862545785,
-      "E_lin_minus": 0.14310567571315944,
-      "E_pair": 0.14310567571315944
+      "E_lin_plus": 0.0994179565348225,
+      "E_lin_minus": 0.16698858893135202,
+      "E_pair": 0.16698858893135202
      },
      {
       "beta": 0.7,
@@ -1938,9 +1939,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00028962755486980243,
-      "E_lin_plus": 0.14929225821969483,
-      "E_lin_minus": 0.2201712406271906,
-      "E_pair": 0.2201712406271906
+      "E_lin_plus": 0.12991265362984447,
+      "E_lin_minus": 0.2822900018133502,
+      "E_pair": 0.2822900018133502
      },
      {
       "beta": 1.0,
@@ -1951,9 +1952,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0003485125887690773,
-      "E_lin_plus": 0.20362139255174258,
-      "E_lin_minus": 0.43169015299153685,
-      "E_pair": 0.43169015299153685
+      "E_lin_plus": 0.16919767900609253,
+      "E_lin_minus": 0.759377721735863,
+      "E_pair": 0.759377721735863
      },
      {
       "beta": 1.5,
@@ -1988,25 +1989,25 @@
      "lower_pass_beta": 0.03,
      "upper_fail_beta": 0.1,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.040374467670917506,
-     "refined_radius_m": 0.0019365563939032033,
-     "radius_over_phi": 0.040374467670917506,
-     "bracket_width": 4.172325138163124e-09
+     "refined_beta": 0.039980112016201025,
+     "refined_radius_m": 0.0019176411732534165,
+     "radius_over_phi": 0.039980112016201025,
+     "bracket_width": 4.1723251312242304e-09
     },
     "r_5pct_refined": {
      "classification": "MONOTONE_REFINED_RADIUS",
      "lower_pass_beta": 0.1,
      "upper_fail_beta": 0.2,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.19370727241039276,
-     "refined_radius_m": 0.009291145582139906,
-     "radius_over_phi": 0.19370727241039276,
-     "bracket_width": 5.960464483090178e-09
+     "refined_beta": 0.18495217263698582,
+     "refined_radius_m": 0.008871208294454884,
+     "radius_over_phi": 0.18495217263698582,
+     "bracket_width": 5.960464455334602e-09
     },
-    "r_1pct_m": 0.0019365563939032033,
-    "r_5pct_m": 0.009291145582139906,
-    "r_1pct_over_phi": 0.040374467670917506,
-    "r_5pct_over_phi": 0.19370727241039276,
+    "r_1pct_m": 0.0019176411732534165,
+    "r_5pct_m": 0.008871208294454884,
+    "r_1pct_over_phi": 0.039980112016201025,
+    "r_5pct_over_phi": 0.18495217263698582,
     "validity_shrinkage_note": "r/phi toward grazing: compare alpha=1 vs alpha=0.5 (B0)"
    },
    "B0_a0.5": {
@@ -2022,9 +2023,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005383534284745759,
-      "E_lin_plus": 0.0009241687124174098,
-      "E_lin_minus": 0.00023479895439523798,
-      "E_pair": 0.0009241687124174098
+      "E_lin_plus": 0.0009251317150651478,
+      "E_lin_minus": 0.0002349250233181432,
+      "E_pair": 0.0009251317150651478
      },
      {
       "beta": 0.0003,
@@ -2035,9 +2036,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005380846105441845,
-      "E_lin_plus": 4.180905485597789e-06,
-      "E_lin_minus": 0.00015658431799950184,
-      "E_pair": 0.00015658431799950184
+      "E_lin_plus": 4.2940865141744025e-06,
+      "E_lin_minus": 0.00015661135179039442,
+      "E_pair": 0.00015661135179039442
      },
      {
       "beta": 0.001,
@@ -2048,9 +2049,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005380270173860119,
-      "E_lin_plus": 0.0002687889723433222,
-      "E_lin_minus": 0.00021537454127037897,
-      "E_pair": 0.0002687889723433222
+      "E_lin_plus": 0.00026871692578617657,
+      "E_lin_minus": 0.00021542076114154367,
+      "E_pair": 0.00026871692578617657
      },
      {
       "beta": 0.003,
@@ -2061,9 +2062,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005380364218984442,
-      "E_lin_plus": 0.0007416801051950612,
-      "E_lin_minus": 0.0007222854769842499,
-      "E_pair": 0.0007416801051950612
+      "E_lin_plus": 0.0007411305721502205,
+      "E_lin_minus": 0.0007228073866302256,
+      "E_pair": 0.0007411305721502205
      },
      {
       "beta": 0.01,
@@ -2074,9 +2075,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005380495602248401,
-      "E_lin_plus": 0.0024418709925542806,
-      "E_lin_minus": 0.002460369721760605,
-      "E_pair": 0.002460369721760605
+      "E_lin_plus": 0.00243592384274028,
+      "E_lin_minus": 0.002466436994261133,
+      "E_pair": 0.002466436994261133
      },
      {
       "beta": 0.03,
@@ -2087,9 +2088,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005380992196654707,
-      "E_lin_plus": 0.0073056944966825455,
-      "E_lin_minus": 0.00741251112355507,
-      "E_pair": 0.00741251112355507
+      "E_lin_plus": 0.007252717572688912,
+      "E_lin_minus": 0.0074678572114618424,
+      "E_pair": 0.0074678572114618424
      },
      {
       "beta": 0.1,
@@ -2100,9 +2101,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005386914521009152,
-      "E_lin_plus": 0.023956686659841988,
-      "E_lin_minus": 0.02516379465404758,
-      "E_pair": 0.02516379465404758
+      "E_lin_plus": 0.023396287988247076,
+      "E_lin_minus": 0.025813244759202433,
+      "E_pair": 0.025813244759202433
      },
      {
       "beta": 0.2,
@@ -2113,9 +2114,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005406761803465348,
-      "E_lin_plus": 0.0468635473492326,
-      "E_lin_minus": 0.05173932296123693,
-      "E_pair": 0.05173932296123693
+      "E_lin_plus": 0.04476603067025063,
+      "E_lin_minus": 0.054561855292974026,
+      "E_pair": 0.054561855292974026
      },
      {
       "beta": 0.3,
@@ -2126,9 +2127,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005441020183096818,
-      "E_lin_plus": 0.06884918547111836,
-      "E_lin_minus": 0.07999341069436208,
-      "E_pair": 0.07999341069436208
+      "E_lin_plus": 0.06441507646110897,
+      "E_lin_minus": 0.0869475386010616,
+      "E_pair": 0.0869475386010616
      },
      {
       "beta": 0.5,
@@ -2139,9 +2140,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0005562248250700648,
-      "E_lin_plus": 0.1104476511085087,
-      "E_lin_minus": 0.1431540342611896,
-      "E_pair": 0.1431540342611896
+      "E_lin_plus": 0.09946416862565438,
+      "E_lin_minus": 0.1670667891215529,
+      "E_pair": 0.1670667891215529
      },
      {
       "beta": 0.7,
@@ -2152,9 +2153,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.000579046880526965,
-      "E_lin_plus": 0.14938509523817284,
-      "E_lin_minus": 0.2202323062360114,
-      "E_pair": 0.2202323062360114
+      "E_lin_plus": 0.12997292200199395,
+      "E_lin_minus": 0.28242251296745113,
+      "E_pair": 0.28242251296745113
      },
      {
       "beta": 1.0,
@@ -2202,9 +2203,9 @@
      "lower_pass_beta": 0.03,
      "upper_fail_beta": 0.1,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.04036072820425034,
-     "refined_radius_m": 0.0004839743549142889,
-     "radius_over_phi": 0.04036072820425034,
+     "refined_beta": 0.03997192591428757,
+     "refined_radius_m": 0.00047931214127627743,
+     "radius_over_phi": 0.03997192591428757,
      "bracket_width": 4.1723251312242304e-09
     },
     "r_5pct_refined": {
@@ -2212,15 +2213,15 @@
      "lower_pass_beta": 0.1,
      "upper_fail_beta": 0.2,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.1936308890581131,
-     "refined_radius_m": 0.002321870511085372,
-     "radius_over_phi": 0.1936308890581131,
+     "refined_beta": 0.1848739296197891,
+     "refined_radius_m": 0.0022168638874752677,
+     "radius_over_phi": 0.1848739296197891,
      "bracket_width": 5.960464483090178e-09
     },
-    "r_1pct_m": 0.0004839743549142889,
-    "r_5pct_m": 0.002321870511085372,
-    "r_1pct_over_phi": 0.04036072820425034,
-    "r_5pct_over_phi": 0.1936308890581131,
+    "r_1pct_m": 0.00047931214127627743,
+    "r_5pct_m": 0.0022168638874752677,
+    "r_1pct_over_phi": 0.03997192591428757,
+    "r_5pct_over_phi": 0.1848739296197891,
     "validity_shrinkage_note": "r/phi toward grazing: compare alpha=1 vs alpha=0.5 (B0)"
    },
    "B3_a1": {
@@ -2236,9 +2237,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012214707940664803,
-      "E_lin_plus": 9.588920237441195e-05,
-      "E_lin_minus": 1.5993181216331103e-05,
-      "E_pair": 9.588920237441195e-05
+      "E_lin_plus": 9.588526977965447e-05,
+      "E_lin_minus": 1.6018379504953225e-05,
+      "E_pair": 9.588526977965447e-05
      },
      {
       "beta": 0.0003,
@@ -2249,9 +2250,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012215503277395728,
-      "E_lin_plus": 5.3665378511390995e-05,
-      "E_lin_minus": 0.00010303532653504108,
-      "E_pair": 0.00010303532653504108
+      "E_lin_plus": 5.354841300429494e-05,
+      "E_lin_minus": 0.00010298593415574706,
+      "E_pair": 0.00010298593415574706
      },
      {
       "beta": 0.001,
@@ -2262,9 +2263,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012215384488260418,
-      "E_lin_plus": 0.00022572789216191227,
-      "E_lin_minus": 0.0002564701388651339,
-      "E_pair": 0.0002564701388651339
+      "E_lin_plus": 0.00022566182177248938,
+      "E_lin_minus": 0.0002565371930766705,
+      "E_pair": 0.0002565371930766705
      },
      {
       "beta": 0.003,
@@ -2275,9 +2276,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012215125466532686,
-      "E_lin_plus": 0.0007507088204349911,
-      "E_lin_minus": 0.0007382392592193586,
-      "E_pair": 0.0007507088204349911
+      "E_lin_plus": 0.0007501475760023164,
+      "E_lin_minus": 0.0007387830360406665,
+      "E_pair": 0.0007501475760023164
      },
      {
       "beta": 0.01,
@@ -2288,9 +2289,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0001221533512359854,
-      "E_lin_plus": 0.0024774560132387095,
-      "E_lin_minus": 0.0024881640037346057,
-      "E_pair": 0.0024881640037346057
+      "E_lin_plus": 0.002471353881025503,
+      "E_lin_minus": 0.0024943496084721133,
+      "E_pair": 0.0024943496084721133
      },
      {
       "beta": 0.03,
@@ -2301,9 +2302,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.000122165486742202,
-      "E_lin_plus": 0.007394489874671726,
-      "E_lin_minus": 0.007506173455105921,
-      "E_pair": 0.007506173455105921
+      "E_lin_plus": 0.007340394908166332,
+      "E_lin_minus": 0.007562751619128801,
+      "E_pair": 0.007562751619128801
      },
      {
       "beta": 0.1,
@@ -2314,9 +2315,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012230325502147725,
-      "E_lin_plus": 0.024239326581160528,
-      "E_lin_minus": 0.025488798863387185,
-      "E_pair": 0.025488798863387185
+      "E_lin_plus": 0.0236676116186892,
+      "E_lin_minus": 0.026153232951361814,
+      "E_pair": 0.026153232951361814
      },
      {
       "beta": 0.2,
@@ -2327,9 +2328,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0001227652666629372,
-      "E_lin_plus": 0.04739521637747997,
-      "E_lin_minus": 0.05244074327780718,
-      "E_pair": 0.05244074327780718
+      "E_lin_plus": 0.04525775518122525,
+      "E_lin_minus": 0.055333229813362216,
+      "E_pair": 0.055333229813362216
      },
      {
       "beta": 0.3,
@@ -2340,9 +2341,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00012356381060553643,
-      "E_lin_plus": 0.06960032249882976,
-      "E_lin_minus": 0.08113906217460631,
-      "E_pair": 0.08113906217460631
+      "E_lin_plus": 0.06508653900520116,
+      "E_lin_minus": 0.0882799184522746,
+      "E_pair": 0.0882799184522746
      },
      {
       "beta": 0.5,
@@ -2353,9 +2354,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.0001263998729753831,
-      "E_lin_plus": 0.11156860213092064,
-      "E_lin_minus": 0.14549550963226682,
-      "E_pair": 0.14549550963226682
+      "E_lin_plus": 0.10040800741228494,
+      "E_lin_minus": 0.1701857357666953,
+      "E_pair": 0.1701857357666953
      },
      {
       "beta": 0.7,
@@ -2366,9 +2367,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 0.00013179310061844964,
-      "E_lin_plus": 0.150801790153123,
-      "E_lin_minus": 0.22460953278951373,
-      "E_pair": 0.22460953278951373
+      "E_lin_plus": 0.13110697216939407,
+      "E_lin_minus": 0.2894544995108271,
+      "E_pair": 0.2894544995108271
      },
      {
       "beta": 1.0,
@@ -2416,25 +2417,25 @@
      "lower_pass_beta": 0.03,
      "upper_fail_beta": 0.1,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.03986378341913223,
-     "refined_radius_m": 0.0014361743558055932,
-     "radius_over_phi": 0.03986378341913223,
-     "bracket_width": 4.1723251312242304e-09
+     "refined_beta": 0.03947364598512649,
+     "refined_radius_m": 0.001422118856555366,
+     "radius_over_phi": 0.03947364598512649,
+     "bracket_width": 4.172325138163124e-09
     },
     "r_5pct_refined": {
      "classification": "MONOTONE_REFINED_RADIUS",
      "lower_pass_beta": 0.1,
      "upper_fail_beta": 0.2,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.19118705689907078,
-     "refined_radius_m": 0.0068879048783063905,
-     "radius_over_phi": 0.19118705689907078,
+     "refined_beta": 0.18256950676441192,
+     "refined_radius_m": 0.0065774400038829004,
+     "radius_over_phi": 0.18256950676441192,
      "bracket_width": 5.960464483090178e-09
     },
-    "r_1pct_m": 0.0014361743558055932,
-    "r_5pct_m": 0.0068879048783063905,
-    "r_1pct_over_phi": 0.03986378341913223,
-    "r_5pct_over_phi": 0.19118705689907078,
+    "r_1pct_m": 0.001422118856555366,
+    "r_5pct_m": 0.0065774400038829004,
+    "r_1pct_over_phi": 0.03947364598512649,
+    "r_5pct_over_phi": 0.18256950676441192,
     "validity_shrinkage_note": "r/phi toward grazing: compare alpha=1 vs alpha=0.5 (B0)"
    },
    "B4_a1": {
@@ -2450,9 +2451,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.49470765416344e-05,
-      "E_lin_plus": 3.1072369814126055e-05,
-      "E_lin_minus": 1.1511463770664879e-05,
-      "E_pair": 3.1072369814126055e-05
+      "E_lin_plus": 3.105162375420375e-05,
+      "E_lin_minus": 1.1457712734891875e-05,
+      "E_pair": 3.105162375420375e-05
      },
      {
       "beta": 0.0003,
@@ -2463,9 +2464,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.4947470212329314e-05,
-      "E_lin_plus": 7.414660195702678e-05,
-      "E_lin_minus": 6.997161472860557e-05,
-      "E_pair": 7.414660195702678e-05
+      "E_lin_plus": 7.414129700888487e-05,
+      "E_lin_minus": 6.997347761173554e-05,
+      "E_pair": 7.414129700888487e-05
      },
      {
       "beta": 0.001,
@@ -2476,9 +2477,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.4947658930753814e-05,
-      "E_lin_plus": 0.0002398973308774191,
-      "E_lin_minus": 0.0002436082003755958,
-      "E_pair": 0.0002436082003755958
+      "E_lin_plus": 0.00023984210561613415,
+      "E_lin_minus": 0.00024366586743997394,
+      "E_pair": 0.00024366586743997394
      },
      {
       "beta": 0.003,
@@ -2489,9 +2490,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.494763597942621e-05,
-      "E_lin_plus": 0.0007272195496041928,
-      "E_lin_minus": 0.0007291904218327369,
-      "E_pair": 0.0007291904218327369
+      "E_lin_plus": 0.000726704291392295,
+      "E_lin_minus": 0.0007297092589404205,
+      "E_pair": 0.0007297092589404205
      },
      {
       "beta": 0.01,
@@ -2502,9 +2503,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.4948099067662796e-05,
-      "E_lin_plus": 0.002422522211932278,
-      "E_lin_minus": 0.0024352286525342903,
-      "E_pair": 0.0024352286525342903
+      "E_lin_plus": 0.0024168144041447326,
+      "E_lin_minus": 0.002441024564943441,
+      "E_pair": 0.002441024564943441
      },
      {
       "beta": 0.03,
@@ -2515,9 +2516,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.4952339753419035e-05,
-      "E_lin_plus": 0.00722982766781105,
-      "E_lin_minus": 0.0073440034557456626,
-      "E_pair": 0.0073440034557456626
+      "E_lin_plus": 0.007179233029463963,
+      "E_lin_minus": 0.0073969754473834715,
+      "E_pair": 0.0073969754473834715
      },
      {
       "beta": 0.1,
@@ -2528,9 +2529,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.500078905242348e-05,
-      "E_lin_plus": 0.023682153812142098,
-      "E_lin_minus": 0.024954262478037184,
-      "E_pair": 0.024954262478037184
+      "E_lin_plus": 0.023148017651655577,
+      "E_lin_minus": 0.025576915325250145,
+      "E_pair": 0.025576915325250145
      },
      {
       "beta": 0.2,
@@ -2541,9 +2542,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.516331253705661e-05,
-      "E_lin_plus": 0.04625995032430403,
-      "E_lin_minus": 0.051396235511351515,
-      "E_pair": 0.051396235511351515
+      "E_lin_plus": 0.044265872840667936,
+      "E_lin_minus": 0.054111190859273656,
+      "E_pair": 0.054111190859273656
      },
      {
       "beta": 0.3,
@@ -2554,9 +2555,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.54442599492514e-05,
-      "E_lin_plus": 0.06786708954760784,
-      "E_lin_minus": 0.07961089825737346,
-      "E_pair": 0.07961089825737346
+      "E_lin_plus": 0.06366205865679003,
+      "E_lin_minus": 0.08632459798935405,
+      "E_pair": 0.08632459798935405
      },
      {
       "beta": 0.5,
@@ -2567,9 +2568,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.644248981548211e-05,
-      "E_lin_plus": 0.1085843758098949,
-      "E_lin_minus": 0.14309064857957438,
-      "E_pair": 0.14309064857957438
+      "E_lin_plus": 0.09821560766099686,
+      "E_lin_minus": 0.16638672964354434,
+      "E_pair": 0.16638672964354434
      },
      {
       "beta": 0.7,
@@ -2580,9 +2581,9 @@
        "PAIR_LOCAL_VALID"
       ],
       "fd_norm": 4.834223897133257e-05,
-      "E_lin_plus": 0.1464993647776775,
-      "E_lin_minus": 0.2214722749917351,
-      "E_pair": 0.2214722749917351
+      "E_lin_plus": 0.12824981154072967,
+      "E_lin_minus": 0.28290034744979387,
+      "E_pair": 0.28290034744979387
      },
      {
       "beta": 1.0,
@@ -2630,9 +2631,9 @@
      "lower_pass_beta": 0.03,
      "upper_fail_beta": 0.1,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.0407324531674385,
-     "refined_radius_m": 0.017071972591246022,
-     "radius_over_phi": 0.0407324531674385,
+     "refined_beta": 0.0403433421254158,
+     "refined_radius_m": 0.016908886586652686,
+     "radius_over_phi": 0.0403433421254158,
      "bracket_width": 4.172325138163124e-09
     },
     "r_5pct_refined": {
@@ -2640,15 +2641,15 @@
      "lower_pass_beta": 0.1,
      "upper_fail_beta": 0.2,
      "upper_fail_reason": "E>tau",
-     "refined_beta": 0.19487219750881196,
-     "refined_radius_m": 0.08167572920272338,
-     "radius_over_phi": 0.19487219750881196,
-     "bracket_width": 5.960464455334602e-09
+     "refined_beta": 0.18628928959369656,
+     "refined_radius_m": 0.07807842147176716,
+     "radius_over_phi": 0.18628928959369656,
+     "bracket_width": 5.960464483090178e-09
     },
-    "r_1pct_m": 0.017071972591246022,
-    "r_5pct_m": 0.08167572920272338,
-    "r_1pct_over_phi": 0.0407324531674385,
-    "r_5pct_over_phi": 0.19487219750881196,
+    "r_1pct_m": 0.016908886586652686,
+    "r_5pct_m": 0.07807842147176716,
+    "r_1pct_over_phi": 0.0403433421254158,
+    "r_5pct_over_phi": 0.18628928959369656,
     "validity_shrinkage_note": "r/phi toward grazing: compare alpha=1 vs alpha=0.5 (B0)"
    }
   },
@@ -3218,18 +3219,47 @@
    "after_refined_radii": "NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED",
    "refined_radii_over_phi": {
     "r_1pct": {
-     "B0_a1": 0.040374467670917506,
-     "B0_a0.5": 0.04036072820425034,
-     "B3_a1": 0.03986378341913223,
-     "B4_a1": 0.0407324531674385
+     "B0_a1": 0.039980112016201025,
+     "B0_a0.5": 0.03997192591428757,
+     "B3_a1": 0.03947364598512649,
+     "B4_a1": 0.0403433421254158
     },
     "r_5pct": {
-     "B0_a1": 0.19370727241039276,
-     "B0_a0.5": 0.1936308890581131,
-     "B3_a1": 0.19118705689907078,
-     "B4_a1": 0.19487219750881196
+     "B0_a1": 0.18495217263698582,
+     "B0_a0.5": 0.1848739296197891,
+     "B3_a1": 0.18256950676441192,
+     "B4_a1": 0.18628928959369656
     }
    }
   }
+ },
+ "g6r2": {
+  "schema_version": "phase-g6r2-linearization-normalization-v1",
+  "rationale": "G6R2 minimal corrective patch: the G6R refined validity radii initially normalized the relative linearization error by the canonical-A scaled NONLINEAR increment norm.  The frozen Phase-G protocol defines E = ERROR / LINEAR PREDICTION, i.e. the denominator is ||S^-1 (eps P(:,r))||.  Re-generated with the protocol-correct denominator; the two definitions are asymptotically equivalent, so 1%/5% coefficients shift only modestly, but the operational radii now match the frozen protocol exactly.",
+  "error_normalization": "ERROR_OVER_LINEAR_PREDICTION",
+  "old_error_normalization": "ERROR_OVER_NONLINEAR_INCREMENT",
+  "epsilon_floor": 1e-15,
+  "epsilon_floor_role": "numerical normalization guard only (0/0); NOT a grazing / validity / physics threshold; G6 threshold policy unchanged.",
+  "old_radii_g6r_nonlinear_denominator": {
+   "B0_a1": {
+    "r_1pct_refined": 0.040374467670917506,
+    "r_5pct_refined": 0.19370727241039276
+   },
+   "B0_a0.5": {
+    "r_1pct_refined": 0.04036072820425034,
+    "r_5pct_refined": 0.1936308890581131
+   },
+   "B3_a1": {
+    "r_1pct_refined": 0.03986378341913223,
+    "r_5pct_refined": 0.19118705689907078
+   },
+   "B4_a1": {
+    "r_1pct_refined": 0.0407324531674385,
+    "r_5pct_refined": 0.19487219750881196
+   }
+  },
+  "paired_fd_results_unchanged": true,
+  "threshold_decision_reaudited": true,
+  "threshold_after_reaudit": "NO_UNIVERSAL_NUMERIC_THRESHOLD_SUPPORTED"
  }
 }

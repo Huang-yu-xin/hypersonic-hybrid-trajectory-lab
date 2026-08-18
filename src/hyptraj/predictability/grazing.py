@@ -819,6 +819,33 @@ def _scaled_residual(fd, pcol, relative):
     return resid
 
 
+def scaled_linearization_error(
+    nonlinear_increment,
+    linear_increment,
+    scale_vector,
+    floor: float = 1e-15,
+) -> float:
+    """Protocol-defined relative linearization error (G6 §36; G6R2 §2-§4).
+
+    .. math::
+
+        E = \\frac{||S^{-1} (\\Delta x_{NL} - \\Delta x_{LIN})||_2}
+                 {\\max(||S^{-1} \\Delta x_{LIN}||_2, \\epsilon_{floor})}
+
+    i.e. ``ERROR / LINEAR PREDICTION``.  ``epsilon_floor`` is a pure
+    numerical normalization guard against ``0/0``; it is NOT a grazing /
+    validity / physics threshold and must not be confused with the G6
+    threshold policy.  This helper is denominator-explicit so the frozen
+    normalization can be unit-tested independently of any trajectory."""
+
+    nl = np.asarray(nonlinear_increment, dtype=float)
+    lin = np.asarray(linear_increment, dtype=float)
+    svec = np.asarray(scale_vector, dtype=float).reshape(-1)
+    num = np.linalg.norm((nl - lin) / svec)
+    den = max(np.linalg.norm(lin / svec), float(floor))
+    return float(num / den)
+
+
 def paired_radial_fd_plateau(
     exit_state: np.ndarray,
     env: EnvironmentParams,
@@ -998,9 +1025,13 @@ def _elin_probe(exit_state, eps, env, vehicle, k, cfg, nominal_vac_duration,
 
     Returns a dict ``{E_pair, E_plus, E_minus, fd_scaled_norm, valid,
     cls_plus, cls_minus}`` with ``E_pair = max(E_plus, E_minus)`` (G6 §36;
-    G6R Issue 2).  ``fd_scaled_norm`` is the canonical-A scaled norm of the
-    centered radial FD column (the derivative-plateau diagnostic used by
-    G6; ``||S^-1 FD||``).  A ``None`` map -> ``valid=False`` with the
+    G6R Issue 2).  Per G6R2, the relative error is normalized by the
+    canonical-A scaled LINEAR prediction norm ``||S^-1 (pm eps P(:,r))||``
+    (``scaled_linearization_error``), exactly as the frozen protocol
+    defines ``E = ERROR / LINEAR PREDICTION`` -- NOT by the nonlinear
+    increment norm.  ``fd_scaled_norm`` is the canonical-A scaled norm of
+    the centered radial FD column (the derivative-plateau diagnostic used
+    by G6; ``||S^-1 FD||``).  A ``None`` map -> ``valid=False`` with the
     failing side's class (topology-side failure)."""
     st = PairedExcursionClass
     e = np.zeros(_STATE_DIM, dtype=float)
@@ -1018,10 +1049,12 @@ def _elin_probe(exit_state, eps, env, vehicle, k, cfg, nominal_vac_duration,
     if M0 is None or Mp is None or Mm is None:
         return fail
     svec = _canonical_scale_vector()
-    Ep = np.linalg.norm((Mp - (M0 + eps * pcol)) / svec) / \
-        max(np.linalg.norm((Mp - M0) / svec), 1e-15)
-    Em = np.linalg.norm((Mm - (M0 - eps * pcol)) / svec) / \
-        max(np.linalg.norm((Mm - M0) / svec), 1e-15)
+    lin_plus = eps * pcol
+    lin_minus = -eps * pcol
+    nl_plus = Mp - M0
+    nl_minus = Mm - M0
+    Ep = scaled_linearization_error(nl_plus, lin_plus, svec)
+    Em = scaled_linearization_error(nl_minus, lin_minus, svec)
     fd = (Mp - Mm) / (2.0 * eps)
     fail.update({
         "E_pair": float(max(Ep, Em)), "E_plus": float(Ep),

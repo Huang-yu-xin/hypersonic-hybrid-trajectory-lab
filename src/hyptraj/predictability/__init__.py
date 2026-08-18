@@ -86,6 +86,7 @@ from hyptraj.predictability.grazing import (
     paired_radial_fd_plateau,
     paired_fd_validation,
     refined_operational_radius,
+    scaled_linearization_error,
 )
 
 __all__ = [
@@ -135,4 +136,5 @@ __all__ = [
     "paired_radial_fd_plateau",
     "paired_fd_validation",
     "refined_operational_radius",
+    "scaled_linearization_error",
 ]
