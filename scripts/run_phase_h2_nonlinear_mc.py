@@ -74,15 +74,16 @@ from hyptraj.simulation.sanger_research_trajectory import (  # noqa: E402
 from hyptraj.uncertainty.distributions import sample_initial_states  # noqa: E402
 from hyptraj.uncertainty.nonlinear_validation import (  # noqa: E402
     accuracy_classification,
+    classification_detail_counts,
     classify_fixed_time_sample,
     classify_terminal_sample,
     classification_counts,
-    cross_covariance_metrics,
+    composite_terminal_discrepancy,
     domain_gate_status,
     extract_sample_observations,
     fixed_time_metrics,
     pair_bootstrap,
-    terminal_time_metrics,
+    signature_from_observables,
 )
 from hyptraj.uncertainty.sampling import NESTED_SAMPLE_SIZES, sample_bank  # noqa: E402
 
@@ -154,6 +155,9 @@ def _fp() -> str:
 
 CACHE_FP = _fp()
 CACHE_DIR = CACHE / CACHE_FP
+# H2R reaggregation mode: read cache ONLY, never run an expensive trajectory;
+# a required-cache miss raises (H2R §20).
+CACHE_ONLY = False
 
 
 def _ini(x0: np.ndarray) -> InitialCondition:
@@ -192,21 +196,36 @@ def _obs_to_row(obs) -> np.ndarray:
     ]).astype(np.float64)
 
 
-def _row_to_obs(row) -> dict:
+def _row_to_obs(model: str, row) -> dict:
     rmode = {v: k for k, v in MODE_CODES.items()}
     rkind = {v: k for k, v in KIND_CODES.items()}
     st = row[5:9]
-    return {"terminal_kind": rkind.get(float(row[12]), "UNKNOWN"),
-            "terminal_time": float(row[0]),
-            "terminal_state": np.asarray(row[1:5], dtype=float),
-            "state_T": st if bool(np.all(np.isfinite(st))) else None,
-            "switches_at_T": int(row[9]),
-            "terminal_switches": int(row[10]),
-            "mode_at_T": rmode.get(float(row[11]))}
+    switches = int(row[9])
+    mode_at_T = rmode.get(float(row[11]))
+    obs = {"terminal_kind": rkind.get(float(row[12]), "UNKNOWN"),
+           "terminal_time": float(row[0]),
+           "terminal_state": np.asarray(row[1:5], dtype=float),
+           "state_T": st if bool(np.all(np.isfinite(st))) else None,
+           "switches_at_T": switches,
+           "terminal_switches": int(row[10]),
+           "mode_at_T": mode_at_T}
+    # true-switch signature through T (H2R §8): reconstructed deterministically
+    # from the stored observables for cache-only reaggregation.
+    obs["true_switch_signature_at_T"] = signature_from_observables(
+        model, switches, mode_at_T)
+    return obs
 
 
 def _cache_path(case: str, model: str, alpha: float, profile: str) -> Path:
     return CACHE_DIR / f"{model}__{case}__{profile}__alpha_{alpha:.6e}.npz"
+
+
+def _cache_filled(case: str, model: str, alpha: float, profile: str) -> int:
+    path = _cache_path(case, model, alpha, profile)
+    if not path.exists():
+        return 0
+    with np.load(path) as f:
+        return int(f["filled"][0])
 
 
 def _load_or_build_cache(case: str, model: str, alpha: float, k: float,
@@ -229,6 +248,10 @@ def _load_or_build_cache(case: str, model: str, alpha: float, k: float,
             arr = np.asarray(f["arr_0"], dtype=np.float64)
             filled = int(f["filled"][0])
     target = min(int(max_n), MAX_N)
+    if CACHE_ONLY and filled < target:
+        raise RuntimeError(
+            f"cache-only reaggregation requires {case}/{model}/alpha={alpha:.2e}"
+            f"/{profile} to have >= {target} rows; has {filled}.")
     solver = PROFILE_SOLVERS[profile]
     for i in range(filled, target):
         # H0 law: delta X0 = S_A (alpha z)  (canonical-A covariance geometry)
@@ -272,7 +295,7 @@ def _ensembles(model: str, alpha: float, n: int, obs_arr: np.ndarray,
     obs = []
     for i in range(n):
         row = obs_arr[i]
-        o = _row_to_obs(row)
+        o = _row_to_obs(model, row)
         obs.append(o)
         st = row[5:9]
         y_N[i] = Sinv @ (st - x_nom_T) if np.all(np.isfinite(st)) else np.full(4, np.nan)
@@ -301,18 +324,21 @@ def _nominal_obs(model: str, xbar: np.ndarray, k: float, T: float,
 
 
 def _fixed_time_cell(model: str, alpha: float, n: int, ens: dict, maps: dict,
-                     *, T: float, nominal_switches: int, nominal_mode: str) -> dict:
-    cls = []
+                     *, T: float, nominal_signature: tuple,
+                     nominal_mode: str) -> dict:
+    pairs = []
     for o in ens["obs"]:
-        c, _ = classify_fixed_time_sample(
-            model, o, T=T, nominal_switches_at_T=nominal_switches,
-            nominal_mode_at_T=nominal_mode)
-        cls.append(c)
+        pairs.append(classify_fixed_time_sample(
+            model, o, T=T, nominal_signature=nominal_signature,
+            nominal_mode_at_T=nominal_mode))
+    cls = [c for c, _ in pairs]
     counts = classification_counts(cls)
+    detail_counts = classification_detail_counts(pairs)
     gate = domain_gate_status(cls)
     P_H1 = (alpha ** 2) * maps["kernel"]
-    out = {"model": model, "alpha": round(float(alpha), 12), "T": T_PRIMARY,
+    out = {"model": model, "alpha": round(float(alpha), 12), "T": T,
            "sample_count": n, "classification_counts": counts,
+           "classification_detail_counts": detail_counts,
            "domain_gate_status": gate}
     if gate == "PASS":
         m = fixed_time_metrics(ens["y_L"], ens["y_N"], P_H1)
@@ -365,17 +391,23 @@ def _terminal_cell(model: str, alpha: float, n: int, ens: dict, maps: dict) -> d
         valid = [i for i, c in enumerate(cls) if c.value == "TOPOLOGY_PRESERVED"]
         dL = ens["dt_L"][valid]; dN = ens["dt_N"][valid]
         zL = ens["zT_L"][valid]; zN = ens["zT_N"][valid]
-        tt = terminal_time_metrics(dL, dN)
         P_T = (alpha ** 2) * maps["K_T"]
+        # SINGLE SOURCE OF TRUTH for the terminal composite (H2R §16) -- it
+        # now explicitly includes the state-time cross-covariance mismatch.
+        # ``ts`` (full terminal-state sub-metrics) is recomputed here only
+        # for serialization; the composite E_H2_terminal / cross fields are
+        # taken from composite_terminal_discrepancy.
         ts = fixed_time_metrics(zL, zN, P_T)
-        cross_L = _cross(zL, dL); cross_N = _cross(zN, dN)
-        cL = cross_covariance_metrics(cross_L, cross_N)
-        eH2T = max(tt["E_t_mu"], tt["E_t_sigma"], ts["E_mu"], ts["E_cov"],
-                   ts["E_sigma1"], ts["E_marginal_max"], ts["E_zero_max"])
+        comp = composite_terminal_discrepancy(dL, dN, zL, zN, P_T)
+        tt = comp["terminal_time"]
+        cm = comp["cross"]
+        eH2T = comp["E_H2_terminal"]
+        # pair bootstrap recomputes the SAME corrected composite inside
+        # every replicate (H2R §17).
         med, lo, hi = pair_bootstrap(
             dL, dN, zL, zN,
-            statistic=lambda ddL, ddN, zzL, zzN: _c_terminal(ddL, ddN, zzL, zzN,
-                                                             maps, alpha),
+            statistic=lambda ddL, ddN, zzL, zzN:
+            composite_terminal_discrepancy(ddL, ddN, zzL, zzN, P_T)["E_H2_terminal"],
             n_boot=N_BOOT)
         st1 = accuracy_classification(med, lo, hi, 0.01, gate)
         st5 = accuracy_classification(med, lo, hi, 0.05, gate)
@@ -388,9 +420,14 @@ def _terminal_cell(model: str, alpha: float, n: int, ens: dict, maps: dict) -> d
             "nonlinear_terminal_state_mean": [round(float(x), 10) for x in ts["nonlinear_sample_mean"]],
             "linear_terminal_state_cov": _mt(ts["linear_sample_covariance"]),
             "nonlinear_terminal_state_cov": _mt(ts["nonlinear_sample_covariance"]),
-            "linear_state_time_cross_cov": [round(float(x), 10) for x in cross_L],
-            "nonlinear_state_time_cross_cov": [round(float(x), 10) for x in cross_N],
-            "E_cross_rel": round(cL["E_cross_rel"], 10),
+            "linear_state_time_cross_cov": [round(float(x), 10) for x in cm["linear_state_time_cross_cov"]],
+            "nonlinear_state_time_cross_cov": [round(float(x), 10) for x in cm["nonlinear_state_time_cross_cov"]],
+            "linear_cross_norm": round(cm["linear_cross_norm"], 10),
+            "cross_natural_scale": round(cm["cross_natural_scale"], 10),
+            "cross_metric_mode": cm["cross_metric_mode"],
+            "E_cross_rel": _nn([cm["E_cross_rel"]])[0],
+            "E_cross_absnorm": round(cm["E_cross_absnorm"], 10),
+            "E_cross_composite": round(cm["E_cross_composite"], 10),
             "E_t_mu": round(tt["E_t_mu"], 10), "E_t_sigma": round(tt["E_t_sigma"], 10),
             "E_cov_T": round(ts["E_cov"], 10), "E_sigma1_T": round(ts["E_sigma1"], 10),
             "E_H2_terminal": round(eH2T, 10),
@@ -401,18 +438,6 @@ def _terminal_cell(model: str, alpha: float, n: int, ens: dict, maps: dict) -> d
     else:
         out.update({"status_1pct": "DOMAIN_GATE_FAIL", "status_5pct": "DOMAIN_GATE_FAIL"})
     return out
-
-
-def _c_terminal(dL, dN, zL, zN, maps, alpha) -> float:
-    tt = terminal_time_metrics(dL, dN)
-    ts = fixed_time_metrics(zL, zN, (alpha ** 2) * maps["K_T"])
-    return max(tt["E_t_mu"], tt["E_t_sigma"], ts["E_mu"], ts["E_cov"],
-               ts["E_sigma1"], ts["E_marginal_max"], ts["E_zero_max"])
-
-
-def _cross(z, d) -> np.ndarray:
-    return np.asarray([np.mean((z[:, j] - z[:, j].mean()) * (d - d.mean()))
-                       for j in range(4)])
 
 
 def _mt(mat) -> list:
@@ -427,14 +452,13 @@ def _nn(vals) -> list:
 def _primary_cell(model: str, alpha: float, n: int) -> dict:
     xbar, k = _baseline_case_x0(-5.0, 3.0)
     nom = _nominal_obs(model, xbar, k, T_PRIMARY)
-    n_sw = int(nom["switches_at_T"])
-    n_mode = nom["mode_at_T"]
     maps = _map_primary(model)
     obs = _load_or_build_cache(f"baseline_T{T_PRIMARY:.0f}", model, alpha, k,
                                xbar, "production", T_PRIMARY, max_n=n)
     ens = _ensembles(model, alpha, n, obs, nom["state_T"], maps)
     ft = _fixed_time_cell(model, alpha, n, ens, maps, T=T_PRIMARY,
-                          nominal_switches=n_sw, nominal_mode=n_mode)
+                          nominal_signature=nom["true_switch_signature_at_T"],
+                          nominal_mode=nom["mode_at_T"])
     te = _terminal_cell(model, alpha, n, ens, maps)
     return {"fixed_time": ft, "terminal": te}
 
@@ -510,6 +534,33 @@ def run_primary(targets: dict) -> dict:
                   f"5%={ft.get('status_5pct','-'):15s}")
             recs.append(r)
         cells[(model, alpha)] = recs
+    return cells
+
+
+def run_primary_reaggregate() -> dict:
+    """H2R §19-§22: reaggregate EVERY cached (model, alpha) cell at its
+    cached sample depth -- cache-only (raises on a real cache miss), never
+    re-running trajectories."""
+    print("== PRIMARY REAGGREGATION (cache-only) ==")
+    cells = {}
+    for model in ("qian", "sanger"):
+        for alpha in ALPHA_GRID:
+            filled = _cache_filled(f"baseline_T{T_PRIMARY:.0f}", model, alpha,
+                                   "production")
+            if filled == 0:
+                continue
+            recs = []
+            for n in NESTED_SAMPLE_SIZES:
+                if n > filled:
+                    break
+                r = _primary_cell(model, alpha, n)
+                recs.append(r)
+                ft = r["fixed_time"]
+                te = r["terminal"]
+                print(f"  {model:6s} a={alpha:9.1e} N={n:5d} gate={ft['domain_gate_status']:14s} "
+                      f"E_H2={ft.get('E_H2', float('nan')):8.3f} 1%={ft.get('status_1pct','-'):15s} "
+                      f"5%={ft.get('status_5pct','-'):15s} | T5%={te.get('status_5pct','-')}")
+            cells[(model, alpha)] = recs
     return cells
 
 
@@ -617,7 +668,7 @@ def run_deep(cells: dict) -> dict:
         ens = _ensembles("sanger", alpha_deep, 256, obs, nom["state_T"], maps)
         ft = _fixed_time_cell(
             "sanger", alpha_deep, 256, ens, maps, T=t_deep,
-            nominal_switches=int(nom["switches_at_T"]),
+            nominal_signature=nom["true_switch_signature_at_T"],
             nominal_mode=nom["mode_at_T"])
         per_deep[case] = {
             "gamma0_deg": float(rep.gamma0_deg), "K": float(rep.K),
@@ -761,6 +812,19 @@ def build_snapshot(primary, reference, deep, pilot) -> dict:
         "starting_h1_commit": STARTING_H1_COMMIT,
         "upstream_phase_g_commit": PHASE_G_COMMIT,
         "upstream_phase_f_commit": PHASE_F_COMMIT,
+        # H2R corrective provenance: the same physical experiment (sampling
+        # seed / bank / alpha grid / nonlinear model) reaggregated with the
+        # endpoint-scoped fixed-time gate and the corrected terminal joint
+        # metric.  The sample bank is preserved bit-for-bit (H2R §31).
+        "h2r": {
+            "endpoint_scoped_fixed_time_gate": True,
+            "terminal_cross_covariance_in_composite": True,
+            "terminal_cross_covariance_in_bootstrap": True,
+            "sample_bank_changed": False,
+            "alpha_grid_changed": False,
+            "nonlinear_model_changed": False,
+            "reaggregation_mode": "cache_only",
+        },
         "sample_law": {
             "distribution": "Z0 = S_A^-1 delta X0 ~ N(0, alpha^2 I) (canonical R=I)",
             "canonical_scale": {"r": 1e5, "theta": 1.0, "v": 7e3, "gamma": 0.1},
@@ -801,34 +865,48 @@ def build_snapshot(primary, reference, deep, pilot) -> dict:
 
 
 def main() -> None:
+    global CACHE_ONLY
     ap = argparse.ArgumentParser()
     ap.add_argument("--pilot", action="store_true")
     ap.add_argument("--primary", action="store_true")
     ap.add_argument("--deep", action="store_true")
     ap.add_argument("--all", action="store_true")
+    ap.add_argument("--reaggregate-only", action="store_true",
+                    help="H2R: reclassify / re-metric / re-bootstrap / rebuild "
+                         "the snapshot from the existing cache ONLY; raise on "
+                         "a required cache miss, never run trajectories")
     ap.add_argument("--workers", type=int, default=1,
                     help="accepted for interface parity; output is worker-independent "
                          "(this build runs single-process)")
     ap.add_argument("--write", action="store_true")
     args = ap.parse_args()
 
-    pilot = {}
-    cells = {}
-    ref = {}
-    deep = {}
-    if args.pilot or args.all:
+    if args.reaggregate_only:
+        CACHE_ONLY = True
         pilot = run_pilot()
-    if args.primary or args.all:
-        targets = _select_targets(pilot) if pilot else {}
-        cells = run_primary(targets)
-    best = _merge_cells(pilot, cells)
-    if args.primary or args.all:
+        cells = run_primary_reaggregate()
+        best = _merge_cells(pilot, cells)
         ref = run_reference_subset(best)
-    if args.deep or args.all:
         deep = run_deep(best)
+    else:
+        pilot = {}
+        cells = {}
+        ref = {}
+        deep = {}
+        if args.pilot or args.all:
+            pilot = run_pilot()
+        if args.primary or args.all:
+            targets = _select_targets(pilot) if pilot else {}
+            cells = run_primary(targets)
+        best = _merge_cells(pilot, cells)
+        if args.primary or args.all:
+            ref = run_reference_subset(best)
+        if args.deep or args.all:
+            deep = run_deep(best)
 
-    if not (args.pilot or args.primary or args.deep or args.all):
-        ap.error("choose --pilot / --primary / --deep / --all")
+    if not (args.pilot or args.primary or args.deep or args.all
+            or args.reaggregate_only):
+        ap.error("choose --pilot / --primary / --deep / --all / --reaggregate-only")
 
     if args.write:
         snap = build_snapshot(cells, ref, deep, pilot)

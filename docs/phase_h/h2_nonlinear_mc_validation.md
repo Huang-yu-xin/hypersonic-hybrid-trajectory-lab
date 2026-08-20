@@ -1,8 +1,10 @@
 # H2 — Nonlinear Monte-Carlo Validation & Alpha Validity Audit
 
-> 状态：**H2 COMPLETE / READY FOR REVIEW**（2026-08-19；H0/H0R/H1 已 ACCEPTED）。
+> 状态：**H2 COMPLETE / SCIENTIFICALLY VALIDATED · H2R COMPLETE / READY FOR REVIEW**
+> （2026-08-19；H0/H0R/H1 已 ACCEPTED）。
 > machine-readable snapshot：`tests/data/phase_h2_nonlinear_mc_validation_v1.json`
-> （`schema_version = phase-h2-nonlinear-mc-validation-v1`）。
+> （`schema_version = phase-h2-nonlinear-mc-validation-v1`，H2R 修正后重新聚合，
+> 含 `h2r` corrective provenance 块）。
 >
 > 原则：**H2 validates H1 against the frozen nonlinear trajectory model.
 > It does not modify either H1 linear theory or Phase-G derivatives.**
@@ -272,12 +274,98 @@ H2 方法论在保守公共 α=3e-4 跨代表 deep topology 内部闭合；**不
   H2 只给出 observed preservation counts（domain-gate diagnostic），
   **无 topology probability / P(N) estimate**。
 
-## 17. Scope confirmation
+## 17. H2R corrective provenance（H2R §36）
+
+### Issue A — fixed-time gate was not fully endpoint-scoped
+
+```text
+fixed-time classification previously allowed future terminal semantics
+to contaminate endpoint-T validity.
+```
+
+旧实现先检查 final terminal kind（grazing / solver failure / ground），再检查
+`terminal_time <= T`，因此 `terminal_time > T` 的样本会被未来事件错误拒绝。
+H2R 冻结规则（H2R §3）：
+
+> Any event / terminal / numerical outcome strictly after T cannot
+> retroactively invalidate an otherwise well-defined fixed-time state
+> and topology at T.
+
+### Fix A
+
+```text
+all fixed-time classification is endpoint-scoped to [0,T].
+```
+
+新判定顺序：① terminal/failure 是否在 `<= T` 已发生（是 → 按 pre-T 事件分类：
+`RTI_BEFORE_T` / `SRTI_BEFORE_T` / `GRAZING_BEFORE_T` / `*_BEFORE_T` /
+`NUMERICAL_FAILURE`）；② 否则忽略一切 future terminal semantics；③ `state_T`
+不可得 → `NUMERICAL_FAILURE` / `NONPHYSICAL_STATE`（不 fabricate state）；
+④ 比较 **true-switch signature through T** + mode at T
+（`extract_sample_observations` 从 structured event records 读取；
+cache-only reaggregation 由 `signature_from_observables` 依 frozen state
+machine 确定性重建，两者一致）。相同 signature + 相同 mode →
+`TOPOLOGY_PRESERVED`；同数量不同顺序 → `EVENT_ORDER_CHANGED`；数量不同 →
+`TOPOLOGY_CHANGED`。snapshot 新增 `classification_detail_counts`（H2R §10）。
+
+### Issue B — terminal composite omitted the cross covariance
+
+```text
+state-time cross-covariance mismatch was reported but omitted from the
+terminal composite/bootstrap.
+```
+
+旧 `E_H2_terminal` 与 terminal pair-bootstrap statistic 的 max-list 不含
+`E_cross_rel`。
+
+### Fix B
+
+```text
+cross mismatch is now an explicit component of E_H2_terminal and its
+pair-bootstrap statistic.
+```
+
+`cross_covariance_metrics` 新增 numerical-zero guard：natural scale
+`c_scale = sigma_t,L * sqrt(tr(P_z,L))`、materiality
+`c_zero = 100*eps*max(c_scale,1e-300)`；`||C_L|| > c_zero` →
+RELATIVE（`E_cross_composite = E_cross_rel`），否则 ABSOLUTE_NORMALIZED
+（`E_cross_composite = E_cross_absnorm`，`E_cross_rel = null`）。最终
+`E_H2_terminal = max(E_t_mu, E_t_sigma, E_mu,T, E_P,T, E_sigma1,T,
+E_marginal,T, E_zero,T, E_cross_composite)` —— **`composite_terminal_discrepancy`
+为 single source of truth**；generator 与 bootstrap 都只调用它（H2R §16-§17）。
+
+### H2R reaggregation audit（同一 sample bank / seed / alpha grid，cache-only）
+
+- **Fixed-time reclassification**（N=256 pilot）：
+  - Qian 0.1：旧 `NONPHYSICAL_STATE:23` → 新 `TOPOLOGY_CHANGED (RTI_BEFORE_T):23`
+    （pre-T RTI，非 nonphysical）；gate 仍 DOMAIN_GATE_FAIL。
+  - Sanger 0.03：`TOPOLOGY_CHANGED:13` 保持（detail
+    `SWITCH_SIGNATURE_CHANGED ['atmosphere_exit']`）—— 13 个是**真实的
+    pre-T600 signature change**，DOMAIN_GATE_FAIL 保留（H2R §23）。
+  - Sanger 0.1：旧 `NONPHYSICAL:23 + NUMERICAL_FAILURE:8 + CHANGED:76` →
+    新 `TOPOLOGY_CHANGED:107`（`SRTI_BEFORE_T:23` + `SWITCH_SIGNATURE_CHANGED:84`）
+    —— 23 个 nonphysical 实为 pre-T SRTI；8 个 "failure" 不再计作 fixed-time
+    failure（H2R §24）。
+- **Primary fixed-time validity brackets：UNCHANGED**（Qian 1% ~1e-2 / 5% ~1e-2；
+  Sanger 1% ~3e-4 / 5% ~1e-3）。
+- **Terminal composite**：real cases 中 cross 项较小（`E_cross_rel`
+  ~1e-6..1e-3，RELATIVE mode），**不改变 E_H2_terminal / brackets
+  （UNCHANGED）**—— 但协议现已正确包含 joint 结构。旧 E_H2_terminal 与
+  新 E_H2_terminal 逐 cell 相同，1%/5% status 相同。
+- **Deep N0-N5：UNCHANGED AFTER ENDPOINT-SCOPE CORRECTION**
+  （T_deep=300, alpha_deep=3e-4, N=256；全部 PASS，E_H2 逐位相同）。
+- **Sample-bank SHA-256 逐位不变**（`99613cb2…`），alpha grid / seeds /
+  nonlinear model 不变（snapshot `h2r` 块记录 `sample_bank_changed=false` 等）。
+- Reaggregation determinism：cache 完整时 `--reaggregate-only --write`
+  连续两次输出 byte-identical。
+
+## 18. Scope confirmation
 
 ```text
 H0/H0R ACCEPTED
 H1 ACCEPTED
-H2 COMPLETE / READY FOR REVIEW
+H2 CORRECTED (H2R)
+H2R COMPLETE / READY FOR REVIEW
 
 H3 NOT STARTED
 B0-B4 stochastic grazing analysis NOT performed

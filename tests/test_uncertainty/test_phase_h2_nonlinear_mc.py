@@ -23,10 +23,16 @@ from hyptraj.uncertainty.distributions import (
 )
 from hyptraj.uncertainty.nonlinear_validation import (
     accuracy_classification,
+    classification_detail_counts,
+    classify_fixed_time_sample,
     classify_tau,
+    classify_terminal_sample,
+    composite_terminal_discrepancy,
+    cross_covariance_metrics,
     domain_gate_status,
     fixed_time_metrics,
     pair_bootstrap,
+    signature_from_observables,
 )
 from hyptraj.uncertainty.sampling import (
     NESTED_SAMPLE_SIZES,
@@ -357,7 +363,8 @@ def test_live_trajectory_smoke():
             # terminal extraction works
             assert obs["terminal_time"] > 0.0
             c_ft = classify_fixed_time_sample(
-                model, obs, T=600.0, nominal_switches_at_T=obs["switches_at_T"],
+                model, obs, T=600.0,
+                nominal_signature=obs["true_switch_signature_at_T"],
                 nominal_mode_at_T=obs["mode_at_T"])
             c_te = classify_terminal_sample(
                 model, obs, expected_kind="RTI" if model == "qian" else "srti",
@@ -374,3 +381,225 @@ def _ini(x0, RE):
     return InitialCondition(altitude=float(x0[0]) - RE, range_angle=float(x0[1]),
                             velocity=float(x0[2]),
                             flight_path_angle_deg=_np.rad2deg(float(x0[3])))
+
+
+# ---------------------------------------------------------------------------
+# H2R -- endpoint-scoped fixed-time gate (H2R §11, §34)
+# ---------------------------------------------------------------------------
+_T_H2R = 600.0
+_NOM_SANGER_SIG = ("atmosphere_exit", "atmosphere_entry")
+_NOM_QIAN_SIG = ("qian_capture",)
+_STATE_OK = np.array([6.417e6, 0.5, 6000.0, 0.01])
+
+
+def _sanger_obs(**kw):
+    base = dict(terminal_kind="srti", terminal_time=_T_H2R + 100.0,
+                terminal_state=np.zeros(4), state_T=_STATE_OK, switches_at_T=2,
+                mode_at_T="SANGER_ATM", terminal_switches=4,
+                true_switch_signature_at_T=_NOM_SANGER_SIG)
+    base.update(kw)
+    return base
+
+
+def _cf(model, obs, **kw):
+    return classify_fixed_time_sample(model, obs, T=_T_H2R, **kw)
+
+
+def test_future_sanger_grazing_does_not_invalidate_T():
+    o = _sanger_obs(terminal_kind="grazing_or_unresolved_event",
+                    terminal_time=_T_H2R + 100.0)
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.TOPOLOGY_PRESERVED
+
+
+def test_pre_T_sanger_grazing_invalidates_T():
+    o = _sanger_obs(terminal_kind="grazing_or_unresolved_event",
+                    terminal_time=_T_H2R - 1.0)
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.GRAZING_CROSSED
+    assert c[1] == "GRAZING_BEFORE_T"
+
+
+def test_future_sanger_solver_failure_does_not_invalidate_T():
+    o = _sanger_obs(terminal_kind="solver_failure", terminal_time=_T_H2R + 100.0)
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.TOPOLOGY_PRESERVED
+
+
+def test_pre_T_sanger_solver_failure_invalidates_T():
+    o = _sanger_obs(terminal_kind="solver_failure", terminal_time=_T_H2R - 10.0)
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.NUMERICAL_FAILURE
+    assert c[1] == "solver_failure_BEFORE_T"
+
+
+def test_future_sanger_ground_does_not_invalidate_T():
+    o = _sanger_obs(terminal_kind="ground_before_srti",
+                    terminal_time=_T_H2R + 500.0)
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.TOPOLOGY_PRESERVED
+
+
+def test_future_qian_failure_does_not_invalidate_T():
+    o = dict(terminal_kind="SOLVER_FAILURE", terminal_time=_T_H2R + 100.0,
+             terminal_state=np.zeros(4), state_T=_STATE_OK, switches_at_T=1,
+             mode_at_T="QEG_GLIDE", terminal_switches=1,
+             true_switch_signature_at_T=_NOM_QIAN_SIG)
+    c = _cf("qian", o, nominal_signature=_NOM_QIAN_SIG,
+            nominal_mode_at_T="QEG_GLIDE")
+    assert c[0] == SampleClassification.TOPOLOGY_PRESERVED
+
+
+def test_qian_rti_before_T_invalidates_T():
+    o = dict(terminal_kind="RTI", terminal_time=400.0,
+             terminal_state=np.zeros(4), state_T=_STATE_OK, switches_at_T=1,
+             mode_at_T="QEG_GLIDE", terminal_switches=1,
+             true_switch_signature_at_T=_NOM_QIAN_SIG)
+    c = _cf("qian", o, nominal_signature=_NOM_QIAN_SIG,
+            nominal_mode_at_T="QEG_GLIDE")
+    assert c[0] == SampleClassification.TOPOLOGY_CHANGED
+    assert c[1] == "RTI_BEFORE_T"
+
+
+def test_nominal_self_classifies_preserved_with_live_signature():
+    o = _sanger_obs()
+    o["true_switch_signature_at_T"] = ("atmosphere_exit", "atmosphere_entry")
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.TOPOLOGY_PRESERVED
+
+
+def test_true_switch_signature_mismatch():
+    o = _sanger_obs(switches_at_T=1, mode_at_T="SANGER_VAC",
+                    true_switch_signature_at_T=("atmosphere_exit",))
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] == SampleClassification.TOPOLOGY_CHANGED
+    assert "SWITCH_SIGNATURE_CHANGED" in c[1]
+
+
+def test_same_count_event_order_mismatch():
+    o = _sanger_obs(true_switch_signature_at_T=("atmosphere_entry",
+                                                "atmosphere_exit"))
+    c = _cf("sanger", o, nominal_signature=_NOM_SANGER_SIG,
+            nominal_mode_at_T="SANGER_ATM")
+    assert c[0] in (SampleClassification.EVENT_ORDER_CHANGED,
+                    SampleClassification.TOPOLOGY_PRESERVED)
+
+
+def test_signature_from_observables_reconstruction():
+    assert signature_from_observables("sanger", 2, "SANGER_ATM") == _NOM_SANGER_SIG
+    assert signature_from_observables("sanger", 4, "SANGER_ATM") == (
+        "atmosphere_exit", "atmosphere_entry", "atmosphere_exit",
+        "atmosphere_entry")
+    assert signature_from_observables("sanger", 1, "SANGER_VAC") == (
+        "atmosphere_exit",)
+    assert signature_from_observables("qian", 1, "QEG_GLIDE") == _NOM_QIAN_SIG
+    assert signature_from_observables("qian", 0, "ENTRY_CAPTURE") == ()
+
+
+def test_classification_detail_counts_aggregation():
+    pairs = [
+        (SampleClassification.TOPOLOGY_PRESERVED, ""),
+        (SampleClassification.TOPOLOGY_CHANGED, "RTI_BEFORE_T"),
+        (SampleClassification.TOPOLOGY_CHANGED, "RTI_BEFORE_T"),
+    ]
+    dc = classification_detail_counts(pairs)
+    assert dc["TOPOLOGY_PRESERVED"]["_"] == 1
+    assert dc["TOPOLOGY_CHANGED"]["RTI_BEFORE_T"] == 2
+
+
+# ---------------------------------------------------------------------------
+# H2R -- terminal joint metric (cross covariance in composite + bootstrap) (H2R §18)
+# ---------------------------------------------------------------------------
+def _cross_only_perturbation(rng, n, a, a_new):
+    """Variance-preserving joint perturbation: only Cov(z_0, d) changes.
+
+    ``zL[:,0] = a*dL + sqrt(1-a^2)*e`` keeps Var(z_0) = 1; replacing ``a``
+    with ``a_new`` (and re-normalizing the orthogonal part) changes ONLY
+    the state-time cross covariance, leaving the marginal state covariance
+    and the mean untouched -- so the cross term is the single limiting
+    metric (H2R §18).
+    """
+    dL = rng.normal(size=n)
+    e = rng.normal(size=n)
+    b = float(np.sqrt(max(1.0 - a * a, 0.0)))
+    b_new = float(np.sqrt(max(1.0 - a_new * a_new, 0.0)))
+    zL = np.column_stack([a * dL + b * e, rng.normal(size=(n, 3)) * 0.01])
+    zN = np.column_stack([a_new * dL + b_new * e, zL[:, 1:].copy()])
+    return dL, zL, zN
+
+
+def test_cross_term_is_limiting_in_terminal_composite():
+    rng = np.random.default_rng(3)
+    n = 256
+    dL, zL, zN = _cross_only_perturbation(rng, n, a=0.7, a_new=0.721)
+    # |C_N - C_L|/|C_L| = (0.721-0.7)/0.7 = 3% ; state covariance unchanged
+    comp = composite_terminal_discrepancy(dL, dL, zL, zN, np.eye(4))
+    # old code (no cross) would miss this -> corrected E_H2_terminal >= 3%
+    assert comp["E_H2_terminal"] >= 0.03
+    assert comp["E_cross_composite"] >= 0.03
+
+
+def test_bootstrap_terminal_includes_cross():
+    rng = np.random.default_rng(4)
+    n = 256
+    dL, zL, zN = _cross_only_perturbation(rng, n, a=0.7, a_new=0.735)
+    # (0.735-0.7)/0.7 = 5% cross mismatch, dominating the bootstrap statistic
+    P_T = np.eye(4)
+    med, lo, hi = pair_bootstrap(
+        dL, dL, zL, zN,
+        statistic=lambda ddL, ddN, zzL, zzN:
+        composite_terminal_discrepancy(ddL, ddN, zzL, zzN, P_T)["E_H2_terminal"],
+        n_boot=200)
+    assert med >= 0.04                      # cross mismatch dominates the median
+
+
+def test_near_zero_linear_cross_handled_stably():
+    # exactly-zero linear cross covariance -> ABSOLUTE_NORMALIZED, no div-by-zero
+    cm = cross_covariance_metrics(np.zeros(4), np.ones(4) * 0.01,
+                                  sigma_t_L=0.1, P_z_L=np.eye(4))
+    assert cm["cross_metric_mode"] == "ABSOLUTE_NORMALIZED"
+    assert cm["E_cross_rel"] is None
+    assert np.isfinite(cm["E_cross_composite"])
+    assert cm["E_cross_composite"] > 0.0
+
+
+def test_relative_cross_when_linear_cross_material():
+    cm = cross_covariance_metrics(np.ones(4) * 1e2, np.ones(4) * 1.03e2,
+                                  sigma_t_L=0.1, P_z_L=np.eye(4))
+    assert cm["cross_metric_mode"] == "RELATIVE"
+    assert np.isclose(cm["E_cross_composite"], 0.03, rtol=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# H2R -- snapshot provenance / sample-bank preservation (H2R §31, §34)
+# ---------------------------------------------------------------------------
+def test_h2r_provenance_and_sample_bank_preserved():
+    assert H2["h2r"]["endpoint_scoped_fixed_time_gate"] is True
+    assert H2["h2r"]["terminal_cross_covariance_in_composite"] is True
+    assert H2["h2r"]["terminal_cross_covariance_in_bootstrap"] is True
+    assert H2["h2r"]["sample_bank_changed"] is False
+    assert H2["h2r"]["alpha_grid_changed"] is False
+    # sample-bank SHA-256 bit-identical to the committed H2 identity
+    assert H2["sampling"]["sample_bank_sha256"] == bank_sha256(sample_bank().z)
+    assert H2["sampling"]["sample_bank_sha256"] == \
+        "99613cb244a2015f763a6da5b75c7999612bd955dc808ed168c91167d0f6d63b"
+
+
+def test_h2r_classification_detail_counts_present():
+    ft = H2["pilot"]["sanger"]["0.1"]["fixed_time"]
+    assert "classification_detail_counts" in ft
+    text = json.dumps(H2)
+    assert "SWITCH_SIGNATURE_CHANGED" in text or "RTI_BEFORE_T" in text
+
+
+def test_h2r_no_h3_scope_leak():
+    assert H2["claim_boundaries"]["B0_B4_not_sampled"] is True
+    assert H2["claim_boundaries"]["topology_probability_not_estimated"] is True
+    assert H2["claim_boundaries"]["mixture_analysis_not_performed"] is True

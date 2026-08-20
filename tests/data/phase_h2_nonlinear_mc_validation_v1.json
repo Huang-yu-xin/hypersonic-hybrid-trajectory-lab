@@ -308,6 +308,15 @@
   "t_deep": 300.0
  },
  "h1_snapshot_schema": "phase-h1-linear-uncertainty-v1",
+ "h2r": {
+  "alpha_grid_changed": false,
+  "endpoint_scoped_fixed_time_gate": true,
+  "nonlinear_model_changed": false,
+  "reaggregation_mode": "cache_only",
+  "sample_bank_changed": false,
+  "terminal_cross_covariance_in_bootstrap": true,
+  "terminal_cross_covariance_in_composite": true
+ },
  "pilot": {
   "qian": {
    "0.0001": {
@@ -354,6 +363,11 @@
      },
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
      },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
@@ -454,7 +468,9 @@
     "terminal": {
      "E_H2_terminal": 0.0428750464,
      "E_cov_T": 4.047e-07,
-     "E_cross_rel": 1.893e-07,
+     "E_cross_absnorm": 1.638e-07,
+     "E_cross_composite": 1.893e-07,
+     "E_cross_rel": 1.8927240372564474e-07,
      "E_sigma1_T": 6.1e-08,
      "E_t_mu": 4.82944e-05,
      "E_t_sigma": 1.126e-07,
@@ -466,6 +482,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 2.10324e-05,
+     "linear_cross_norm": 1.81978e-05,
      "linear_state_time_cross_cov": [
       2.7558e-06,
       1.65765e-05,
@@ -597,6 +616,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -696,7 +720,9 @@
     "terminal": {
      "E_H2_terminal": 0.0143169716,
      "E_cov_T": 9.664e-07,
-     "E_cross_rel": 1.1658e-06,
+     "E_cross_absnorm": 1.0087e-06,
+     "E_cross_composite": 1.1658e-06,
+     "E_cross_rel": 1.1657720697996164e-06,
      "E_sigma1_T": 4.485e-07,
      "E_t_mu": 0.0002666958,
      "E_t_sigma": 5.888e-07,
@@ -708,6 +734,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001892912,
+     "linear_cross_norm": 0.0001637799,
      "linear_state_time_cross_cov": [
       2.4802e-05,
       0.0001491881,
@@ -839,6 +868,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -938,7 +972,9 @@
     "terminal": {
      "E_H2_terminal": 0.0044674824,
      "E_cov_T": 9.644e-06,
-     "E_cross_rel": 1.21289e-05,
+     "E_cross_absnorm": 1.04943e-05,
+     "E_cross_composite": 1.21289e-05,
+     "E_cross_rel": 1.2128920162377647e-05,
      "E_sigma1_T": 4.8198e-06,
      "E_t_mu": 0.0009350992,
      "E_t_sigma": 5.99e-06,
@@ -950,6 +986,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0021032359,
+     "linear_cross_norm": 0.0018197772,
      "linear_state_time_cross_cov": [
       0.0002755777,
       0.001657645,
@@ -1081,6 +1120,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -1180,7 +1224,9 @@
     "terminal": {
      "E_H2_terminal": 0.0032349946,
      "E_cov_T": 8.65936e-05,
-     "E_cross_rel": 0.0001091085,
+     "E_cross_absnorm": 9.44037e-05,
+     "E_cross_composite": 0.0001091085,
+     "E_cross_rel": 0.00010910854963540101,
      "E_sigma1_T": 4.33296e-05,
      "E_t_mu": 0.0028176446,
      "E_t_sigma": 5.38239e-05,
@@ -1192,6 +1238,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0189291234,
+     "linear_cross_norm": 0.0163779946,
      "linear_state_time_cross_cov": [
       0.0024801994,
       0.0149188054,
@@ -1323,6 +1372,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -1422,7 +1476,9 @@
     "terminal": {
      "E_H2_terminal": 0.0094033674,
      "E_cov_T": 0.000963783,
-     "E_cross_rel": 0.0012139183,
+     "E_cross_absnorm": 0.0010503153,
+     "E_cross_composite": 0.0012139183,
+     "E_cross_rel": 0.0012139182991381984,
      "E_sigma1_T": 0.000482153,
      "E_t_mu": 0.0094033674,
      "E_t_sigma": 0.0005985139,
@@ -1434,6 +1490,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.2103235936,
+     "linear_cross_norm": 0.1819777183,
      "linear_state_time_cross_cov": [
       0.0275577716,
       0.1657645044,
@@ -1565,6 +1624,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -1664,7 +1728,9 @@
     "terminal": {
      "E_H2_terminal": 0.0283856245,
      "E_cov_T": 0.0088233985,
-     "E_cross_rel": 0.0111168047,
+     "E_cross_absnorm": 0.0096185631,
+     "E_cross_composite": 0.0111168047,
+     "E_cross_rel": 0.011116804669148776,
      "E_sigma1_T": 0.0044055036,
      "E_t_mu": 0.0283856245,
      "E_t_sigma": 0.0054710403,
@@ -1676,6 +1742,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8929123427,
+     "linear_cross_norm": 1.6377994643,
      "linear_state_time_cross_cov": [
       0.2480199447,
       1.4918805392,
@@ -1767,8 +1836,16 @@
      "T": 600.0,
      "alpha": 0.1,
      "classification_counts": {
-      "NONPHYSICAL_STATE": 23,
+      "TOPOLOGY_CHANGED": 23,
       "TOPOLOGY_PRESERVED": 233
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "RTI_BEFORE_T": 23
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 233
+      }
      },
      "domain_gate_status": "DOMAIN_GATE_FAIL",
      "model": "qian",
@@ -1779,7 +1856,9 @@
     "terminal": {
      "E_H2_terminal": 0.5275027506,
      "E_cov_T": 0.1914675719,
-     "E_cross_rel": 0.1599966177,
+     "E_cross_absnorm": 0.138433444,
+     "E_cross_composite": 0.1599966177,
+     "E_cross_rel": 0.15999661768308793,
      "E_sigma1_T": 0.0213706197,
      "E_t_mu": 0.0048002707,
      "E_t_sigma": 0.0252594196,
@@ -1791,6 +1870,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 21.0323593628,
+     "linear_cross_norm": 18.1977718255,
      "linear_state_time_cross_cov": [
       2.7557771634,
       16.5764504355,
@@ -1924,6 +2006,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -2023,7 +2110,9 @@
     "terminal": {
      "E_H2_terminal": 0.0268882057,
      "E_cov_T": 9.182e-07,
-     "E_cross_rel": 1.0926e-06,
+     "E_cross_absnorm": 1.0608e-06,
+     "E_cross_composite": 1.0926e-06,
+     "E_cross_rel": 1.092632587489392e-06,
      "E_sigma1_T": 4.516e-07,
      "E_t_mu": 0.0003864338,
      "E_t_sigma": 6.202e-07,
@@ -2035,6 +2124,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001418352,
+     "linear_cross_norm": 0.0001377064,
      "linear_state_time_cross_cov": [
       3.23237e-05,
       0.0001302413,
@@ -2166,6 +2258,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -2265,7 +2362,9 @@
     "terminal": {
      "E_H2_terminal": 0.0087537682,
      "E_cov_T": 7.8803e-06,
-     "E_cross_rel": 9.4304e-06,
+     "E_cross_absnorm": 9.1559e-06,
+     "E_cross_composite": 9.4304e-06,
+     "E_cross_rel": 9.430422713526207e-06,
      "E_sigma1_T": 3.8752e-06,
      "E_t_mu": 0.0013002868,
      "E_t_sigma": 5.3816e-06,
@@ -2277,6 +2376,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0012765172,
+     "linear_cross_norm": 0.0012393575,
      "linear_state_time_cross_cov": [
       0.0002909129,
       0.0011721716,
@@ -2408,6 +2510,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -2507,7 +2614,9 @@
     "terminal": {
      "E_H2_terminal": 0.0043881897,
      "E_cov_T": 8.73474e-05,
-     "E_cross_rel": 0.000104614,
+     "E_cross_absnorm": 0.0001015687,
+     "E_cross_composite": 0.000104614,
+     "E_cross_rel": 0.00010461400205568297,
      "E_sigma1_T": 4.29484e-05,
      "E_t_mu": 0.0043881897,
      "E_t_sigma": 5.97341e-05,
@@ -2519,6 +2628,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0141835247,
+     "linear_cross_norm": 0.0137706393,
      "linear_state_time_cross_cov": [
       0.003232365,
       0.0130241288,
@@ -2650,6 +2762,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -2749,7 +2866,9 @@
     "terminal": {
      "E_H2_terminal": 0.0131918892,
      "E_cov_T": 0.0007821798,
-     "E_cross_rel": 0.0009352597,
+     "E_cross_absnorm": 0.0009080341,
+     "E_cross_composite": 0.0009352597,
+     "E_cross_rel": 0.0009352597065559009,
      "E_sigma1_T": 0.0003846319,
      "E_t_mu": 0.0131918892,
      "E_t_sigma": 0.0005332688,
@@ -2761,6 +2880,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.1276517224,
+     "linear_cross_norm": 0.1239357534,
      "linear_state_time_cross_cov": [
       0.0290912853,
       0.1172171588,
@@ -2892,6 +3014,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -3007,6 +3134,14 @@
       "TOPOLOGY_CHANGED": 13,
       "TOPOLOGY_PRESERVED": 243
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "SWITCH_SIGNATURE_CHANGED ['atmosphere_exit']": 13
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 243
+      }
+     },
      "domain_gate_status": "DOMAIN_GATE_FAIL",
      "model": "sanger",
      "sample_count": 256,
@@ -3029,10 +3164,17 @@
      "T": 600.0,
      "alpha": 0.1,
      "classification_counts": {
-      "NONPHYSICAL_STATE": 23,
-      "NUMERICAL_FAILURE": 8,
-      "TOPOLOGY_CHANGED": 76,
+      "TOPOLOGY_CHANGED": 107,
       "TOPOLOGY_PRESERVED": 149
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "SRTI_BEFORE_T": 23,
+       "SWITCH_SIGNATURE_CHANGED ['atmosphere_exit']": 84
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 149
+      }
      },
      "domain_gate_status": "DOMAIN_GATE_FAIL",
      "model": "sanger",
@@ -3100,6 +3242,11 @@
      },
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
      },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
@@ -3201,7 +3348,9 @@
     "terminal": {
      "E_H2_terminal": 0.0428750464,
      "E_cov_T": 4.047e-07,
-     "E_cross_rel": 1.893e-07,
+     "E_cross_absnorm": 1.638e-07,
+     "E_cross_composite": 1.893e-07,
+     "E_cross_rel": 1.8927240372564474e-07,
      "E_sigma1_T": 6.1e-08,
      "E_t_mu": 4.82944e-05,
      "E_t_sigma": 1.126e-07,
@@ -3213,6 +3362,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 2.10324e-05,
+     "linear_cross_norm": 1.81978e-05,
      "linear_state_time_cross_cov": [
       2.7558e-06,
       1.65765e-05,
@@ -3344,6 +3496,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -3444,7 +3601,9 @@
     "terminal": {
      "E_H2_terminal": 0.0448646676,
      "E_cov_T": 6.036e-07,
-     "E_cross_rel": 2.015e-07,
+     "E_cross_absnorm": 1.739e-07,
+     "E_cross_composite": 2.015e-07,
+     "E_cross_rel": 2.0152402932405797e-07,
      "E_sigma1_T": 5.13e-08,
      "E_t_mu": 5.14641e-05,
      "E_t_sigma": 1.206e-07,
@@ -3456,6 +3615,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 2.03365e-05,
+     "linear_cross_norm": 1.75461e-05,
      "linear_state_time_cross_cov": [
       2.819e-06,
       1.57756e-05,
@@ -3587,6 +3749,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -3687,7 +3854,9 @@
     "terminal": {
      "E_H2_terminal": 0.0460645529,
      "E_cov_T": 3.986e-07,
-     "E_cross_rel": 6.046e-07,
+     "E_cross_absnorm": 5.153e-07,
+     "E_cross_composite": 6.046e-07,
+     "E_cross_rel": 6.045521476860928e-07,
      "E_sigma1_T": 5.33e-08,
      "E_t_mu": 4.86362e-05,
      "E_t_sigma": 9.86e-08,
@@ -3699,6 +3868,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 2.00001e-05,
+     "linear_cross_norm": 1.70461e-05,
      "linear_state_time_cross_cov": [
       2.8876e-06,
       1.51217e-05,
@@ -3786,6 +3958,771 @@
     }
    }
   ],
+  "qian|0.0003": [
+   {
+    "fixed_time": {
+     "E_H2": 0.0001554962,
+     "E_cov": 2.961e-07,
+     "E_marginal_max": 3.347e-07,
+     "E_mu": 0.0001554962,
+     "E_sampling": 0.1800762703,
+     "E_sigma1": 1.074e-07,
+     "E_zero_max": 0.0,
+     "T": 600.0,
+     "alpha": 0.0003,
+     "analytic_H1_covariance": [
+      [
+       8.3e-09,
+       2.07e-08,
+       3.35e-08,
+       0.0
+      ],
+      [
+       2.07e-08,
+       1.443e-07,
+       8.56e-08,
+       0.0
+      ],
+      [
+       3.35e-08,
+       8.56e-08,
+       1.369e-07,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "bootstrap": {
+      "E_H2_median": 0.0001543917,
+      "lower95": 0.0001025145,
+      "upper95": 0.0002096448
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
+     "domain_gate_status": "PASS",
+     "linear_sample_covariance": [
+      [
+       7.2e-09,
+       2.33e-08,
+       2.91e-08,
+       0.0
+      ],
+      [
+       2.33e-08,
+       1.781e-07,
+       9.83e-08,
+       0.0
+      ],
+      [
+       2.91e-08,
+       9.83e-08,
+       1.186e-07,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_sample_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "marginal_relative_errors": [
+      3.3474527768715264e-07,
+      1.5300360758161844e-08,
+      2.605350797732541e-07,
+      null
+     ],
+     "marginal_std_linear": [
+      8.51177e-05,
+      0.0004220252,
+      0.0003443247,
+      0.0
+     ],
+     "marginal_std_nonlinear": [
+      8.51178e-05,
+      0.0004220252,
+      0.0003443248,
+      0.0
+     ],
+     "model": "qian",
+     "nonlinear_sample_covariance": [
+      [
+       7.2e-09,
+       2.33e-08,
+       2.91e-08,
+       -0.0
+      ],
+      [
+       2.33e-08,
+       1.781e-07,
+       9.83e-08,
+       -0.0
+      ],
+      [
+       2.91e-08,
+       9.83e-08,
+       1.186e-07,
+       -0.0
+      ],
+      [
+       -0.0,
+       -0.0,
+       -0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_sample_mean": [
+      7.6e-09,
+      2.25e-08,
+      8.24e-08,
+      0.0
+     ],
+     "principal_alignment": 1.0,
+     "principal_angle": 1.75e-07,
+     "sample_count": 256,
+     "status_1pct": "PASS",
+     "status_5pct": "PASS",
+     "structural_zero_leakage": [
+      null,
+      null,
+      null,
+      3.816967217635165e-12
+     ]
+    },
+    "sample_count": 256,
+    "terminal": {
+     "E_H2_terminal": 0.0143169716,
+     "E_cov_T": 9.664e-07,
+     "E_cross_absnorm": 1.0087e-06,
+     "E_cross_composite": 1.1658e-06,
+     "E_cross_rel": 1.1657720697996164e-06,
+     "E_sigma1_T": 4.485e-07,
+     "E_t_mu": 0.0002666958,
+     "E_t_sigma": 5.888e-07,
+     "bootstrap_terminal": {
+      "E_H2_T_median": 0.0143704333,
+      "lower95": 0.0127715902,
+      "upper95": 0.0164732833
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001892912,
+     "linear_cross_norm": 0.0001637799,
+     "linear_state_time_cross_cov": [
+      2.4802e-05,
+      0.0001491881,
+      6.28622e-05,
+      0.0
+     ],
+     "linear_terminal_state_cov": [
+      [
+       7.2e-09,
+       3.95e-08,
+       1.84e-08,
+       0.0
+      ],
+      [
+       3.95e-08,
+       3.319e-07,
+       1.001e-07,
+       0.0
+      ],
+      [
+       1.84e-08,
+       1.001e-07,
+       4.65e-08,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_terminal_state_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "linear_terminal_time_mean": 0.0,
+     "linear_terminal_time_std": 0.3047932568,
+     "nonlinear_state_time_cross_cov": [
+      2.4802e-05,
+      0.0001491882,
+      6.28623e-05,
+      0.0
+     ],
+     "nonlinear_terminal_state_cov": [
+      [
+       7.2e-09,
+       3.95e-08,
+       1.84e-08,
+       0.0
+      ],
+      [
+       3.95e-08,
+       3.319e-07,
+       1.001e-07,
+       0.0
+      ],
+      [
+       1.84e-08,
+       1.001e-07,
+       4.65e-08,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_terminal_state_mean": [
+      8.8647e-06,
+      4.711e-07,
+      5.046e-07,
+      2e-10
+     ],
+     "nonlinear_terminal_time_mean": 8.12871e-05,
+     "nonlinear_terminal_time_std": 0.3047934362,
+     "status_1pct": "FAIL",
+     "status_5pct": "PASS",
+     "terminal_gate_status": "PASS",
+     "terminal_kind": "RTI"
+    }
+   }
+  ],
+  "qian|0.001": [
+   {
+    "fixed_time": {
+     "E_H2": 0.0005181432,
+     "E_cov": 2.8917e-06,
+     "E_marginal_max": 3.2161e-06,
+     "E_mu": 0.0005181432,
+     "E_sampling": 0.1800762703,
+     "E_sigma1": 1.0317e-06,
+     "E_zero_max": 0.0,
+     "T": 600.0,
+     "alpha": 0.001,
+     "analytic_H1_covariance": [
+      [
+       9.19e-08,
+       2.299e-07,
+       3.72e-07,
+       0.0
+      ],
+      [
+       2.299e-07,
+       1.6029e-06,
+       9.512e-07,
+       0.0
+      ],
+      [
+       3.72e-07,
+       9.512e-07,
+       1.5216e-06,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "bootstrap": {
+      "E_H2_median": 0.0005144633,
+      "lower95": 0.0003415429,
+      "upper95": 0.0006986588
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
+     "domain_gate_status": "PASS",
+     "linear_sample_covariance": [
+      [
+       8.05e-08,
+       2.589e-07,
+       3.233e-07,
+       0.0
+      ],
+      [
+       2.589e-07,
+       1.9789e-06,
+       1.0927e-06,
+       0.0
+      ],
+      [
+       3.233e-07,
+       1.0927e-06,
+       1.3173e-06,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_sample_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "marginal_relative_errors": [
+      3.2160992220822443e-06,
+      1.188641349266217e-07,
+      2.563738537952116e-06,
+      null
+     ],
+     "marginal_std_linear": [
+      0.0002837257,
+      0.0014067508,
+      0.001147749,
+      0.0
+     ],
+     "marginal_std_nonlinear": [
+      0.0002837267,
+      0.0014067509,
+      0.001147752,
+      0.0
+     ],
+     "model": "qian",
+     "nonlinear_sample_covariance": [
+      [
+       8.05e-08,
+       2.589e-07,
+       3.233e-07,
+       0.0
+      ],
+      [
+       2.589e-07,
+       1.9789e-06,
+       1.0927e-06,
+       0.0
+      ],
+      [
+       3.233e-07,
+       1.0927e-06,
+       1.3173e-06,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_sample_mean": [
+      8.43e-08,
+      2.494e-07,
+      9.15e-07,
+      0.0
+     ],
+     "principal_alignment": 1.0,
+     "principal_angle": 1.7321e-06,
+     "sample_count": 256,
+     "status_1pct": "PASS",
+     "status_5pct": "PASS",
+     "structural_zero_leakage": [
+      null,
+      null,
+      null,
+      1.146004006052067e-12
+     ]
+    },
+    "sample_count": 256,
+    "terminal": {
+     "E_H2_terminal": 0.0044674824,
+     "E_cov_T": 9.644e-06,
+     "E_cross_absnorm": 1.04943e-05,
+     "E_cross_composite": 1.21289e-05,
+     "E_cross_rel": 1.2128920162377647e-05,
+     "E_sigma1_T": 4.8198e-06,
+     "E_t_mu": 0.0009350992,
+     "E_t_sigma": 5.99e-06,
+     "bootstrap_terminal": {
+      "E_H2_T_median": 0.0044897742,
+      "lower95": 0.0040119106,
+      "upper95": 0.0050780238
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0021032359,
+     "linear_cross_norm": 0.0018197772,
+     "linear_state_time_cross_cov": [
+      0.0002755777,
+      0.001657645,
+      0.0006984689,
+      0.0
+     ],
+     "linear_terminal_state_cov": [
+      [
+       8.05e-08,
+       4.39e-07,
+       2.04e-07,
+       0.0
+      ],
+      [
+       4.39e-07,
+       3.6879e-06,
+       1.1128e-06,
+       0.0
+      ],
+      [
+       2.04e-07,
+       1.1128e-06,
+       5.171e-07,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_terminal_state_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "linear_terminal_time_mean": 0.0,
+     "linear_terminal_time_std": 1.0159775225,
+     "nonlinear_state_time_cross_cov": [
+      0.0002755801,
+      0.0016576659,
+      0.0006984757,
+      6e-10
+     ],
+     "nonlinear_terminal_state_cov": [
+      [
+       8.05e-08,
+       4.39e-07,
+       2.04e-07,
+       0.0
+      ],
+      [
+       4.39e-07,
+       3.688e-06,
+       1.1128e-06,
+       0.0
+      ],
+      [
+       2.04e-07,
+       1.1128e-06,
+       5.171e-07,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_terminal_state_mean": [
+      8.9414e-06,
+      2.1361e-06,
+      1.0104e-06,
+      1.1e-09
+     ],
+     "nonlinear_terminal_time_mean": 0.0009500398,
+     "nonlinear_terminal_time_std": 1.0159836082,
+     "status_1pct": "PASS",
+     "status_5pct": "PASS",
+     "terminal_gate_status": "PASS",
+     "terminal_kind": "RTI"
+    }
+   }
+  ],
+  "qian|0.003": [
+   {
+    "fixed_time": {
+     "E_H2": 0.0015543615,
+     "E_cov": 2.5806e-05,
+     "E_marginal_max": 2.86977e-05,
+     "E_mu": 0.0015543615,
+     "E_sampling": 0.1800762703,
+     "E_sigma1": 9.1868e-06,
+     "E_zero_max": 0.0,
+     "T": 600.0,
+     "alpha": 0.003,
+     "analytic_H1_covariance": [
+      [
+       8.267e-07,
+       2.0688e-06,
+       3.3479e-06,
+       0.0
+      ],
+      [
+       2.0688e-06,
+       1.4426e-05,
+       8.5608e-06,
+       0.0
+      ],
+      [
+       3.3479e-06,
+       8.5608e-06,
+       1.36945e-05,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "bootstrap": {
+      "E_H2_median": 0.0015433054,
+      "lower95": 0.0010245773,
+      "upper95": 0.0020959091
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
+     "domain_gate_status": "PASS",
+     "linear_sample_covariance": [
+      [
+       7.245e-07,
+       2.3303e-06,
+       2.9099e-06,
+       0.0
+      ],
+      [
+       2.3303e-06,
+       1.78105e-05,
+       9.8344e-06,
+       0.0
+      ],
+      [
+       2.9099e-06,
+       9.8344e-06,
+       1.1856e-05,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_sample_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "marginal_relative_errors": [
+      2.8697682367005263e-05,
+      1.03101718223535e-06,
+      2.290493880758128e-05,
+      null
+     ],
+     "marginal_std_linear": [
+      0.0008511772,
+      0.0042202523,
+      0.003443247,
+      0.0
+     ],
+     "marginal_std_nonlinear": [
+      0.0008512017,
+      0.0042202566,
+      0.0034433259,
+      0.0
+     ],
+     "model": "qian",
+     "nonlinear_sample_covariance": [
+      [
+       7.245e-07,
+       2.3304e-06,
+       2.9101e-06,
+       -0.0
+      ],
+      [
+       2.3304e-06,
+       1.78106e-05,
+       9.8346e-06,
+       -0.0
+      ],
+      [
+       2.9101e-06,
+       9.8346e-06,
+       1.18565e-05,
+       -0.0
+      ],
+      [
+       -0.0,
+       -0.0,
+       -0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_sample_mean": [
+      7.589e-07,
+      2.2448e-06,
+      8.2347e-06,
+      0.0
+     ],
+     "principal_alignment": 0.9999999999,
+     "principal_angle": 1.54875e-05,
+     "sample_count": 256,
+     "status_1pct": "PASS",
+     "status_5pct": "PASS",
+     "structural_zero_leakage": [
+      null,
+      null,
+      null,
+      4.21057984926413e-13
+     ]
+    },
+    "sample_count": 256,
+    "terminal": {
+     "E_H2_terminal": 0.0032349946,
+     "E_cov_T": 8.65936e-05,
+     "E_cross_absnorm": 9.44037e-05,
+     "E_cross_composite": 0.0001091085,
+     "E_cross_rel": 0.00010910854963540101,
+     "E_sigma1_T": 4.33296e-05,
+     "E_t_mu": 0.0028176446,
+     "E_t_sigma": 5.38239e-05,
+     "bootstrap_terminal": {
+      "E_H2_T_median": 0.0032345555,
+      "lower95": 0.0026918587,
+      "upper95": 0.0038571614
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0189291234,
+     "linear_cross_norm": 0.0163779946,
+     "linear_state_time_cross_cov": [
+      0.0024801994,
+      0.0149188054,
+      0.0062862202,
+      0.0
+     ],
+     "linear_terminal_state_cov": [
+      [
+       7.245e-07,
+       3.9514e-06,
+       1.8363e-06,
+       0.0
+      ],
+      [
+       3.9514e-06,
+       3.31913e-05,
+       1.0015e-05,
+       0.0
+      ],
+      [
+       1.8363e-06,
+       1.0015e-05,
+       4.6542e-06,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_terminal_state_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "linear_terminal_time_mean": 0.0,
+     "linear_terminal_time_std": 3.0479325676,
+     "nonlinear_state_time_cross_cov": [
+      0.0024803898,
+      0.014920495,
+      0.00628677,
+      -3.1e-09
+     ],
+     "nonlinear_terminal_state_cov": [
+      [
+       7.245e-07,
+       3.9517e-06,
+       1.8364e-06,
+       -0.0
+      ],
+      [
+       3.9517e-06,
+       3.31942e-05,
+       1.00159e-05,
+       -0.0
+      ],
+      [
+       1.8364e-06,
+       1.00159e-05,
+       4.6545e-06,
+       -0.0
+      ],
+      [
+       -0.0,
+       -0.0,
+       -0.0,
+       0.0
+      ]
+     ],
+     "nonlinear_terminal_state_mean": [
+      9.616e-06,
+      1.67748e-05,
+      5.4572e-06,
+      1.4e-09
+     ],
+     "nonlinear_terminal_time_mean": 0.0085879907,
+     "nonlinear_terminal_time_std": 3.0480966193,
+     "status_1pct": "PASS",
+     "status_5pct": "PASS",
+     "terminal_gate_status": "PASS",
+     "terminal_kind": "RTI"
+    }
+   }
+  ],
   "qian|0.01": [
    {
     "fixed_time": {
@@ -3831,6 +4768,11 @@
      },
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
      },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
@@ -3932,7 +4874,9 @@
     "terminal": {
      "E_H2_terminal": 0.0094033674,
      "E_cov_T": 0.000963783,
-     "E_cross_rel": 0.0012139183,
+     "E_cross_absnorm": 0.0010503153,
+     "E_cross_composite": 0.0012139183,
+     "E_cross_rel": 0.0012139182991381984,
      "E_sigma1_T": 0.000482153,
      "E_t_mu": 0.0094033674,
      "E_t_sigma": 0.0005985139,
@@ -3944,6 +4888,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.2103235936,
+     "linear_cross_norm": 0.1819777183,
      "linear_state_time_cross_cov": [
       0.0275577716,
       0.1657645044,
@@ -4075,6 +5022,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -4175,7 +5127,9 @@
     "terminal": {
      "E_H2_terminal": 0.0100548901,
      "E_cov_T": 0.0009140605,
-     "E_cross_rel": 0.0011546029,
+     "E_cross_absnorm": 0.0009961801,
+     "E_cross_composite": 0.0011546029,
+     "E_cross_rel": 0.001154602905197878,
      "E_sigma1_T": 0.0004561264,
      "E_t_mu": 0.0096575683,
      "E_t_sigma": 0.0005713627,
@@ -4187,6 +5141,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.2033650085,
+     "linear_cross_norm": 0.1754613468,
      "linear_state_time_cross_cov": [
       0.0281904407,
       0.157755568,
@@ -4318,6 +5275,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -4418,7 +5380,9 @@
     "terminal": {
      "E_H2_terminal": 0.0098628736,
      "E_cov_T": 0.0008629152,
-     "E_cross_rel": 0.0010910714,
+     "E_cross_absnorm": 0.000929923,
+     "E_cross_composite": 0.0010910714,
+     "E_cross_rel": 0.001091071363223948,
      "E_sigma1_T": 0.0004310676,
      "E_t_mu": 0.0093325836,
      "E_t_sigma": 0.000527425,
@@ -4430,6 +5394,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.2000009165,
+     "linear_cross_norm": 0.1704613118,
      "linear_state_time_cross_cov": [
       0.0288763506,
       0.1512170571,
@@ -4561,6 +5528,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 2048
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -4661,7 +5633,9 @@
     "terminal": {
      "E_H2_terminal": 0.0099408217,
      "E_cov_T": 0.0009397443,
-     "E_cross_rel": 0.0011819882,
+     "E_cross_absnorm": 0.001002537,
+     "E_cross_composite": 0.0011819882,
+     "E_cross_rel": 0.0011819881979910037,
      "E_sigma1_T": 0.0004692487,
      "E_t_mu": 0.0093833295,
      "E_t_sigma": 0.0005666011,
@@ -4673,6 +5647,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.2029090618,
+     "linear_cross_norm": 0.1721031079,
      "linear_state_time_cross_cov": [
       0.0296893475,
       0.151906335,
@@ -4804,6 +5781,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 4096
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -4904,7 +5886,9 @@
     "terminal": {
      "E_H2_terminal": 0.0103487675,
      "E_cov_T": 0.0010917848,
-     "E_cross_rel": 0.0013756299,
+     "E_cross_absnorm": 0.0011624475,
+     "E_cross_composite": 0.0013756299,
+     "E_cross_rel": 0.00137562992616889,
      "E_sigma1_T": 0.000545735,
      "E_t_mu": 0.0096542652,
      "E_t_sigma": 0.0006543715,
@@ -4916,6 +5900,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.208174672,
+     "linear_cross_norm": 0.1759136777,
      "linear_state_time_cross_cov": [
       0.0309022775,
       0.1544540754,
@@ -5049,6 +6036,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -5149,7 +6141,9 @@
     "terminal": {
      "E_H2_terminal": 0.0283856245,
      "E_cov_T": 0.0088233985,
-     "E_cross_rel": 0.0111168047,
+     "E_cross_absnorm": 0.0096185631,
+     "E_cross_composite": 0.0111168047,
+     "E_cross_rel": 0.011116804669148776,
      "E_sigma1_T": 0.0044055036,
      "E_t_mu": 0.0283856245,
      "E_t_sigma": 0.0054710403,
@@ -5161,6 +6155,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8929123427,
+     "linear_cross_norm": 1.6377994643,
      "linear_state_time_cross_cov": [
       0.2480199447,
       1.4918805392,
@@ -5292,6 +6289,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -5392,7 +6394,9 @@
     "terminal": {
      "E_H2_terminal": 0.0301553725,
      "E_cov_T": 0.0083576059,
-     "E_cross_rel": 0.0105538636,
+     "E_cross_absnorm": 0.0091057707,
+     "E_cross_composite": 0.0105538636,
+     "E_cross_rel": 0.010553863639404425,
      "E_sigma1_T": 0.0041632068,
      "E_t_mu": 0.0291252103,
      "E_t_sigma": 0.0052102295,
@@ -5404,6 +6408,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8302850763,
+     "linear_cross_norm": 1.5791521208,
      "linear_state_time_cross_cov": [
       0.2537139659,
       1.4198001117,
@@ -5535,6 +6542,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -5635,7 +6647,9 @@
     "terminal": {
      "E_H2_terminal": 0.0296103853,
      "E_cov_T": 0.0079012459,
-     "E_cross_rel": 0.0099852577,
+     "E_cross_absnorm": 0.0085104616,
+     "E_cross_composite": 0.0099852577,
+     "E_cross_rel": 0.009985257667772463,
      "E_sigma1_T": 0.0039403813,
      "E_t_mu": 0.0281396708,
      "E_t_sigma": 0.0048155458,
@@ -5647,6 +6661,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8000082487,
+     "linear_cross_norm": 1.5341518061,
      "linear_state_time_cross_cov": [
       0.259887155,
       1.3609535137,
@@ -5778,6 +6795,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 2048
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -5878,7 +6900,9 @@
     "terminal": {
      "E_H2_terminal": 0.0298508826,
      "E_cov_T": 0.0086143053,
-     "E_cross_rel": 0.0108348859,
+     "E_cross_absnorm": 0.0091899175,
+     "E_cross_composite": 0.0108348859,
+     "E_cross_rel": 0.010834885899038832,
      "E_sigma1_T": 0.0042932564,
      "E_t_mu": 0.0283037638,
      "E_t_sigma": 0.0051814069,
@@ -5890,6 +6914,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8261815561,
+     "linear_cross_norm": 1.5489279708,
      "linear_state_time_cross_cov": [
       0.2672041276,
       1.3671570147,
@@ -5981,8 +7008,16 @@
      "T": 600.0,
      "alpha": 0.03,
      "classification_counts": {
-      "NONPHYSICAL_STATE": 1,
+      "TOPOLOGY_CHANGED": 1,
       "TOPOLOGY_PRESERVED": 4095
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "RTI_BEFORE_T": 1
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 4095
+      }
      },
      "domain_gate_status": "DOMAIN_GATE_FAIL",
      "model": "qian",
@@ -5994,7 +7029,9 @@
     "terminal": {
      "E_H2_terminal": 0.0311187618,
      "E_cov_T": 0.0101220515,
-     "E_cross_rel": 0.0127610866,
+     "E_cross_absnorm": 0.0107834909,
+     "E_cross_composite": 0.0127610866,
+     "E_cross_rel": 0.012761086635427334,
      "E_sigma1_T": 0.0050480832,
      "E_t_mu": 0.0291604095,
      "E_t_sigma": 0.0060590819,
@@ -6006,6 +7043,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 1.8735720479,
+     "linear_cross_norm": 1.5832230996,
      "linear_state_time_cross_cov": [
       0.2781204973,
       1.3900866788,
@@ -6093,6 +7133,137 @@
     }
    }
   ],
+  "qian|0.1": [
+   {
+    "fixed_time": {
+     "T": 600.0,
+     "alpha": 0.1,
+     "classification_counts": {
+      "TOPOLOGY_CHANGED": 23,
+      "TOPOLOGY_PRESERVED": 233
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "RTI_BEFORE_T": 23
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 233
+      }
+     },
+     "domain_gate_status": "DOMAIN_GATE_FAIL",
+     "model": "qian",
+     "sample_count": 256,
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL"
+    },
+    "sample_count": 256,
+    "terminal": {
+     "E_H2_terminal": 0.5275027506,
+     "E_cov_T": 0.1914675719,
+     "E_cross_absnorm": 0.138433444,
+     "E_cross_composite": 0.1599966177,
+     "E_cross_rel": 0.15999661768308793,
+     "E_sigma1_T": 0.0213706197,
+     "E_t_mu": 0.0048002707,
+     "E_t_sigma": 0.0252594196,
+     "bootstrap_terminal": {
+      "E_H2_T_median": 0.5174141954,
+      "lower95": 0.2126736227,
+      "upper95": 0.7999567037
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 21.0323593628,
+     "linear_cross_norm": 18.1977718255,
+     "linear_state_time_cross_cov": [
+      2.7557771634,
+      16.5764504355,
+      6.9846891554,
+      0.0
+     ],
+     "linear_terminal_state_cov": [
+      [
+       0.000805003,
+       0.0043903921,
+       0.0020403303,
+       0.0
+      ],
+      [
+       0.0043903921,
+       0.0368792732,
+       0.0111277228,
+       0.0
+      ],
+      [
+       0.0020403303,
+       0.0111277228,
+       0.0051713444,
+       0.0
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ]
+     ],
+     "linear_terminal_state_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "linear_terminal_time_mean": 0.0,
+     "linear_terminal_time_std": 101.5977522525,
+     "nonlinear_state_time_cross_cov": [
+      1.9443014198,
+      14.4794320136,
+      5.1403124957,
+      -0.1400178366
+     ],
+     "nonlinear_terminal_state_cov": [
+      [
+       0.001878285,
+       0.0052536689,
+       0.0045415753,
+       0.0002368054
+      ],
+      [
+       0.0052536689,
+       0.0358524769,
+       0.013316104,
+       0.000235631
+      ],
+      [
+       0.0045415753,
+       0.013316104,
+       0.0110916837,
+       0.0005469837
+      ],
+      [
+       0.0002368054,
+       0.000235631,
+       0.0005469837,
+       5.15746e-05
+      ]
+     ],
+     "nonlinear_terminal_state_mean": [
+      0.0047549435,
+      0.0125264604,
+      0.0146625361,
+      0.0011102833
+     ],
+     "nonlinear_terminal_time_mean": -0.4876967121,
+     "nonlinear_terminal_time_std": 99.031451996,
+     "status_1pct": "FAIL",
+     "status_5pct": "FAIL",
+     "terminal_gate_status": "PASS",
+     "terminal_kind": "RTI"
+    }
+   }
+  ],
   "sanger|0.0001": [
    {
     "fixed_time": {
@@ -6138,6 +7309,11 @@
      },
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
      },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
@@ -6239,7 +7415,9 @@
     "terminal": {
      "E_H2_terminal": 0.0268882057,
      "E_cov_T": 9.182e-07,
-     "E_cross_rel": 1.0926e-06,
+     "E_cross_absnorm": 1.0608e-06,
+     "E_cross_composite": 1.0926e-06,
+     "E_cross_rel": 1.092632587489392e-06,
      "E_sigma1_T": 4.516e-07,
      "E_t_mu": 0.0003864338,
      "E_t_sigma": 6.202e-07,
@@ -6251,6 +7429,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001418352,
+     "linear_cross_norm": 0.0001377064,
      "linear_state_time_cross_cov": [
       3.23237e-05,
       0.0001302413,
@@ -6382,6 +7563,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -6482,7 +7668,9 @@
     "terminal": {
      "E_H2_terminal": 0.027272868,
      "E_cov_T": 9.59e-07,
-     "E_cross_rel": 1.1202e-06,
+     "E_cross_absnorm": 1.0893e-06,
+     "E_cross_composite": 1.1202e-06,
+     "E_cross_rel": 1.120210679553708e-06,
      "E_sigma1_T": 4.711e-07,
      "E_t_mu": 0.0003962374,
      "E_t_sigma": 6.251e-07,
@@ -6494,6 +7682,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001424111,
+     "linear_cross_norm": 0.0001384835,
      "linear_state_time_cross_cov": [
       3.35403e-05,
       0.0001304405,
@@ -6625,6 +7816,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -6725,7 +7921,9 @@
     "terminal": {
      "E_H2_terminal": 0.0271882091,
      "E_cov_T": 1.0386e-06,
-     "E_cross_rel": 1.2031e-06,
+     "E_cross_absnorm": 1.1715e-06,
+     "E_cross_composite": 1.2031e-06,
+     "E_cross_rel": 1.203091972814648e-06,
      "E_sigma1_T": 5.093e-07,
      "E_t_mu": 0.0004167382,
      "E_t_sigma": 6.667e-07,
@@ -6737,6 +7935,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0001456875,
+     "linear_cross_norm": 0.0001418581,
      "linear_state_time_cross_cov": [
       3.49004e-05,
       0.0001332133,
@@ -6870,6 +8071,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -6970,7 +8176,9 @@
     "terminal": {
      "E_H2_terminal": 0.0087537682,
      "E_cov_T": 7.8803e-06,
-     "E_cross_rel": 9.4304e-06,
+     "E_cross_absnorm": 9.1559e-06,
+     "E_cross_composite": 9.4304e-06,
+     "E_cross_rel": 9.430422713526207e-06,
      "E_sigma1_T": 3.8752e-06,
      "E_t_mu": 0.0013002868,
      "E_t_sigma": 5.3816e-06,
@@ -6982,6 +8190,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0012765172,
+     "linear_cross_norm": 0.0012393575,
      "linear_state_time_cross_cov": [
       0.0002909129,
       0.0011721716,
@@ -7113,6 +8324,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -7213,7 +8429,9 @@
     "terminal": {
      "E_H2_terminal": 0.0088732914,
      "E_cov_T": 8.3519e-06,
-     "E_cross_rel": 9.8276e-06,
+     "E_cross_absnorm": 9.5566e-06,
+     "E_cross_composite": 9.8276e-06,
+     "E_cross_rel": 9.827594627111299e-06,
      "E_sigma1_T": 4.1004e-06,
      "E_t_mu": 0.0013271232,
      "E_t_sigma": 5.5189e-06,
@@ -7225,6 +8443,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0012816998,
+     "linear_cross_norm": 0.0012463514,
      "linear_state_time_cross_cov": [
       0.0003018628,
       0.0011739643,
@@ -7356,6 +8577,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -7456,7 +8682,9 @@
     "terminal": {
      "E_H2_terminal": 0.0088320864,
      "E_cov_T": 9.0833e-06,
-     "E_cross_rel": 1.06021e-05,
+     "E_cross_absnorm": 1.03234e-05,
+     "E_cross_composite": 1.06021e-05,
+     "E_cross_rel": 1.0602126087414836e-05,
      "E_sigma1_T": 4.4512e-06,
      "E_t_mu": 0.0013859078,
      "E_t_sigma": 5.9138e-06,
@@ -7468,6 +8696,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0013111879,
+     "linear_cross_norm": 0.0012767233,
      "linear_state_time_cross_cov": [
       0.0003141037,
       0.00119892,
@@ -7599,6 +8830,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 2048
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -7699,7 +8935,9 @@
     "terminal": {
      "E_H2_terminal": 0.0088900619,
      "E_cov_T": 9.7243e-06,
-     "E_cross_rel": 1.14159e-05,
+     "E_cross_absnorm": 1.10981e-05,
+     "E_cross_composite": 1.14159e-05,
+     "E_cross_rel": 1.1415867835081096e-05,
      "E_sigma1_T": 4.763e-06,
      "E_t_mu": 0.0013914812,
      "E_t_sigma": 6.3846e-06,
@@ -7711,6 +8949,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0012945854,
+     "linear_cross_norm": 0.0012585544,
      "linear_state_time_cross_cov": [
       0.000309188,
       0.0011810152,
@@ -7842,6 +9083,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 4096
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -7942,7 +9188,9 @@
     "terminal": {
      "E_H2_terminal": 0.0087410181,
      "E_cov_T": 1.03783e-05,
-     "E_cross_rel": 1.21172e-05,
+     "E_cross_absnorm": 1.17839e-05,
+     "E_cross_composite": 1.21172e-05,
+     "E_cross_rel": 1.2117194669648476e-05,
      "E_sigma1_T": 5.0802e-06,
      "E_t_mu": 0.0014261117,
      "E_t_sigma": 6.7406e-06,
@@ -7954,6 +9202,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0013481343,
+     "linear_cross_norm": 0.0013110553,
      "linear_state_time_cross_cov": [
       0.0003248513,
       0.0012287955,
@@ -8087,6 +9338,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -8187,7 +9443,9 @@
     "terminal": {
      "E_H2_terminal": 0.0043881897,
      "E_cov_T": 8.73474e-05,
-     "E_cross_rel": 0.000104614,
+     "E_cross_absnorm": 0.0001015687,
+     "E_cross_composite": 0.000104614,
+     "E_cross_rel": 0.00010461400205568297,
      "E_sigma1_T": 4.29484e-05,
      "E_t_mu": 0.0043881897,
      "E_t_sigma": 5.97341e-05,
@@ -8199,6 +9457,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0141835247,
+     "linear_cross_norm": 0.0137706393,
      "linear_state_time_cross_cov": [
       0.003232365,
       0.0130241288,
@@ -8330,6 +9591,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -8430,7 +9696,9 @@
     "terminal": {
      "E_H2_terminal": 0.0044766699,
      "E_cov_T": 9.26023e-05,
-     "E_cross_rel": 0.0001090605,
+     "E_cross_absnorm": 0.0001060526,
+     "E_cross_composite": 0.0001090605,
+     "E_cross_rel": 0.00010906045176735383,
      "E_sigma1_T": 4.54565e-05,
      "E_t_mu": 0.0044766699,
      "E_t_sigma": 6.12896e-05,
@@ -8442,6 +9710,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0142411092,
+     "linear_cross_norm": 0.0138483486,
      "linear_state_time_cross_cov": [
       0.0033540308,
       0.0130440478,
@@ -8573,6 +9844,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -8673,7 +9949,9 @@
     "terminal": {
      "E_H2_terminal": 0.0046716225,
      "E_cov_T": 0.0001007053,
-     "E_cross_rel": 0.0001176372,
+     "E_cross_absnorm": 0.0001145452,
+     "E_cross_composite": 0.0001176372,
+     "E_cross_rel": 0.0001176372492847307,
      "E_sigma1_T": 4.93435e-05,
      "E_t_mu": 0.0046716225,
      "E_t_sigma": 6.56591e-05,
@@ -8685,6 +9963,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0145687543,
+     "linear_cross_norm": 0.0141858145,
      "linear_state_time_cross_cov": [
       0.0034900408,
       0.0133213331,
@@ -8816,6 +10097,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 2048
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -8916,7 +10202,9 @@
     "terminal": {
      "E_H2_terminal": 0.0046905479,
      "E_cov_T": 0.0001078437,
-     "E_cross_rel": 0.0001266967,
+     "E_cross_absnorm": 0.0001231705,
+     "E_cross_composite": 0.0001266967,
+     "E_cross_rel": 0.00012669670655696434,
      "E_sigma1_T": 5.2817e-05,
      "E_t_mu": 0.0046905479,
      "E_t_sigma": 7.09002e-05,
@@ -8928,6 +10216,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0143842828,
+     "linear_cross_norm": 0.0139839373,
      "linear_state_time_cross_cov": [
       0.0034354228,
       0.0131223909,
@@ -9059,6 +10350,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 4096
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -9159,7 +10455,9 @@
     "terminal": {
      "E_H2_terminal": 0.0048047505,
      "E_cov_T": 0.0001151033,
-     "E_cross_rel": 0.0001344776,
+     "E_cross_absnorm": 0.000130779,
+     "E_cross_composite": 0.0001344776,
+     "E_cross_rel": 0.00013447764868033306,
      "E_sigma1_T": 5.63368e-05,
      "E_t_mu": 0.0048047505,
      "E_t_sigma": 7.48483e-05,
@@ -9171,6 +10469,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.0149792696,
+     "linear_cross_norm": 0.0145672812,
      "linear_state_time_cross_cov": [
       0.0036094588,
       0.0136532835,
@@ -9304,6 +10605,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -9404,7 +10710,9 @@
     "terminal": {
      "E_H2_terminal": 0.0131918892,
      "E_cov_T": 0.0007821798,
-     "E_cross_rel": 0.0009352597,
+     "E_cross_absnorm": 0.0009080341,
+     "E_cross_composite": 0.0009352597,
+     "E_cross_rel": 0.0009352597065559009,
      "E_sigma1_T": 0.0003846319,
      "E_t_mu": 0.0131918892,
      "E_t_sigma": 0.0005332688,
@@ -9416,6 +10724,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 256
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.1276517224,
+     "linear_cross_norm": 0.1239357534,
      "linear_state_time_cross_cov": [
       0.0290912853,
       0.1172171588,
@@ -9547,6 +10858,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 512
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -9647,7 +10963,9 @@
     "terminal": {
      "E_H2_terminal": 0.0134565936,
      "E_cov_T": 0.0008305276,
-     "E_cross_rel": 0.0009770029,
+     "E_cross_absnorm": 0.0009500578,
+     "E_cross_composite": 0.0009770029,
+     "E_cross_rel": 0.000977002882759237,
      "E_sigma1_T": 0.000407701,
      "E_t_mu": 0.0134565936,
      "E_t_sigma": 0.0005484625,
@@ -9659,6 +10977,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 512
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.128169983,
+     "linear_cross_norm": 0.1246351372,
      "linear_state_time_cross_cov": [
       0.0301862769,
       0.1173964302,
@@ -9790,6 +11111,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 1024
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -9890,7 +11216,9 @@
     "terminal": {
      "E_H2_terminal": 0.0140422667,
      "E_cov_T": 0.0009025762,
-     "E_cross_rel": 0.0010528875,
+     "E_cross_absnorm": 0.0010252124,
+     "E_cross_composite": 0.0010528875,
+     "E_cross_rel": 0.0010528875208849495,
      "E_sigma1_T": 0.0004422697,
      "E_t_mu": 0.0140422667,
      "E_t_sigma": 0.0005869265,
@@ -9902,6 +11230,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 1024
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.1311187884,
+     "linear_cross_norm": 0.1276723302,
      "linear_state_time_cross_cov": [
       0.0314103674,
       0.1198919976,
@@ -10033,6 +11364,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 2048
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -10133,7 +11469,9 @@
     "terminal": {
      "E_H2_terminal": 0.0140998857,
      "E_cov_T": 0.0009661373,
-     "E_cross_rel": 0.0011332982,
+     "E_cross_absnorm": 0.001101756,
+     "E_cross_composite": 0.0011332982,
+     "E_cross_rel": 0.0011332981600115245,
      "E_sigma1_T": 0.0004732046,
      "E_t_mu": 0.0140998857,
      "E_t_sigma": 0.0006332972,
@@ -10145,6 +11483,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 2048
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.1294585449,
+     "linear_cross_norm": 0.1258554359,
      "linear_state_time_cross_cov": [
       0.030918805,
       0.118101518,
@@ -10276,6 +11617,11 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 4096
+      }
+     },
      "domain_gate_status": "PASS",
      "linear_sample_covariance": [
       [
@@ -10376,7 +11722,9 @@
     "terminal": {
      "E_H2_terminal": 0.0144430819,
      "E_cov_T": 0.0010314509,
-     "E_cross_rel": 0.0012032125,
+     "E_cross_absnorm": 0.0011701195,
+     "E_cross_composite": 0.0012032125,
+     "E_cross_rel": 0.001203212548510445,
      "E_sigma1_T": 0.000504865,
      "E_t_mu": 0.0144430819,
      "E_t_sigma": 0.0006686745,
@@ -10388,6 +11736,9 @@
      "classification_counts": {
       "TOPOLOGY_PRESERVED": 4096
      },
+     "cross_metric_mode": "RELATIVE",
+     "cross_natural_scale": 0.1348134264,
+     "linear_cross_norm": 0.1311055308,
      "linear_state_time_cross_cov": [
       0.0324851292,
       0.1228795519,
@@ -10471,6 +11822,240 @@
      "status_1pct": "FAIL",
      "status_5pct": "PASS",
      "terminal_gate_status": "PASS",
+     "terminal_kind": "srti"
+    }
+   }
+  ],
+  "sanger|0.01": [
+   {
+    "fixed_time": {
+     "E_H2": 1.2473585579,
+     "E_cov": 0.4883021412,
+     "E_marginal_max": 1.2473585579,
+     "E_mu": 0.1108754566,
+     "E_sampling": 0.1675677729,
+     "E_sigma1": 0.2842510118,
+     "E_zero_max": 0.0,
+     "T": 600.0,
+     "alpha": 0.01,
+     "analytic_H1_covariance": [
+      [
+       0.0004242425,
+       -0.0001399744,
+       -0.0008214393,
+       0.0176110031
+      ],
+      [
+       -0.0001399744,
+       0.000148856,
+       0.0002790944,
+       -0.0059160999
+      ],
+      [
+       -0.0008214393,
+       0.0002790944,
+       0.0016148835,
+       -0.0344189087
+      ],
+      [
+       0.0176110031,
+       -0.0059160999,
+       -0.0344189087,
+       0.7353118504
+      ]
+     ],
+     "bootstrap": {
+      "E_H2_median": 1.2404060203,
+      "lower95": 0.9664777716,
+      "upper95": 1.446985394
+     },
+     "classification_counts": {
+      "TOPOLOGY_PRESERVED": 256
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_PRESERVED": {
+       "_": 256
+      }
+     },
+     "domain_gate_status": "PASS",
+     "linear_sample_covariance": [
+      [
+       0.000359595,
+       -0.0001780611,
+       -0.0006832269,
+       0.0147715424
+      ],
+      [
+       -0.0001780611,
+       0.0001868498,
+       0.0003464489,
+       -0.0074168097
+      ],
+      [
+       -0.0006832269,
+       0.0003464489,
+       0.0013279966,
+       -0.0284619524
+      ],
+      [
+       0.0147715424,
+       -0.0074168097,
+       -0.0284619524,
+       0.6121204338
+      ]
+     ],
+     "linear_sample_mean": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "marginal_relative_errors": [
+      1.247358557867834,
+      0.0017331510050183519,
+      0.19319817189122507,
+      0.28427687160671794
+     ],
+     "marginal_std_linear": [
+      0.0189629895,
+      0.0136693021,
+      0.0364416871,
+      0.7823812586
+     ],
+     "marginal_std_nonlinear": [
+      0.0426166368,
+      0.0136456111,
+      0.0294012197,
+      0.559968362
+     ],
+     "model": "sanger",
+     "nonlinear_sample_covariance": [
+      [
+       0.0018161777,
+       -3.55543e-05,
+       -8.4042e-05,
+       0.0004018117
+      ],
+      [
+       -3.55543e-05,
+       0.0001862027,
+       0.0002717755,
+       -0.0049918775
+      ],
+      [
+       -8.4042e-05,
+       0.0002717755,
+       0.0008644317,
+       -0.0163181802
+      ],
+      [
+       0.0004018117,
+       -0.0049918775,
+       -0.0163181802,
+       0.3135645665
+      ]
+     ],
+     "nonlinear_sample_mean": [
+      0.0354980245,
+      -0.000236848,
+      0.0018414272,
+      -0.0792748861
+     ],
+     "principal_alignment": 0.9997175703,
+     "principal_angle": 0.0237673307,
+     "sample_count": 256,
+     "status_1pct": "FAIL",
+     "status_5pct": "FAIL",
+     "structural_zero_leakage": [
+      null,
+      null,
+      null,
+      null
+     ]
+    },
+    "sample_count": 256,
+    "terminal": {
+     "classification_counts": {
+      "TOPOLOGY_CHANGED": 21,
+      "TOPOLOGY_PRESERVED": 235
+     },
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL",
+     "terminal_gate_status": "DOMAIN_GATE_FAIL",
+     "terminal_kind": "srti"
+    }
+   }
+  ],
+  "sanger|0.03": [
+   {
+    "fixed_time": {
+     "T": 600.0,
+     "alpha": 0.03,
+     "classification_counts": {
+      "TOPOLOGY_CHANGED": 13,
+      "TOPOLOGY_PRESERVED": 243
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "SWITCH_SIGNATURE_CHANGED ['atmosphere_exit']": 13
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 243
+      }
+     },
+     "domain_gate_status": "DOMAIN_GATE_FAIL",
+     "model": "sanger",
+     "sample_count": 256,
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL"
+    },
+    "sample_count": 256,
+    "terminal": {
+     "classification_counts": {
+      "TOPOLOGY_CHANGED": 86,
+      "TOPOLOGY_PRESERVED": 170
+     },
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL",
+     "terminal_gate_status": "DOMAIN_GATE_FAIL",
+     "terminal_kind": "srti"
+    }
+   }
+  ],
+  "sanger|0.1": [
+   {
+    "fixed_time": {
+     "T": 600.0,
+     "alpha": 0.1,
+     "classification_counts": {
+      "TOPOLOGY_CHANGED": 107,
+      "TOPOLOGY_PRESERVED": 149
+     },
+     "classification_detail_counts": {
+      "TOPOLOGY_CHANGED": {
+       "SRTI_BEFORE_T": 23,
+       "SWITCH_SIGNATURE_CHANGED ['atmosphere_exit']": 84
+      },
+      "TOPOLOGY_PRESERVED": {
+       "_": 149
+      }
+     },
+     "domain_gate_status": "DOMAIN_GATE_FAIL",
+     "model": "sanger",
+     "sample_count": 256,
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL"
+    },
+    "sample_count": 256,
+    "terminal": {
+     "classification_counts": {
+      "NUMERICAL_FAILURE": 8,
+      "TOPOLOGY_CHANGED": 152,
+      "TOPOLOGY_PRESERVED": 96
+     },
+     "status_1pct": "DOMAIN_GATE_FAIL",
+     "status_5pct": "DOMAIN_GATE_FAIL",
+     "terminal_gate_status": "DOMAIN_GATE_FAIL",
      "terminal_kind": "srti"
     }
    }

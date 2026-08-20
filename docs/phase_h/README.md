@@ -1,7 +1,7 @@
 # Phase H — Topology-Aware Uncertainty & Risk Propagation
 
-状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / ACCEPTED · H1 COMPLETE / ACCEPTED · H2 COMPLETE / READY FOR REVIEW · H3 PENDING**
-（2026-08-19；H0/H0R/H1 经人工验收通过，H2 完成非线性 MC 验证与 alpha validity audit，等待人工验收后进入 H3）。
+状态：**H0 COMPLETE / ACCEPTED · H0R COMPLETE / ACCEPTED · H1 COMPLETE / ACCEPTED · H2 COMPLETE / SCIENTIFICALLY VALIDATED · H2R COMPLETE / READY FOR REVIEW · H3 PENDING**
+（2026-08-19；H0/H0R/H1 经人工验收通过；H2 完成非线性 MC 验证，H2R 修正 endpoint-scoped fixed-time gate 与 terminal joint metric 后重新聚合，等待人工验收后进入 H3）。
 
 分支：`feature/phase-h-uncertainty-risk`
 上游冻结基线：`phase-g-v1.0` = `predictability-v1.0` =
@@ -41,7 +41,8 @@ interception analysis、robust optimization、control redesign。
 | **H0** | Uncertainty / Risk Protocol Freeze（random-variable semantics · covariance convention · canonical-A scaling · synthetic family · linear formulas · topology RV · mixture · MC / RNG / CI protocol · grazing validity inheritance · risk taxonomy · claim boundaries · machine-readable schema） | **COMPLETE / ACCEPTED** |
 | **H0R** | Frozen-State / Regression Contract Corrective Patch（修正 stale Phase-G0 live-tag absence 测试 → final-freeze manifest lifecycle semantics；`phase_h0_done = true`、`h1_started = false`；机器可读 manifest 仅 lifecycle 字段变更） | **COMPLETE / ACCEPTED** |
 | **H1** | fixed-topology linear uncertainty：`P(T) = Phi P0 Phi^T`、terminal-time variance、terminal-state covariance、rank / eigenspectrum（per-alpha response coefficients；linear kernel `K_x = tilde Phi tilde Phi^T`；G5 SVD closure） | **COMPLETE / ACCEPTED** |
-| **H2** | nonlinear Monte-Carlo validation（Qian/Sanger baseline T600 + deep fixed-topology Sanger cases；linear covariance vs nonlinear MC；antithetic/CRN；pair bootstrap；1% / 5% alpha validity brackets） | **COMPLETE / READY FOR REVIEW**（Qian 1% ~1e-2 / Sanger 1% ~3e-4；Sanger T600 首个 limiter 为 nonlinear mean shift） |
+| **H2** | nonlinear Monte-Carlo validation（Qian/Sanger baseline T600 + deep fixed-topology Sanger cases；linear covariance vs nonlinear MC；antithetic/CRN；pair bootstrap；1% / 5% alpha validity brackets） | **COMPLETE / SCIENTIFICALLY VALIDATED**（Qian 1% ~1e-2 / Sanger 1% ~3e-4；Sanger T600 首个 limiter 为 nonlinear mean shift） |
+| **H2R** | Endpoint-Scoped Fixed-Time Gate & Terminal Joint-Metric Corrective Patch（fixed-time classification 严格 endpoint-scoped 到 [0,T]：future terminal/grazing/failure 不再污染 T；true-switch signature 分类 + classification_detail_counts；`E_H2_terminal` 与 pair-bootstrap 正式纳入 state-time cross-covariance（numerical-zero guard）；cache-only reaggregation，brackets UNCHANGED，sample-bank SHA 逐位不变） | **COMPLETE / READY FOR REVIEW** |
 | **H3** | grazing / topology-transition risk（B0–B4 topology probability、`P(N)` / `P(N+1)`、uncertainty amplitude vs topology transition、linearization breakdown）—— Phase H 核心创新阶段 | PENDING |
 | **H4** | topology-conditioned mixture uncertainty（within-topology covariance + between-topology separation；mixture mean/covariance；non-Gaussian output diagnostics） | future |
 | **H5** | cross-model common-time uncertainty synthesis（Qian vs Sanger，same T / same input law / same canonical A；不做 optimization） | future |
@@ -139,7 +140,14 @@ interception analysis、robust optimization、control redesign。
 - risk taxonomy 冻结（仅统计研究风险）；
 - **H1 COMPLETE / ACCEPTED**：固定拓扑线性 covariance 传播已完成
   （per-alpha response coefficients、G5 SVD closure 全部 PASS）；
-- **H2 COMPLETE / READY FOR REVIEW**：非线性 MC 验证完成（antithetic/CRN、
-  sample-matched comparator、pair bootstrap、REF-0.1 subset、deep N0-N5
-  generality）——Qian T600 1% 有效至 ~1e-2、Sanger T600 1% 有效至 ~3e-4；
+- **H2 COMPLETE / SCIENTIFICALLY VALIDATED**：非线性 MC 验证完成
+  （antithetic/CRN、sample-matched comparator、pair bootstrap、REF-0.1 subset、
+  deep N0-N5 generality）——Qian T600 1% 有效至 ~1e-2、Sanger T600 1% 有效至
+  ~3e-4；
+- **H2R COMPLETE / READY FOR REVIEW**：fixed-time gate 严格 endpoint-scoped
+  （future terminal/grazing/failure 不再污染 T600；pre-T 事件正确分类；
+  true-switch signature + `classification_detail_counts`）；terminal
+  `E_H2_terminal` 与 bootstrap 正式纳入 state-time cross covariance
+  （numerical-zero guard）；cache-only reaggregation 后 **fixed-time /
+  terminal brackets UNCHANGED**、deep UNCHANGED、sample-bank SHA-256 逐位不变；
   **topology probability / P(N) / uncertainty maps 仍未被生产**（H3 未启动）。

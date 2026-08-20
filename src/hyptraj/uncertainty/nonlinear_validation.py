@@ -71,6 +71,13 @@ def _state_at_T(segments, T: float):
     return None
 
 
+# True-switch (hybrid) event kinds only -- pullout / VAC apogee / synthetic
+# initial entry are DIAGNOSTIC metadata and are never part of the signature
+# (H2R §8).
+SANGER_TRUE_SWITCH_EVENTS = ("atmosphere_exit", "atmosphere_entry")
+QIAN_TRUE_SWITCH_EVENT = "qian_capture"
+
+
 def extract_sample_observations(model: str, traj, segments, T: float) -> dict:
     """Pure observation extractor: fixed-time state + terminal + switch info."""
     state_T = None
@@ -81,18 +88,21 @@ def extract_sample_observations(model: str, traj, segments, T: float) -> dict:
     switches = 0
     mode_at_T = None
     terminal_switches = 0
+    signature_at_T: tuple[str, ...] = ()
     if model == "qian":
-        # true switch = capture; mode at T from mode_sequence.
-        captured_at_T = bool(getattr(traj, "capture_event", None) is not None)
-        mode_seq = tuple(getattr(traj, "mode_sequence", ()))
-        switches = 1 if (captured_at_T and traj.capture_event.time_s <= T) else 0
-        mode_at_T = "QEG_GLIDE" if (captured_at_T and traj.capture_event.time_s <= T) else "ENTRY_CAPTURE"
+        # true switch = capture; mode at T from mode_sequence semantics.
+        captured = getattr(traj, "capture_event", None)
+        captured_at_T = captured is not None and captured.time_s <= T
+        switches = 1 if captured_at_T else 0
+        mode_at_T = "QEG_GLIDE" if captured_at_T else "ENTRY_CAPTURE"
+        signature_at_T = (QIAN_TRUE_SWITCH_EVENT,) if captured_at_T else ()
         terminal_switches = switches
     else:
         for e in getattr(traj, "events", ()):
-            if e.kind in ("atmosphere_exit", "atmosphere_entry"):
+            if e.kind in SANGER_TRUE_SWITCH_EVENTS:
                 if e.time <= T:
                     switches += 1
+                    signature_at_T = signature_at_T + (e.kind,)
                 terminal_switches += 1
         for seg in segments:
             if seg.t_start <= T <= seg.t_end:
@@ -106,6 +116,7 @@ def extract_sample_observations(model: str, traj, segments, T: float) -> dict:
         "switches_at_T": int(switches),
         "mode_at_T": mode_at_T,
         "terminal_switches": int(terminal_switches),
+        "true_switch_signature_at_T": signature_at_T,
         "success": bool(getattr(traj, "success", True)),
     }
 
@@ -113,6 +124,23 @@ def extract_sample_observations(model: str, traj, segments, T: float) -> dict:
 def _obs_state_T_finite(obs: dict) -> bool:
     st = obs.get("state_T")
     return st is not None and bool(np.all(np.isfinite(st)))
+
+
+def signature_from_observables(model: str, switches_at_T: int,
+                               mode_at_T: str | None) -> tuple[str, ...]:
+    """Deterministic true-switch signature reconstructed from observables.
+
+    Used for cache-only reaggregation (H2R §20): the frozen Sanger state
+    machine alternates ``atmosphere_exit / atmosphere_entry`` starting at
+    ATM, so the signature is uniquely determined by the switch count; Qian
+    has a single ``qian_capture`` switch.  The LIVE observation path
+    (:func:`extract_sample_observations`) reads the actual structured event
+    records instead; the two agree.
+    """
+    n = int(switches_at_T)
+    if model == "qian":
+        return (QIAN_TRUE_SWITCH_EVENT,) if n >= 1 else ()
+    return tuple(SANGER_TRUE_SWITCH_EVENTS[i % 2] for i in range(n))
 
 
 # ---------------------------------------------------------------------------
@@ -127,6 +155,31 @@ SANGER_FIXED_FAILURE_KINDS = {
 QIAN_TERMINAL_KIND_CHANGED = {
     TERMINAL_GROUND_BEFORE_CAPTURE, TERMINAL_GROUND_AFTER_CAPTURE_BEFORE_RTI,
 }
+ALL_FIXED_FAILURE_KINDS = QIAN_FIXED_FAILURE_KINDS | SANGER_FIXED_FAILURE_KINDS
+
+
+def _pre_T_classification(
+    model: str, tkind: str
+) -> tuple[SampleClassification, str]:
+    """Classify a terminal / failure that occurred AT OR BEFORE T.
+
+    When the trajectory already ended by T, ``x(T)`` is not a well-defined
+    fixed-time mid-flight state; the pre-T event itself is classified.
+    """
+    if model == "qian":
+        if tkind == TERMINAL_RTI:
+            return (SampleClassification.TOPOLOGY_CHANGED, "RTI_BEFORE_T")
+        if tkind in QIAN_TERMINAL_KIND_CHANGED:
+            return (SampleClassification.TERMINAL_KIND_CHANGED, f"{tkind}_BEFORE_T")
+        return (SampleClassification.NUMERICAL_FAILURE, f"{tkind}_BEFORE_T")
+    # sanger
+    if tkind == TERMINAL_SRTI:
+        return (SampleClassification.TOPOLOGY_CHANGED, "SRTI_BEFORE_T")
+    if tkind == TERMINAL_GRAZING_OR_UNRESOLVED_EVENT:
+        return (SampleClassification.GRAZING_CROSSED, "GRAZING_BEFORE_T")
+    if tkind == TERMINAL_GROUND_BEFORE_SRTI:
+        return (SampleClassification.TERMINAL_KIND_CHANGED, f"{tkind}_BEFORE_T")
+    return (SampleClassification.NUMERICAL_FAILURE, f"{tkind}_BEFORE_T")
 
 
 def classify_fixed_time_sample(
@@ -134,51 +187,55 @@ def classify_fixed_time_sample(
     obs: dict,
     *,
     T: float,
-    nominal_switches_at_T: int,
+    nominal_signature: tuple[str, ...],
     nominal_mode_at_T: str,
 ) -> tuple[SampleClassification, str]:
     """Classify one nonlinear sample for the fixed-time T validation gate.
 
-    Returning ``TOPOLOGY_PRESERVED`` means the sample is inside the same
-    fixed-topology / event-order domain as the nominal trajectory at time T.
-    Any other class excludes the alpha from the ordinary H1-covariance
-    acceptance population (H2 §23); the counts are still recorded.
+    H2R ENDPOINT-SCOPED RULE (H2R §3): classification may only depend on the
+    trajectory history on ``[0, T]``.  Any event / terminal / numerical
+    outcome STRICTLY AFTER T cannot retroactively invalidate an otherwise
+    well-defined fixed-time state and topology at T.  This is consistent
+    with the Phase-G G4R endpoint semantics.
+
+    Order (H2R §4):
+    1. Did a terminal / failure occur at or before T?
+         -> classify that pre-T event (x(T) is then not a mid-flight state).
+    2. Otherwise (terminal_time > T): ignore ALL future terminal semantics.
+    3. Is a finite physical state x(T) available?
+         - if not -> NUMERICAL_FAILURE / NONPHYSICAL_STATE (never fabricate).
+    4. Compare the TRUE-SWITCH SIGNATURE through T and the mode at T:
+         exact same signature + same mode      -> TOPOLOGY_PRESERVED
+         same event count, different order     -> EVENT_ORDER_CHANGED
+         different count / missing / extra     -> TOPOLOGY_CHANGED
     """
-    tkind = obs["terminal_kind"]
-    t_time = obs["terminal_time"]
+    tkind = obs.get("terminal_kind")
+    t_time = obs.get("terminal_time", np.nan)
+    t_time = float(t_time) if np.isfinite(t_time) else float("inf")
 
+    if t_time <= T:
+        # terminal (or failure) already ended the trajectory by T.
+        return _pre_T_classification(model, tkind)
+
+    # terminal_time > T: future terminal kind / grazing / failure MUST NOT
+    # invalidate the fixed-time state at T (H2R §3, §6).
     if not _obs_state_T_finite(obs):
-        return (SampleClassification.NONPHYSICAL_STATE, "NON_FINITE_STATE_AT_T")
+        # no finite state at T actually available -> classify by cause.
+        if tkind in ALL_FIXED_FAILURE_KINDS:
+            return (SampleClassification.NUMERICAL_FAILURE, "NO_FINITE_STATE_AT_T")
+        return (SampleClassification.NONPHYSICAL_STATE, "NO_FINITE_STATE_AT_T")
 
-    if model == "qian":
-        if tkind in QIAN_FIXED_FAILURE_KINDS:
-            return (SampleClassification.NUMERICAL_FAILURE, f"{tkind}")
-        if t_time <= T:
-            if tkind == TERMINAL_RTI:
-                return (SampleClassification.TOPOLOGY_CHANGED, "RTI_BEFORE_T600")
-            return (SampleClassification.TERMINAL_KIND_CHANGED, f"{tkind}_BEFORE_T600")
-        if obs["switches_at_T"] == nominal_switches_at_T and obs["mode_at_T"] == nominal_mode_at_T:
+    sig = tuple(obs.get("true_switch_signature_at_T") or ())
+    if tuple(sig) == tuple(nominal_signature):
+        if obs.get("mode_at_T") == nominal_mode_at_T:
             return (SampleClassification.TOPOLOGY_PRESERVED, "")
-        return (SampleClassification.TOPOLOGY_CHANGED, "QIAN_TOPOLOGY_MISMATCH_AT_T")
-
-    # sanger
-    if tkind == TERMINAL_GRAZING_OR_UNRESOLVED_EVENT:
-        return (SampleClassification.GRAZING_CROSSED, f"{tkind}")
-    if tkind in SANGER_FIXED_FAILURE_KINDS:
-        return (SampleClassification.NUMERICAL_FAILURE, f"{tkind}")
-    if tkind in (TERMINAL_SRTI, TERMINAL_GROUND_BEFORE_SRTI) and t_time <= T:
-        if tkind == TERMINAL_SRTI:
-            return (SampleClassification.TOPOLOGY_CHANGED, "SRTI_BEFORE_T600")
-        return (SampleClassification.TERMINAL_KIND_CHANGED, f"{tkind}_BEFORE_T600")
-    if tkind == TERMINAL_GROUND_BEFORE_SRTI:
-        return (SampleClassification.TERMINAL_KIND_CHANGED, f"{tkind}")
-    # terminal_time > T (mid-flight)
-    if obs["switches_at_T"] == nominal_switches_at_T:
-        if obs["mode_at_T"] == nominal_mode_at_T:
-            return (SampleClassification.TOPOLOGY_PRESERVED, "")
-        return (SampleClassification.EVENT_ORDER_CHANGED, f"mode_at_T={obs['mode_at_T']}")
+        return (SampleClassification.EVENT_ORDER_CHANGED,
+                f"mode_at_T={obs.get('mode_at_T')}")
+    if len(sig) == len(nominal_signature):
+        return (SampleClassification.EVENT_ORDER_CHANGED,
+                f"SWITCH_SIGNATURE_ORDER_CHANGED {list(sig)}")
     return (SampleClassification.TOPOLOGY_CHANGED,
-            f"switches_at_T={obs['switches_at_T']}")
+            f"SWITCH_SIGNATURE_CHANGED {list(sig)}")
 
 
 def classify_terminal_sample(
@@ -231,6 +288,24 @@ def classification_counts(classifications: Sequence[SampleClassification]) -> di
     for c in classifications:
         counts[c.value] = counts.get(c.value, 0) + 1
     return counts
+
+
+def classification_detail_counts(
+    classifications: Sequence[tuple[SampleClassification, str]],
+) -> dict:
+    """Per-class detail-reason counts (H2R §10).
+
+    ``classifications`` is a sequence of ``(SampleClassification, detail)``
+    pairs; the returned dict maps each class to a dict of ``detail ->
+    count`` (machine-readable, e.g. ``{"TOPOLOGY_CHANGED":
+    {"SWITCH_SIGNATURE_CHANGED [...]": 13}}``).
+    """
+    out: dict[str, dict] = {}
+    for c, detail in classifications:
+        key = c.value
+        sub = out.setdefault(key, {})
+        sub[detail if detail else "_"] = sub.get(detail if detail else "_", 0) + 1
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -369,17 +444,63 @@ def terminal_time_metrics(
     }
 
 
+def _cross_cov(z: np.ndarray, d: np.ndarray) -> np.ndarray:
+    """Sample ``Cov(z_T, delta t_T)`` (scaled state, shape (4,))."""
+    z = np.asarray(z, dtype=float)
+    d = np.asarray(d, dtype=float)
+    return np.asarray([np.mean((z[:, j] - z[:, j].mean()) * (d - d.mean()))
+                       for j in range(4)])
+
+
 def cross_covariance_metrics(
-    cross_L: np.ndarray, cross_N: np.ndarray
+    cross_L: np.ndarray,
+    cross_N: np.ndarray,
+    *,
+    sigma_t_L: float,
+    P_z_L: np.ndarray,
 ) -> dict:
-    """Norm-relative mismatch of the scaled state-time cross covariance."""
-    nL = float(np.linalg.norm(cross_L))
-    rel = float(np.linalg.norm(cross_N - cross_L) / max(nL, SCALED_EPS))
+    """State-time cross-covariance mismatch with a numerical-zero guard (H2R §13-§15).
+
+    ``cross_L`` / ``cross_N`` are the sample-matched linear / nonlinear
+    ``Cov(Z_T, t_T)`` vectors (shape (4,), units seconds since the scaled
+    state is dimensionless).  A natural scale of the same units is
+    ``c_scale = sigma_t,L * sqrt(tr(P_z,L))`` and a pure numerical-zero
+    materiality criterion ``c_zero = 100 * eps_mach * max(c_scale, 1e-300)``:
+
+    * ``||C_L|| > c_zero``      -> RELATIVE mode: ``E_cross_composite =
+      E_cross_rel = ||C_N - C_L|| / ||C_L||``;
+    * ``||C_L|| <= c_zero``     -> ABSOLUTE_NORMALIZED mode: the relative
+      mismatch is UNDEFINED (null) and ``E_cross_composite = E_cross_absnorm =
+      ||C_N - C_L|| / max(c_scale, 1e-300)`` (no unstable division).
+
+    ``c_zero`` is a numerical materiality guard, NOT a scientific acceptance
+    threshold (H2R §14).
+    """
+    cL = np.asarray(cross_L, dtype=float)
+    cN = np.asarray(cross_N, dtype=float)
+    nL = float(np.linalg.norm(cL))
+    Pz = _sym(P_z_L)
+    c_scale = float(sigma_t_L) * float(np.sqrt(max(float(np.trace(Pz)), 0.0)))
+    c_zero = 100.0 * np.finfo(float).eps * max(c_scale, 1e-300)
+    diff = float(np.linalg.norm(cN - cL))
+    if nL > c_zero:
+        mode = "RELATIVE"
+        E_cross_rel = float(diff / max(nL, SCALED_EPS))
+        E_cross_composite = E_cross_rel
+    else:
+        mode = "ABSOLUTE_NORMALIZED"
+        E_cross_rel = None
+        E_cross_composite = float(diff / max(c_scale, 1e-300))
     return {
-        "linear_state_time_cross_cov": np.asarray(cross_L),
-        "nonlinear_state_time_cross_cov": np.asarray(cross_N),
-        "E_cross_rel": rel,
+        "linear_state_time_cross_cov": cL,
+        "nonlinear_state_time_cross_cov": cN,
         "linear_cross_norm": nL,
+        "cross_natural_scale": c_scale,
+        "cross_zero_criterion": c_zero,
+        "cross_metric_mode": mode,
+        "E_cross_rel": E_cross_rel,
+        "E_cross_absnorm": float(diff / max(c_scale, 1e-300)),
+        "E_cross_composite": float(E_cross_composite),
     }
 
 
@@ -401,15 +522,33 @@ def composite_terminal_discrepancy(
     zT_N: np.ndarray,
     P_T_H1: np.ndarray,
 ) -> dict:
-    """Composite terminal discrepancy ``E_H2_T`` (H2 §48)."""
+    """Composite terminal discrepancy ``E_H2_terminal`` (H2R §16).
+
+    SINGLE SOURCE OF TRUTH for the terminal composite:
+
+    .. math::
+        E_{H2,T} = max(E_{t,mu}, E_{t,sigma}, E_{mu,T}, E_{P,T},
+                       E_{sigma1,T}, E_{marginal,T}, E_{zero,T},
+                       E_{times})
+
+    with ``E_times = E_cross_composite`` from
+    :func:`cross_covariance_metrics` (numerical-zero guarded).  The
+    generator and the bootstrap statistic call THIS function; they never
+    carry a second max-list (H2R §16, §17).
+    """
     tt = terminal_time_metrics(dt_L, dt_N)
     ts = fixed_time_metrics(zT_L, zT_N, P_T_H1)
-    ts_mod = dict(ts)
-    ts_mod["E_mu"] = ts["E_mu"]
+    cross_L = _cross_cov(zT_L, dt_L)
+    cross_N = _cross_cov(zT_N, dt_N)
+    _, Pz_L = ensemble_mean_cov(zT_L)
+    cm = cross_covariance_metrics(
+        cross_L, cross_N, sigma_t_L=tt["linear_terminal_time_std"], P_z_L=Pz_L)
+    E_cross = cm["E_cross_composite"]
     E_H2_T = max(
         tt["E_t_mu"], tt["E_t_sigma"],
         ts["E_mu"], ts["E_cov"], ts["E_sigma1"],
         ts["E_marginal_max"], ts["E_zero_max"],
+        E_cross,
     )
     return {
         "terminal_time": tt,
@@ -418,6 +557,8 @@ def composite_terminal_discrepancy(
                             "analytic_H1_covariance", "marginal_relative_errors",
                             "structural_zero_leakage", "marginal_std_linear",
                             "marginal_std_nonlinear", "structural_zero_mask")},
+        "cross": cm,
+        "E_cross_composite": float(E_cross),
         "E_H2_terminal": float(E_H2_T),
     }
 
