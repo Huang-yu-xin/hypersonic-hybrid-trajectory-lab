@@ -1,0 +1,381 @@
+{
+ "schema_version": "h3-sample-schema-v1",
+ "schema_kind": "sample-record-schema",
+ "status": "FROZEN",
+ "freeze_stage": "H3-0",
+ "date": "2026-08-20",
+ "authoritative_doc": "docs/phase_h/h3_benchmark_protocol.md",
+ "source_definition": "H3-0_Experiment_Task_RareTopo_Benchmark_Definition_Freeze.md",
+ "upstream_frozen": {
+  "branch": "feature/phase-h-uncertainty-risk",
+  "ml_b1_snapshot": "ml-b1-first-order-geometry-v1",
+  "phase_f_tag": "phase-f-v1.0",
+  "phase_g_tag": "phase-g-v1.0",
+  "canonical_scale": "S_A = diag(1e5, 1, 7e3, 0.1) (frozen)"
+ },
+ "event_definition": {
+  "random_input": "X0 = xbar0 + deltaX0",
+  "uncertainty_law": "deltaX0 ~ N(0, P0)",
+  "p0": "P0 = S_A (alpha^2 I) S_A^T with S_A = diag(1e5, 1, 7e3, 0.1)",
+  "nominal_topology": "Z0 = T(xbar0)",
+  "sample_topology": "Z = T(X0)",
+  "rare_event": "A = {Z != Z0}",
+  "event_scope": "topology transition only",
+  "excluded_events": [
+   "terminal state error",
+   "range error",
+   "energy error"
+  ]
+ },
+ "topology_label_protocol": {
+  "required_fields": [
+   "topology_id",
+   "event_sequence",
+   "switch_signature",
+   "mode_sequence",
+   "terminal_event",
+   "critical_event",
+   "skip_count"
+  ],
+  "forbidden_minimal_label": "success/failure only",
+  "forbidden_reason": "H3 studies topology transition, not ordinary failure classification.",
+  "regime_encoding": "SRTI_N{skip_count}",
+  "allowed_regimes": "SRTI_N[0-9]+ (regex; skip_count = int(group(1)))",
+  "allowed_switch_names": [
+   "sanger_atmosphere_exit",
+   "sanger_atmosphere_entry"
+  ],
+  "topology_id_encoding": "<regime>:<'+'-joined switch_signature or 'none'>",
+  "mode_count_invariant": "len(mode_sequence) == len(switch_signature) + 1",
+  "shared_with_oracle": [
+   "event_sequence",
+   "switch_signature"
+  ]
+ },
+ "input": {
+  "description": "random input of one H3 sample (Task 3).",
+  "required": [
+   "sample_id",
+   "x0",
+   "delta_x",
+   "whitened_u",
+   "alpha",
+   "uncertainty_scale"
+  ],
+  "fields": {
+   "sample_id": {
+    "type": "string",
+    "required": true,
+    "description": "unique sample identifier; CRN-compatible with the H2 sample bank when applicable."
+   },
+   "x0": {
+    "type": "array[4]",
+    "required": true,
+    "description": "nominal initial state xbar0 = [r, theta, v, gamma] (physical units)."
+   },
+   "delta_x": {
+    "type": "array[4]",
+    "required": true,
+    "description": "deltaX0 = X0 - xbar0; deltaX0 ~ N(0, P0)."
+   },
+   "whitened_u": {
+    "type": "array[4]",
+    "required": true,
+    "description": "standardized input u = L0^{-1} deltaX0 with P0 = L0 L0^T; u ~ N(0, alpha^2 I)."
+   },
+   "alpha": {
+    "type": "number",
+    "required": true,
+    "description": "synthetic dimensionless uncertainty amplitude (NOT numerically frozen; ALPHA_STATUS = PENDING_NUMERICAL_AUDIT)."
+   },
+   "uncertainty_scale": {
+    "type": "number",
+    "required": true,
+    "description": "numeric covariance scale of P0 (alpha^2 for the canonical synthetic family)."
+   }
+  }
+ },
+ "exact_simulator_output": {
+  "description": "output of the exact real hybrid simulator oracle (Task 3); never sign(b).",
+  "required": [
+   "topology_label",
+   "nominal_topology",
+   "transition_flag",
+   "transition_channel",
+   "event_sequence",
+   "switch_signature",
+   "terminal_state",
+   "simulation_status"
+  ],
+  "simulation_status_allowed": [
+   "COMPLETE",
+   "MAX_TIME_TERMINATED",
+   "NONPHYSICAL",
+   "FAILED"
+  ],
+  "fields": {
+   "topology_label": {
+    "type": "string",
+    "required": true,
+    "description": "exact sample topology from the real hybrid simulator: regime label SRTI_N{skip_count}."
+   },
+   "nominal_topology": {
+    "type": "string",
+    "required": true,
+    "description": "nominal topology Z0 = T(xbar0)."
+   },
+   "transition_flag": {
+    "type": "boolean",
+    "required": true,
+    "description": "I_A = 1[Z != Z0]; transition_flag == (topology_label != nominal_topology)."
+   },
+   "transition_channel": {
+    "type": "string|null",
+    "required": true,
+    "description": "event channel carrying the topology transition (e.g. atmosphere_exit); null when no transition."
+   },
+   "event_sequence": {
+    "type": "array[string]",
+    "required": true,
+    "description": "full event-kind sequence of the trajectory."
+   },
+   "switch_signature": {
+    "type": "array[string]",
+    "required": true,
+    "description": "Phase-G0 switch taxonomy names of the executed switches."
+   },
+   "terminal_state": {
+    "type": "array[4]|null",
+    "required": true,
+    "description": "terminal state [r, theta, v, gamma] at the simulation horizon / terminal event; null on failure."
+   },
+   "simulation_status": {
+    "type": "string",
+    "required": true,
+    "description": "oracle status; one of ['COMPLETE', 'MAX_TIME_TERMINATED', 'NONPHYSICAL', 'FAILED']."
+   }
+  }
+ },
+ "geometry_information": {
+  "description": "first-order topology geometry from the frozen ML-B1 pipeline (Task 3).",
+  "required": [
+   "margin_b",
+   "gradient_a",
+   "beta_local",
+   "design_direction",
+   "u_star",
+   "critical_guard",
+   "critical_time",
+   "d"
+  ],
+  "fields": {
+   "margin_b": {
+    "type": "number",
+    "required": true,
+    "description": "b = sigma * G(x*(t*; x0)): virtual topology margin at the critical extremum (ML-B1 Goal A; nominal.b)."
+   },
+   "gradient_a": {
+    "type": "array[4]",
+    "required": true,
+    "description": "a = (Phi*)^T n* = d b / d x0: analytic first-order topology gradient (ML-B1 Goal C; analytic_gradient.a_raw)."
+   },
+   "beta_local": {
+    "type": "number",
+    "required": true,
+    "description": "beta_local = b0 / sqrt(a^T P0 a): local FORM-like clearance in whitened units (ML-B1 geometry_direction.beta_local)."
+   },
+   "design_direction": {
+    "type": "array[4]",
+    "required": true,
+    "description": "v_geom = -P0 a / sqrt(a^T P0 a): covariance-weighted geometry direction (ML-B1 geometry_direction.v_geom)."
+   },
+   "u_star": {
+    "type": "array[4]",
+    "required": true,
+    "description": "whitened design direction alpha = L0^T a / ||L0^T a|| (ML-B1 geometry_direction.alpha)."
+   },
+   "critical_guard": {
+    "type": "number",
+    "required": true,
+    "description": "oriented guard value at the critical extremum (ML-B1 nominal.guard_value)."
+   },
+   "critical_time": {
+    "type": "number",
+    "required": true,
+    "description": "t*: time of the tracked critical extremum (ML-B1 nominal.t_star)."
+   },
+   "d": {
+    "type": "number",
+    "required": true,
+    "description": "d = n^T f: oriented guard normal dotted with the vector field at x*; grazing sensitivity, d -> 0 at grazing (derived from n_star, x_star, f(x*); ML-B1 stores n_star and x_star)."
+   }
+  }
+ },
+ "nonlinearity_diagnostics": {
+  "description": "local linear approximation deviation (Task 3-4).",
+  "required": [
+   "linear_prediction",
+   "true_margin",
+   "geometry_error",
+   "epsilon_geo"
+  ],
+  "fields": {
+   "linear_prediction": {
+    "type": "number",
+    "required": true,
+    "description": "g_hat(x) = g(x0) + grad g(x0)^T (x - x0): first-order margin prediction at the sample point."
+   },
+   "true_margin": {
+    "type": "number",
+    "required": true,
+    "description": "g(x): exact margin at the sample point (virtual continuation on the fixed critical mode)."
+   },
+   "geometry_error": {
+    "type": "number",
+    "required": true,
+    "description": "g(x) - g_hat(x): signed first-order approximation deviation."
+   },
+   "epsilon_geo": {
+    "type": "number",
+    "required": true,
+    "description": "epsilon_geo = ||g(x) - g_hat(x)||: local half-space approximation deviation (geometry accuracy metric; NOT topology probability)."
+   }
+  }
+ },
+ "geometry_error_definition": {
+  "local_linear_approximation": "g_hat(x) = g(x0) + grad g(x0)^T (x - x0)",
+  "epsilon_geo": "epsilon_geo = ||g(x) - g_hat(x)||",
+  "note": "geometry error is NOT topology probability; it measures the local half-space approximation deviation."
+ },
+ "levels": {
+  "level_0_near_linear": {
+   "purpose": "verify theorem limit",
+   "features": [
+    "small alpha",
+    "small curvature",
+    "single channel"
+   ]
+  },
+  "level_1_moderate_hybrid": {
+   "features": [
+    "finite topology switching",
+    "multiple events",
+    "nonlinear margin"
+   ]
+  },
+  "level_2_grazing_dominated": {
+   "features": [
+    "near grazing",
+    "small n^T f",
+    "large sensitivity"
+   ]
+  },
+  "level_3_multi_channel_topology": {
+   "features": [
+    "multiple transition channels",
+    "Ni -> Nj"
+   ]
+  }
+ },
+ "evaluation_metrics": {
+  "geometry_accuracy": "epsilon_geo",
+  "direction_accuracy": {
+   "formula": "Delta_d = 1 - (d_geo . d_opt) / (||d_geo|| ||d_opt||)",
+   "note": "compares the geometry direction d_geo with the reference optimal direction d_opt."
+  },
+  "sampling_metrics_reserved": {
+   "metrics": [
+    "VRF",
+    "ESS",
+    "relative variance",
+    "simulator calls"
+   ],
+   "note": "reserved for H3-2+; not computed in H3-0."
+  }
+ },
+ "ground_truth_protocol": {
+  "oracle": "exact real hybrid simulator",
+  "indicator": "I_A(x) = 1[T(x) != T(xbar)]",
+  "forbidden": [
+   "sign(b) as event oracle",
+   "margin as event oracle"
+  ],
+  "forbidden_reason": "margin is proposal geometry, not the event oracle."
+ },
+ "experiment_matrix": {
+  "frozen": [
+   {
+    "experiment": "Smooth synthetic",
+    "purpose": "verify theorem limit"
+   },
+   {
+    "experiment": "Qian hybrid",
+    "purpose": "single topology transition"
+   },
+   {
+    "experiment": "Sanger hybrid",
+    "purpose": "multi-switch topology"
+   },
+   {
+    "experiment": "Grazing subset",
+    "purpose": "stress test"
+   },
+   {
+    "experiment": "Multi-channel subset",
+    "purpose": "future extension"
+   }
+  ],
+  "note": "H3 benchmark matrix v1; generation in H3-1."
+ },
+ "claim_boundaries": {
+  "supported": [
+   "topology geometry -> local linear approximation -> Geometry-IS validity",
+   "rare topology transition event A = {Z != Z0} (topology transition only)"
+  ],
+  "not_claimed": [
+   "global optimal IS",
+   "all hybrid systems valid",
+   "Geometry-IS always superior",
+   "topology probability solved",
+   "adaptive proposal solved"
+  ]
+ },
+ "not_implemented_in_h3_0": {
+  "items": [
+   "Geometry-IS sampler",
+   "Importance sampling estimator",
+   "CEM",
+   "Flow model",
+   "Residual learning"
+  ],
+  "note": "H3-0 is definition-only; no sampler, estimator, or proposal implemented."
+ },
+ "git_rule": {
+  "allowed": [
+   "new docs",
+   "schema",
+   "tests"
+  ],
+  "forbidden": [
+   "ML-B1 implementation",
+   "frozen physics",
+   "simulator dynamics",
+   "Geometry-IS sampler"
+  ]
+ },
+ "success_criteria": [
+  "rare topology event formally defined",
+  "dataset schema frozen",
+  "exact oracle defined",
+  "geometry error metric defined",
+  "evaluation protocol frozen",
+  "claim boundaries documented"
+ ],
+ "lifecycle": {
+  "h3_0_definition_freeze": true,
+  "dataset_generated": false,
+  "geometry_is_sampler_implemented": false,
+  "topology_probability_computed": false
+ },
+ "next_stage": "H3-1: rare topology transition dataset generation"
+}
