@@ -1,0 +1,433 @@
+{
+ "schema_version": "h3-2-leakage-point-dataset-v1",
+ "status": "GENERATED",
+ "freeze_stage": "H3-2",
+ "date": "2026-08-20",
+ "ml_b1_snapshot": "ml-b1-first-order-geometry-v1",
+ "design_space": "standardized z ~ N(0, I); rho_L = phi^2/q; x_L = argmax_A rho_L",
+ "experiments": [
+  {
+   "experiment_id": "A_synthetic_multi_mode_recovery",
+   "kind": "synthetic_linear",
+   "anchor": null,
+   "alpha": null,
+   "nominal_topology": "S0",
+   "p_mc": 0.07248,
+   "var_mc": 1.3445329920000002e-06,
+   "point_geometry": [
+    {
+     "mode_id": "mode0",
+     "topology_label": "S1",
+     "probability": 0.0663,
+     "leak": 0.012794762116078422,
+     "leak_fraction": 0.00705544918314067,
+     "coverage_score": 7.541478129713424,
+     "probability_design_point": [
+      -1.5333333333333332,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "leakage_point": [
+      -1.5333333333333332,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "distance_between_points": 0.0,
+     "leakage_density": 0.0024117062378143875,
+     "mpp_density": 0.0024117062378143875
+    },
+    {
+     "mode_id": "mode1",
+     "topology_label": "S2",
+     "probability": 0.00618,
+     "leak": 1.800663429412267,
+     "leak_fraction": 0.9929445508168593,
+     "coverage_score": 0.004045307443365696,
+     "probability_design_point": [
+      2.533333333333333,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "leakage_point": [
+      2.533333333333333,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "distance_between_points": 0.0,
+     "leakage_density": 1.213198116671902e-08,
+     "mpp_density": 1.213198116671902e-08
+    }
+   ],
+   "n_modes": 2,
+   "baseline_m1": {
+    "vrf": 0.1487195708575889,
+    "total_leak": 1.8134581915283454,
+    "p": 0.07288933838261452,
+    "var": 9.040726679392451e-06,
+    "ess": 20577.088330454066
+   },
+   "topology_mixture_m2": {
+    "vrf": 26.13709814541283,
+    "total_leak": 0.01563927885282402,
+    "p": 0.07315030894097414,
+    "var": 5.144155577332029e-08,
+    "ess": 51188.622484843196
+   },
+   "leakage_point_m3": {
+    "probability": {
+     "vrf": 26.237531013564645,
+     "total_leak": 0.01556283041375146,
+     "p": 0.07289651012653638,
+     "var": 5.1244646125616197e-08,
+     "ess": 51279.020539708355
+    },
+    "leak_power1": {
+     "vrf": 0.1715148926877391,
+     "total_leak": 1.5723168911480438,
+     "p": 0.06696666720571964,
+     "var": 7.839161783157011e-06,
+     "ess": 6679.1702246910245
+    },
+    "p05_l05": {
+     "vrf": 5.04058207517355,
+     "total_leak": 0.05868111604163174,
+     "p": 0.07302597817814888,
+     "var": 2.667416127637813e-07,
+     "ess": 37778.93267461083
+    }
+   },
+   "best_m3_strategy": "probability",
+   "leakage_reduction": 0.008581852334095127,
+   "mpp_xl_separation": {
+    "S1": 0.0,
+    "S2": 0.0
+   }
+  },
+  {
+   "experiment_id": "B_synthetic_curvature_beta_kappa",
+   "kind": "synthetic_curved",
+   "anchor": null,
+   "alpha": null,
+   "nominal_topology": "S0",
+   "p_mc": 0.11372,
+   "var_mc": 2.015755232e-06,
+   "point_geometry": [
+    {
+     "mode_id": "mode0",
+     "topology_label": "S1",
+     "probability": 0.06844,
+     "leak": 0.0128265344422772,
+     "leak_fraction": 0.0038935971666816433,
+     "coverage_score": 7.305669199298656,
+     "probability_design_point": [
+      -1.5333333333333332,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "leakage_point": [
+      -1.5333333333333332,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "distance_between_points": 0.0,
+     "leakage_density": 0.0024117062378143875,
+     "mpp_density": 0.0024117062378143875
+    },
+    {
+     "mode_id": "mode1",
+     "topology_label": "S2",
+     "probability": 0.04528,
+     "leak": 3.281436814636729,
+     "leak_fraction": 0.9961064028333184,
+     "coverage_score": 0.02871024734982332,
+     "probability_design_point": [
+      1.2333333333333325,
+      0.8250000000000002,
+      0.0,
+      0.0
+     ],
+     "leakage_point": [
+      1.7666666666666657,
+      0.2625000000000002,
+      0.0,
+      0.0
+     ],
+     "distance_between_points": 0.7751455956428084,
+     "leakage_density": 4.963669523480599e-05,
+     "mpp_density": 4.7567619087597295e-05
+    }
+   ],
+   "n_modes": 2,
+   "baseline_m1": {
+    "vrf": 0.12285896014900245,
+    "total_leak": 3.294263349079006,
+    "p": 0.11335731944555517,
+    "var": 1.640706733603562e-05,
+    "ess": 20895.509395908375
+   },
+   "topology_mixture_m2": {
+    "vrf": 14.588748503402497,
+    "total_leak": 0.040095379811190705,
+    "p": 0.11162884032583864,
+    "var": 1.3817190909349562e-07,
+    "ess": 91927.54905264456
+   },
+   "leakage_point_m3": {
+    "probability": {
+     "vrf": 12.127479648655305,
+     "total_leak": 0.045906864566492324,
+     "p": 0.1125348484361859,
+     "var": 1.6621386226968495e-07,
+     "ess": 87901.37602508708
+    },
+    "leak_power1": {
+     "vrf": 0.1727819509665702,
+     "total_leak": 2.3472698225125366,
+     "p": 0.1182204379612141,
+     "var": 1.1666468752803976e-05,
+     "ess": 19459.809640193012
+    },
+    "p05_l05": {
+     "vrf": 2.3845940545523714,
+     "total_leak": 0.1816742205055449,
+     "p": 0.11229143424373247,
+     "var": 8.453242715051521e-07,
+     "ess": 48065.68350337137
+    }
+   },
+   "best_m3_strategy": "probability",
+   "leakage_reduction": 0.013935396081593398,
+   "mpp_xl_separation": {
+    "S1": 0.0,
+    "S2": 0.7751455956428084
+   }
+  },
+  {
+   "experiment_id": "C1_sanger_b1n1_wide",
+   "kind": "real_sanger",
+   "anchor": "B1_N1_side",
+   "alpha": 8.0,
+   "nominal_topology": "SRTI_N2",
+   "p_mc": 0.484375,
+   "var_mc": 0.0019512176513671875,
+   "point_geometry": [
+    {
+     "mode_id": "mode0",
+     "topology_label": "SRTI_N1",
+     "probability": 0.484375,
+     "leak": 0.3971169390022614,
+     "leak_fraction": 1.0,
+     "coverage_score": 1.032258064516129,
+     "probability_design_point": [
+      0.2859151471406397,
+      0.19000334105249617,
+      -0.3557343653042545,
+      0.4667710126657425
+     ],
+     "leakage_point": [
+      -0.13802172675346414,
+      -0.08977010605057596,
+      -0.3700096055045614,
+      -0.5495914039638737
+     ],
+     "distance_between_points": 1.1363062963703978,
+     "leakage_density": 0.013214814249588341,
+     "mpp_density": 0.013214814249588341
+    }
+   ],
+   "n_modes": 1,
+   "baseline_m1": {
+    "vrf": 1.2494857232990169,
+    "total_leak": 0.3971169390022614,
+    "p": 0.4441058587222998,
+    "var": 0.0015616166035217977,
+    "ess": 125.47178457190392
+   },
+   "topology_mixture_m2": {
+    "vrf": 0.7490289354857277,
+    "total_leak": 0.5453852727197741,
+    "p": 0.4603756493205404,
+    "var": 0.0026049963611911317,
+    "ess": 86.14351213459392
+   },
+   "leakage_point_m3": {
+    "probability": {
+     "vrf": 1.2233649471737302,
+     "total_leak": 0.38498559285698714,
+     "p": 0.4252420083570402,
+     "var": 0.0015949595873863914,
+     "ess": 81.58739579012695
+    },
+    "leak_power1": {
+     "vrf": 0.7739768866152905,
+     "total_leak": 0.5269629425250347,
+     "p": 0.4519638452012773,
+     "var": 0.002521028321530551,
+     "ess": 78.67646600731308
+    },
+    "p05_l05": {
+     "vrf": 0.9555584473681148,
+     "total_leak": 0.4091258353584021,
+     "p": 0.38438810514575183,
+     "var": 0.0020419657811004727,
+     "ess": 86.72035260643824
+    }
+   },
+   "best_m3_strategy": "probability",
+   "leakage_reduction": 0.9694514513136766,
+   "mpp_xl_separation": {
+    "SRTI_N1": 1.1363062963703978
+   }
+  },
+  {
+   "experiment_id": "C2_sanger_b2n_wide",
+   "kind": "real_sanger",
+   "anchor": "B2_N_side",
+   "alpha": 8.0,
+   "nominal_topology": "SRTI_N2",
+   "p_mc": 0.4609375,
+   "var_mc": 0.0019412040710449219,
+   "point_geometry": [
+    {
+     "mode_id": "mode0",
+     "topology_label": "SRTI_N3",
+     "probability": 0.4609375,
+     "leak": 0.3987216050066109,
+     "leak_fraction": 0.9999999999999999,
+     "coverage_score": 1.0847457627118644,
+     "probability_design_point": [
+      -0.11092239552343863,
+      -0.22278267503401636,
+      0.2951993506542797,
+      0.2575958459835363
+     ],
+     "leakage_point": [
+      -0.11092239552343863,
+      -0.22278267503401636,
+      0.2951993506542797,
+      0.2575958459835363
+     ],
+     "distance_between_points": 0.0,
+     "leakage_density": 0.01874594913558028,
+     "mpp_density": 0.01871032547793324
+    }
+   ],
+   "n_modes": 1,
+   "baseline_m1": {
+    "vrf": 1.2382789155047336,
+    "total_leak": 0.39872160500661097,
+    "p": 0.4450401529610354,
+    "var": 0.0015676630254611657,
+    "ess": 125.53633395160283
+   },
+   "topology_mixture_m2": {
+    "vrf": 1.0092617748656278,
+    "total_leak": 0.42493147172901513,
+    "p": 0.42277363135960033,
+    "var": 0.0019233900652814993,
+    "ess": 107.01274800640054
+   },
+   "leakage_point_m3": {
+    "probability": {
+     "vrf": 1.2977083713203779,
+     "total_leak": 0.40217561998615126,
+     "p": 0.4590252242030754,
+     "var": 0.0014958708088395908,
+     "ess": 104.14857480042946
+    },
+    "leak_power1": {
+     "vrf": 1.0355737023096492,
+     "total_leak": 0.41703655689123814,
+     "p": 0.4208300615478649,
+     "var": 0.0018745204389754562,
+     "ess": 99.75394729558425
+    },
+    "p05_l05": {
+     "vrf": 1.0305013006931496,
+     "total_leak": 0.45023163406907946,
+     "p": 0.45728762957696334,
+     "var": 0.0018837473273825111,
+     "ess": 102.23430900820324
+    }
+   },
+   "best_m3_strategy": "probability",
+   "leakage_reduction": 1.008662723404424,
+   "mpp_xl_separation": {
+    "SRTI_N3": 0.0
+   }
+  }
+ ],
+ "summary": {
+  "n_experiments": 4,
+  "per_experiment": {
+   "A_synthetic_multi_mode_recovery": {
+    "n_modes": 2,
+    "m1_vrf": 0.149,
+    "m2_vrf": 26.137,
+    "m3_vrf": {
+     "probability": 26.238,
+     "leak_power1": 0.172,
+     "p05_l05": 5.041
+    },
+    "best_m3": "probability",
+    "leakage_reduction": 0.008581852334095127,
+    "mpp_xl_separation": {
+     "S1": 0.0,
+     "S2": 0.0
+    }
+   },
+   "B_synthetic_curvature_beta_kappa": {
+    "n_modes": 2,
+    "m1_vrf": 0.123,
+    "m2_vrf": 14.589,
+    "m3_vrf": {
+     "probability": 12.127,
+     "leak_power1": 0.173,
+     "p05_l05": 2.385
+    },
+    "best_m3": "probability",
+    "leakage_reduction": 0.013935396081593398,
+    "mpp_xl_separation": {
+     "S1": 0.0,
+     "S2": 0.7751455956428084
+    }
+   },
+   "C1_sanger_b1n1_wide": {
+    "n_modes": 1,
+    "m1_vrf": 1.249,
+    "m2_vrf": 0.749,
+    "m3_vrf": {
+     "probability": 1.223,
+     "leak_power1": 0.774,
+     "p05_l05": 0.956
+    },
+    "best_m3": "probability",
+    "leakage_reduction": 0.9694514513136766,
+    "mpp_xl_separation": {
+     "SRTI_N1": 1.1363062963703978
+    }
+   },
+   "C2_sanger_b2n_wide": {
+    "n_modes": 1,
+    "m1_vrf": 1.238,
+    "m2_vrf": 1.009,
+    "m3_vrf": {
+     "probability": 1.298,
+     "leak_power1": 1.036,
+     "p05_l05": 1.031
+    },
+    "best_m3": "probability",
+    "leakage_reduction": 1.008662723404424,
+    "mpp_xl_separation": {
+     "SRTI_N3": 0.0
+    }
+   }
+  }
+ }
+}
