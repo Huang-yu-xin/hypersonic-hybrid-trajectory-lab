@@ -1,0 +1,388 @@
+{
+ "schema_version": "h3-variance-leakage-dataset-v1",
+ "status": "GENERATED",
+ "freeze_stage": "H3-1",
+ "date": "2026-08-20",
+ "h3_schema": "h3-sample-schema-v1",
+ "ml_b1_snapshot": "ml-b1-first-order-geometry-v1",
+ "seed": 2026,
+ "n_pairs": 128,
+ "n_samples_per_estimator": 256,
+ "design_space": "standardized z ~ N(0, I); delta_x = S_A (alpha z); q(z) = N(z*, I), z* = -beta_eff * alpha_dir",
+ "configs": [
+  {
+   "config_id": "L0_smooth_synthetic",
+   "level": "L0",
+   "anchor": null,
+   "alpha": 1.0,
+   "nominal_topology": "S0",
+   "beta_eff": 2.0,
+   "design_point": [
+    -2.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "epsilon_geo": 0.0,
+   "n_mc": 256,
+   "n_is": 256,
+   "p_mc": 0.0390625,
+   "p_is": 0.021587064959852735,
+   "var_mc": 0.00014662742614746094,
+   "var_is": 4.590842898055979e-06,
+   "ess": 18.785169525654368,
+   "vrf": 31.93910778553351,
+   "total_leak": 0.0016412571554832323,
+   "accepted_rare_events": 128,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "S1",
+     "transition_channel": null,
+     "mode_probability": 0.0390625,
+     "conditional_probability": 1.0,
+     "mode_beta": 2.3732827291972503,
+     "mode_design_point": [
+      -2.3732827291972503,
+      -0.0,
+      -0.0,
+      -0.0
+     ],
+     "mode_direction": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "proposal_density": 0.02362560657553137,
+     "leak_k": 0.0016412571554832323,
+     "leak_fraction": 1.0,
+     "coverage_score": 12.8,
+     "n_events": 128
+    }
+   ],
+   "analytic_leak": 0.0017291912133406754
+  },
+  {
+   "config_id": "L1_B0_N_side",
+   "level": "L1",
+   "anchor": "B0_N_side",
+   "alpha": 1.3187902564470993e-06,
+   "nominal_topology": "SRTI_N0",
+   "beta_eff": 0.5,
+   "design_point": [
+    0.2441895639018621,
+    -0.0,
+    0.377531170585712,
+    -0.21872739224340515
+   ],
+   "epsilon_geo": 5.639632917331383e-07,
+   "n_mc": 256,
+   "n_is": 256,
+   "p_mc": 0.3203125,
+   "p_is": 0.300669763504835,
+   "var_mc": 0.0008504390716552734,
+   "var_is": 0.00041495311362450436,
+   "ess": 188.88705716155383,
+   "vrf": 2.049482323983343,
+   "total_leak": 0.1966303037739265,
+   "accepted_rare_events": 127,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "SRTI_N1",
+     "transition_channel": "atmosphere_exit",
+     "mode_probability": 0.3203125,
+     "conditional_probability": 1.0,
+     "mode_beta": 1.1664452107262657,
+     "mode_design_point": [
+      0.569667494645325,
+      -0.0,
+      0.8807388516591692,
+      -0.5102670382739306
+     ],
+     "mode_direction": [
+      -0.4883791278037242,
+      0.0,
+      -0.755062341171424,
+      0.4374547844868103
+     ],
+     "proposal_density": 0.020285909600909757,
+     "leak_k": 0.19663030377392648,
+     "leak_fraction": 0.9999999999999999,
+     "coverage_score": 1.548780487804878,
+     "n_events": 127
+    }
+   ]
+  },
+  {
+   "config_id": "L2_synthetic_multi_mode",
+   "level": "L2",
+   "anchor": null,
+   "alpha": 1.0,
+   "nominal_topology": "S0",
+   "beta_eff": 1.5,
+   "design_point": [
+    -1.5,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "epsilon_geo": 0.0,
+   "n_mc": 20000,
+   "n_is": 200000,
+   "p_mc": 0.07105,
+   "p_is": 0.07181946597352405,
+   "var_mc": 3.300094875e-06,
+   "var_is": 6.144038668617007e-06,
+   "ess": 21440.549112361132,
+   "vrf": 0.5371214364024886,
+   "total_leak": 1.2339657694161235,
+   "accepted_rare_events": 100005,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "S1",
+     "transition_channel": null,
+     "mode_probability": 0.0653,
+     "conditional_probability": 0.9190710767065446,
+     "mode_beta": 1.9380326554720637,
+     "mode_design_point": [
+      -1.9380326554720637,
+      -0.0,
+      -0.0,
+      -0.0
+     ],
+     "mode_direction": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "proposal_density": 0.02301312815718153,
+     "leak_k": 0.012834696514215755,
+     "leak_fraction": 0.01040117710906094,
+     "coverage_score": 7.656967840735069,
+     "n_events": 100000
+    },
+    {
+     "mode_id": "mode1",
+     "mode_index": 1,
+     "transition_topology": "S2",
+     "transition_channel": null,
+     "mode_probability": 0.00575,
+     "conditional_probability": 0.08092892329345532,
+     "mode_beta": -2.8446594688451228,
+     "mode_design_point": [
+      2.8446594688451228,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mode_direction": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "proposal_density": 2.0172263524944206e-06,
+     "leak_k": 1.2211310729019076,
+     "leak_fraction": 0.9895988228909389,
+     "coverage_score": 0.004347826086956522,
+     "n_events": 5
+    }
+   ],
+   "analytic_leak_s1": 0.012807475930126702,
+   "analytic_leak_s2": 1.5052791383520474
+  },
+  {
+   "config_id": "L2_B1_N1_side",
+   "level": "L2",
+   "anchor": "B1_N1_side",
+   "alpha": 2.8170023591518866e-06,
+   "nominal_topology": "SRTI_N2",
+   "beta_eff": -0.3333333333333333,
+   "design_point": [
+    -0.02222346417191307,
+    0.0,
+    -0.32848642670299005,
+    0.0520950690873133
+   ],
+   "epsilon_geo": 1.5996434134524229e-06,
+   "n_mc": 256,
+   "n_is": 256,
+   "p_mc": 0.35546875,
+   "p_is": 0.36933062344778933,
+   "var_mc": 0.0008949637413024902,
+   "var_is": 0.0005761110507112624,
+   "ess": 227.26582758940432,
+   "vrf": 1.553456994441566,
+   "total_leak": 0.2838895383984159,
+   "accepted_rare_events": 128,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "SRTI_N1",
+     "transition_channel": "atmosphere_exit",
+     "mode_probability": 0.35546875,
+     "conditional_probability": 1.0,
+     "mode_beta": -1.0118110285673239,
+     "mode_design_point": [
+      -0.0674578384263373,
+      0.0,
+      -0.9970985678182717,
+      0.15813109630956082
+     ],
+     "mode_direction": [
+      -0.06667039251573921,
+      0.0,
+      -0.9854592801089702,
+      0.15628520726193992
+     ],
+     "proposal_density": 0.020122430833304783,
+     "leak_k": 0.2838895383984159,
+     "leak_fraction": 1.0,
+     "coverage_score": 1.4065934065934067,
+     "n_events": 128
+    }
+   ]
+  },
+  {
+   "config_id": "L2_B2_N_side",
+   "level": "L2",
+   "anchor": "B2_N_side",
+   "alpha": 3.673086633484524e-06,
+   "nominal_topology": "SRTI_N2",
+   "beta_eff": 0.25,
+   "design_point": [
+    0.024371186188875637,
+    -0.0,
+    0.24354475094850367,
+    -0.0509116840143645
+   ],
+   "epsilon_geo": 9.92878206168557e-06,
+   "n_mc": 256,
+   "n_is": 256,
+   "p_mc": 0.421875,
+   "p_is": 0.413572494079851,
+   "var_mc": 0.0009527206420898438,
+   "var_is": 0.0006868303698990715,
+   "ess": 245.2016479866142,
+   "vrf": 1.3871265509558706,
+   "total_leak": 0.3468707825535907,
+   "accepted_rare_events": 128,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "SRTI_N3",
+     "transition_channel": "atmosphere_exit",
+     "mode_probability": 0.421875,
+     "conditional_probability": 1.0,
+     "mode_beta": 0.8551690012581161,
+     "mode_design_point": [
+      0.08336593181046549,
+      -0.0,
+      0.8330876857211541,
+      -0.17415237588373156
+     ],
+     "mode_direction": [
+      -0.09748474475550255,
+      0.0,
+      -0.9741790037940147,
+      0.203646736057458
+     ],
+     "proposal_density": 0.021091843170033115,
+     "leak_k": 0.3468707825535907,
+     "leak_fraction": 1.0,
+     "coverage_score": 1.1851851851851851,
+     "n_events": 128
+    }
+   ]
+  },
+  {
+   "config_id": "L3_B2_N1_side",
+   "level": "L3",
+   "anchor": "B2_N1_side",
+   "alpha": 1.3221293835201746e-06,
+   "nominal_topology": "SRTI_N3",
+   "beta_eff": -0.5,
+   "design_point": [
+    -0.08656769936663963,
+    0.0,
+    -0.4716219966526315,
+    0.14169942025199805
+   ],
+   "epsilon_geo": 5.189498302818341e-07,
+   "n_mc": 256,
+   "n_is": 256,
+   "p_mc": 0.296875,
+   "p_is": 0.3054372149654477,
+   "var_mc": 0.0008153915405273438,
+   "var_is": 0.0004122642698741336,
+   "ess": 201.50879366461388,
+   "vrf": 1.97783703345499,
+   "total_leak": 0.1988315453736273,
+   "accepted_rare_events": 128,
+   "modes": [
+    {
+     "mode_id": "mode0",
+     "mode_index": 0,
+     "transition_topology": "SRTI_N2",
+     "transition_channel": "atmosphere_exit",
+     "mode_probability": 0.296875,
+     "conditional_probability": 1.0,
+     "mode_beta": -1.1664923388656239,
+     "mode_design_point": [
+      -0.2019611162088153,
+      0.0,
+      -1.100286891871607,
+      0.3305825762913123
+     ],
+     "mode_direction": [
+      -0.17313539873327927,
+      0.0,
+      -0.943243993305263,
+      0.2833988405039961
+     ],
+     "proposal_density": 0.020285272441991742,
+     "leak_k": 0.1988315453736273,
+     "leak_fraction": 1.0,
+     "coverage_score": 1.6842105263157894,
+     "n_events": 128
+    }
+   ]
+  }
+ ],
+ "correlations": {
+  "n_configs": 6,
+  "eps_geo_vs_vrf": -0.2672609918430824,
+  "leak_vs_vrf": -0.4589488387757531,
+  "eps_geo_vs_vrf_spearman": -0.23190841426097938,
+  "leak_vs_vrf_spearman": -1.0
+ },
+ "summary": {
+  "n_configs": 6,
+  "n_modes": 7,
+  "secondary_leak_fractions": [
+   0.0,
+   0.0,
+   0.9895988228909389,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "levels": [
+   "L0",
+   "L1",
+   "L2",
+   "L2",
+   "L2",
+   "L3"
+  ]
+ }
+}
