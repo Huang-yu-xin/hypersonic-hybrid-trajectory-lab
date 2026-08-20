@@ -1,0 +1,5455 @@
+{
+ "schema_version": "ml-b1-first-order-geometry-v1",
+ "status": "GENERATED",
+ "generator": "scripts/run_ml_b1_geometry_gate.py",
+ "solver_label": "REF-0.1",
+ "max_time": 3000.0,
+ "source_phase_f_snapshot": "phase-f-gamma-k-sensitivity-v1",
+ "source_phase_g6_snapshot": "phase-g6-grazing-predictability-v1",
+ "canonical_scale": {
+  "r": 100000.0,
+  "theta": 1.0,
+  "v": 7000.0,
+  "gamma": 0.1
+ },
+ "p0_definition": "P0 = S_A (alpha^2 I) S_A^T with alpha=1",
+ "epsilon_sweep": [
+  1e-08,
+  3e-08,
+  1e-07,
+  3e-07,
+  1e-06
+ ],
+ "anchors": {
+  "B0_N_side": {
+   "branch": "B0",
+   "side": "N_side",
+   "gamma0_deg": -2.046875,
+   "K": 3.984375,
+   "phase_f_reference_phi_m": -0.080928,
+   "expected_regime": "SRTI_N0",
+   "nominal": {
+    "classification": "VALID_MARGIN",
+    "b": 0.08092792797833681,
+    "sigma": -1.0,
+    "initial_state": [
+     6471000.0,
+     0.0,
+     7000.0,
+     -0.03572470812675893
+    ],
+    "K": 3.984375,
+    "channel": "atmosphere_exit",
+    "branch_index": 0,
+    "exact_regime": "SRTI_N0",
+    "prior_event_sequence": [],
+    "prior_switch_signature": [],
+    "critical_segment_id": 0,
+    "critical_mode": "SANGER_ATM",
+    "critical_trigger": "srti",
+    "t_star": 365.86119370713146,
+    "x_star": [
+     6470999.919072072,
+     0.38915507439410557,
+     6726.560008765339,
+     9.834052517622427e-18
+    ],
+    "guard_value": -0.08092792797833681,
+    "guard_derivative": 6.614934438913711e-14,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "solver_label": "REF-0.1",
+    "message": "virtual margin evaluated on the tracked extremum branch."
+   },
+   "topology": {
+    "regime": "SRTI_N0",
+    "skip_count": 0,
+    "true_switch_signature": [],
+    "event_kinds": [
+     "synthetic_initial_entry",
+     "atmospheric_pullout",
+     "srti"
+    ],
+    "terminal_kind": "srti",
+    "terminal_time": 365.86119370713146
+   },
+   "reference_audit": {
+    "production": {
+     "b": 0.08091381937265396,
+     "t_star": 365.8611937377579,
+     "x_star": [
+      6470999.919086181,
+      0.3891550744248927,
+      6726.560008722802,
+      6.071532165918825e-18
+     ],
+     "guard_derivative": 4.0840525458943705e-14,
+     "exact_regime": "SRTI_N0",
+     "event_sequence": [],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.1": {
+     "b": 0.08092792797833681,
+     "t_star": 365.86119370713146,
+     "x_star": [
+      6470999.919072072,
+      0.38915507439410557,
+      6726.560008765339,
+      9.834052517622427e-18
+     ],
+     "guard_derivative": 6.614934438913711e-14,
+     "exact_regime": "SRTI_N0",
+     "event_sequence": [],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.05": {
+     "b": 0.08092796802520752,
+     "t_star": 365.86119370702875,
+     "x_star": [
+      6470999.919072032,
+      0.3891550743940023,
+      6726.560008765504,
+      -4.4350645118235166e-18
+     ],
+     "guard_derivative": -2.983272758152717e-14,
+     "exact_regime": "SRTI_N0",
+     "event_sequence": [],
+     "classification": "VALID_MARGIN"
+    }
+   },
+   "analytic_gradient": {
+    "a_raw": [
+     -0.599390398705272,
+     0.0,
+     -13.238459688285545,
+     536890.6711231457
+    ],
+    "a_scaled": [
+     -59939.0398705272,
+     0.0,
+     -92669.21781799881,
+     53689.06711231457
+    ],
+    "a_whitened": [
+     -59939.0398705272,
+     0.0,
+     -92669.21781799881,
+     53689.06711231457
+    ],
+    "sqrt_aT_P0_a": 122730.55185645903,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "prior_saltation_denominators": [],
+    "critical_saltation_excluded": true
+   },
+   "sign_gate": {
+    "samples": [
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.3,
+      "delta_x0": [
+       -0.009661044527995263,
+       0.0,
+       -0.00104555730147436,
+       8.653666611260567e-09
+      ],
+      "b": 0.1052063936367631,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.7,
+      "delta_x0": [
+       -0.022542437231988944,
+       0.0,
+       -0.002439633703440173,
+       2.019188875960799e-08
+      ],
+      "b": 0.13757744245231152,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 1.2,
+      "delta_x0": [
+       -0.03864417811198105,
+       0.0,
+       -0.00418222920589744,
+       3.461466644504227e-08
+      ],
+      "b": 0.17804121784865856,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.06440696351996841,
+       0.0,
+       -0.006970382009829066,
+       5.7691110741737116e-08
+      ],
+      "b": 0.24278304260224104,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.3,
+      "delta_x0": [
+       0.009661044527995263,
+       0.0,
+       0.00104555730147436,
+       -8.653666611260567e-09
+      ],
+      "b": 0.0566495917737484,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.7,
+      "delta_x0": [
+       0.022542437231988944,
+       0.0,
+       0.002439633703440173,
+       -2.019188875960799e-08
+      ],
+      "b": 0.024278349243104458,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 1.2,
+      "delta_x0": [
+       0.03864417811198105,
+       0.0,
+       0.00418222920589744,
+       -3.461466644504227e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.06440696351996841,
+       0.0,
+       0.006970382009829066,
+       -5.7691110741737116e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       8.289397115510129e-05,
+       2.0130989212288622e-07,
+       -0.0012930959165119561,
+       -6.001259415654594e-08
+      ],
+      "b": 0.06577668152749538,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.00016578794231020258,
+       4.0261978424577243e-07,
+       -0.0025861918330239123,
+       -1.2002518831309187e-07
+      ],
+      "b": 0.050625418312847614,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.017338667486726706,
+       -3.7815998832975046e-07,
+       0.00016054846113498913,
+       5.1108510291760565e-08
+      ],
+      "b": 0.11663486436009407,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.03467733497345341,
+       -7.563199766595009e-07,
+       0.00032109692226997826,
+       1.0221702058352113e-07
+      ],
+      "b": 0.15234173089265823,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.032544337349293656,
+       -4.1025349513739757e-07,
+       0.00226716002933309,
+       2.359710965089526e-08
+      ],
+      "b": 0.0830900939181447,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.06508867469858731,
+       -8.205069902747951e-07,
+       0.00453432005866618,
+       4.719421930179052e-08
+      ],
+      "b": 0.08525208476930857,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.013933966655129675,
+       -5.41102453825654e-07,
+       0.0007254737229157889,
+       3.344450077169752e-08
+      ],
+      "b": 0.08092796616256237,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.02786793331025935,
+       -1.082204907651308e-06,
+       0.0014509474458315778,
+       6.688900154339504e-08
+      ],
+      "b": 0.08092797826975584,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.017706953458687166,
+       -1.3549830619247038e-07,
+       -0.001549432898139531,
+       -5.797359598383229e-08
+      ],
+      "b": 0.08092793636023998,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.03541390691737433,
+       -2.7099661238494076e-07,
+       -0.003098865796279062,
+       -1.1594719196766458e-07
+      ],
+      "b": 0.0809280201792717,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N0",
+      "switch_signature": [],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     }
+    ],
+    "valid_count": 16,
+    "agreement_count": 16,
+    "agreement_rate": 1.0,
+    "mismatch_classifications": {}
+   },
+   "fd_sweep": {
+    "epsilons": [
+     1e-08,
+     3e-08,
+     1e-07,
+     3e-07,
+     1e-06
+    ],
+    "plateau": {
+     "0": [
+      1e-08,
+      1e-06
+     ],
+     "1": [
+      1e-08,
+      1e-06
+     ],
+     "2": [
+      1e-08,
+      3e-07
+     ],
+     "3": [
+      1e-08,
+      1e-06
+     ]
+    },
+    "plateau_value": {
+     "0": -59939.11996483803,
+     "1": 0.0,
+     "2": -92669.32960599661,
+     "3": 53688.970704873405
+    },
+    "coordinate_status": {
+     "0": "PLATEAU_OK",
+     "1": "PLATEAU_OK",
+     "2": "PLATEAU_OK",
+     "3": "PLATEAU_OK"
+    },
+    "theta_zero_column": {
+     "derivative_at_1e-4": 0.0,
+     "gate_ok": true
+    },
+    "per_epsilon_valid": [
+     {
+      "epsilon": 1e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -59940.29343128204,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.0,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -92669.48327422142,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 53688.37155401707,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -59939.64150547982,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.0,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -92668.19494465987,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 53688.775127132736,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -59939.11996483803,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.0,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -92669.45999115705,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 53689.10729885101,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -59939.05942887068,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.0,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -92669.19922083616,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 53688.970704873405,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-06,
+      "valid_coordinates": [
+       0,
+       1,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -59939.03148919344,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.0,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "PRIOR_TOPOLOGY_CHANGED",
+        "minus": "VALID_MARGIN",
+        "derivative": null,
+        "valid_pair": false
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 53689.072374254465,
+        "valid_pair": true
+       }
+      ]
+     }
+    ]
+   },
+   "gradient_metrics": {
+    "abs_error": [
+     0.08009431082609808,
+     0.0,
+     0.11178799779736437,
+     0.09640744116768474
+    ],
+    "relative_error": [
+     1.3362628263500345e-06,
+     0.0,
+     1.206312089705069e-06,
+     1.7956624384254186e-06
+    ],
+    "symmetric_relative_error": [
+     1.3362619335514605e-06,
+     0.0,
+     1.206311362111079e-06,
+     1.7956640506286624e-06
+    ],
+    "cosine_similarity": 0.9999999999992835,
+    "normalized_l2_error": 1.3684169566656603e-06
+   },
+   "geometry_direction": {
+    "v_geom": [
+     48837.91278037242,
+     -0.0,
+     5285.436388199968,
+     -0.043745478448681034
+    ],
+    "alpha": [
+     -0.4883791278037242,
+     0.0,
+     -0.755062341171424,
+     0.4374547844868103
+    ],
+    "beta_local": 6.593951282235497e-07,
+    "identity_residual": 1.4551915228366852e-11,
+    "sqrt_aT_P0_a": 122730.55185645903
+   },
+   "boundary_approach": {
+    "v_geom": [
+     48837.91278037242,
+     -0.0,
+     5285.436388199968,
+     -0.043745478448681034
+    ],
+    "alpha": [
+     -0.4883791278037242,
+     0.0,
+     -0.755062341171424,
+     0.4374547844868103
+    ],
+    "beta_local": 6.593951282235497e-07,
+    "identity_residual": 1.4551915228366852e-11,
+    "sqrt_aT_P0_a": 122730.55185645903,
+    "lambda_min": 6.593951282235497e-08,
+    "lambda_max": 3.956370769341298e-06,
+    "points": [
+     {
+      "lambda": 6.593951282235497e-08,
+      "b": 0.07283520698547363,
+      "b_linear": 0.07283513518050314,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 8.179610844741988e-08,
+      "b": 0.07088909856975079,
+      "b_linear": 0.0708890464488742,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.0146576871392674e-07,
+      "b": 0.06847501825541258,
+      "b_linear": 0.06847497818953674,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.258654282718852e-07,
+      "b": 0.06548045203089714,
+      "b_linear": 0.06548039450687879,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.561325187288575e-07,
+      "b": 0.06176577229052782,
+      "b_linear": 0.061765697792005206,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.9367799195787773e-07,
+      "b": 0.057157804258167744,
+      "b_linear": 0.05715772114289564,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.4025209401750777e-07,
+      "b": 0.051441702991724014,
+      "b_linear": 0.0514416558948982,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.980259558471203e-07,
+      "b": 0.04435105435550213,
+      "b_linear": 0.04435103794967104,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 3.6969280422636906e-07,
+      "b": 0.03555534780025482,
+      "b_linear": 0.035555326098272666,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 4.585935111197699e-07,
+      "b": 0.024644450284540653,
+      "b_linear": 0.02464449328081627,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 5.688723341025146e-07,
+      "b": 0.011109826155006886,
+      "b_linear": 0.011109912478063255,
+      "exact_regime": "SRTI_N0",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 7.056701079722102e-07,
+      "b": null,
+      "b_linear": -0.00567935380169958,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 8.753638935019347e-07,
+      "b": null,
+      "b_linear": -0.02650596574637426,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.0858642549686163e-06,
+      "b": null,
+      "b_linear": -0.052340791275164195,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.3469840245540595e-06,
+      "b": null,
+      "b_linear": -0.08438816469701707,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.6708957441980547e-06,
+      "b": null,
+      "b_linear": -0.12414202880169925,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.072699109333142e-06,
+      "b": null,
+      "b_linear": -0.17345557754251084,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.5711248668553525e-06,
+      "b": null,
+      "b_linear": -0.23462764582268536,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 3.1894079807313863e-06,
+      "b": null,
+      "b_linear": -0.3105098735922209,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 3.956370769341298e-06,
+      "b": null,
+      "b_linear": -0.40463963989168406,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     }
+    ],
+    "bracket": {
+     "lambda_minus": 5.688723341025146e-07,
+     "b_at_minus": 0.011109826155006886,
+     "lambda_plus": 7.056701079722102e-07,
+     "b_at_plus": null
+    },
+    "lambda_exact_estimate": null
+   },
+   "controls": {
+    "controls": [
+     {
+      "direction_type": "geometry",
+      "v": [
+       48837.91278037242,
+       0.0,
+       5285.436388199968,
+       -0.043745478448681034
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.009074707515537739,
+      "b_at_min": 0.009074707515537739,
+      "topology_changed": true,
+      "distance_to_transition": 7.691950563974205e-07
+     },
+     {
+      "direction_type": "random0",
+      "v": [
+       -33148.25855908809,
+       -0.8535604398622928,
+       1771.668330860612,
+       0.03122443771516142
+      ],
+      "initial_db_dlambda": 13178.71455103159,
+      "min_abs_b": 0.08179697766900063,
+      "b_at_min": 0.08179697766900063,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random1",
+      "v": [
+       79803.20667808941,
+       -0.3211357191549247,
+       -3347.4002911445846,
+       -0.017703499793428893
+      ],
+      "initial_db_dlambda": -13023.702427744865,
+      "min_abs_b": 0.029399418272078037,
+      "b_at_min": 0.029399418272078037,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random2",
+      "v": [
+       -60543.77079897051,
+       -0.3518368203115918,
+       -4824.9922040201,
+       0.01858568616659847
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.08819075021892786,
+      "b_at_min": 0.08819075021892786,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent0",
+      "v": [
+       -28066.362481343658,
+       -0.858524299924864,
+       2352.8174284765278,
+       0.026681354795969642
+      ],
+      "initial_db_dlambda": 0.014435499906539917,
+      "min_abs_b": 0.08092739060521126,
+      "b_at_min": 0.08092739060521126,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent1",
+      "v": [
+       75044.43493685797,
+       -0.322959231187323,
+       -3930.462969108549,
+       -0.013135564044490353
+      ],
+      "initial_db_dlambda": 0.010710209608078003,
+      "min_abs_b": 0.08092502038925886,
+      "b_at_min": 0.08092502038925886,
+      "topology_changed": false,
+      "distance_to_transition": null
+     }
+    ]
+   },
+   "acceptance": {
+    "orientation": "PASS",
+    "margin_reference_stability": "PASS",
+    "sign_gate": "PASS",
+    "sign_gate_rate": 1.0,
+    "analytic_gradient": "PASS",
+    "fd_plateau": "PASS",
+    "gradient_gate": "PASS",
+    "cosine_similarity": 0.9999999999992835,
+    "normalized_l2_error": 1.3684169566656603e-06,
+    "geometry_direction_identity": "PASS",
+    "boundary_approach": "PASS",
+    "controls": "PASS",
+    "message": ""
+   }
+  },
+  "B1_N_side": {
+   "branch": "B1",
+   "side": "N_side",
+   "gamma0_deg": -3.2421875,
+   "K": 4.1953125,
+   "phase_f_reference_phi_m": -0.128188,
+   "expected_regime": "SRTI_N1",
+   "nominal": {
+    "classification": "VALID_MARGIN",
+    "b": 0.1281877988949418,
+    "sigma": -1.0,
+    "initial_state": [
+     6471000.0,
+     0.0,
+     7000.0,
+     -0.05658684684200365
+    ],
+    "K": 4.1953125,
+    "channel": "atmosphere_exit",
+    "branch_index": 1,
+    "exact_regime": "SRTI_N1",
+    "prior_event_sequence": [
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry"
+    ],
+    "prior_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "critical_segment_id": 2,
+    "critical_mode": "SANGER_ATM",
+    "critical_trigger": "srti",
+    "t_star": 797.0547334519582,
+    "x_star": [
+     6470999.871812201,
+     0.8251277678110451,
+     6400.777998207669,
+     -1.9386890096756426e-17
+    ],
+    "guard_value": -0.1281877988949418,
+    "guard_derivative": -1.2409117958498868e-13,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "solver_label": "REF-0.1",
+    "message": "virtual margin evaluated on the tracked extremum branch."
+   },
+   "topology": {
+    "regime": "SRTI_N1",
+    "skip_count": 1,
+    "true_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "event_kinds": [
+     "synthetic_initial_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "srti"
+    ],
+    "terminal_kind": "srti",
+    "terminal_time": 797.0547334519582
+   },
+   "reference_audit": {
+    "production": {
+     "b": 0.1281533297151327,
+     "t_star": 797.0547335233608,
+     "x_star": [
+      6470999.87184667,
+      0.8251277678786177,
+      6400.77799809383,
+      6.613633252161577e-18
+     ],
+     "guard_derivative": 4.233239820789757e-14,
+     "exact_regime": "SRTI_N1",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.1": {
+     "b": 0.1281877988949418,
+     "t_star": 797.0547334519582,
+     "x_star": [
+      6470999.871812201,
+      0.8251277678110451,
+      6400.777998207669,
+      -1.9386890096756426e-17
+     ],
+     "guard_derivative": -1.2409117958498868e-13,
+     "exact_regime": "SRTI_N1",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.05": {
+     "b": 0.12818777281790972,
+     "t_star": 797.0547334520353,
+     "x_star": [
+      6470999.871812227,
+      0.8251277678111048,
+      6400.77799820739,
+      2.0599841277224584e-18
+     ],
+     "guard_derivative": 1.3185501081382353e-14,
+     "exact_regime": "SRTI_N1",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    }
+   },
+   "analytic_gradient": {
+    "a_raw": [
+     -0.37158784701478764,
+     0.0,
+     -19.28979141041165,
+     506317.76632929826
+    ],
+    "a_scaled": [
+     -37158.78470147876,
+     0.0,
+     -135028.53987288155,
+     50631.77663292983
+    ],
+    "a_whitened": [
+     -37158.78470147876,
+     0.0,
+     -135028.53987288155,
+     50631.77663292983
+    ],
+    "sqrt_aT_P0_a": 148919.63828085305,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "prior_saltation_denominators": [
+     277.18588686192726,
+     -277.18588686199286
+    ],
+    "critical_saltation_excluded": true
+   },
+   "sign_gate": {
+    "samples": [
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.3,
+      "delta_x0": [
+       -0.00644355443022844,
+       0.0,
+       -0.001639032673717639,
+       8.779851420180287e-09
+      ],
+      "b": 0.16664408892393112,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.7,
+      "delta_x0": [
+       -0.015034960337199695,
+       0.0,
+       -0.0038244095720078248,
+       2.0486319980420673e-08
+      ],
+      "b": 0.2179190255701542,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 1.2,
+      "delta_x0": [
+       -0.02577421772091376,
+       0.0,
+       -0.006556130694870556,
+       3.511940568072115e-08
+      ],
+      "b": 0.2820124253630638,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.04295702953485627,
+       0.0,
+       -0.010926884491450928,
+       5.853234280120192e-08
+      ],
+      "b": 0.38456145487725735,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.3,
+      "delta_x0": [
+       0.00644355443022844,
+       0.0,
+       0.001639032673717639,
+       -8.779851420180287e-09
+      ],
+      "b": 0.08973138500005007,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.7,
+      "delta_x0": [
+       0.015034960337199695,
+       0.0,
+       0.0038244095720078248,
+       -2.0486319980420673e-08
+      ],
+      "b": 0.0384561512619257,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 1.2,
+      "delta_x0": [
+       0.02577421772091376,
+       0.0,
+       0.006556130694870556,
+       -3.511940568072115e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.04295702953485627,
+       0.0,
+       0.010926884491450928,
+       -5.853234280120192e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.00010821112924808475,
+       2.627931857030722e-07,
+       -0.001688028301720888,
+       -7.834141002408962e-08
+      ],
+      "b": 0.12104363646358252,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.0002164222584961695,
+       5.255863714061444e-07,
+       -0.003376056603441776,
+       -1.5668282004817924e-07
+      ],
+      "b": 0.1138995187357068,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.022634176674744638,
+       -4.936561586250722e-07,
+       0.0002095825551167394,
+       6.671787508539967e-08
+      ],
+      "b": 0.16633601300418377,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.045268353349489275,
+       -9.873123172501445e-07,
+       0.0004191651102334788,
+       1.3343575017079935e-07
+      ],
+      "b": 0.20448421593755484,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.0424839037884719,
+       -5.35551540940495e-07,
+       0.002959587332367258,
+       3.080404819231675e-08
+      ],
+      "b": 0.10248101130127907,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.0849678075769438,
+       -1.07110308188099e-06,
+       0.005919174664734516,
+       6.16080963846335e-08
+      ],
+      "b": 0.07677406538277864,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.012391000443953306,
+       -7.010648717333621e-07,
+       0.0009772812887780128,
+       4.632643558452344e-08
+      ],
+      "b": 0.12818778213113546,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.02478200088790661,
+       -1.4021297434667241e-06,
+       0.0019545625775560255,
+       9.265287116904688e-08
+      ],
+      "b": 0.1281877811998129,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.0374466683383122,
+       -1.8234350163553504e-07,
+       -0.0012037280369910446,
+       -7.33420631935328e-08
+      ],
+      "b": 0.12818780448287725,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.0748933366766244,
+       -3.646870032710701e-07,
+       -0.002407456073982089,
+       -1.466841263870656e-07
+      ],
+      "b": 0.1281877737492323,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     }
+    ],
+    "valid_count": 16,
+    "agreement_count": 16,
+    "agreement_rate": 1.0,
+    "mismatch_classifications": {}
+   },
+   "fd_sweep": {
+    "epsilons": [
+     1e-08,
+     3e-08,
+     1e-07,
+     3e-07,
+     1e-06
+    ],
+    "plateau": {
+     "0": [
+      1e-08,
+      1e-06
+     ],
+     "2": [
+      1e-08,
+      3e-07
+     ],
+     "3": [
+      1e-08,
+      1e-06
+     ]
+    },
+    "plateau_value": {
+     "0": -37158.794701099396,
+     "2": -135028.93658975762,
+     "3": 50631.91056251526
+    },
+    "coordinate_status": {
+     "0": "PLATEAU_OK",
+     "1": "NO_CLEAR_PLATEAU",
+     "2": "PLATEAU_OK",
+     "3": "PLATEAU_OK"
+    },
+    "theta_zero_column": {
+     "derivative_at_1e-4": -4.6566128730773926e-05,
+     "gate_ok": true
+    },
+    "per_epsilon_valid": [
+     {
+      "epsilon": 1e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -37160.8417481184,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.7450580596923828,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -135029.34016287327,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 50631.44490122795,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -37157.6597293218,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.17074247201283774,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -135029.04524405798,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 50632.686664660774,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -37158.97910296917,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.22351741790771484,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -135028.82793545723,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 50632.115453481674,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -37158.76334657272,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.023283064365386963,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -135028.53612105054,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 50631.91056251526,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-06,
+      "valid_coordinates": [
+       0,
+       1,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -37158.794701099396,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.03073364496231079,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "PRIOR_TOPOLOGY_CHANGED",
+        "minus": "VALID_MARGIN",
+        "derivative": null,
+        "valid_pair": false
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 50631.76807016134,
+        "valid_pair": true
+       }
+      ]
+     }
+    ]
+   },
+   "gradient_metrics": {
+    "abs_error": [
+     0.009999620633607265,
+     4.6566128730773926e-05,
+     0.3967168760718778,
+     0.133929585426813
+    ],
+    "relative_error": [
+     2.691051581460715e-07,
+     4.656612873077392e+295,
+     2.938022409524347e-06,
+     2.645168594374546e-06
+    ],
+    "symmetric_relative_error": [
+     2.6910512193728334e-07,
+     2.0,
+     2.9380180935428477e-06,
+     2.6451650959207267e-06
+    ],
+    "cosine_similarity": 0.9999999999997934,
+    "normalized_l2_error": 2.8124792295740254e-06
+   },
+   "geometry_direction": {
+    "v_geom": [
+     24952.239429563775,
+     -0.0,
+     6347.045896845275,
+     -0.03399939539031212
+    ],
+    "alpha": [
+     -0.24952239429563774,
+     0.0,
+     -0.9067208424064678,
+     0.3399939539031212
+    ],
+    "beta_local": 8.607850541054075e-07,
+    "identity_residual": 0.0,
+    "sqrt_aT_P0_a": 148919.63828085305
+   },
+   "boundary_approach": {
+    "v_geom": [
+     24952.239429563775,
+     -0.0,
+     6347.045896845275,
+     -0.03399939539031212
+    ],
+    "alpha": [
+     -0.24952239429563774,
+     0.0,
+     -0.9067208424064678,
+     0.3399939539031212
+    ],
+    "beta_local": 8.607850541054075e-07,
+    "identity_residual": 0.0,
+    "sqrt_aT_P0_a": 148919.63828085305,
+    "lambda_min": 8.607850541054075e-08,
+    "lambda_max": 5.164710324632445e-06,
+    "points": [
+     {
+      "lambda": 8.607850541054075e-08,
+      "b": 0.11536893621087074,
+      "b_linear": 0.11536901900544763,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.0677796153151731e-07,
+      "b": 0.1122864056378603,
+      "b_linear": 0.11228646348730141,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.3245505384239646e-07,
+      "b": 0.10846261493861675,
+      "b_linear": 0.10846264018826121,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.643067636500406e-07,
+      "b": 0.10371920000761747,
+      "b_linear": 0.10371929508508015,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.038179125522288e-07,
+      "b": 0.09783527255058289,
+      "b_linear": 0.09783530908250536,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.5283037992050243e-07,
+      "b": 0.09053631778806448,
+      "b_linear": 0.09053639017076993,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 3.136289652381026e-07,
+      "b": 0.08148222602903843,
+      "b_linear": 0.08148228683728534,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 3.890478979118386e-07,
+      "b": 0.07025078404694796,
+      "b_linear": 0.07025092666398455,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 4.82602959693826e-07,
+      "b": 0.05631852429360151,
+      "b_linear": 0.05631874070406814,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 5.986553788243803e-07,
+      "b": 0.03903595916926861,
+      "b_linear": 0.039036256425528035,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 7.426151361001429e-07,
+      "b": 0.017597386613488197,
+      "b_linear": 0.017597821445022074,
+      "exact_regime": "SRTI_N1",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 9.211931603254054e-07,
+      "b": null,
+      "b_linear": -0.008995953327513434,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.142714169666309e-06,
+      "b": null,
+      "b_linear": -0.04198478191017027,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.4175047425394467e-06,
+      "b": null,
+      "b_linear": -0.08290649462542632,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.7583747086190203e-06,
+      "b": null,
+      "b_linear": -0.13366872667480306,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.1812143008226894e-06,
+      "b": null,
+      "b_linear": -0.19663784579659688,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.705734905531016e-06,
+      "b": null,
+      "b_linear": -0.2747492645206152,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 3.356387942371215e-06,
+      "b": null,
+      "b_linear": -0.37164427941319617,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 4.163504708708334e-06,
+      "b": null,
+      "b_linear": -0.4918398163065316,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 5.164710324632445e-06,
+      "b": null,
+      "b_linear": -0.640938994474709,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     }
+    ],
+    "bracket": {
+     "lambda_minus": 7.426151361001429e-07,
+     "b_at_minus": 0.017597386613488197,
+     "lambda_plus": 9.211931603254054e-07,
+     "b_at_plus": null
+    },
+    "lambda_exact_estimate": null
+   },
+   "controls": {
+    "controls": [
+     {
+      "direction_type": "geometry",
+      "v": [
+       24952.239429563775,
+       0.0,
+       6347.045896845274,
+       -0.033999395390312125
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.01437388639897108,
+      "b_at_min": 0.01437388639897108,
+      "topology_changed": true,
+      "distance_to_transition": 1.0041196543602533e-06
+     },
+     {
+      "direction_type": "random0",
+      "v": [
+       -33148.25855908809,
+       -0.8535604398622928,
+       1771.668330860612,
+       0.03122443771516142
+      ],
+      "initial_db_dlambda": -6048.145703971386,
+      "min_abs_b": 0.09695029351860285,
+      "b_at_min": 0.09695029351860285,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random1",
+      "v": [
+       79803.20667808941,
+       -0.3211357191549247,
+       -3347.4002911445846,
+       -0.017703499793428893
+      ],
+      "initial_db_dlambda": 25953.192729502916,
+      "min_abs_b": 0.1304217493161559,
+      "b_at_min": 0.1304217493161559,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random2",
+      "v": [
+       -60543.77079897051,
+       -0.3518368203115918,
+       -4824.9922040201,
+       0.01858568616659847
+      ],
+      "initial_db_dlambda": 124980.66714033484,
+      "min_abs_b": 0.13894592970609665,
+      "b_at_min": 0.13894592970609665,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent0",
+      "v": [
+       -34189.86305781041,
+       -0.854265264296911,
+       1515.1432182486924,
+       0.03263219292761132
+      ],
+      "initial_db_dlambda": -0.01210719347000122,
+      "min_abs_b": 0.12818732764571905,
+      "b_at_min": 0.12818732764571905,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent1",
+      "v": [
+       85459.59437010935,
+       -0.3261264976794599,
+       -2276.0924691290097,
+       -0.02399600229248043
+      ],
+      "initial_db_dlambda": -0.003725290298461914,
+      "min_abs_b": 0.1281859315931797,
+      "b_at_min": 0.1281859315931797,
+      "topology_changed": false,
+      "distance_to_transition": null
+     }
+    ]
+   },
+   "acceptance": {
+    "orientation": "PASS",
+    "margin_reference_stability": "PASS",
+    "sign_gate": "PASS",
+    "sign_gate_rate": 1.0,
+    "analytic_gradient": "PASS",
+    "fd_plateau": "PASS",
+    "gradient_gate": "PASS",
+    "cosine_similarity": 0.9999999999997934,
+    "normalized_l2_error": 2.8124792295740254e-06,
+    "geometry_direction_identity": "PASS",
+    "boundary_approach": "PASS",
+    "controls": "PASS",
+    "message": ""
+   }
+  },
+  "B1_N1_side": {
+   "branch": "B1",
+   "side": "N1_side",
+   "gamma0_deg": -7.296875,
+   "K": 2.234375,
+   "phase_f_reference_phi_m": 0.169139,
+   "expected_regime": "SRTI_N2",
+   "nominal": {
+    "classification": "VALID_MARGIN",
+    "b": -0.16953780688345432,
+    "sigma": -1.0,
+    "initial_state": [
+     6471000.0,
+     0.0,
+     7000.0,
+     -0.12735449385646122
+    ],
+    "K": 2.234375,
+    "channel": "atmosphere_exit",
+    "branch_index": 1,
+    "exact_regime": "SRTI_N2",
+    "prior_event_sequence": [
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry"
+    ],
+    "prior_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "critical_segment_id": 2,
+    "critical_mode": "SANGER_ATM",
+    "critical_trigger": "atmosphere_exit",
+    "t_star": 740.4676483354316,
+    "x_star": [
+     6471000.169537807,
+     0.6855012544389516,
+     5266.300833781542,
+     -3.156214168058974e-17
+    ],
+    "guard_value": 0.16953780688345432,
+    "guard_derivative": -1.662157330484209e-13,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "solver_label": "REF-0.1",
+    "message": "virtual margin evaluated on the tracked extremum branch."
+   },
+   "topology": {
+    "regime": "SRTI_N2",
+    "skip_count": 2,
+    "true_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "event_kinds": [
+     "synthetic_initial_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "srti"
+    ],
+    "terminal_kind": "srti",
+    "terminal_time": 1038.9520262449178
+   },
+   "reference_audit": {
+    "production": {
+     "b": -0.16956959012895823,
+     "t_star": 740.4676485023512,
+     "x_star": [
+      6471000.16956959,
+      0.6855012545562252,
+      5266.300833254226,
+      -5.551115123125783e-17
+     ],
+     "guard_derivative": -2.9233842198407444e-13,
+     "exact_regime": "SRTI_N1",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.1": {
+     "b": -0.16953780688345432,
+     "t_star": 740.4676483354316,
+     "x_star": [
+      6471000.169537807,
+      0.6855012544389516,
+      5266.300833781542,
+      -3.156214168058974e-17
+     ],
+     "guard_derivative": -1.662157330484209e-13,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.05": {
+     "b": -0.16953775566071272,
+     "t_star": 740.4676483354067,
+     "x_star": [
+      6471000.169537756,
+      0.6855012544389226,
+      5266.300833781569,
+      1.1702607199265413e-17
+     ],
+     "guard_derivative": 6.162945005090963e-14,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    }
+   },
+   "analytic_gradient": {
+    "a_raw": [
+     -0.12037425628476071,
+     0.0,
+     -25.41799257637464,
+     282174.9637670798
+    ],
+    "a_scaled": [
+     -12037.425628476072,
+     0.0,
+     -177925.94803462247,
+     28217.496376707983
+    ],
+    "a_whitened": [
+     -12037.425628476072,
+     0.0,
+     -177925.94803462247,
+     28217.496376707983
+    ],
+    "sqrt_aT_P0_a": 180551.29382408148,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "prior_saltation_denominators": [
+     593.1747735970649,
+     -593.1747735971572
+    ],
+    "critical_saltation_excluded": true
+   },
+   "sign_gate": {
+    "samples": [
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.3,
+      "delta_x0": [
+       0.0018781065300241965,
+       0.0,
+       0.0019432287818405623,
+       -4.4025579755742634e-09
+      ],
+      "b": -0.22039917763322592,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.7,
+      "delta_x0": [
+       0.004382248570056458,
+       0.0,
+       0.004534200490961311,
+       -1.0272635276339948e-08
+      ],
+      "b": -0.2882144823670387,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 1.2,
+      "delta_x0": [
+       0.007512426120096786,
+       0.0,
+       0.007772915127362249,
+       -1.7610231902297054e-08
+      ],
+      "b": -0.37298373505473137,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.012520710200161309,
+       0.0,
+       0.012954858545603748,
+       -2.9350386503828424e-08
+      ],
+      "b": -0.5086149629205465,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.3,
+      "delta_x0": [
+       -0.0018781065300241965,
+       0.0,
+       -0.0019432287818405623,
+       4.4025579755742634e-09
+      ],
+      "b": -0.11867650132626295,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.7,
+      "delta_x0": [
+       -0.004382248570056458,
+       0.0,
+       -0.004534200490961311,
+       1.0272635276339948e-08
+      ],
+      "b": -0.05086153093725443,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 1.2,
+      "delta_x0": [
+       -0.007512426120096786,
+       0.0,
+       -0.007772915127362249,
+       1.7610231902297054e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.012520710200161309,
+       0.0,
+       -0.012954858545603748,
+       2.9350386503828424e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N1",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.00011804379615425507,
+       -2.866720406617492e-07,
+       0.001841411970612816,
+       8.545994760039183e-08
+      ],
+      "b": -0.19221398700028658,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.00023608759230851013,
+       -5.733440813234984e-07,
+       0.003682823941225632,
+       1.7091989520078367e-07
+      ],
+      "b": -0.2148900656029582,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.02469084424197745,
+       5.385125112726058e-07,
+       -0.00022862639532177502,
+       -7.278023343024457e-08
+      ],
+      "b": -0.18723546154797077,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.0493816884839549,
+       1.0770250225452115e-06,
+       -0.00045725279064355004,
+       -1.4556046686048914e-07
+      ],
+      "b": -0.20493315905332565,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.04634422830156468,
+       5.842147417567578e-07,
+       -0.0032285119487269337,
+       -3.360307586480571e-08
+      ],
+      "b": -0.10253618005663157,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.09268845660312935,
+       1.1684294835135156e-06,
+       -0.006457023897453867,
+       -6.720615172961142e-08
+      ],
+      "b": -0.03553474973887205,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.009242136817247176,
+       7.536006158209417e-07,
+       -0.0005630585906717723,
+       -5.46623067394071e-08
+      ],
+      "b": -0.169537796638906,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.018484273634494352,
+       1.5072012316418833e-06,
+       -0.0011261171813435446,
+       -1.093246134788142e-07
+      ],
+      "b": -0.16953784599900246,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.056272685590280216,
+       2.0991217470639668e-07,
+       0.0005303775577131471,
+       7.178140551981786e-08
+      ],
+      "b": -0.16953776217997074,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.11254537118056043,
+       4.1982434941279336e-07,
+       0.0010607551154262942,
+       1.4356281103963572e-07
+      ],
+      "b": -0.16953778360038996,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     }
+    ],
+    "valid_count": 16,
+    "agreement_count": 16,
+    "agreement_rate": 1.0,
+    "mismatch_classifications": {}
+   },
+   "fd_sweep": {
+    "epsilons": [
+     1e-08,
+     3e-08,
+     1e-07,
+     3e-07,
+     1e-06
+    ],
+    "plateau": {
+     "0": [
+      1e-08,
+      1e-06
+     ],
+     "2": [
+      1e-08,
+      3e-07
+     ],
+     "3": [
+      1e-08,
+      1e-06
+     ]
+    },
+    "plateau_value": {
+     "0": -12037.43414953351,
+     "2": -177925.46267931664,
+     "3": 28217.528015375137
+    },
+    "coordinate_status": {
+     "0": "PLATEAU_OK",
+     "1": "NO_CLEAR_PLATEAU",
+     "2": "PLATEAU_OK",
+     "3": "PLATEAU_OK"
+    },
+    "theta_zero_column": {
+     "derivative_at_1e-4": 3.259629011154175e-05,
+     "gate_ok": true
+    },
+    "per_epsilon_valid": [
+     {
+      "epsilon": 1e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -12038.135901093483,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 1.0244548320770264,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -177924.42813515663,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 28220.284730196,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -12037.220100561779,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.8537123600641887,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -177925.0800609589,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 28217.009579141937,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -12037.34427690506,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.1862645149230957,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -177925.8856549859,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 28217.616491019726,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -12037.466901044052,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.15366822481155396,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -177925.84529767436,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 28217.528015375137,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-06,
+      "valid_coordinates": [
+       0,
+       1,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -12037.43414953351,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.0009313225746154785,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "PRIOR_TOPOLOGY_CHANGED",
+        "derivative": null,
+        "valid_pair": false
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 28217.47725829482,
+        "valid_pair": true
+       }
+      ]
+     }
+    ]
+   },
+   "gradient_metrics": {
+    "abs_error": [
+     0.008521057437974378,
+     3.259629011154175e-05,
+     0.48535530583467335,
+     0.031638667154766154
+    ],
+    "relative_error": [
+     7.078803808196933e-07,
+     3.2596290111541746e+295,
+     2.7278500477076477e-06,
+     1.1212428888936497e-06
+    ],
+    "symmetric_relative_error": [
+     7.078801302724653e-07,
+     2.0,
+     2.727853768295664e-06,
+     1.1212422603011943e-06
+    ],
+    "cosine_similarity": 0.9999999999997988,
+    "normalized_l2_error": 2.6943039138642543e-06
+   },
+   "geometry_direction": {
+    "v_geom": [
+     6667.03925157392,
+     -0.0,
+     6898.214960762792,
+     -0.01562852072619399
+    ],
+    "alpha": [
+     -0.06667039251573921,
+     0.0,
+     -0.9854592801089702,
+     0.15628520726193992
+    ],
+    "beta_local": -9.390007863839622e-07,
+    "identity_residual": 0.0,
+    "sqrt_aT_P0_a": 180551.29382408148
+   },
+   "boundary_approach": {
+    "v_geom": [
+     6667.03925157392,
+     -0.0,
+     6898.214960762792,
+     -0.01562852072619399
+    ],
+    "alpha": [
+     -0.06667039251573921,
+     0.0,
+     -0.9854592801089702,
+     0.15628520726193992
+    ],
+    "beta_local": -9.390007863839622e-07,
+    "identity_residual": 0.0,
+    "sqrt_aT_P0_a": 180551.29382408148,
+    "lambda_min": -9.390007863839622e-08,
+    "lambda_max": -5.634004718303773e-06,
+    "points": [
+     {
+      "lambda": -9.390007863839622e-08,
+      "b": -0.15258403960615396,
+      "b_linear": -0.15258402619510888,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.16480402823413e-07,
+      "b": -0.14850710984319448,
+      "b_linear": -0.14850711944853692,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.44490658992448e-07,
+      "b": -0.14344985224306583,
+      "b_linear": -0.14344983145687368,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.7923659285178417e-07,
+      "b": -0.13717649597674608,
+      "b_linear": -0.13717640814344456,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -2.223379451732957e-07,
+      "b": -0.1293943915516138,
+      "b_linear": -0.12939440321622808,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -2.7580395876394466e-07,
+      "b": -0.11974107567220926,
+      "b_linear": -0.1197410452868205,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -3.4212704273476373e-07,
+      "b": -0.1077663479372859,
+      "b_linear": -0.10776632666548591,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -4.243989603884421e-07,
+      "b": -0.09291207045316696,
+      "b_linear": -0.092912025487726,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -5.264549570214051e-07,
+      "b": -0.07448580674827099,
+      "b_linear": -0.07448568325313842,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -6.530525464028854e-07,
+      "b": -0.05162850860506296,
+      "b_linear": -0.05162832469530236,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -8.1009329036663e-07,
+      "b": -0.023274729028344154,
+      "b_linear": -0.02327441518955195,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.004897910147914e-06,
+      "b": null,
+      "b_linear": 0.01189781095486711,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.2465475542485025e-06,
+      "b": null,
+      "b_linear": 0.05552796684935721,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.546307131611214e-06,
+      "b": null,
+      "b_linear": 0.10964994637835462,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.918150444499636e-06,
+      "b": null,
+      "b_linear": 0.17678673762019192,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -2.379411601044878e-06,
+      "b": null,
+      "b_linear": 0.2600680362252276,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -2.9515930741625536e-06,
+      "b": null,
+      "b_linear": 0.3633761414987928,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -3.6613680758800487e-06,
+      "b": null,
+      "b_linear": 0.49152693638287626,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -4.54182397445729e-06,
+      "b": null,
+      "b_linear": 0.6504943880260413,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -5.634004718303773e-06,
+      "b": null,
+      "b_linear": 0.8476890344172716,
+      "exact_regime": "SRTI_N1",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     }
+    ],
+    "bracket": {
+     "lambda_minus": -1.004897910147914e-06,
+     "b_at_minus": null,
+     "lambda_plus": -8.1009329036663e-07,
+     "b_at_plus": -0.023274729028344154
+    },
+    "lambda_exact_estimate": null
+   },
+   "controls": {
+    "controls": [
+     {
+      "direction_type": "geometry",
+      "v": [
+       6667.039251573921,
+       0.0,
+       6898.214960762792,
+       -0.015628520726193994
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.01901125442236662,
+      "b_at_min": -0.01901125442236662,
+      "topology_changed": true,
+      "distance_to_transition": -8.337066958484441e-07
+     },
+     {
+      "direction_type": "random0",
+      "v": [
+       -33148.25855908809,
+       -0.8535604398622928,
+       1771.668330860612,
+       0.03122443771516142
+      ],
+      "initial_db_dlambda": -32231.279648840427,
+      "min_abs_b": 0.03132432512938976,
+      "b_at_min": -0.03132432512938976,
+      "topology_changed": true,
+      "distance_to_transition": -4.288187728490403e-06
+     },
+     {
+      "direction_type": "random1",
+      "v": [
+       79803.20667808941,
+       -0.3211357191549247,
+       -3347.4002911445846,
+       -0.017703499793428893
+      ],
+      "initial_db_dlambda": 70482.46962949634,
+      "min_abs_b": 0.1761561520397663,
+      "b_at_min": -0.1761561520397663,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random2",
+      "v": [
+       -60543.77079897051,
+       -0.3518368203115918,
+       -4824.9922040201,
+       0.01858568616659847
+      ],
+      "initial_db_dlambda": 135173.93916845322,
+      "min_abs_b": 0.18223064206540585,
+      "b_at_min": -0.18223064206540585,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent0",
+      "v": [
+       -34899.014740241626,
+       -0.8674950097388372,
+       549.0456726066442,
+       0.03456967179423756
+      ],
+      "initial_db_dlambda": -0.010710209608078003,
+      "min_abs_b": 0.1695377305150032,
+      "b_at_min": -0.1695377305150032,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent1",
+      "v": [
+       89507.69378710502,
+       -0.3488116452154524,
+       -710.9266250067325,
+       -0.025855963647447223
+      ],
+      "initial_db_dlambda": -0.02421438694000244,
+      "min_abs_b": 0.16953775566071272,
+      "b_at_min": -0.16953775566071272,
+      "topology_changed": false,
+      "distance_to_transition": null
+     }
+    ]
+   },
+   "acceptance": {
+    "orientation": "PASS",
+    "margin_reference_stability": "PASS",
+    "sign_gate": "PASS",
+    "sign_gate_rate": 1.0,
+    "analytic_gradient": "PASS",
+    "fd_plateau": "PASS",
+    "gradient_gate": "PASS",
+    "cosine_similarity": 0.9999999999997988,
+    "normalized_l2_error": 2.6943039138642543e-06,
+    "geometry_direction_identity": "PASS",
+    "boundary_approach": "PASS",
+    "controls": "PASS",
+    "message": ""
+   }
+  },
+  "B2_N_side": {
+   "branch": "B2",
+   "side": "N_side",
+   "gamma0_deg": -5.7265625,
+   "K": 3.703125,
+   "phase_f_reference_phi_m": -0.154892,
+   "expected_regime": "SRTI_N2",
+   "nominal": {
+    "classification": "VALID_MARGIN",
+    "b": 0.15489238128066063,
+    "sigma": -1.0,
+    "initial_state": [
+     6471000.0,
+     0.0,
+     7000.0,
+     -0.09994737044623778
+    ],
+    "K": 3.703125,
+    "channel": "atmosphere_exit",
+    "branch_index": 2,
+    "exact_regime": "SRTI_N2",
+    "prior_event_sequence": [
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry"
+    ],
+    "prior_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "critical_segment_id": 4,
+    "critical_mode": "SANGER_ATM",
+    "critical_trigger": "srti",
+    "t_star": 1244.1745723989566,
+    "x_star": [
+     6470999.845107619,
+     1.208219513083439,
+     5652.356161590043,
+     2.940898392866931e-17
+    ],
+    "guard_value": -0.15489238128066063,
+    "guard_derivative": 1.662300515153165e-13,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "solver_label": "REF-0.1",
+    "message": "virtual margin evaluated on the tracked extremum branch."
+   },
+   "topology": {
+    "regime": "SRTI_N2",
+    "skip_count": 2,
+    "true_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "event_kinds": [
+     "synthetic_initial_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "srti"
+    ],
+    "terminal_kind": "srti",
+    "terminal_time": 1244.1745723989566
+   },
+   "reference_audit": {
+    "production": {
+     "b": 0.15483638364821672,
+     "t_star": 1244.174572698306,
+     "x_star": [
+      6470999.845163616,
+      1.2082195133274798,
+      5652.356161083283,
+      3.176712365382528e-17
+     ],
+     "guard_derivative": 1.7955909710459382e-13,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.1": {
+     "b": 0.15489238128066063,
+     "t_star": 1244.1745723989566,
+     "x_star": [
+      6470999.845107619,
+      1.208219513083439,
+      5652.356161590043,
+      2.940898392866931e-17
+     ],
+     "guard_derivative": 1.662300515153165e-13,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.05": {
+     "b": 0.15489234402775764,
+     "t_star": 1244.1745723988465,
+     "x_star": [
+      6470999.845107656,
+      1.2082195130833673,
+      5652.356161590266,
+      5.407966555039806e-17
+     ],
+     "guard_derivative": 3.0567753079053333e-13,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    }
+   },
+   "analytic_gradient": {
+    "a_raw": [
+     -0.16443548176692688,
+     0.0,
+     -23.474675699678308,
+     343507.5840620707
+    ],
+    "a_scaled": [
+     -16443.548176692686,
+     0.0,
+     -164322.72989774816,
+     34350.758406207075
+    ],
+    "a_whitened": [
+     -16443.548176692686,
+     0.0,
+     -164322.72989774816,
+     34350.758406207075
+    ],
+    "sqrt_aT_P0_a": 168678.1682399033,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "prior_saltation_denominators": [
+     555.6693759555036,
+     -555.6693759555031,
+     383.1930609088652,
+     -383.19306090901676
+    ],
+    "critical_saltation_excluded": true
+   },
+   "sign_gate": {
+    "samples": [
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.3,
+      "delta_x0": [
+       -0.002685524346975652,
+       0.0,
+       -0.001878578035664959,
+       5.6100907812404985e-09
+      ],
+      "b": 0.20136002637445927,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.7,
+      "delta_x0": [
+       -0.006266223476276522,
+       0.0,
+       -0.004383348749884904,
+       1.3090211822894498e-08
+      ],
+      "b": 0.2633167030289769,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 1.2,
+      "delta_x0": [
+       -0.010742097387902608,
+       0.0,
+       -0.007514312142659836,
+       2.2440363124961994e-08
+      ],
+      "b": 0.34076256956905127,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.01790349564650435,
+       0.0,
+       -0.012523853571099728,
+       3.740060520827e-08
+      ],
+      "b": 0.46467546094208956,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.3,
+      "delta_x0": [
+       0.002685524346975652,
+       0.0,
+       0.001878578035664959,
+       -5.6100907812404985e-09
+      ],
+      "b": 0.1084245815873146,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.7,
+      "delta_x0": [
+       0.006266223476276522,
+       0.0,
+       0.004383348749884904,
+       -1.3090211822894498e-08
+      ],
+      "b": 0.046467418782413006,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 1.2,
+      "delta_x0": [
+       0.010742097387902608,
+       0.0,
+       0.007514312142659836,
+       -2.2440363124961994e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.01790349564650435,
+       0.0,
+       0.012523853571099728,
+       -3.740060520827e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.00011543789315919462,
+       2.8034354603773403e-07,
+       -0.0018007614567722618,
+       -8.357335685471168e-08
+      ],
+      "b": 0.16843753028661013,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.00023087578631838924,
+       5.606870920754681e-07,
+       -0.0036015229135445237,
+       -1.6714671370942336e-07
+      ],
+      "b": 0.18198287300765514,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.024145775826211992,
+       -5.26624454367277e-07,
+       0.0002235793007032628,
+       7.117355663353061e-08
+      ],
+      "b": 0.17806296050548553,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.048291551652423985,
+       -1.053248908734554e-06,
+       0.0004471586014065256,
+       1.4234711326706121e-07
+      ],
+      "b": 0.20123366173356771,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.045321145621497375,
+       -5.713177747419646e-07,
+       0.0031572401900164465,
+       3.286126342830196e-08
+      ],
+      "b": 0.0995174515992403,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.09064229124299475,
+       -1.1426355494839292e-06,
+       0.006314480380032893,
+       6.572252685660392e-08
+      ],
+      "b": 0.0441425908356905,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.009613673696634635,
+       -7.393112401019345e-07,
+       0.0007032367381500196,
+       5.2659924477122474e-08
+      ],
+      "b": 0.1548923021182418,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.01922734739326927,
+       -1.478622480203869e-06,
+       0.0014064734763000392,
+       1.0531984895424495e-07
+      ],
+      "b": 0.15489238686859608,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.05189626870031458,
+       -2.0186002709561832e-07,
+       -0.0006950233316882421,
+       -7.233911684536034e-08
+      ],
+      "b": 0.15489243529736996,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.10379253740062916,
+       -4.0372005419123664e-07,
+       -0.0013900466633764842,
+       -1.4467823369072068e-07
+      ],
+      "b": 0.15489237755537033,
+      "sign_b": 1.0,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     }
+    ],
+    "valid_count": 16,
+    "agreement_count": 16,
+    "agreement_rate": 1.0,
+    "mismatch_classifications": {}
+   },
+   "fd_sweep": {
+    "epsilons": [
+     1e-08,
+     3e-08,
+     1e-07,
+     3e-07,
+     1e-06
+    ],
+    "plateau": {
+     "0": [
+      1e-08,
+      1e-06
+     ],
+     "2": [
+      1e-08,
+      3e-07
+     ],
+     "3": [
+      1e-08,
+      1e-06
+     ]
+    },
+    "plateau_value": {
+     "0": -16443.92032176256,
+     "2": -164322.63888418674,
+     "3": 34350.72395950556
+    },
+    "coordinate_status": {
+     "0": "PLATEAU_OK",
+     "1": "NO_CLEAR_PLATEAU",
+     "2": "PLATEAU_OK",
+     "3": "PLATEAU_OK"
+    },
+    "theta_zero_column": {
+     "derivative_at_1e-4": -6.51925802230835e-05,
+     "gate_ok": true
+    },
+    "per_epsilon_valid": [
+     {
+      "epsilon": 1e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -16444.64209675789,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.6984919309616089,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -164319.9473619461,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 34350.15678405762,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -16443.943604826927,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.7605801026026409,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -164323.03624848527,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 34349.87738728523,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -16443.92032176256,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.11641532182693481,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -164322.6109445095,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 34350.85527598858,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -16443.473286926746,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.02017865578333537,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -164322.66682386398,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 34350.81491867702,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-06,
+      "valid_coordinates": [
+       0,
+       1,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -16443.592961877584,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.004656612873077393,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "PRIOR_TOPOLOGY_CHANGED",
+        "minus": "VALID_MARGIN",
+        "derivative": null,
+        "valid_pair": false
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 34350.72395950556,
+        "valid_pair": true
+       }
+      ]
+     }
+    ]
+   },
+   "gradient_metrics": {
+    "abs_error": [
+     0.3721450698758417,
+     6.51925802230835e-05,
+     0.09101356141036376,
+     0.03444670151657192
+    ],
+    "relative_error": [
+     2.2631676927448378e-05,
+     6.519258022308349e+295,
+     5.53870797223233e-07,
+     1.0027930419826628e-06
+    ],
+    "symmetric_relative_error": [
+     2.263142083394602e-05,
+     2.0,
+     5.538709506097055e-07,
+     1.0027935447798573e-06
+    ],
+    "cosine_similarity": 0.9999999999974618,
+    "normalized_l2_error": 2.2804272484330998e-06
+   },
+   "geometry_direction": {
+    "v_geom": [
+     9748.474475550254,
+     -0.0,
+     6819.253026558102,
+     -0.0203646736057458
+    ],
+    "alpha": [
+     -0.09748474475550255,
+     0.0,
+     -0.9741790037940147,
+     0.203646736057458
+    ],
+    "beta_local": 9.18271658371131e-07,
+    "identity_residual": 2.9103830456733704e-11,
+    "sqrt_aT_P0_a": 168678.1682399033
+   },
+   "boundary_approach": {
+    "v_geom": [
+     9748.474475550254,
+     -0.0,
+     6819.253026558102,
+     -0.0203646736057458
+    ],
+    "alpha": [
+     -0.09748474475550255,
+     0.0,
+     -0.9741790037940147,
+     0.203646736057458
+    ],
+    "beta_local": 9.18271658371131e-07,
+    "identity_residual": 2.9103830456733704e-11,
+    "sqrt_aT_P0_a": 168678.1682399033,
+    "lambda_min": 9.182716583711311e-08,
+    "lambda_max": 5.5096299502267865e-06,
+    "points": [
+     {
+      "lambda": 9.182716583711311e-08,
+      "b": 0.13940311968326569,
+      "b_linear": 0.13940314315259456,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.1390901287771241e-07,
+      "b": 0.1356783751398325,
+      "b_linear": 0.13567841764243255,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.4130092218887512e-07,
+      "b": 0.13105795625597239,
+      "b_linear": 0.13105800055523206,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 1.7527981418696943e-07,
+      "b": 0.12532642111182213,
+      "b_linear": 0.125326503294172,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.174296726836042e-07,
+      "b": 0.11821671482175589,
+      "b_linear": 0.11821674237138854,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 2.697153849836394e-07,
+      "b": 0.10939726233482361,
+      "b_linear": 0.10939728419550002,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 3.345743384470377e-07,
+      "b": 0.09845695551484823,
+      "b_linear": 0.09845699473133686,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 4.1503004344399225e-07,
+      "b": 0.08488571271300316,
+      "b_linear": 0.08488587378800054,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 5.148330794305339e-07,
+      "b": 0.06805105973035097,
+      "b_linear": 0.06805128049300954,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 6.386359345855282e-07,
+      "b": 0.04716822877526283,
+      "b_linear": 0.04716844166259504,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 7.92209889455953e-07,
+      "b": 0.021263502538204193,
+      "b_linear": 0.021263868265694208,
+      "exact_regime": "SRTI_N2",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": 9.827140550102624e-07,
+      "b": null,
+      "b_linear": -0.010870025422077989,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.2190291067660393e-06,
+      "b": null,
+      "b_linear": -0.050731215479760366,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.5121712725756117e-06,
+      "b": null,
+      "b_linear": -0.10017789904239705,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 1.8758058728140023e-06,
+      "b": null,
+      "b_linear": -0.16151511731925827,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.326884352518053e-06,
+      "b": null,
+      "b_linear": -0.23760220900817797,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 2.886434501812772e-06,
+      "b": null,
+      "b_linear": -0.33198610322957556,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 3.580540702093403e-06,
+      "b": null,
+      "b_linear": -0.4490666656568718,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 4.441559893805313e-06,
+      "b": null,
+      "b_linear": -0.594301805734239,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": 5.5096299502267865e-06,
+      "b": null,
+      "b_linear": -0.7744619064033033,
+      "exact_regime": "SRTI_N3",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     }
+    ],
+    "bracket": {
+     "lambda_minus": 7.92209889455953e-07,
+     "b_at_minus": 0.021263502538204193,
+     "lambda_plus": 9.827140550102624e-07,
+     "b_at_plus": null
+    },
+    "lambda_exact_estimate": null
+   },
+   "controls": {
+    "controls": [
+     {
+      "direction_type": "geometry",
+      "v": [
+       9748.474475550254,
+       0.0,
+       6819.253026558103,
+       -0.0203646736057458
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.01736840046942234,
+      "b_at_min": 0.01736840046942234,
+      "topology_changed": true,
+      "distance_to_transition": 1.071178705781207e-06
+     },
+     {
+      "direction_type": "random0",
+      "v": [
+       -33148.25855908809,
+       -0.8535604398622928,
+       1771.668330860612,
+       0.03122443771516142
+      ],
+      "initial_db_dlambda": -25412.744376808405,
+      "min_abs_b": 0.014876720495522022,
+      "b_at_min": 0.014876720495522022,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random1",
+      "v": [
+       79803.20667808941,
+       -0.3211357191549247,
+       -3347.4002911445846,
+       -0.017703499793428893
+      ],
+      "initial_db_dlambda": 59375.351294875145,
+      "min_abs_b": 0.16034463327378035,
+      "b_at_min": 0.16034463327378035,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random2",
+      "v": [
+       -60543.77079897051,
+       -0.3518368203115918,
+       -4824.9922040201,
+       0.01858568616659847
+      ],
+      "initial_db_dlambda": 129605.02691566944,
+      "min_abs_b": 0.166793548502028,
+      "b_at_min": 0.166793548502028,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent0",
+      "v": [
+       -35016.62987678509,
+       -0.8634155475434588,
+       752.885071664155,
+       0.03468848155226944
+      ],
+      "initial_db_dlambda": 0.01257285475730896,
+      "min_abs_b": 0.15489229559898376,
+      "b_at_min": 0.15489229559898376,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent1",
+      "v": [
+       88926.10858216728,
+       -0.3430942530482503,
+       -1011.7502029521802,
+       -0.026572631349443633
+      ],
+      "initial_db_dlambda": -0.023283064365386963,
+      "min_abs_b": 0.15489204786717892,
+      "b_at_min": 0.15489204786717892,
+      "topology_changed": false,
+      "distance_to_transition": null
+     }
+    ]
+   },
+   "acceptance": {
+    "orientation": "PASS",
+    "margin_reference_stability": "PASS",
+    "sign_gate": "PASS",
+    "sign_gate_rate": 1.0,
+    "analytic_gradient": "PASS",
+    "fd_plateau": "PASS",
+    "gradient_gate": "PASS",
+    "cosine_similarity": 0.9999999999974618,
+    "normalized_l2_error": 2.2804272484330998e-06,
+    "geometry_direction_identity": "PASS",
+    "boundary_approach": "PASS",
+    "controls": "PASS",
+    "message": ""
+   }
+  },
+  "B2_N1_side": {
+   "branch": "B2",
+   "side": "N1_side",
+   "gamma0_deg": -4.03125,
+   "K": 4.82421875,
+   "phase_f_reference_phi_m": 0.102113,
+   "expected_regime": "SRTI_N3",
+   "nominal": {
+    "classification": "VALID_MARGIN",
+    "b": -0.10312712751328945,
+    "sigma": -1.0,
+    "initial_state": [
+     6471000.0,
+     0.0,
+     7000.0,
+     -0.0703585854710214
+    ],
+    "K": 4.82421875,
+    "channel": "atmosphere_exit",
+    "branch_index": 2,
+    "exact_regime": "SRTI_N3",
+    "prior_event_sequence": [
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry"
+    ],
+    "prior_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "critical_segment_id": 4,
+    "critical_mode": "SANGER_ATM",
+    "critical_trigger": "atmosphere_exit",
+    "t_star": 1250.9665226389245,
+    "x_star": [
+     6471000.1031271275,
+     1.269473961105067,
+     6144.358913680695,
+     5.834362940687621e-17
+    ],
+    "guard_value": 0.10312712751328945,
+    "guard_derivative": 3.5848419940262293e-13,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "solver_label": "REF-0.1",
+    "message": "virtual margin evaluated on the tracked extremum branch."
+   },
+   "topology": {
+    "regime": "SRTI_N3",
+    "skip_count": 3,
+    "true_switch_signature": [
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry",
+     "sanger_atmosphere_exit",
+     "sanger_atmosphere_entry"
+    ],
+    "event_kinds": [
+     "synthetic_initial_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "atmosphere_exit",
+     "vacuum_apogee",
+     "atmosphere_entry",
+     "atmospheric_pullout",
+     "srti"
+    ],
+    "terminal_kind": "srti",
+    "terminal_time": 1598.4676247649556
+   },
+   "reference_audit": {
+    "production": {
+     "b": -0.10316393990069628,
+     "t_star": 1250.9665228191345,
+     "x_star": [
+      6471000.10316394,
+      1.2694739612667172,
+      6144.358913469823,
+      3.903127820947816e-17
+     ],
+     "guard_derivative": 2.398221821705276e-13,
+     "exact_regime": "SRTI_N2",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.1": {
+     "b": -0.10312712751328945,
+     "t_star": 1250.9665226389245,
+     "x_star": [
+      6471000.1031271275,
+      1.269473961105067,
+      6144.358913680695,
+      5.834362940687621e-17
+     ],
+     "guard_derivative": 3.5848419940262293e-13,
+     "exact_regime": "SRTI_N3",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    },
+    "REF-0.05": {
+     "b": -0.10312708280980587,
+     "t_star": 1250.9665226387679,
+     "x_star": [
+      6471000.103127083,
+      1.2694739611048895,
+      6144.358913680633,
+      -6.329707808241936e-17
+     ],
+     "guard_derivative": -3.889199659256524e-13,
+     "exact_regime": "SRTI_N3",
+     "event_sequence": [
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry",
+      "atmospheric_pullout",
+      "atmosphere_exit",
+      "vacuum_apogee",
+      "atmosphere_entry"
+     ],
+     "classification": "VALID_MARGIN"
+    }
+   },
+   "analytic_gradient": {
+    "a_raw": [
+     -0.27009393429699313,
+     0.0,
+     -21.021077229380136,
+     442106.6308043069
+    ],
+    "a_scaled": [
+     -27009.393429699314,
+     0.0,
+     -147147.54060566096,
+     44210.66308043069
+    ],
+    "a_whitened": [
+     -27009.393429699314,
+     0.0,
+     -147147.54060566096,
+     44210.66308043069
+    ],
+    "sqrt_aT_P0_a": 156001.56656183387,
+    "n_star": [
+     -1.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "prior_saltation_denominators": [
+     396.95865555855136,
+     -396.9586555587231,
+     277.4582471354623,
+     -277.458247135339
+    ],
+    "critical_saltation_excluded": true
+   },
+   "sign_gate": {
+    "samples": [
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.3,
+      "delta_x0": [
+       0.003433610969891252,
+       0.0,
+       0.0013094451293466848,
+       -5.6203490142882105e-09
+      ],
+      "b": -0.13406530302017927,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 0.7,
+      "delta_x0": [
+       0.008011758929746253,
+       0.0,
+       0.0030553719684755973,
+       -1.3114147700005822e-08
+      ],
+      "b": -0.17531633377075195,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 1.2,
+      "delta_x0": [
+       0.013734443879565008,
+       0.0,
+       0.005237780517386739,
+       -2.2481396057152842e-08
+      ],
+      "b": -0.22688010055571795,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "geometry_normal",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.02289073979927501,
+       0.0,
+       0.008729634195644567,
+       -3.746899342858807e-08
+      ],
+      "b": -0.3093824256211519,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.3,
+      "delta_x0": [
+       -0.003433610969891252,
+       0.0,
+       -0.0013094451293466848,
+       5.6203490142882105e-09
+      ],
+      "b": -0.0721890814602375,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 0.7,
+      "delta_x0": [
+       -0.008011758929746253,
+       0.0,
+       -0.0030553719684755973,
+       1.3114147700005822e-08
+      ],
+      "b": -0.0309383450075984,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 1.2,
+      "delta_x0": [
+       -0.013734443879565008,
+       0.0,
+       -0.005237780517386739,
+       2.2481396057152842e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "opposite_geometry",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.02289073979927501,
+       0.0,
+       -0.008729634195644567,
+       3.746899342858807e-08
+      ],
+      "b": null,
+      "sign_b": null,
+      "exact_regime": "SRTI_N2",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": 1,
+      "agreement": null,
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -8.310385555629819e-05,
+       -2.0181960115931506e-07,
+       0.001296369986487678,
+       6.016454377620226e-08
+      ],
+      "b": -0.10375668480992317,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.00016620771111259638,
+       -4.0363920231863013e-07,
+       0.002592739972975356,
+       1.2032908755240452e-07
+      ],
+      "b": -0.1043860549107194,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.017382568337322882,
+       3.791174751240399e-07,
+       -0.00016095496376912344,
+       -5.1237915107685973e-08
+      ],
+      "b": -0.1270912867039442,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.034765136674645765,
+       7.582349502480798e-07,
+       -0.0003219099275382469,
+       -1.0247583021537195e-07
+      ],
+      "b": -0.15105538628995419,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.03262673838113862,
+       4.1129224147764395e-07,
+       -0.002272900392818437,
+       -2.3656856640453634e-08
+      ],
+      "b": -0.07461953163146973,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "random2",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.06525347676227725,
+       8.225844829552879e-07,
+       -0.004545800785636874,
+       -4.731371328090727e-08
+      ],
+      "b": -0.04611205402761698,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 1.0,
+      "delta_x0": [
+       -0.008125728664553716,
+       5.356618665601955e-07,
+       -0.0006666281106110041,
+       -3.666072818447073e-08
+      ],
+      "b": -0.1031271843239665,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent0",
+      "amplitude": 2.0,
+      "delta_x0": [
+       -0.016251457329107433,
+       1.071323733120391e-06,
+       -0.0013332562212220083,
+       -7.332145636894146e-08
+      ],
+      "b": -0.10312710609287024,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 1.0,
+      "delta_x0": [
+       0.03279799568208633,
+       1.4203447047183703e-07,
+       0.0007275720704319584,
+       5.463136422401151e-08
+      ],
+      "b": -0.10312726814299822,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "kind": "tangent1",
+      "amplitude": 2.0,
+      "delta_x0": [
+       0.06559599136417266,
+       2.8406894094367405e-07,
+       0.001455144140863917,
+       1.0926272844802303e-07
+      ],
+      "b": -0.10312710795551538,
+      "sign_b": -1.0,
+      "exact_regime": "SRTI_N3",
+      "switch_signature": [
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry",
+       "sanger_atmosphere_exit",
+       "sanger_atmosphere_entry"
+      ],
+      "expected_side_sign": -1,
+      "agreement": true,
+      "classification": "VALID_MARGIN"
+     }
+    ],
+    "valid_count": 16,
+    "agreement_count": 16,
+    "agreement_rate": 1.0,
+    "mismatch_classifications": {}
+   },
+   "fd_sweep": {
+    "epsilons": [
+     1e-08,
+     3e-08,
+     1e-07,
+     3e-07,
+     1e-06
+    ],
+    "plateau": {
+     "0": [
+      1e-08,
+      1e-06
+     ],
+     "2": [
+      1e-08,
+      3e-07
+     ],
+     "3": [
+      1e-08,
+      1e-06
+     ]
+    },
+    "plateau_value": {
+     "0": -27009.43499803543,
+     "2": -147147.92060355347,
+     "3": 44210.68821102381
+    },
+    "coordinate_status": {
+     "0": "PLATEAU_OK",
+     "1": "NO_CLEAR_PLATEAU",
+     "2": "PLATEAU_OK",
+     "3": "PLATEAU_OK"
+    },
+    "theta_zero_column": {
+     "derivative_at_1e-4": 0.00015366822481155396,
+     "gate_ok": true
+    },
+    "per_epsilon_valid": [
+     {
+      "epsilon": 1e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -27011.102065443993,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 1.5366822481155396,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -147148.31486344337,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 44215.00489115715,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-08,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -27010.18626491229,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.27939677238464355,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -147149.51006074747,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 44210.19305785497,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -27009.332552552223,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.22351741790771484,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -147147.10414409637,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 44210.697524249554,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 3e-07,
+      "valid_coordinates": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -27009.43499803543,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 0.03880510727564494,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -147147.52634366354,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 44210.68821102381,
+        "valid_pair": true
+       }
+      ]
+     },
+     {
+      "epsilon": 1e-06,
+      "valid_coordinates": [
+       0,
+       1,
+       3
+      ],
+      "columns": [
+       {
+        "coordinate": 0,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -27009.349782019854,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 1,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": -0.010710209608078003,
+        "valid_pair": true
+       },
+       {
+        "coordinate": 2,
+        "plus": "VALID_MARGIN",
+        "minus": "PRIOR_TOPOLOGY_CHANGED",
+        "derivative": null,
+        "valid_pair": false
+       },
+       {
+        "coordinate": 3,
+        "plus": "VALID_MARGIN",
+        "minus": "VALID_MARGIN",
+        "derivative": 44210.67703515291,
+        "valid_pair": true
+       }
+      ]
+     }
+    ]
+   },
+   "gradient_metrics": {
+    "abs_error": [
+     0.04156833611705224,
+     0.00015366822481155396,
+     0.37999789250898175,
+     0.02513059311604593
+    ],
+    "relative_error": [
+     1.5390325675120133e-06,
+     1.5366822481155395e+296,
+     2.582427752070514e-06,
+     5.684283239617294e-07
+    ],
+    "symmetric_relative_error": [
+     1.5390313832023028e-06,
+     2.0,
+     2.5824244176082726e-06,
+     5.684281624063956e-07
+    ],
+    "cosine_similarity": 0.9999999999998395,
+    "normalized_l2_error": 2.45568002554873e-06
+   },
+   "geometry_direction": {
+    "v_geom": [
+     17313.539873327925,
+     -0.0,
+     6602.70795313684,
+     -0.028339884050399614
+    ],
+    "alpha": [
+     -0.17313539873327927,
+     0.0,
+     -0.943243993305263,
+     0.2833988405039961
+    ],
+    "beta_local": -6.610646917600873e-07,
+    "identity_residual": 2.9103830456733704e-11,
+    "sqrt_aT_P0_a": 156001.56656183387
+   },
+   "boundary_approach": {
+    "v_geom": [
+     17313.539873327925,
+     -0.0,
+     6602.70795313684,
+     -0.028339884050399614
+    ],
+    "alpha": [
+     -0.17313539873327927,
+     0.0,
+     -0.943243993305263,
+     0.2833988405039961
+    ],
+    "beta_local": -6.610646917600873e-07,
+    "identity_residual": 2.9103830456733704e-11,
+    "sqrt_aT_P0_a": 156001.56656183387,
+    "lambda_min": -6.610646917600873e-08,
+    "lambda_max": -3.9663881505605235e-06,
+    "points": [
+     {
+      "lambda": -6.610646917600873e-08,
+      "b": -0.09281445574015379,
+      "b_linear": -0.0928144147619605,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -8.200321310174514e-08,
+      "b": -0.0903345812112093,
+      "b_linear": -0.09033449780631331,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.0172267620444447e-07,
+      "b": -0.08725822903215885,
+      "b_linear": -0.08725823067053393,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.2618411477798597e-07,
+      "b": -0.08344222605228424,
+      "b_linear": -0.08344220793270539,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.565278403637621e-07,
+      "b": -0.07870854716747999,
+      "b_linear": -0.07870853920600192,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -1.941683773116092e-07,
+      "b": -0.07283659372478724,
+      "b_linear": -0.07283655647590917,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -2.4086040323694204e-07,
+      "b": -0.06555259507149458,
+      "b_linear": -0.06555252728561149,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -2.9878054630059336e-07,
+      "b": -0.05651692394167185,
+      "b_linear": -0.05651689423219635,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -3.7062885243060666e-07,
+      "b": -0.04530850052833557,
+      "b_linear": -0.04530844592110007,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -4.5975465255301194e-07,
+      "b": -0.03140483610332012,
+      "b_linear": -0.031404681480927954,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -5.703126973465096e-07,
+      "b": -0.014157663099467754,
+      "b_linear": -0.014157453297128919,
+      "exact_regime": "SRTI_N3",
+      "classification": "VALID_MARGIN"
+     },
+     {
+      "lambda": -7.074568380080674e-07,
+      "b": null,
+      "b_linear": 0.0072372474908505985,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -8.77580281787559e-07,
+      "b": null,
+      "b_linear": 0.03377677122934536,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.0886136222116063e-06,
+      "b": null,
+      "b_linear": 0.06669830293227352,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.3503945371821295e-06,
+      "b": null,
+      "b_linear": 0.10753653576366537,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -1.675126389054932e-06,
+      "b": null,
+      "b_linear": 0.1581952133683479,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -2.077947105120553e-06,
+      "b": null,
+      "b_linear": 0.22103587611814446,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -2.5776348578180575e-06,
+      "b": null,
+      "b_linear": 0.2989879483307174,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -3.197483441164521e-06,
+      "b": null,
+      "b_linear": 0.3956852983638992,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     },
+     {
+      "lambda": -3.9663881505605235e-06,
+      "b": null,
+      "b_linear": 0.5156356375664471,
+      "exact_regime": "SRTI_N2",
+      "classification": "PRIOR_TOPOLOGY_CHANGED"
+     }
+    ],
+    "bracket": {
+     "lambda_minus": -7.074568380080674e-07,
+     "b_at_minus": null,
+     "lambda_plus": -5.703126973465096e-07,
+     "b_at_plus": -0.014157663099467754
+    },
+    "lambda_exact_estimate": null
+   },
+   "controls": {
+    "controls": [
+     {
+      "direction_type": "geometry",
+      "v": [
+       17313.539873327925,
+       0.0,
+       6602.707953136841,
+       -0.02833988405039961
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.011564331129193306,
+      "b_at_min": -0.011564331129193306,
+      "topology_changed": true,
+      "distance_to_transition": -5.869367394587155e-07
+     },
+     {
+      "direction_type": "random0",
+      "v": [
+       -33148.25855908809,
+       -0.8535604398622928,
+       1771.668330860612,
+       0.03122443771516142
+      ],
+      "initial_db_dlambda": -14484.663493931293,
+      "min_abs_b": 0.04567555896937847,
+      "b_at_min": -0.04567555896937847,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random1",
+      "v": [
+       79803.20667808941,
+       -0.3211357191549247,
+       -3347.4002911445846,
+       -0.017703499793428893
+      ],
+      "initial_db_dlambda": 40984.72697660327,
+      "min_abs_b": 0.1058364687487483,
+      "b_at_min": -0.1058364687487483,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "random2",
+      "v": [
+       -60543.77079897051,
+       -0.3518368203115918,
+       -4824.9922040201,
+       0.01858568616659847
+      ],
+      "initial_db_dlambda": NaN,
+      "min_abs_b": 0.11145629454404116,
+      "b_at_min": -0.11145629454404116,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent0",
+      "v": [
+       -34906.60781919211,
+       -0.8572637043421766,
+       1163.6354742494725,
+       0.034002675112219376
+      ],
+      "initial_db_dlambda": 0.014435499906539917,
+      "min_abs_b": 0.10312706511467695,
+      "b_at_min": -0.10312706511467695,
+      "topology_changed": false,
+      "distance_to_transition": null
+     },
+     {
+      "direction_type": "tangent1",
+      "v": [
+       87422.80638501624,
+       -0.3328272545609033,
+       -1671.4501104367562,
+       -0.026064553955614245
+      ],
+      "initial_db_dlambda": -0.026542693376541138,
+      "min_abs_b": 0.10312710143625736,
+      "b_at_min": -0.10312710143625736,
+      "topology_changed": false,
+      "distance_to_transition": null
+     }
+    ]
+   },
+   "acceptance": {
+    "orientation": "PASS",
+    "margin_reference_stability": "PASS",
+    "sign_gate": "PASS",
+    "sign_gate_rate": 1.0,
+    "analytic_gradient": "PASS",
+    "fd_plateau": "PASS",
+    "gradient_gate": "PASS",
+    "cosine_similarity": 0.9999999999998395,
+    "normalized_l2_error": 2.45568002554873e-06,
+    "geometry_direction_identity": "PASS",
+    "boundary_approach": "PASS",
+    "controls": "PASS",
+    "message": ""
+   }
+  }
+ },
+ "total_wall_seconds": 1636.2222971916199
+}
