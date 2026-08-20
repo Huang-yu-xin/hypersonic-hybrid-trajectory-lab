@@ -2,7 +2,7 @@
 
 > **Status: FROZEN** (2026-08-21)
 > Branch: `feature/phase-h-uncertainty-risk`
-> Freeze commits: `a03b364` (header ref) → `fa7c476` (deterministic re-run) → `2171795` (initial H3-2)
+> Freeze commits: `65dba42` (freeze marker) → `a03b364` (header ref) → `fa7c476` (deterministic re-run) → `2171795` (initial H3-2)
 > Authoritative doc: `docs/phase_h/h3_2_leakage_point_adaptive_geometry_is.md`
 > Result analysis report: `docs/phase_h/h3_2_result_analysis.md`
 
@@ -35,12 +35,13 @@
 ## 2. Commits
 
 ```
+65dba42 H3-2 实验冻结（FROZEN）：生成 freeze 报告，添加 FROZEN 状态标记
 a03b364 docs: 更新报告 commit 引用为确定版 fa7c476
 fa7c476 H3-2 确定版重跑（稳定 crc32 种子 + 增量落盘）：修正真实系统 x*-xL 分离伪影，填充模板结果报告
 2171795 完成 H3-2 variance-optimal leakage-point 自适应 Geometry-IS（MPP 与泄漏点分离验证 + 三方法 ablation）
 ```
 
-提交链：`a03b364 → fa7c476 → 2171795 → 319d9c6 (H3-1) → 127ce0c (H3-0)`，完整。
+提交链：`65dba42 → a03b364 → fa7c476 → 2171795 → 319d9c6 (H3-1) → 127ce0c (H3-0)`，完整。
 
 ---
 
@@ -280,7 +281,7 @@ Synthetic curved regime 验证 probability geometry ≠ variance geometry（$d =
 
 ```
 SHA-256: 29e09cb69d0642730e660b84614918cdbb6e4b43c615812b66177aa9fb2c9f4b
-Commits:  a03b364 → fa7c476 → 2171795
+Commits:  65dba42 (freeze) → a03b364 → fa7c476 → 2171795
 Tests:    145 passed
 Seeds:    crc32-stable
 ```
