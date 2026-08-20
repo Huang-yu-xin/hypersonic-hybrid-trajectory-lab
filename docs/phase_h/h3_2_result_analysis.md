@@ -4,8 +4,8 @@
 
 > 项目：RareTopo — Rare Topology Transition Estimation in Hybrid Dynamical Systems
 > 分支：`feature/phase-h-uncertainty-risk` · dataset：`tests/data/h3_2_leakage_point_dataset_v1.json`
-> （`h3-2-leakage-point-dataset-v1`）· Commit：`2171795`（H3-2 权威文档见
-> `docs/phase_h/h3_2_leakage_point_adaptive_geometry_is.md`）
+> （`h3-2-leakage-point-dataset-v1`，确定版：crc32 稳定种子）· Commit：`fa7c476`
+> （H3-2 权威文档见 `docs/phase_h/h3_2_leakage_point_adaptive_geometry_is.md`）
 
 ---
 
