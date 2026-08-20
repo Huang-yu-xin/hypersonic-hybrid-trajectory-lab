@@ -2,6 +2,9 @@
 
 ## Variance-Optimal Leakage-Point Adaptive Geometry-IS Validation
 
+> **STATUS: FROZEN (2026-08-21)** — see `docs/phase_h/H3_2_experiment_freeze.md`
+> Frozen commits: `a03b364 → fa7c476` · dataset SHA-256: `29e09cb6...`
+
 > 项目：RareTopo — Rare Topology Transition Estimation in Hybrid Dynamical Systems
 > 分支：`feature/phase-h-uncertainty-risk` · dataset：`tests/data/h3_2_leakage_point_dataset_v1.json`
 > （`h3-2-leakage-point-dataset-v1`，确定版：crc32 稳定种子）· Commit：`fa7c476`

@@ -6,10 +6,12 @@
 > 分支：`feature/phase-h-uncertainty-risk`
 > 上游：H2R ACCEPTED · ML-B1 COMPLETE · H3-0 COMPLETE / FROZEN
 > （`127ce0c`）· H3-1 COMPLETE（`319d9c6`）· H3 Theory Audit COMPLETE
-> 状态：**H3-2 COMPLETE / READY FOR REVIEW**（2026-08-21）
+> 状态：**H3-2 COMPLETE / FROZEN**（2026-08-21）
+> Frozen commits：`a03b364 → fa7c476` · dataset SHA-256：`29e09cb6...`
+> 冻结报告：`docs/phase_h/H3_2_experiment_freeze.md`
 > 执行 brief：`PareTopo_H3-2_Variance_Optimal_Leakage_Point_Adaptive_Geometry_IS_Task.md`
 > dataset：`tests/data/h3_2_leakage_point_dataset_v1.json`
-> （`schema_version = h3-2-leakage-point-dataset-v1`）
+> （`schema_version = h3-2-leakage-point-dataset-v1`，SHA-256 `29e09cb6...`）
 > 代码：`src/hyptraj/uncertainty/leakage_point_geometry.py` ·
 > `src/hyptraj/uncertainty/adaptive_geometry_is.py` ·
 > `scripts/run_h3_2_adaptive_geometry_is.py`
@@ -250,5 +252,5 @@ Artifacts:
     tests/data/h3_2_leakage_point_dataset_v1.json
     tests/test_h3_2_adaptive_geometry_is.py
 
-Commit: <filled at acceptance>
+Commit: a03b364 (freeze header) → fa7c476 (deterministic re-run) → 2171795 (initial H3-2)
 ```
