@@ -136,10 +136,18 @@ def _eval_proposal(z_q, w_q, labels_q, nominal, alpha_dir, p_k_mc, p_total_mc, c
 # ---------------------------------------------------------------------------
 # Per-experiment runner (shared synthetic/real skeleton)
 # ---------------------------------------------------------------------------
+def _stable_seed(eid: str) -> int:
+    """Deterministic per-experiment seed (builtin ``hash`` is randomized
+    per-process in Python 3, which would break reproducibility)."""
+    import zlib
+
+    return SEED + (zlib.crc32(eid.encode("utf-8")) % 1000)
+
+
 def run_experiment(exp_cfg: dict, mlb1: dict | None = None) -> dict:
     eid = exp_cfg["experiment_id"]
     kind = exp_cfg["kind"]
-    rng = np.random.default_rng(SEED + hash(eid) % 1000)
+    rng = np.random.default_rng(_stable_seed(eid))
     d = 4
 
     if kind.startswith("synthetic"):
@@ -498,7 +506,21 @@ def main() -> None:
             f"[{time.perf_counter()-t0:.0f}s]",
             flush=True,
         )
+        _persist(experiments)  # incremental: survives session interruption
 
+    dataset = _build_dataset(experiments)
+    DATASET_OUT.write_text(
+        json.dumps(dataset, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    fig_files = make_figures(experiments, FIG_DIR)
+    print("\n=== SUMMARY ===")
+    print(json.dumps(dataset["summary"], indent=1))
+    print(f"figures: {fig_files}")
+    print(f"total wall time: {time.perf_counter()-t0:.0f}s")
+
+
+def _build_dataset(experiments: list[dict]) -> dict:
+    """Assemble the dataset dict (reused by incremental persistence)."""
     summary = {
         "n_experiments": len(experiments),
         "per_experiment": {
@@ -516,7 +538,7 @@ def main() -> None:
             for e in experiments
         },
     }
-    dataset = {
+    return {
         "schema_version": "h3-2-leakage-point-dataset-v1",
         "status": "GENERATED",
         "freeze_stage": "H3-2",
@@ -526,14 +548,15 @@ def main() -> None:
         "experiments": experiments,
         "summary": summary,
     }
+
+
+def _persist(experiments: list[dict]) -> None:
+    """Incrementally write the dataset after every completed experiment."""
     DATASET_OUT.write_text(
-        json.dumps(dataset, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps(_build_dataset(experiments), indent=1, ensure_ascii=False)
+        + "\n",
+        encoding="utf-8",
     )
-    fig_files = make_figures(experiments, FIG_DIR)
-    print("\n=== SUMMARY ===")
-    print(json.dumps(summary, indent=1))
-    print(f"figures: {fig_files}")
-    print(f"total wall time: {time.perf_counter()-t0:.0f}s")
 
 
 if __name__ == "__main__":
