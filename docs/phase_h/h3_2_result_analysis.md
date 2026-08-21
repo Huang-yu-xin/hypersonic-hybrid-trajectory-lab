@@ -4,6 +4,10 @@
 
 > **STATUS: FROZEN (2026-08-21)** — see `docs/phase_h/H3_2_experiment_freeze.md`
 > Frozen commits: `a03b364 → fa7c476` · dataset SHA-256: `29e09cb6...`
+> C1 stability audit (2026-08-21, `docs/phase_h/H3_2_C1_stability_audit.md`):
+> real C1 separation confirmed **unstable (Case A)** — 4 seeds d_L ∈ {0, 0, 0, 0.32},
+> 16N d_L = 0.47, flat landscape (gap 1.01–1.21); old 1.136 is a sampling artifact.
+> H3-2 claim unchanged: $x^{\ast}\neq x_L$ proven only in synthetic curved regime.
 
 > 项目：RareTopo — Rare Topology Transition Estimation in Hybrid Dynamical Systems
 > 分支：`feature/phase-h-uncertainty-risk` · dataset：`tests/data/h3_2_leakage_point_dataset_v1.json`

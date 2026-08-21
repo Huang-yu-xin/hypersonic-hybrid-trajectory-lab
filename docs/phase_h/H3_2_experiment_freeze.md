@@ -5,6 +5,8 @@
 > Freeze commits: `65dba42` (freeze marker) → `a03b364` (header ref) → `fa7c476` (deterministic re-run) → `2171795` (initial H3-2)
 > Authoritative doc: `docs/phase_h/h3_2_leakage_point_adaptive_geometry_is.md`
 > Result analysis report: `docs/phase_h/h3_2_result_analysis.md`
+> **C1 stability audit (2026-08-21, post-freeze, `docs/phase_h/H3_2_C1_stability_audit.md`, commit `7d013f6`)**:
+> real C1 separation confirmed **unstable (Case A)**; frozen dataset & claims unchanged.
 
 ---
 

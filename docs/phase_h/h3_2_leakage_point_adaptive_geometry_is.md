@@ -9,6 +9,10 @@
 > 状态：**H3-2 COMPLETE / FROZEN**（2026-08-21）
 > Frozen commits：`a03b364 → fa7c476` · dataset SHA-256：`29e09cb6...`
 > 冻结报告：`docs/phase_h/H3_2_experiment_freeze.md`
+> C1 stability audit（2026-08-21）：`docs/phase_h/H3_2_C1_stability_audit.md`
+> —— real C1 separation 判定**不稳定（Case A）**：4 seeds d_L ∈ {0,0,0,0.32}、
+> 16N d_L=0.47、landscape 平坦（gap 1.01-1.21）；旧 1.136 为采样伪影；
+> claim 维持：$x^{\ast}\neq x_L$ 仅在 synthetic curved（Exp B, 0.775）中成立
 > 执行 brief：`PareTopo_H3-2_Variance_Optimal_Leakage_Point_Adaptive_Geometry_IS_Task.md`
 > dataset：`tests/data/h3_2_leakage_point_dataset_v1.json`
 > （`schema_version = h3-2-leakage-point-dataset-v1`，SHA-256 `29e09cb6...`）
