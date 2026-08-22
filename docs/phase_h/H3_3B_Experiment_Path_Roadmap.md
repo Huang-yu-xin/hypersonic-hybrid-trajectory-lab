@@ -194,7 +194,7 @@ P3：III/IV 空缺 ⇒ 如实标注空缺；Gate 3-1 改为"已填充象限的�
 | P1 曲率扫描 | **COMPLETE**（`79bd8c9`） | `79bd8c9` | `H3_3B_Phase1_Curvature_Transition_Scan_Report.md` | P1-A/B/C 全过（C4 勘误披露） |
 | P2 阈值标定 | **COMPLETE**（ABS 全局窗口存在） | —（见 P2 提交） | `H3_3B_Phase2_Covariance_Map_Report.md` | P2-CK1..5 全过 |
 | P2R 真机 N（可选） | PLAN | — | — | 方向性 |
-| P3 联合 map | PLAN | — | — | 3-1/2/3 |
+| P3 联合 map | **COMPLETE**（四象限全 populated） | —（见 P3 提交） | `H3_3B_Phase3_Joint_Regime_Map_Report.md` | 3-1/3-2 过、3-3 记录 |
 | H3-3B Final Summary v2 | PLAN | — | — | — |
 | 论文 Section X 增量 | PLAN | — | — | — |
 
