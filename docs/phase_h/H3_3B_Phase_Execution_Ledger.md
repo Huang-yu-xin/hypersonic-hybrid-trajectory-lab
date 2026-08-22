@@ -140,8 +140,8 @@ $R_\eta$（seed 均值，$s^2$: 0.75→2）：A 1.834→1.226 · B 1.590→1.103
 | P1 曲率扫描 | COMPLETE | `79bd8c9` | §1 |
 | P2 阈值标定 | COMPLETE | `57a0e66` | §2 |
 | P2R 真机 N（可选） | 未排期 | — | §4 |
-| P3 联合 map | PLAN | — | §3 |
-| H3-3B Final Summary v2 | PLAN | — | — |
+| P3 联合 map | COMPLETE | `ef35423` | §3 |
+| H3-3B Final Summary v2 | **COMPLETE** | —（见收尾提交） | `H3_3B_Final_Summary.md`（独立状态入口） |
 | 论文 Section X 增量 | PLAN | — | — |
 
 ## §6 一句话总结

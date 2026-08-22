@@ -195,7 +195,7 @@ P3：III/IV 空缺 ⇒ 如实标注空缺；Gate 3-1 改为"已填充象限的�
 | P2 阈值标定 | **COMPLETE**（ABS 全局窗口存在） | —（见 P2 提交） | `H3_3B_Phase2_Covariance_Map_Report.md` | P2-CK1..5 全过 |
 | P2R 真机 N（可选） | PLAN | — | — | 方向性 |
 | P3 联合 map | **COMPLETE**（四象限全 populated） | —（见 P3 提交） | `H3_3B_Phase3_Joint_Regime_Map_Report.md` | 3-1/3-2 过、3-3 记录 |
-| H3-3B Final Summary v2 | PLAN | — | — | — |
+| H3-3B Final Summary v2 | **COMPLETE** | —（见收尾提交） | `H3_3B_Final_Summary.md` | — |
 | 论文 Section X 增量 | PLAN | — | — | — |
 
 > 执行规则：每完成一行，回填状态/commit/报告列并在该阶段核对单逐项打勾；任何一行未核对完毕不得开启下一行（P2R 可与 P3 并行）。
