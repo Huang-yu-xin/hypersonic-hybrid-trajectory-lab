@@ -81,11 +81,18 @@
 
 ## 6. 下一步接口（不在 H3-3B 内）
 
-1. **P2R（可选）**：真机 C1/C2 N∈{512,1024} 收敛检查（预算 2–3 h）——检验 cov 杠杆 ρ 随 N 上升；
+1. ~~P2R（可选）：真机 C1/C2 N∈{512,1024} 收敛检查~~ → **Stage 1 已执行（见 §9）**；
 2. **mixture/compound proposal**：$q=\sum_k\pi_k\mathcal N(m_k,\Sigma_k)$ 进 H3-3B 框架（pilot §11.3 遗留）；
 3. **ML-H4 接口**：学习 $(system,q)\to(C_\eta,R_\eta,G_\eta)$（Theory Extension Sec. 8；输入低维 proposal 参数，输出区域描述子）；
 4. **论文 Section X 增量**：叙事骨架已备——盲性定理（不可能性结果）→ 偏移锚定/泄漏感知的必然性 → 曲率响应律与饱和尺度 → 四象限 regime map；
-5. **形状算子内蕴形式化**（评审 Q3(c)）：future work。
+5. **形状算子内蕴形式化**（评审 Q3(c)）：future work；
+6. **真机辅助字段审计（P2R 新发现）**：`h3_3b_multi_system_validation_v1.json` 真机 is_performance 字段存在 nominal 常量伪影（详见 §9），如未来消费真机 VRF/p̂ 须先行重算。
+
+## 9. P2R 增补（2026-08-22 晚，Stage 1）
+
+真机 cov 杠杆的样本量稳健性检查按两阶段预注册附记执行（`8954ae8` 预注册先于结果）。**Stage 1 (512,256) 主 Gate 双系统通过且改善**：C1 $\rho$ 0.9095→0.9459（+0.036）、C2 0.8610→0.9459（+0.085）；(512,256) 档下全部 8 个 seed-sweep 的 4 点 (tr$\Sigma_V$, $R_\eta$) 排列**完美单调**（per-seed ρ=1.000）。**真机稳健性声明升级**：cov 杠杆映射在加倍样本量下无退化、逐 seed 完全可预测。Stage 2 (1024 档) 按附记裁定不启动（主 Gate 已过，边际信息不抵 5.4h）。
+
+**附带 corpus 级新发现（勘误已登记）**：辅助字段 p_mc/is_performance 存在 nominal 常量伪影（'S0' vs expected_regime 'SRTI_N2'），且同样存在于 multi-system JSON 的真机 is_performance 字段——诊断确认采样流与环境与冻结管线逐位一致（seed-matched 标签分布精确复现基线 127/256=0.4961），$\rho$/regime map 结论不受波及；真机 VRF/p̂ 如需消费须先重算。详见台账 §4.3 与 P2R JSON `erratum_v1_1` 块。
 
 ## 7. ASCII 总结块
 

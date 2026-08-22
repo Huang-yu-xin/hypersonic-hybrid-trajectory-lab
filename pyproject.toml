@@ -23,3 +23,5 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# .venv/Scripts/python -m pip install -e ".[dev]"

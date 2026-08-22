@@ -87,7 +87,12 @@ def run_case(case: str, mlb1: dict) -> dict:
         rng = np.random.default_rng(seed)
         z_mc = rng.standard_normal((N_MC_NEW, ms.DIM))
         labels_mc = np.asarray(label_fn(z_mc))
-        ind_mc = labels_mc != ms.NOMINAL
+        # ERRATUM (v1.1): nominal must be the case expected_regime from
+        # _real_setup (C1/C2: 'SRTI_N2'), NOT ms.NOMINAL ('S0') -- no real
+        # sample is ever 'S0', so the v1 run reported p_mc==1.0 and
+        # is_performance acceptance 100% throughout.  The primary endpoint
+        # rho(tr Sigma_V, R_eta) is nominal-independent and unaffected.
+        ind_mc = labels_mc != nominal
         p_mc = float(ind_mc.mean())
         var_mc = p_mc * (1 - p_mc) / N_MC_NEW
 
