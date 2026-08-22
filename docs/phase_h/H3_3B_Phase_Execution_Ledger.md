@@ -153,7 +153,7 @@ $R_\eta$（seed 均值，$s^2$: 0.75→2）：A 1.834→1.226 · B 1.590→1.103
 - **根因**：辅助字段用了错误 nominal 常量（`ms.NOMINAL='S0'` 而非 case expected_regime `'SRTI_N2'`）。诊断确认采样流与动力学环境与冻结管线**逐位一致**（seed-matched 前 256 标签分布 {N1:127,N2:129} 精确复现基线 127/256=0.4961）；$\beta_{local}=\pm9.3\times10^{-7}$（设计点在 nominal 边界，plateau 机制），协议本身如此。
 - **波及范围**：主端点 $\rho$ 与全部区域描述子 nominal 无关、**不受影响**；受影响的是 p_mc 与 is_performance 辅助字段。
 - **corpus 级发现**：同样伪影存在于 `h3_3b_multi_system_validation_v1.json` 的真机 is_performance 字段（acc=n_total、p̂≈0.98）——即 multi-system 报告 §4.3 引用的真机 VRF 数值（0.34–0.96）在该常量下语义存疑。已登记为未来审计项；$\rho$/regime map 结论不受波及。
-- 处置：JSON 打 `erratum_v1_1` 块；脚本 v1.1 修正常量；真机辅助字段如需消费须先行重算。
+- 处置：JSON 打 `erratum_v1_1` 块；脚本 v1.1 修正常量；真机辅助字段如需消费须先行重算。**→ 已重算：`H3_3B_Real_VRF_Audit.md`（双 Scope 同流重标注）交付 nominal-corrected 干净数据，并反转出 provenance 发现（multi-system 真机行不可复现、干净替代 ρ=0.9095/0.8853/0.9459），详见该报告 §3–§5。**
 
 ## §5 主控清单镜像（与路线图 §7 同步）
 

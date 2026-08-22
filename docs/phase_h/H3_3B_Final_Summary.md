@@ -86,7 +86,7 @@
 3. **ML-H4 接口**：学习 $(system,q)\to(C_\eta,R_\eta,G_\eta)$（Theory Extension Sec. 8；输入低维 proposal 参数，输出区域描述子）；
 4. **论文 Section X 增量**：叙事骨架已备——盲性定理（不可能性结果）→ 偏移锚定/泄漏感知的必然性 → 曲率响应律与饱和尺度 → 四象限 regime map；
 5. **形状算子内蕴形式化**（评审 Q3(c)）：future work；
-6. **真机辅助字段审计（P2R 新发现）**：`h3_3b_multi_system_validation_v1.json` 真机 is_performance 字段存在 nominal 常量伪影（详见 §9），如未来消费真机 VRF/p̂ 须先行重算。
+6. **真机辅助字段审计（P2R 新发现 → 已闭环）**：`H3_3B_Real_VRF_Audit.md` 完成双 Scope 同流重标注——修正后真机 p̂≈0.39–0.51、VRF≈0.21–0.66（语义干净，全部 <1 与"不 rare"一致）；**provenance 发现**：multi-system 真机行不可被 committed 管线复现（存储侧行来源不可考），干净替代 ρ=0.9095/0.8853（256,128）与 0.9459/0.9459（512,256），Gate-A 结论两口径均稳健；真机 VRF 引用以审计 JSON 为准。
 
 ## 9. P2R 增补（2026-08-22 晚，Stage 1）
 
