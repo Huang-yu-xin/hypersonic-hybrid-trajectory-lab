@@ -5,6 +5,7 @@
 > 论文主线：ICML 2027 方法论文
 > 仓库目标路径：`docs/phase_h/H3_3B_Theory_Extension.md`
 > **状态：THEORY FOUNDATION（H3-3B 理论基础；实验未开始）**
+> **增补（v2,2026-08-22）**:外部评审后回填 定理 4.4 / 推论 4.5 / 注 4.6–4.7 / 注 5.1(MPP 锚定方差盲性及其对协方差杠杆路径的前提修正);原有章节编号与全部结论不变。
 > 依据链：H3_Final_Summary（H3-3A COMPLETE / frozen）· H3_Theory_Consolidation_Variance_Leakage · H3_3A_set_valued_variance_geometry
 > 本文用途：为 H3-3B「proposal $q$ 如何塑造 variance geometry $\nu_V$」建立**唯一理论依据**——只建框架,不出实验结论。
 
@@ -37,6 +38,8 @@
 | $M_2=\int_A\dfrac{p^2}{q}\,dx=\sum_k L_k$ | estimator 二阶矩;$L_k=\int_{A_k}\dfrac{p^2}{q}\,dx$ | H3-1 精确恒等式 |
 | $x^*=\arg\min_{x\in A}\lVert x\rVert$ | probability design point(MPP),probability geometry 代表点 | 控制 $P_f$ |
 | $x_L=\arg\max_{x\in A}\rho_V(x)$ | variance leakage point,variance geometry 代表点 | 控制 $M_2$;平坦景观下不稳定(H3-2 C1 audit) |
+| **$D_L=\lVert x^*-x_L\rVert$** | 点级 alignment 距离(**v2 新增**);区域级对应量为 $D_\eta$ | 见定理 4.4 |
+| **$N_A(x)$** | $A$ 在 $x$ 处的法锥(**v2 新增**,凸分析标准记号:$N_A(x)=\{v:\langle v,z-x\rangle\le0\ \forall z\in A\}$) | 定理 4.4 证明用 |
 | $\mathcal L_\eta=\{x\in A:\rho_V(x)\ge c_\eta\}$,s.t. $\nu_V^{(q)}(\mathcal L_\eta)\ge\eta$ | variance-critical high-contribution region(HDR) | H3-3A |
 | $D_\eta=\mathrm{dist}(x^*,\mathcal L_\eta)$ | 区域分离(**到最近点**) | H3-3A |
 | $m_\eta=\mathbb E_{\nu_V}[X\mid X\in\mathcal L_\eta]$ | 区域**加权质心** | H3-3A(注:$m_\eta$ 带下标,区别于 proposal mean $m$) |
@@ -296,6 +299,65 @@ $$
 
 第三行给出清晰的物理直觉:proposal 越宽($\sigma^2\uparrow$),$p^2/q\to p^2/\text{const}\propto p^2$,故 $\Sigma_V$ 趋于 $p^2$ 自身的协方差 $\tfrac12 I$;proposal 逼近合法性边界($\sigma^2\to\tfrac12^{+}$),$\Sigma_V$ 发散——variance geometry 在失去良定义前先「摊平」。
 
+**定理 4.4（MPP 锚定下的方差盲性,v2 增补）。** 设失效集 $A\subseteq\mathbb R^d$ 非空、闭、凸且 $0\notin A$,$x^*=\operatorname*{proj}_A(0)$,$\beta=\lVert x^*\rVert>0$,点级 alignment 距离 $D_L=\lVert x^*-x_L\rVert$。若 proposal 锚在 MPP,即 $m=x^*$,则对**任意**合法协方差 $\Sigma\succ\tfrac12 I$,$\rho_V$ 在 $A$ 上的最大值在 $x^*$ 处**唯一**取得:
+
+$$
+\boxed{\ x_L=x^*,\qquad D_L=0.\ }
+$$
+
+换言之,把 proposal 对准 MPP 时,variance 密度的峰必与 probability design point 重合,**与 $\Sigma$ 的选取无关**。该定理只以定理 2.1 的对数展开为输入,不需要 $\mu_V,\Sigma_V$ 的显式形式;反过来,它也构成 Section 4 闭式的一个独立 sanity check($m=x^*$ 时受约束最大必落在 $x^*$)。
+
+**证明(坐标无关的一阶条件 + 凹性)。** 记 $\phi(x)$ 为 $\log\rho_V(x)=2\log p(x)-\log q(x)$ 中与 $x$ 相关的部分。由定理 2.1,
+
+$$
+\phi(x)=-\tfrac12x^{\mathsf T}\Lambda x-x^{\mathsf T}\Sigma^{-1}m+\text{const},\qquad
+\Lambda=2I-\Sigma^{-1},
+$$
+
+$\phi$ 为二次多项式,$\nabla\phi(x)=-\Lambda x-\Sigma^{-1}m$,$\nabla^2\phi=-\Lambda$。
+
+**(0) 良定性。** 合法性 $\Lambda\succ0$ 使 $\phi$ 严格凹且强制($\lVert x\rVert\to\infty$ 时 $\phi\to-\infty$);$A$ 非空闭保证最大值取得,严格凹保证最大元唯一,记 $x_L$。
+
+**(1) $x^*$ 对任意 $\Sigma$ 满足一阶条件。** 代入 $m=x^*$ 并用 $\Lambda+\Sigma^{-1}=2I$:
+
+$$
+\nabla\phi(x^*)=-\Lambda x^*-\Sigma^{-1}x^*=-(\Lambda+\Sigma^{-1})x^*=-2x^*.
+$$
+
+由投影的变分不等式 $\langle -x^*,z-x^*\rangle\le0\ (\forall z\in A)$ 知 $-x^*\in N_A(x^*)$(法锥);法锥是锥,故 $\nabla\phi(x^*)=2(-x^*)\in N_A(x^*)$。关键在于 $m=x^*$ 使梯度的 $\Sigma^{-1}(x-m)$ 项在 $x^*$ 处**恒消失**——因此一阶条件对一切 $\Sigma$ 同时成立。
+
+**(2) 凹性把驻点升级为全局最大。** 凸集上的凹函数:$x^*$ 为全局最大 $\iff \nabla\phi(x^*)\in N_A(x^*)$,已由 (1) 验证;严格凹给出唯一性。故 $x_L=x^*$。$\blacksquare$
+
+**推论 4.5（$\Sigma=I$ 特例:纯投影恒等式）。** $\Sigma=I$ 时 $\rho_V\propto\mathcal N(-m,I)$,$x_L=\operatorname*{proj}_A(-m)$,于是定理 4.4 化为与 proposal 无关的几何恒等式
+
+$$
+\operatorname*{proj}_A\!\big(-\operatorname*{proj}_A(0)\big)=\operatorname*{proj}_A(0)
+\qquad(\forall\ \text{闭凸 }A,\ 0\notin A).
+$$
+
+*初等证明(备选).* 变分不等式给 $\langle x^*,z\rangle\ge\beta^2$;Cauchy–Schwarz 给 $\beta\lVert z\rVert\ge\langle x^*,z\rangle\ge\beta^2$,故 $\lVert z\rVert\ge\beta$;于是
+
+$$
+\lVert z+x^*\rVert^2-\lVert 2x^*\rVert^2=\lVert z\rVert^2+2\langle x^*,z\rangle-3\beta^2\ \ge\ \beta^2+2\beta^2-3\beta^2=0,
+$$
+
+等号仅在 $z=x^*$;凸集投影唯一,得证。$\square$
+
+**注 4.6（$\tfrac12 I$ 不是巧合——同一不等式的三顶帽子,v2 增补）。** 命题 3.1 的矩阵不等式 $\Sigma^{-1}\preceq2I$(即 $\Lambda\succeq0$,即 $\Sigma\succeq\tfrac12 I$)同时编码三件事:
+
+1. **可积性**(命题 3.1):$\rho_V=p^2/q$ 是正规高斯核当且仅当 $\Lambda\succ0$;
+2. **对数凹性**:$\log\rho_V$ 的 Hessian 为 $-\Lambda$;
+3. **证明常数**:定理 4.4 步骤 (2) 把「$x^*$ 恒成立的驻点性」升级为全局最大所需的凹性正是 $\Lambda\succeq0$。
+
+因子 2 恰为 $p$ 进入 $\rho_V$ 的幂次:$\rho_V$ 的精度 $=2\cdot\mathrm{prec}(p)-\mathrm{prec}(q)=2I-\Sigma^{-1}$。三种情形:严格 $\Sigma\succ\tfrac12I$ 时定理 4.4 成立且 $x_L$ 唯一;边界 $\Sigma=\tfrac12I$ 时 $\Lambda=0$、$\phi$ 退化为仿射、$\rho_V$ **不可积**——其上确界虽仍形式地落在 $x^*$,但对象已非概率密度,被合法性条件正确排除;$\Sigma\prec\tfrac12I$ 时框架失效。**合法性界、对数凹门槛与盲性定理的证明常数是同一个结构事实,而非巧合。**
+
+**注 4.7（凸性必要;多模态并集的伪 mismatch,v2 增补）。** 定理中凸性不可去:反例 $A=\{z:\lVert z\rVert\ge1\}$(环形,原点在洞内),取 $x^*=e_1$,则镜像点 $-e_1$ 本身落在 $A$ 内,$\operatorname*{proj}_A(-e_1)=-e_1\neq x^*$,$D_L=2>0$。一般地,失效机制是 $A$ 相对线段 $[-x^*,x^*]$ 的非凸性(「包裹」)。对多模态并集 $A=\bigsqcup_k A_k$(各 $A_k$ 凸、并集非凸):
+
+- **并集级**计算(单一锚 $m$):即使取 $m=x^*_{\text{union}}$,镜像点也可能落入另一模态,投影发生跨模态切换,产生纯属几何切换的非零 $D_L$——按 frozen B/S1/S2 锚点粗估可达 $\approx3.2$,它不是任何单模态的真实几何性质;
+- **逐模态**计算(H3 语料约定,shared anchor):每个模态内的 $x_{L,k}$ 是该凸模态上真实的受约束最大——偏移锚下可与 $x_k^*$ 分离(那是真实几何,frozen B/S2 的 $d_L=0.775$ 即此类),MPP 锚下则恒重合(定理 4.4)。
+
+union 级对照计算已列入 Phase 1 任务书,用以实证展示这一伪迹并反向证成逐模态约定。
+
 ---
 
 # Section 5 — Topology Truncation
@@ -323,6 +385,8 @@ $$
 $$
 
 $x^*$ 是否被排除取决于**马氏距离** $(x^*-\mu_V)^{\mathsf T}\Sigma_V^{-1}(x^*-\mu_V)$。这给出 H3-3A §7.1 遗留问题的理论出路:**通过设计 $\Sigma$ 使 $\Sigma_V$ 在 $x^*$ 方向收窄**,可让椭球 HDR 排除 MPP——即协方差杠杆为「触发区域级分离」提供了除「平移 $q$」之外的第二条路径。**能否真正触发是 H3-3B 实验的检验对象(见 Section 7 假设),本节不作断言。**
+
+**注 5.1(定理 4.4 对上述「第二条路径」的前提修正,v2 增补)。** 上段设想有一个此前未被言明的隐含前提:**proposal 不能锚在 MPP**。若 $m=x^*$ 且 $A$ 凸,则由定理 4.4,$x_L=x^*$ 对一切合法 $\Sigma$ 成立,即 $x^*$ 是 $\rho_V$ 在 $A$ 上的唯一最大元;此时任何 HDR $\mathcal L_\eta$($\eta<1$)必含 $x^*$,故 $D_\eta\equiv0$——**「椭球 HDR 排除 MPP」在 MPP 锚定下不可能,无论 $\Sigma$ 如何设计**。「收窄 $\Sigma_V$ 使 HDR 甩开 $x^*$」只有在**偏移锚定**($m\neq x^*$,如语料基线 $\mu_{base}$:此时 $x_L=\operatorname*{proj}_A(-m)\neq x^*$,核峰与 MPP 分离)的前提下才成为可行机制。这与 H3-3A 的经验($D_{0.8}\equiv0$,frozen 协议恰为偏移锚但核宽 $\Sigma_V=I$)和 Phase 1 任务书的主约定选择($\mu_{base}$)一致。
 
 ---
 
@@ -443,6 +507,7 @@ $$
 > 3. 阐明 topology 截断如何把解析椭球核塑造为真实 $\nu_V^{(q)}$(Section 5),并把 HDR 由「球」推广为「椭球」,给出「协方差杠杆触发区域级分离」的理论路径;
 > 4. 提出区域级描述子 $C_\eta,G_\eta$(Section 6),补上 H3-3A 中 $D_\eta\equiv0$ 的盲区;
 > 5. 将后续实验凝练为三条**可检验假设** H1–H3(Section 7),并声明 ML 接口(Section 8)。
+> 6. **(v2 增补)** 证明 **MPP 锚定方差盲性定理**(定理 4.4):凸失效集 + $m=x^*$ 时 $x_L=x^*$ 对一切合法 $\Sigma$ 成立,并给出纯投影恒等式(推论 4.5);阐明合法性界 $\tfrac12 I$ 同时是可积性、对数凹性与该定理的证明常数(**注 4.6**,三顶帽子);界定凸性前提与多模态并集伪 mismatch(注 4.7);据此修正 Section 5 协方差杠杆路径的前提——触发区域级分离需要偏移锚定(注 5.1)。
 >
 > 以上均为**框架与推导**;一切经验性结论留待 H3-3B 实验,在 frozen 记账框架 $M_2=\sum_k L_k$ 下检验。
 
@@ -476,6 +541,11 @@ Hypotheses (to test, NOT proven):
 
 NOT claimed: universal mismatch; Gaussian covers all hybrids;
   complete regime map; ML prediction done.
+
+Blindness theorem (v2):  A convex, m = x*  =>  x_L = x*  (any legit Sigma)
+  first-order + concavity;  1/2 I = integrability = log-concavity = proof const
+  corollary: proj_A(-proj_A(0)) = proj_A(0);
+  region-level separation (D_eta > 0) needs offset anchor, not just Sigma design.
 
 Contribution: a theoretical framework for proposal-dependent variance geometry.
   All empirical claims deferred to H3-3B experiments.
