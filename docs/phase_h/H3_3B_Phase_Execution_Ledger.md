@@ -131,7 +131,7 @@ $R_\eta$（seed 均值，$s^2$: 0.75→2）：A 1.834→1.226 · B 1.590→1.103
 
 ## §4 P2R 真机 N 收敛检查【Stage 1 COMPLETE @ 见提交记录；Stage 2 未触发】
 
-执行：`run_h3_3b_p2r_real_n_convergence.py` Stage 1（(512,256) × C1/C2 × $s^2$ 全 sweep × 4 seeds），wall ≈ 3.3 h。预注册附记 `H3_3B_P2R_RealN_Convergence_Task.md` 先于结果入库（`8954ae8`）。
+执行：`run_h3_3b_p2r_real_n_convergence.py` Stage 1（(512,256) × C1/C2 × $s^2$ 全 sweep × 4 seeds），实际 wall **1.67 h**（低于附记 2.7h 估计；报告 `H3_3B_P2R_RealN_Convergence_Report.md`）。预注册附记 `H3_3B_P2R_RealN_Convergence_Task.md` 先于结果入库（`8954ae8`）。
 
 ### 4.1 主 Gate（预注册：$\rho_{new}\ge\rho_{baseline}-0.03$，基线同公式重算）
 
