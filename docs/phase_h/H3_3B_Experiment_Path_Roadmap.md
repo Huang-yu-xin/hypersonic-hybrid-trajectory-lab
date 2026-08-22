@@ -191,8 +191,8 @@ P3：III/IV 空缺 ⇒ 如实标注空缺；Gate 3-1 改为"已填充象限的�
 
 | 阶段 | 状态 | 冻结 commit | 报告 | 关键 Gate |
 |---|---|---|---|---|
-| P1 曲率扫描 | PLAN（任务书 v2 已冻结） | — | — | P1-A/B/C |
-| P2 阈值标定 | PLAN（复用为主） | — | — | P2-CK3 |
+| P1 曲率扫描 | **COMPLETE**（`79bd8c9`） | `79bd8c9` | `H3_3B_Phase1_Curvature_Transition_Scan_Report.md` | P1-A/B/C 全过（C4 勘误披露） |
+| P2 阈值标定 | **COMPLETE**（ABS 全局窗口存在） | —（见 P2 提交） | `H3_3B_Phase2_Covariance_Map_Report.md` | P2-CK1..5 全过 |
 | P2R 真机 N（可选） | PLAN | — | — | 方向性 |
 | P3 联合 map | PLAN | — | — | 3-1/2/3 |
 | H3-3B Final Summary v2 | PLAN | — | — | — |
