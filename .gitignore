@@ -13,3 +13,6 @@ venv/
 
 # Generated experiment outputs
 results/
+
+# local tool state
+.workbuddy/
