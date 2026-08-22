@@ -133,11 +133,20 @@ def stored_rho_ms(stored, case):
 # ---------------------------------------------------------------------------
 # Scope A: multi-system reproduction with corrected perf
 # ---------------------------------------------------------------------------
+def _rescue(block: dict, tag: str) -> None:
+    """Incremental checkpoint: preserve completed work if a later stage fails."""
+    p = OUT_JSON.with_suffix(".partial.json")
+    p.write_text(json.dumps({"rescue_tag": tag, **block}, indent=1),
+                 encoding="utf-8")
+    print(f"  [rescue] partial state written -> {p.name}", flush=True)
+
+
 def scope_a(mlb1: dict) -> tuple[dict, dict]:
     stored = json.loads(MS_JSON.read_text(encoding="utf-8"))
     report, checks = {}, {"p_mc_match": True, "R_eta_bitmatch_maxabs": 0.0,
                           "rho_match_maxabs": 0.0}
     for case in CASES:
+      try:
         cfg = next(c for c in ms.CASES if c["experiment_id"] == case)
         env, vehicle, K, center, alpha_dir, nominal, alpha, mu_base = (
             ms._real_setup(cfg, mlb1))
@@ -158,7 +167,8 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
         lab_by_i = dict(zip(range(len(all_z)), all_labels))
         for seed, record, reqs in per_seed_meta:
             mode = record["anchors"]["mode"]
-            # gather this seed's slices in order
+            # gather this seed's slices in order; own[0] is the 'mc' request,
+            # own[j] corresponds to reqs[j] (reqs[0] IS the mc request)
             own = [(i, b) for i, b in enumerate(index) if b[0] == seed]
             labels_map = {i: lab_by_i[i] for i, b in own}
             z_mc = record["_z_mc"]
@@ -169,10 +179,10 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
                 checks["p_mc_match"] = False
 
             sweeps = {"mean_sweep": {}, "cov_sweep": {}}
-            j = 0
-            for req in reqs:
-                i_req = own[1 + j][0]
-                labels_q = labels_map[i_req]
+            for j, req in enumerate(reqs):
+                if req["kind"] == "mc":
+                    continue                     # already materialised above
+                labels_q = lab_by_i[own[j][0]]
                 rec = materialise(req["z"], req["m"], req["Sigma"], labels_q,
                                   z_mc, labels_mc, p_mc, var_mc, nominal)
                 if req["kind"] == "mean" and record["aligned"]:
@@ -180,8 +190,9 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
                         sweeps["mean_sweep"][f"lambda_{lam:+.1f}"] = rec
                 else:
                     sweeps[req["kind"] + "_sweep"][req["cfg_key"]] = rec
-                j += 1
             per_seed[str(seed)] = {"p_mc": p_mc, "var_mc": var_mc, **sweeps}
+            print(f"  [scope A] {SHORT[case]} seed={seed} materialised",
+                  flush=True)
 
         # Check 3: R_eta bit-match + rho vs stored-recomputed
         rows_tr, rows_R = [], []
@@ -205,6 +216,11 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
             "per_seed": per_seed,
             "rho_cov_audited": rho_audited, "rho_stored_recomputed": rho_stored,
         }
+        _rescue({"scope_A_multi_system": report}, f"scope_A/{SHORT[case]}")
+      except Exception as exc:
+        _rescue({"scope_A_multi_system": report, "error": repr(exc),
+                 "failed_case": case}, f"scope_A/{SHORT[case]}/FAILED")
+        raise
     return report, checks
 
 
@@ -215,6 +231,7 @@ def scope_b(mlb1: dict) -> tuple[dict, dict]:
     stored = json.loads(P2R_JSON.read_text(encoding="utf-8"))
     report, checks = {}, {"R_eta_bitmatch_maxabs": 0.0, "rho_match_maxabs": 0.0}
     for case in CASES:
+      try:
         cfg = next(c for c in ms.CASES if c["experiment_id"] == case)
         env, vehicle, K, center, alpha_dir, nominal, alpha, mu_base = (
             ms._real_setup(cfg, mlb1))
@@ -260,6 +277,11 @@ def scope_b(mlb1: dict) -> tuple[dict, dict]:
                                "mode": mode, "per_seed": per_seed,
                                "rho_cov_audited": rho_audited,
                                "rho_stored": rho_stored}
+        _rescue({"scope_B_p2r": report}, f"scope_B/{SHORT[case]}")
+      except Exception as exc:
+        _rescue({"scope_B_p2r": report, "error": repr(exc),
+                 "failed_case": case}, f"scope_B/{SHORT[case]}/FAILED")
+        raise
     return report, checks
 
 
