@@ -156,9 +156,12 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
         for seed in SEEDS:
             record, reqs = ms.audit_system(cfg, mlb1, seed, "real")
             per_seed_meta.append((seed, record, reqs))
+            # NB: reqs[0] IS the mc request (same z as record['_z_mc']) --
+            # append it only ONCE, then reqs[1:] in order.  Duplicating it
+            # misaligns every later batch by one (the relaunch-1 failure).
             all_z.append(record["_z_mc"])
             index.append((seed, "mc", None))
-            for req in reqs:
+            for req in reqs[1:]:
                 all_z.append(req["z"])
                 index.append((seed, req["kind"], req["cfg_key"]))
         all_labels = batch_labels(label_fn, all_z)
@@ -183,6 +186,7 @@ def scope_a(mlb1: dict) -> tuple[dict, dict]:
                 if req["kind"] == "mc":
                     continue                     # already materialised above
                 labels_q = lab_by_i[own[j][0]]
+                assert len(labels_q) == len(req["z"]), "batch misalignment"
                 rec = materialise(req["z"], req["m"], req["Sigma"], labels_q,
                                   z_mc, labels_mc, p_mc, var_mc, nominal)
                 if req["kind"] == "mean" and record["aligned"]:
