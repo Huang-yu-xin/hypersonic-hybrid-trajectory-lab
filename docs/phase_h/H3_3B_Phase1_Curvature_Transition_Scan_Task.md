@@ -1,13 +1,13 @@
-# H3-3B Phase 1 — Curvature Transition Scan：任务书（设计冻结 v2）
+# H3-3B Phase 1 — Curvature Transition Scan：任务书（设计冻结 v2.1）
 
-> **Status: TASK FROZEN v2（设计冻结；实验未执行、无任何结果）**
+> **Status: TASK FROZEN v2.1（设计冻结；dry-run 已通过；全量实验执行中/未写入报告）**
 > Branch: `feature/phase-h-uncertainty-risk`
 > 论文主线：ICML 2027 方法论文
 > 上游设计：`docs/phase_h/H3_3B_Regime_Map_Theory_and_Experiment_Plan.md`（§6.1 Phase 1）
 > 理论依据：`H3_3B_Theory_Extension.md` **定理 4.4（MPP 锚定方差盲性）/ 推论 4.5 / 注 4.6–4.7 / 注 5.1**（v2 增补）
 > 外部评审：`H3_3B_Phase1_Design_Defect_External_Review.md`（评审说明书）+ 已回收专家意见（处理记录见该文件 §8）
 > **本文用途：Phase 1 的唯一执行任务书。冻结扫描轴 / 参数化边界族 / 计算协议 / Gates / 失败处理预案。不写任何实验结果；不含实验代码。**
-> **与上游计划 v1 任务书的偏差见 §5.4（DV1–DV6）。**
+> **与上游计划 v1 任务书的偏差见 §5.4（DV1–DV7）。**
 
 ---
 
@@ -26,6 +26,8 @@
 |---|---|
 | v1（2026-08-22） | 初版冻结：扫描轴/边界族/协议/Gates/七条失败预案；设计期核验发现 $m=x^*$ 协议结构性零（DV1–DV3） |
 | **v2（2026-08-22）** | 吸收外部评审：(i) 纠错 $a=0$ 行（主约定解析值 $d_L=0.0162$，非 0）；(ii) 发现并修正 scratch 的方法错误——小 $a$ 区存在**内点峰体制**，Layer-D 增加内点分支；(iii) 统计量替换（$\gamma_{on}$ → 初始斜率 $s_0$ + 饱和尺度 $\gamma_{sat}$）；(iv) 新增 union-A 强制对照与第二非二次族稳健性 probe；(v) Gate 阈值相应修订；(vi) 理论引用升级为定理 4.4 |
+| **v2.1（2026-08-22，实现期澄清 DV7）** | dry-run 发现：网格层 $\lVert x^*\rVert$ 关于 $c$ 是阶梯函数（离散 argmin 随格点进入失效区跳变），对其二分钉参不适定。裁定：钉参条件保持在**连续层**（光滑适定）；anchor config（$a=0.5$）改为**逐位硬编码 frozen 边界 $c=1.0$**（全层一致：deterministic/网格桥接/MC），其连续层 $\beta=1.479237$ 与全局 $\beta_B=1.483825$ 差 0.309%，作为位级复现的代价显式记录；$\gamma$ 报告统一用全局 $\beta_B$。$a^\ast=0.05306$ 不变 |
+| **v2.2（2026-08-22，执行期勘误）** | Gate P1-C/C4 预注册论证勘误：C4 所引"frozen B 的 $d_L$ 本身 seed 稳定"是**固定密集网格层**的性质，而 C4 实际检验的 MC 样本池 argmin 点估计正是 H3-3A 证明不稳定的对象。全量执行实测 anchor 四 seed 极差 0.482，复现该结论——按 §8-F4 处置：deterministic 层为 Figure A 权威数据源，失败如实披露于报告 §6，不影响进入后续阶段 |
 
 四条硬约束不变：**不写结果；区分层级（已证定理 / hypothesis / 执行计划）；不修改 frozen artifact；诚实优先。**
 
@@ -172,7 +174,7 @@ $\Sigma\succ\tfrac12I$ 全程满足；每 config 记录极小点唯一性 `gap_r
 
 **(d) 一般 $\Sigma$ 数值自检 ✅**（定理 4.4 支撑证据之一）：frozen-B 钉 β 构型上，$\Sigma\in\{I,0.75I,2I,\mathrm{diag}(1.5,0.8),旋转椭圆,0.51I\}$ 的马氏投影解全部 $D_L\le7\times10^{-8}$。
 
-### 5.4 对上游计划的偏差清单（DV1–DV6）
+### 5.4 对上游计划的偏差清单（DV1–DV7）
 
 | # | 原计划 | 修订 | 理由 |
 |---|---|---|---|
@@ -182,6 +184,7 @@ $\Sigma\succ\tfrac12I$ 全程满足；每 config 记录极小点唯一性 `gap_r
 | DV4 | "$\beta\kappa\gtrsim1$ 出现分离" | 重述为：分离任意 $a>0$ 存在，$\beta\kappa\sim1$ 是饱和尺度标志 | 设计期核验 + 评审第三节 |
 | DV5 | 无跨模态检查 | 新增 union-A 强制对照（Layer D） | 展示伪 mismatch ≈3.19，证成逐模态约定 |
 | DV6 | 单一族 | 新增第二非二次族 probe（Layer D，6 config） | 分离曲率效应与族特异性 |
+| DV7 | （隐含假设：钉参层唯一） | 明确：钉参条件在**连续层**求 $c(a)$（网格层为阶梯函数，二分不适定）；anchor config **逐位硬编码** frozen 边界 $c{=}1.0$，其连续 $\beta$ 与全局 $\beta_B$ 差 0.309%，$\gamma$ 统一用全局 $\beta_B$ 报告 | dry-run 实测发现；位级锚点复现与光滑钉参二者的兼容解 |
 
 ---
 
