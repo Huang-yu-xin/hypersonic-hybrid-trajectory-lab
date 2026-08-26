@@ -1,0 +1,1428 @@
+{
+ "schema_version": "raretopo-m1d-benchmark-freeze-v0",
+ "parent_tag": "RareTopo-M1-v0",
+ "parent_commit": "a825863ec20f8dfe0f4011c0f1ec71faf2a893db",
+ "h3_tag": "RareTopo-H3-v1.0",
+ "git_commit": "fba11db",
+ "config_sha256": "9049bd27fbf0e0864ada9d83b3995ca6f9c2c1c3d1db7ec12848f5617a912386",
+ "task_sha256": "6cf51ae3d2893006faac8dd3e343ba77e4a48cbac5be5dfccdbc49fb058e6f91",
+ "frozen_at_utc": "2026-08-26T17:22:27+00:00",
+ "rule": {
+  "order": "sort eligible configs by config_id ascending across batches (batch_seed asc, then batch_index asc -- zero-padded ids make string order equal this order)",
+  "take": 8,
+  "artifacts": [
+   "results/phase_m1d/benchmark_freeze/M1_D_Benchmark_Freeze.json",
+   "results/phase_m1d/benchmark_freeze/M1_D_Benchmark_Freeze.md"
+  ],
+  "no_threshold_relaxation": true,
+  "no_config_removal_after_freeze": true,
+  "n_candidates_seen": 64,
+  "n_eligible_total": 21,
+  "batches_consumed": [
+   {
+    "file": "results\\phase_m1d\\benchmark_freeze\\candidate_pool_b20260827_v1.json",
+    "sha256": "b0b60c95dc4b06f6977de2f8103cd76399ac88b468e40a30a755c4469e67330c",
+    "batch_seed": 20260827,
+    "pool_size": 64,
+    "n_eligible": 21
+   }
+  ]
+ },
+ "benchmark_configs": [
+  {
+   "config_id": "m1d_b20260827_c000",
+   "params": {
+    "theta_deg": [
+     141.66362018618284,
+     314.7157956539067,
+     73.49193262692648,
+     11.387006538556275
+    ],
+    "h": [
+     1.884922114327688,
+     2.462522340923709,
+     1.7671454133352618,
+     2.3112338912614594
+    ],
+    "curved": [
+     false,
+     false,
+     true,
+     false
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.0,
+     0.19698461729843864,
+     0.0
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.005634020785329718,
+     "L_ref": 6.654136867705446,
+     "raw_count": 33036,
+     "raw_fraction": 0.09438857142857143,
+     "counts_per_stratum": [
+      8196,
+      8164,
+      8225,
+      8451
+     ],
+     "P_ref_mc_crosscheck": 0.0056,
+     "analytic_P": 0.006898178871163285,
+     "analytic_L": 9.675517450374532
+    },
+    "S3": {
+     "P_ref": 0.02313334966703122,
+     "L_ref": 0.034041155547057174,
+     "raw_count": 38514,
+     "raw_fraction": 0.11004,
+     "counts_per_stratum": [
+      9753,
+      9671,
+      9552,
+      9538
+     ],
+     "P_ref_mc_crosscheck": 0.02316
+    },
+    "S4": {
+     "P_ref": 0.010417944390125057,
+     "L_ref": 4.797536276711555,
+     "raw_count": 62595,
+     "raw_fraction": 0.17884285714285714,
+     "counts_per_stratum": [
+      15589,
+      15655,
+      15698,
+      15653
+     ],
+     "P_ref_mc_crosscheck": 0.010013333333333334,
+     "analytic_P": 0.010409969657871387,
+     "analytic_L": 4.792812321135589
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.005557152176914775,
+      0.005726962340845478
+     ],
+     "S3": [
+      0.022877148410609168,
+      0.023380476754567323
+     ],
+     "S4": [
+      0.010319186052957325,
+      0.010508747435201263
+     ]
+    },
+    "L": {
+     "S2": [
+      6.585606191166561,
+      6.716772179338608
+     ],
+     "S3": [
+      0.033477305816998565,
+      0.034607628978163975
+     ],
+     "S4": [
+      4.747106555890051,
+      4.840691159875439
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S3",
+     "S4",
+     "S2"
+    ],
+    "L_ref_order": [
+     "S2",
+     "S4",
+     "S3"
+    ],
+    "rank_P": {
+     "S2": 3,
+     "S3": 1,
+     "S4": 2
+    },
+    "rank_L": {
+     "S2": 1,
+     "S3": 3,
+     "S4": 2
+    },
+    "k_P_star": "S3",
+    "k_V_star": "S2",
+    "kendall_tau_PV": -1.0,
+    "spearman_rho_PV": -1.0,
+    "pairwise_inversions": [
+     {
+      "a": "S3",
+      "b": "S2",
+      "ratio_P": 4.106010706823723,
+      "ratio_L": 195.47329580240088
+     },
+     {
+      "a": "S3",
+      "b": "S4",
+      "ratio_P": 2.2205291946997545,
+      "ratio_L": 140.93341426320345
+     },
+     {
+      "a": "S4",
+      "b": "S2",
+      "ratio_P": 1.8491135881592904,
+      "ratio_L": 1.3869904225646603
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S3",
+     "b": "S2",
+     "ratio_P": 4.106010706823723,
+     "ratio_L": 195.47329580240088,
+     "score": 4.106010706823723
+    },
+    "omega_top_missing": 0.5793402738327096,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c001",
+   "params": {
+    "theta_deg": [
+     137.64443923920612,
+     345.0810586757269,
+     274.1625030305114,
+     87.1737012908423
+    ],
+    "h": [
+     1.979043086892589,
+     2.078088904370156,
+     2.4647335885265287,
+     1.5632829858367985
+    ],
+    "curved": [
+     false,
+     true,
+     false,
+     false
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.4179166043856928,
+     0.0,
+     0.0
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.010453392827904695,
+     "L_ref": 8.41189658118733,
+     "raw_count": 33489,
+     "raw_fraction": 0.09568285714285714,
+     "counts_per_stratum": [
+      8299,
+      8424,
+      8235,
+      8531
+     ],
+     "P_ref_mc_crosscheck": 0.010453333333333334
+    },
+    "S3": {
+     "P_ref": 0.006834520772196712,
+     "L_ref": 7.635365804170468,
+     "raw_count": 45086,
+     "raw_fraction": 0.12881714285714285,
+     "counts_per_stratum": [
+      11196,
+      11191,
+      11317,
+      11382
+     ],
+     "P_ref_mc_crosscheck": 0.006973333333333333,
+     "analytic_P": 0.006855757881171487,
+     "analytic_L": 7.624752823234161
+    },
+    "S4": {
+     "P_ref": 0.05929772249071285,
+     "L_ref": 0.12003348535431725,
+     "raw_count": 82091,
+     "raw_fraction": 0.23454571428571427,
+     "counts_per_stratum": [
+      20601,
+      20440,
+      20540,
+      20510
+     ],
+     "P_ref_mc_crosscheck": 0.05986,
+     "analytic_P": 0.058993024198249755,
+     "analytic_L": 0.11952985016451789
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.010333770795750662,
+      0.010595339141730265
+     ],
+     "S3": [
+      0.006757432534459845,
+      0.006905449380131697
+     ],
+     "S4": [
+      0.058754444581231524,
+      0.059699155201647494
+     ]
+    },
+    "L": {
+     "S2": [
+      8.29745370557312,
+      8.529319967133404
+     ],
+     "S3": [
+      7.5155104425788775,
+      7.756409386828092
+     ],
+     "S4": [
+      0.11778275889456753,
+      0.12203582392390619
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S4",
+     "S2",
+     "S3"
+    ],
+    "L_ref_order": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "rank_P": {
+     "S2": 2,
+     "S3": 3,
+     "S4": 1
+    },
+    "rank_L": {
+     "S2": 1,
+     "S3": 2,
+     "S4": 3
+    },
+    "k_P_star": "S4",
+    "k_V_star": "S2",
+    "kendall_tau_PV": -0.3333333333333333,
+    "spearman_rho_PV": -0.5,
+    "pairwise_inversions": [
+     {
+      "a": "S4",
+      "b": "S2",
+      "ratio_P": 5.672581473492625,
+      "ratio_L": 70.07958284604437
+     },
+     {
+      "a": "S4",
+      "b": "S3",
+      "ratio_P": 8.676207808445026,
+      "ratio_L": 63.61029825662599
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S4",
+     "b": "S3",
+     "ratio_P": 8.676207808445026,
+     "ratio_L": 63.61029825662599,
+     "score": 8.676207808445026
+    },
+    "omega_top_missing": 0.5203032497491379,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c004",
+   "params": {
+    "theta_deg": [
+     145.25613464100022,
+     94.22279237087037,
+     288.5935753296468,
+     46.64767560921957
+    ],
+    "h": [
+     1.9202955677585216,
+     1.57860511815281,
+     1.8855077187069411,
+     2.155598364640572
+    ],
+    "curved": [
+     false,
+     false,
+     true,
+     false
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.0,
+     0.9404568662750512,
+     0.0
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.04849125899467588,
+     "L_ref": 0.041578353658096236,
+     "raw_count": 72519,
+     "raw_fraction": 0.20719714285714286,
+     "counts_per_stratum": [
+      18187,
+      18187,
+      18131,
+      18014
+     ],
+     "P_ref_mc_crosscheck": 0.04878,
+     "analytic_P": 0.05721332998779605,
+     "analytic_L": 0.10651082565018516
+    },
+    "S3": {
+     "P_ref": 0.013649890348091423,
+     "L_ref": 10.596096199200597,
+     "raw_count": 33692,
+     "raw_fraction": 0.09626285714285714,
+     "counts_per_stratum": [
+      8365,
+      8409,
+      8347,
+      8571
+     ],
+     "P_ref_mc_crosscheck": 0.013806666666666667
+    },
+    "S4": {
+     "P_ref": 0.015506890919715091,
+     "L_ref": 1.239305961802698,
+     "raw_count": 57583,
+     "raw_fraction": 0.16452285714285714,
+     "counts_per_stratum": [
+      14290,
+      14306,
+      14548,
+      14439
+     ],
+     "P_ref_mc_crosscheck": 0.015706666666666667,
+     "analytic_P": 0.015557520185017104,
+     "analytic_L": 1.2331198506917458
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.04805688537498438,
+      0.04885443152163013
+     ],
+     "S3": [
+      0.013471372162611153,
+      0.013816579780083065
+     ],
+     "S4": [
+      0.015371921113788968,
+      0.015647334058159778
+     ]
+    },
+    "L": {
+     "S2": [
+      0.040943846133811475,
+      0.04226308475243625
+     ],
+     "S3": [
+      10.499848958427568,
+      10.684955098442416
+     ],
+     "S4": [
+      1.2069235305317214,
+      1.2772144402710153
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S2",
+     "S4",
+     "S3"
+    ],
+    "L_ref_order": [
+     "S3",
+     "S4",
+     "S2"
+    ],
+    "rank_P": {
+     "S2": 1,
+     "S3": 3,
+     "S4": 2
+    },
+    "rank_L": {
+     "S2": 3,
+     "S3": 1,
+     "S4": 2
+    },
+    "k_P_star": "S2",
+    "k_V_star": "S3",
+    "kendall_tau_PV": -1.0,
+    "spearman_rho_PV": -1.0,
+    "pairwise_inversions": [
+     {
+      "a": "S2",
+      "b": "S3",
+      "ratio_P": 3.552501724049095,
+      "ratio_L": 254.84645896115947
+     },
+     {
+      "a": "S2",
+      "b": "S4",
+      "ratio_P": 3.1270781000352077,
+      "ratio_L": 29.80651836274372
+     },
+     {
+      "a": "S4",
+      "b": "S3",
+      "ratio_P": 1.1360450907858992,
+      "ratio_L": 8.550024389285987
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S2",
+     "b": "S3",
+     "ratio_P": 3.552501724049095,
+     "ratio_L": 254.84645896115947,
+     "score": 3.552501724049095
+    },
+    "omega_top_missing": 0.8921540442135422,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c006",
+   "params": {
+    "theta_deg": [
+     234.46687672203507,
+     337.86339379651855,
+     192.5333717300625,
+     102.27432544858176
+    ],
+    "h": [
+     1.7561212711995724,
+     1.8321081819094749,
+     1.7196855578763393,
+     2.07804722260446
+    ],
+    "curved": [
+     false,
+     true,
+     false,
+     true
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.3150001088621053,
+     0.0,
+     0.44364078856726885
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.01992582485084643,
+     "L_ref": 0.5905371297699539,
+     "raw_count": 33899,
+     "raw_fraction": 0.09685428571428571,
+     "counts_per_stratum": [
+      8555,
+      8488,
+      8541,
+      8315
+     ],
+     "P_ref_mc_crosscheck": 0.02024
+    },
+    "S3": {
+     "P_ref": 0.04251130369272709,
+     "L_ref": 0.025587332859612424,
+     "raw_count": 80713,
+     "raw_fraction": 0.23060857142857144,
+     "counts_per_stratum": [
+      20142,
+      20282,
+      20339,
+      19950
+     ],
+     "P_ref_mc_crosscheck": 0.0429,
+     "analytic_P": 0.04274480721520335,
+     "analytic_L": 0.02705799725729431
+    },
+    "S4": {
+     "P_ref": 0.01052857848870974,
+     "L_ref": 1.153646711392493,
+     "raw_count": 34296,
+     "raw_fraction": 0.09798857142857142,
+     "counts_per_stratum": [
+      8522,
+      8667,
+      8518,
+      8589
+     ],
+     "P_ref_mc_crosscheck": 0.010633333333333333
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.019687022007255126,
+      0.020147715806730773
+     ],
+     "S3": [
+      0.0421551281753026,
+      0.042880497154491604
+     ],
+     "S4": [
+      0.01040994540204349,
+      0.010681372726679132
+     ]
+    },
+    "L": {
+     "S2": [
+      0.5825786915604354,
+      0.5986154896936184
+     ],
+     "S3": [
+      0.025208621991127826,
+      0.025945481780068922
+     ],
+     "S4": [
+      1.1342431009697633,
+      1.1700197521842794
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S3",
+     "S2",
+     "S4"
+    ],
+    "L_ref_order": [
+     "S4",
+     "S2",
+     "S3"
+    ],
+    "rank_P": {
+     "S2": 2,
+     "S3": 1,
+     "S4": 3
+    },
+    "rank_L": {
+     "S2": 2,
+     "S3": 3,
+     "S4": 1
+    },
+    "k_P_star": "S3",
+    "k_V_star": "S4",
+    "kendall_tau_PV": -1.0,
+    "spearman_rho_PV": -1.0,
+    "pairwise_inversions": [
+     {
+      "a": "S2",
+      "b": "S4",
+      "ratio_P": 1.8925465457861925,
+      "ratio_L": 1.9535549133750503
+     },
+     {
+      "a": "S3",
+      "b": "S2",
+      "ratio_P": 2.13347773610091,
+      "ratio_L": 23.079276492395575
+     },
+     {
+      "a": "S3",
+      "b": "S4",
+      "ratio_P": 4.0377059199695235,
+      "ratio_L": 45.086633988860676
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S3",
+     "b": "S4",
+     "ratio_P": 4.0377059199695235,
+     "ratio_L": 45.086633988860676,
+     "score": 4.0377059199695235
+    },
+    "omega_top_missing": 0.6518620759149699,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c007",
+   "params": {
+    "theta_deg": [
+     222.52883236903762,
+     169.28398551330605,
+     301.7209412901344,
+     87.66668240801515
+    ],
+    "h": [
+     1.7645504360583302,
+     1.9593890467068447,
+     1.7567207851852662,
+     2.1095623946565896
+    ],
+    "curved": [
+     false,
+     false,
+     true,
+     true
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.0,
+     0.22386800728548906,
+     0.9822606937912182
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.024670971219294142,
+     "L_ref": 0.02187534977151748,
+     "raw_count": 73044,
+     "raw_fraction": 0.20869714285714286,
+     "counts_per_stratum": [
+      18308,
+      18310,
+      18359,
+      18067
+     ],
+     "P_ref_mc_crosscheck": 0.02496,
+     "analytic_P": 0.02503362121954683,
+     "analytic_L": 0.028886073744218598
+    },
+    "S3": {
+     "P_ref": 0.024068260110475997,
+     "L_ref": 0.11621924356106438,
+     "raw_count": 35098,
+     "raw_fraction": 0.10028,
+     "counts_per_stratum": [
+      8770,
+      8760,
+      8765,
+      8803
+     ],
+     "P_ref_mc_crosscheck": 0.024546666666666668
+    },
+    "S4": {
+     "P_ref": 0.007516934430359774,
+     "L_ref": 0.7253201951300343,
+     "raw_count": 35029,
+     "raw_fraction": 0.10008285714285714,
+     "counts_per_stratum": [
+      8804,
+      8797,
+      8791,
+      8637
+     ],
+     "P_ref_mc_crosscheck": 0.007706666666666666
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.024485258462303296,
+      0.024913898920555927
+     ],
+     "S3": [
+      0.02381590099446455,
+      0.02433406994609129
+     ],
+     "S4": [
+      0.007416722031784406,
+      0.007610189627702938
+     ]
+    },
+    "L": {
+     "S2": [
+      0.021643662925243487,
+      0.02218605470766662
+     ],
+     "S3": [
+      0.11442442308951593,
+      0.11773159839168185
+     ],
+     "S4": [
+      0.7126782308381212,
+      0.7371305540937616
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "L_ref_order": [
+     "S4",
+     "S3",
+     "S2"
+    ],
+    "rank_P": {
+     "S2": 1,
+     "S3": 2,
+     "S4": 3
+    },
+    "rank_L": {
+     "S2": 3,
+     "S3": 2,
+     "S4": 1
+    },
+    "k_P_star": "S2",
+    "k_V_star": "S4",
+    "kendall_tau_PV": -1.0,
+    "spearman_rho_PV": -1.0,
+    "pairwise_inversions": [
+     {
+      "a": "S2",
+      "b": "S3",
+      "ratio_P": 1.0250417398703369,
+      "ratio_L": 5.312794756424245
+     },
+     {
+      "a": "S2",
+      "b": "S4",
+      "ratio_P": 3.2820522046396703,
+      "ratio_L": 33.15696446940603
+     },
+     {
+      "a": "S3",
+      "b": "S4",
+      "ratio_P": 3.2018717648071924,
+      "ratio_L": 6.240964687994495
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S2",
+     "b": "S4",
+     "ratio_P": 3.2820522046396703,
+     "ratio_L": 33.15696446940603,
+     "score": 3.2820522046396703
+    },
+    "omega_top_missing": 0.8400599628615684,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c010",
+   "params": {
+    "theta_deg": [
+     162.3700047594338,
+     44.854412191074196,
+     220.02684647195355,
+     4.343971130589939
+    ],
+    "h": [
+     1.6337530333241168,
+     1.9548609276445272,
+     1.7565296629136578,
+     2.528182404693793
+    ],
+    "curved": [
+     false,
+     true,
+     false,
+     true
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.24760615010605203,
+     0.0,
+     -0.4911004936498826
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.01490320273898135,
+     "L_ref": 0.4369816479650841,
+     "raw_count": 38347,
+     "raw_fraction": 0.10956285714285714,
+     "counts_per_stratum": [
+      9483,
+      9641,
+      9563,
+      9660
+     ],
+     "P_ref_mc_crosscheck": 0.014786666666666667
+    },
+    "S3": {
+     "P_ref": 0.039326350248097865,
+     "L_ref": 0.061260748974492414,
+     "raw_count": 60143,
+     "raw_fraction": 0.17183714285714285,
+     "counts_per_stratum": [
+      15145,
+      15057,
+      14931,
+      15010
+     ],
+     "P_ref_mc_crosscheck": 0.03984,
+     "analytic_P": 0.03949900554112673,
+     "analytic_L": 0.061492213903982865
+    },
+    "S4": {
+     "P_ref": 0.002977435340351752,
+     "L_ref": 1.4988274361453684,
+     "raw_count": 35631,
+     "raw_fraction": 0.10180285714285714,
+     "counts_per_stratum": [
+      8982,
+      8891,
+      8862,
+      8896
+     ],
+     "P_ref_mc_crosscheck": 0.0029666666666666665
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.014718040974723455,
+      0.015083144104895578
+     ],
+     "S3": [
+      0.03899927718222749,
+      0.039676333335919
+     ],
+     "S4": [
+      0.002938527041300489,
+      0.003017863529703172
+     ]
+    },
+    "L": {
+     "S2": [
+      0.43116266263221714,
+      0.44252041677571785
+     ],
+     "S3": [
+      0.059359388841344,
+      0.06297239206780958
+     ],
+     "S4": [
+      1.485523298248677,
+      1.5138910810063948
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S3",
+     "S2",
+     "S4"
+    ],
+    "L_ref_order": [
+     "S4",
+     "S2",
+     "S3"
+    ],
+    "rank_P": {
+     "S2": 2,
+     "S3": 1,
+     "S4": 3
+    },
+    "rank_L": {
+     "S2": 2,
+     "S3": 3,
+     "S4": 1
+    },
+    "k_P_star": "S3",
+    "k_V_star": "S4",
+    "kendall_tau_PV": -1.0,
+    "spearman_rho_PV": -1.0,
+    "pairwise_inversions": [
+     {
+      "a": "S2",
+      "b": "S4",
+      "ratio_P": 5.00538249714625,
+      "ratio_L": 3.429955109385116
+     },
+     {
+      "a": "S3",
+      "b": "S2",
+      "ratio_P": 2.6387851616105618,
+      "ratio_L": 7.1331424326371415
+     },
+     {
+      "a": "S3",
+      "b": "S4",
+      "ratio_P": 13.208129061654745,
+      "ratio_L": 24.46635833279554
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S3",
+     "b": "S4",
+     "ratio_P": 13.208129061654745,
+     "ratio_L": 24.46635833279554,
+     "score": 13.208129061654745
+    },
+    "omega_top_missing": 0.7505132826677755,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c017",
+   "params": {
+    "theta_deg": [
+     136.2310817828648,
+     239.86203112758918,
+     40.785093867528474,
+     85.61961870754887
+    ],
+    "h": [
+     1.629510472829989,
+     2.1445648015769203,
+     2.100138522726563,
+     2.164483694645617
+    ],
+    "curved": [
+     false,
+     true,
+     false,
+     false
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     -0.4685128900876889,
+     0.0,
+     0.0
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.008805951757985674,
+     "L_ref": 0.08956307345547024,
+     "raw_count": 33883,
+     "raw_fraction": 0.09680857142857142,
+     "counts_per_stratum": [
+      8504,
+      8464,
+      8492,
+      8423
+     ],
+     "P_ref_mc_crosscheck": 0.008986666666666667
+    },
+    "S3": {
+     "P_ref": 0.012712355785283201,
+     "L_ref": 0.36092867304554743,
+     "raw_count": 28348,
+     "raw_fraction": 0.08099428571428571,
+     "counts_per_stratum": [
+      7088,
+      7074,
+      7050,
+      7136
+     ],
+     "P_ref_mc_crosscheck": 0.01222,
+     "analytic_P": 0.017858328721291172,
+     "analytic_L": 0.3679453314727699
+    },
+    "S4": {
+     "P_ref": 0.015227973938123352,
+     "L_ref": 0.009799441754271396,
+     "raw_count": 77011,
+     "raw_fraction": 0.22003142857142857,
+     "counts_per_stratum": [
+      19326,
+      19324,
+      19201,
+      19160
+     ],
+     "P_ref_mc_crosscheck": 0.015,
+     "analytic_P": 0.015213623326577441,
+     "analytic_L": 0.009827428515214993
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.008689223979737197,
+      0.008933570423599506
+     ],
+     "S3": [
+      0.012565729080665966,
+      0.012888479246636454
+     ],
+     "S4": [
+      0.015104339071086294,
+      0.015349736979213234
+     ]
+    },
+    "L": {
+     "S2": [
+      0.08813263150475209,
+      0.09128070988787583
+     ],
+     "S3": [
+      0.34518492188318295,
+      0.37597692666099225
+     ],
+     "S4": [
+      0.009695475501000873,
+      0.009905440072408544
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S4",
+     "S3",
+     "S2"
+    ],
+    "L_ref_order": [
+     "S3",
+     "S2",
+     "S4"
+    ],
+    "rank_P": {
+     "S2": 3,
+     "S3": 2,
+     "S4": 1
+    },
+    "rank_L": {
+     "S2": 2,
+     "S3": 1,
+     "S4": 3
+    },
+    "k_P_star": "S4",
+    "k_V_star": "S3",
+    "kendall_tau_PV": -0.3333333333333333,
+    "spearman_rho_PV": -0.5,
+    "pairwise_inversions": [
+     {
+      "a": "S4",
+      "b": "S2",
+      "ratio_P": 1.7292820079685163,
+      "ratio_L": 9.139609755467076
+     },
+     {
+      "a": "S4",
+      "b": "S3",
+      "ratio_P": 1.197887645321603,
+      "ratio_L": 36.8315545003597
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S4",
+     "b": "S2",
+     "ratio_P": 1.7292820079685163,
+     "ratio_L": 9.139609755467076,
+     "score": 1.7292820079685163
+    },
+    "omega_top_missing": 0.7841311809892119,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  },
+  {
+   "config_id": "m1d_b20260827_c020",
+   "params": {
+    "theta_deg": [
+     228.0076298802581,
+     334.7095288291787,
+     278.42082543497906,
+     34.77822988937867
+    ],
+    "h": [
+     1.5688725948487074,
+     1.700686816687085,
+     1.8992323780458686,
+     2.368838289248792
+    ],
+    "curved": [
+     false,
+     false,
+     true,
+     false
+    ],
+    "curvature_c": 0.35,
+    "offset_o": [
+     0.0,
+     0.0,
+     -0.5280551594949696,
+     0.0
+    ]
+   },
+   "reference_budget": {
+    "n_total": 500000,
+    "n_mc": 150000,
+    "n_is": 350000,
+    "strata": 4
+   },
+   "modes": {
+    "S2": {
+     "P_ref": 0.0390388695680674,
+     "L_ref": 0.6062651732404634,
+     "raw_count": 50053,
+     "raw_fraction": 0.14300857142857143,
+     "counts_per_stratum": [
+      12582,
+      12427,
+      12539,
+      12505
+     ],
+     "P_ref_mc_crosscheck": 0.041113333333333335,
+     "analytic_P": 0.044500905983076655,
+     "analytic_L": 1.238712705235918
+    },
+    "S3": {
+     "P_ref": 0.015946030026133314,
+     "L_ref": 0.004129923791923101,
+     "raw_count": 46557,
+     "raw_fraction": 0.13302,
+     "counts_per_stratum": [
+      11578,
+      11761,
+      11599,
+      11619
+     ],
+     "P_ref_mc_crosscheck": 0.01642
+    },
+    "S4": {
+     "P_ref": 0.00892868442251205,
+     "L_ref": 2.34033639078243,
+     "raw_count": 49381,
+     "raw_fraction": 0.14108857142857142,
+     "counts_per_stratum": [
+      12399,
+      12454,
+      12195,
+      12333
+     ],
+     "P_ref_mc_crosscheck": 0.008853333333333333,
+     "analytic_P": 0.008922026749261291,
+     "analytic_L": 2.3442172370717986
+    }
+   },
+   "bootstrap_ci": {
+    "P": {
+     "S2": [
+      0.038641208532156524,
+      0.0394267970529982
+     ],
+     "S3": [
+      0.015763863822312832,
+      0.016077271786643955
+     ],
+     "S4": [
+      0.008849513401576277,
+      0.009008199562652386
+     ]
+    },
+    "L": {
+     "S2": [
+      0.5988665044662145,
+      0.6130981646749598
+     ],
+     "S3": [
+      0.004068108853266143,
+      0.004183251062942156
+     ],
+     "S4": [
+      2.3195741550238744,
+      2.3611131243365753
+     ]
+    }
+   },
+   "eligibility": {
+    "missing_modes": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "P_ref_order": [
+     "S2",
+     "S3",
+     "S4"
+    ],
+    "L_ref_order": [
+     "S4",
+     "S2",
+     "S3"
+    ],
+    "rank_P": {
+     "S2": 1,
+     "S3": 2,
+     "S4": 3
+    },
+    "rank_L": {
+     "S2": 2,
+     "S3": 3,
+     "S4": 1
+    },
+    "k_P_star": "S2",
+    "k_V_star": "S4",
+    "kendall_tau_PV": -0.3333333333333333,
+    "spearman_rho_PV": -0.5,
+    "pairwise_inversions": [
+     {
+      "a": "S2",
+      "b": "S4",
+      "ratio_P": 4.372298058786579,
+      "ratio_L": 3.8602520713393855
+     },
+     {
+      "a": "S3",
+      "b": "S4",
+      "ratio_P": 1.785932761373927,
+      "ratio_L": 566.6778634897405
+     }
+    ],
+    "strongest_inversion": {
+     "a": "S2",
+     "b": "S4",
+     "ratio_P": 4.372298058786579,
+     "ratio_L": 3.8602520713393855,
+     "score": 3.8602520713393855
+    },
+    "omega_top_missing": 0.7931377017688523,
+    "E1_K_missing_ge3": true,
+    "E2_observability": true,
+    "E3_top_rank_conflict": true,
+    "E4_strong_inversion": true,
+    "E5_variance_criticality": true,
+    "E6_no_degenerate_domination": true,
+    "eligible": true
+   }
+  }
+ ],
+ "not_yet_run": {
+  "adaptive_policies": "NOT STARTED (Gate D0 requires this freeze first)"
+ }
+}
