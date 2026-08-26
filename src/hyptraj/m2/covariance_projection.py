@@ -81,20 +81,22 @@ def project_covariance(
 ) -> ProjectionResult:
     """Symmetrize + eigen-clip + frozen legality check of one candidate.
 
-    Eigen-decompose the symmetrized input, clip eigenvalues to
-    ``[floor, cap]``, reconstruct ``U diag U^T``, re-symmetrize, then run the
-    FROZEN legality checker (:func:`check_legality_frozen`).  The clip floor
-    already sits above ``LEGALITY_MIN_EIG = 0.5``, so a successful projection
-    passes the frozen gate by construction unless numerics corrupt it -- any
-    such corruption is surfaced through ``legality_passed = False``.
+    The input is ALWAYS symmetrized first ((C + C^T)/2 -- task Sec. 11) and
+    that symmetrized matrix is what gets recorded as ``sigma_pre``, then
+    scanned for validity (finite entries, no negative numerical eigenvalues).
+    On valid input: eigen-decompose, clip eigenvalues to ``[floor, cap]``,
+    reconstruct ``U diag U^T``, re-symmetrize, then run the FROZEN legality
+    checker (:func:`check_legality_frozen`).  The clip floor already sits
+    above ``LEGALITY_MIN_EIG = 0.5``, so a successful projection passes the
+    frozen gate by construction unless numerics corrupt it -- any such
+    corruption is surfaced through ``legality_passed = False``.
     """
     mat = np.asarray(sigma_pre, dtype=float)
-    ok, reasons = _validity_scan(mat)
-    d = mat.shape[0]
+    d = mat.shape[0] if mat.ndim == 2 else 0
     eye = np.eye(d)
-    if not ok:
+    if d == 0 or mat.shape[0] != mat.shape[1]:
         return ProjectionResult(
-            valid_input=False, validity_reasons=tuple(reasons),
+            valid_input=False, validity_reasons=("non_square",),
             sigma_pre=mat, sigma_final=eye,
             eigenvalues_pre=np.full(d, np.nan),
             eigenvalues_post=np.full(d, np.nan),
@@ -104,6 +106,19 @@ def project_covariance(
         )
 
     s = symmetrize_matrix(mat)
+    ok, reasons = _validity_scan(s)
+    if not ok:
+        return ProjectionResult(
+            valid_input=False, validity_reasons=tuple(reasons),
+            sigma_pre=s, sigma_final=eye,
+            eigenvalues_pre=np.linalg.eigvalsh(s)
+            if np.all(np.isfinite(s)) else np.full(d, np.nan),
+            eigenvalues_post=np.full(d, np.nan),
+            n_eigen_clipped_low=0, n_eigen_clipped_high=0,
+            projection_frobenius_norm=float("nan"),
+            legality_passed=False, min_eig_final=float("nan"),
+        )
+
     val, vec = np.linalg.eigh(s)              # ascending eigvals, orthonormal vec
     lo = int(np.sum(val < floor))
     hi = int(np.sum(val > cap))

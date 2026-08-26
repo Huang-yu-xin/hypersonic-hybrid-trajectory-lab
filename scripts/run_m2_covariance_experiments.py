@@ -92,7 +92,11 @@ def _batch_meta(stage: str) -> dict:
 def _save(batch: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(batch, indent=1), encoding="utf-8")
-    print(f"[saved] {path.relative_to(REPO)} "
+    try:
+        shown = path.relative_to(REPO)
+    except ValueError:
+        shown = path
+    print(f"[saved] {shown} "
           f"({len(batch.get('records_by_config', []))} configs)", flush=True)
 
 
@@ -144,6 +148,9 @@ def _evaluation_block(stage, prop, p_ref_union: float, budget_total: int,
     ev = cp.evaluate_variant(stage, prop, n_eval)
     attach_vrfs(ev, p_ref=float(p_ref_union), budget_total=int(budget_total))
     ev["L_table"] = {str(k): float(v) for k, v in ev["L_table"].items()}
+    # task Sec. 45 required key names alongside the frozen evaluator keys
+    ev["n"] = int(ev["n_eval"])
+    ev["mode_L"] = dict(ev["L_table"])
     return ev
 
 
