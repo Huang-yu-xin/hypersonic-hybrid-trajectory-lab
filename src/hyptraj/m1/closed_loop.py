@@ -160,7 +160,7 @@ def run_closed_loop(
 
         # ---- ADD_COMPONENT + UPDATE_WEIGHTS ----
         try:
-            new_center = eta_region_centroid(
+            new_center, centroid_eta_used = eta_region_centroid(
                 z, logp, logr, proposal.weights, proposal.centers,
                 labels, nominal_topology, mode=diag.candidate_mode, eta=ETA_MAIN,
             )
@@ -213,6 +213,7 @@ def run_closed_loop(
                 "objective_init": wres.objective_init,
                 "objective_final": wres.objective_final,
                 "n_iter": wres.n_iter,
+                "centroid_eta_used": centroid_eta_used,
             },
             stop_reason=None,
         ))

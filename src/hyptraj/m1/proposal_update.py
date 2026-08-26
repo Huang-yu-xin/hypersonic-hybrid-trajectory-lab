@@ -79,13 +79,18 @@ def eta_region_centroid(
     nominal_topology: str,
     mode: str,
     eta: float = 0.8,
-) -> np.ndarray:
+) -> tuple[np.ndarray, float]:
     """Variance-mass weighted centroid ``m_eta,k`` (task Sec. 13).
 
     Computed over the born mode's samples restricted to the eta region:
     ``L_eta,k = {x in z : label = mode, log rho_V(x) >= q_eta(region)}`` where
     ``rho_V = p^2 / q_t`` and ``q_eta`` is the eta-quantile of ``log rho_V``
     within the mode.  Uses normalized variance-mass weights (task Sec. 7).
+
+    Engineering fallback (M1 implementation detail, stated explicitly): when
+    the eta region holds fewer than 2 samples (a rare born mode with a thin
+    pilot), the centroid falls back to ALL mode samples (``eta_used = 1.0``).
+    The returned ``eta_used`` records which region was actually used.
     """
     z = np.asarray(z, dtype=float)
     labels = np.asarray(labels)
@@ -96,13 +101,15 @@ def eta_region_centroid(
     log_rho = 2.0 * np.asarray(logp, dtype=float) - logq
     thr = np.quantile(log_rho[mask], eta)
     region = mask & (log_rho >= thr)
+    eta_used = eta
     if region.sum() < 2:
-        raise ValueError(f"eta={eta} region of mode {mode!r} has < 2 samples")
+        region = mask
+        eta_used = 1.0
     w = variance_mass_weights(z, centers, pi, logp, logr, region.astype(float))
     sw = float(w.sum())
     if sw <= 0.0:
         raise ValueError(f"zero variance mass in mode {mode!r} region")
-    return np.sum(w[:, None] * z, axis=0) / sw
+    return np.sum(w[:, None] * z, axis=0) / sw, float(eta_used)
 
 
 def add_component(

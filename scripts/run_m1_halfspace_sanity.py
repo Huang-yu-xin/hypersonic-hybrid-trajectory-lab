@@ -156,8 +156,14 @@ def run_case_a2(seed: int, pilot_n: int, eval_n: int, config) -> dict:
         min_mode_observations=config["mode_birth"]["min_mode_observations"],
     )
     it0 = res.iterations[0]
+    # "births" records modes actually BORN (action=ADD_COMPONENT), not merely
+    # candidates that passed the gate but were stopped before adding
     births = [it.candidate_mode for it in res.iterations
-              if it.candidate_mode is not None]
+              if it.action == "ADD_COMPONENT" and it.candidate_mode is not None]
+    born_centroid_eta = [
+        it.weight_result.get("centroid_eta_used")
+        for it in res.iterations if it.action == "ADD_COMPONENT"
+    ]
     m2_drop = None
     if it0.M2_hat_prev is not None and it0.M2_hat_prev > 0:
         m2_drop = float((it0.M2_hat_prev - it0.M2_hat) / it0.M2_hat_prev)
@@ -169,6 +175,7 @@ def run_case_a2(seed: int, pilot_n: int, eval_n: int, config) -> dict:
         "n_iterations": len(res.iterations),
         "actions": [it.action for it in res.iterations],
         "births": births,
+        "born_centroid_eta_used": born_centroid_eta,
         "correct_birth": True if births == ["S2"] else
                          (None if not births else False),
         "P_hat": ev["P_hat"],
