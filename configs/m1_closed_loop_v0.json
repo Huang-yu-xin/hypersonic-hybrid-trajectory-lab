@@ -1,0 +1,132 @@
+{
+  "schema_version": "raretopo-m1-v0",
+  "config_id": "m1_closed_loop_v0",
+  "task_doc": "docs/phase_m1/M1_Closed_Loop_Variance_Geometry_Adaptive_IS_Task.md",
+  "h3_frozen_tag": "RareTopo-H3-v1.0",
+  "h3_source_commit": "5faef86b9d0ff35eb2cee762ec24a363796f6ce1",
+  "prereg_locked_date": "2026-08-26",
+  "research_question": "Can proposal-dependent variance geometry be used to construct a closed-loop adaptive importance sampler without prior oracle knowledge of all variance-important topology modes?",
+  "firewall": {
+    "h3": "q -> variance geometry",
+    "m1": "variance geometry -> q_next"
+  },
+  "family": {
+    "name": "gaussian_mixture_v0",
+    "covariance": "frozen_base_unit_I_in_standardized_z_space (H3 convention; no covariance adaptation in v0)",
+    "open_levers_v0": [
+      "component_birth",
+      "component_mean_from_variance_geometry",
+      "mixture_weight_reallocation"
+    ],
+    "explicitly_deferred": [
+      "covariance_optimization",
+      "component_deletion",
+      "ML_policy",
+      "neural_proposal",
+      "high_dimensional_benchmark",
+      "real_rare_sanger_optimization"
+    ]
+  },
+  "proposal_legality": {
+    "checked_fields": ["legality_checked", "min_eig_Sigma_minus_halfI"],
+    "failure_policy": "INVALID_RUN",
+    "note": "failure excludes the run from performance comparison (task Sec.9 / Gate 0)"
+  },
+  "eta": {
+    "main": 0.8,
+    "sensitivity": [0.5, 0.8, 0.9],
+    "note": "inherited from H3 frozen regression convention; not modified in v0 (task Sec.7.1)"
+  },
+  "mode_birth": {
+    "tau_birth_main": 0.1,
+    "tau_birth_lower_confidence": 0.05,
+    "min_mode_observations": 5,
+    "bootstrap_confidence": 0.95,
+    "note": "preregistered engineering choices, NOT universal constants (task Sec.12)"
+  },
+  "new_component_center": {
+    "method": "variance_mass_weighted_centroid_within_L_eta_k",
+    "eta_used": 0.8,
+    "note": "algorithm choice, not claimed optimal (task Sec.13)"
+  },
+  "mixture_weights": {
+    "optimizer": "SLSQP",
+    "gradient": "analytic",
+    "gradient_regression_test": "central_finite_difference",
+    "gradient_rel_tol": 1e-6,
+    "hessian_fd_rel_tol": 1e-5,
+    "floor": 0.0,
+    "floor_policy": "explicitly_declared_if_changed; v0 floor = 0.0 (task Sec.14.2)",
+    "init_independence_tol_weights": 1e-6,
+    "init_independence_tol_objective": 1e-8,
+    "kk_tol": 1e-6,
+    "convexity_segment_tol": 1e-9
+  },
+  "budget": {
+    "pilot_per_iteration": 20000,
+    "weight_fit_samples": "included_in_pilot",
+    "max_adaptation_iterations": 3,
+    "final_eval_samples": 100000,
+    "max_nominal_calls_per_method_seed": 160000,
+    "actual_calls_must_be_recorded": true
+  },
+  "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+  "stop_rule": {
+    "m2_relative_reduction_threshold": 0.02,
+    "conditions": [
+      "no_missing_mode_passes_birth_gate",
+      "all_observed_variance_important_modes_represented",
+      "relative_m2_reduction_lt_0.02_on_independent_diagnostic_pilot",
+      "max_adaptation_iterations_reached",
+      "validity_or_legality_gate_failure"
+    ]
+  },
+  "data_splitting": {
+    "roles": ["adaptation_pilot", "optimization_weight_fit", "final_evaluation"],
+    "final_eval_generation": "after_q_final_frozen",
+    "prohibited": "inspect_final_eval_then_tune_then_rerun_same_seed",
+    "amendment_required": "docs/phase_m1/M1_PREREG_AMENDMENT_<date>.md with old/new/reason/outcome_inspected/impact"
+  },
+  "benchmarks": {
+    "A": "affine_halfspace_sanity",
+    "B": "h3_1_variance_leakage_primary",
+    "C": "h3_2_curved_multi_mode",
+    "D": "h3_3b_broader_synthetic_geometry",
+    "run_order": "A -> B -> C -> D, gate sequenced (task Sec.20/33)"
+  },
+  "baselines": [
+    "crude_mc",
+    "single_geometry_is_q0",
+    "h3_2_m2_topology_aware_mixture",
+    "h3_2_m3_leakage_point_mixture",
+    "fixed_variance_aware_mixture_weight_only",
+    "m1_closed_loop_discover_add_reweight",
+    "cross_entropy_method_fair_budget"
+  ],
+  "oracle_levels": {
+    "mc": {"secondary_known": false, "leakage_geometry_known": false, "online_adaptation": false},
+    "single_geometry_is": {"secondary_known": false, "leakage_geometry_known": false, "online_adaptation": false},
+    "h3_2_m2": {"secondary_known": true, "leakage_geometry_known": false, "online_adaptation": false},
+    "h3_2_m3": {"secondary_known": true, "leakage_geometry_known": true, "online_adaptation": false},
+    "fixed_variance_aware": {"secondary_known": true, "leakage_geometry_known": "geometry_fixed", "online_adaptation": "weight_only"},
+    "m1_closed_loop": {"secondary_known": false, "leakage_geometry_known": false, "online_adaptation": true},
+    "cem": {"secondary_known": false, "leakage_geometry_known": false, "online_adaptation": true}
+  },
+  "gates": {
+    "gate0_validity": "all validity/legality checks pass; failure = INVALID_RUN",
+    "gate1_discovery": ">= 7/8 seeds identify variance-important missing mode; 6/8 BORDERLINE; < 6/8 FAIL (task Sec.25 Gate 1)",
+    "gate2_leakage": ">= 7/8 seeds L_final < L_0 and median L_final/L_0 <= 0.5 (task Sec.25 Gate 2)",
+    "gate3_second_moment": ">= 7/8 seeds M2_final < M2_0 and median M2_final/M2_0 <= 0.5 (task Sec.25 Gate 3)",
+    "gate4_oracle_gap": "competitive: median M2(M1)/M2(M3) <= 1.10; strong: median M2(M1) < median M2(M3) (task Sec.25 Gate 4)",
+    "gate5_budget": "median VRF_budget > 1 with 8-seed success count (task Sec.25 Gate 5)"
+  },
+  "primary_metrics": ["M2_second_moment", "estimator_variance", "mode_wise_L_k_and_omega_k_V", "probability_consistency_P_hat", "geometry_diagnostics_C_eta_R_eta_G_eta", "compute_simulator_cost"],
+  "ablations": {
+    "A": "no_variance_geometry_probability_only_birth",
+    "B": "add_without_reweight",
+    "C": "reweight_without_birth",
+    "D": "point_vs_set_valued_center",
+    "E": "eta_sensitivity_0.5_0.8_0.9",
+    "run_condition": "after Benchmark B passes"
+  }
+}
