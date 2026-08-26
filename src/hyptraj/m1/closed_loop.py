@@ -81,6 +81,7 @@ def run_closed_loop(
     logp_fn: Callable[[np.ndarray], np.ndarray],
     nominal_topology: str,
     pilot_n: int = 20_000,
+    pilot_policy: str = "proposal",
     max_iterations: int = MAX_ADAPTATION_ITERATIONS,
     tau_birth_main: float = 0.10,
     tau_birth_lower_confidence: float = 0.05,
@@ -94,9 +95,17 @@ def run_closed_loop(
     """Run the v0 closed loop: Discover + Add + Reweight until the stop rule.
 
     ``label_oracle(z)`` returns the exact topology label per row (event =
-    label != nominal); ``logp_fn(z)`` is the log target density.  All pilots
-    are drawn from the current frozen proposal (r = q_t, recorded), and each
-    new pilot is independent of previous ones (adaptation firewall).
+    label != nominal); ``logp_fn(z)`` is the log target density.  The pilot of
+    each round has size ``pilot_n`` drawn from the DECLARED ``r_t``:
+
+    - ``pilot_policy="proposal"`` (default): ``r_t = q_t``;
+    - ``pilot_policy="mix_50"`` (v0 choice on the H3-1 benchmark, declared in
+      ``configs/m1_closed_loop_v0.json``): half the calls from ``q_t``, half
+      from the target ``p`` -- legal mixed pilot (task Sec. 7 / 29.2),
+      each sample keeps its own ``r_i``.
+
+    All pilots are independent of previous ones (adaptation firewall); the
+    weight-fit samples are the frozen pilot of the birth round.
     """
     rng = np.random.default_rng(seed) if rng_in is None else rng_in
     proposal = initial_proposal
@@ -104,12 +113,24 @@ def run_closed_loop(
     pilot_calls = 0
     stop_reason = "max_iterations"
 
+    def _draw_pilot(n: int, prop: MixtureProposal) -> tuple[np.ndarray, np.ndarray]:
+        """Return ``(z, logr)`` for ``n`` calls under the declared policy."""
+        if pilot_policy == "proposal":
+            z = prop.sample(rng, n)
+            return z, prop.log_density(z)
+        if pilot_policy == "mix_50":
+            half = n // 2
+            z1 = prop.sample(rng, half)
+            r1 = prop.log_density(z1)
+            z2 = rng.standard_normal((n - half, prop.centers.shape[1]))
+            r2 = logp_fn(z2)                  # r = p (target MC)
+            return np.vstack([z1, z2]), np.concatenate([r1, r2])
+        raise ValueError(f"unknown pilot_policy {pilot_policy!r}")
+
     for t in range(max_iterations + 1):
-        z = proposal.sample(rng, pilot_n)
+        z, logr = _draw_pilot(pilot_n, proposal)
         pilot_calls += pilot_n
         logp = logp_fn(z)
-        # r = q_t (sampling density recorded per sample)
-        logr = proposal.log_density(z)
         labels = label_oracle(z)
         indicators = (labels != nominal_topology).astype(float)
         vm = estimate_variance_measure(
@@ -191,10 +212,9 @@ def run_closed_loop(
             break
 
         # independent diagnostic pilot for the relative-improvement stop rule:
-        z_diag = proposal_next.sample(rng, pilot_n)
+        z_diag, logr_diag = _draw_pilot(pilot_n, proposal_next)
         pilot_calls += pilot_n
         logp_diag = logp_fn(z_diag)
-        logr_diag = proposal_next.log_density(z_diag)
         labels_diag = label_oracle(z_diag)
         vm_next = estimate_variance_measure(
             z_diag, proposal_next.centers, proposal_next.weights,

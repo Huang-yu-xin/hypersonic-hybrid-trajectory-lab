@@ -154,6 +154,79 @@ class TestAdaptiveBehavior:
         se = float(np.sqrt(m2_0 / n_eval))
         assert abs(pf - p0) <= 3.0 * se
 
-    def test_stop_constants_frozen(self):
-        assert MAX_ADAPTATION_ITERATIONS == 3
-        assert M2_RELATIVE_STOP_THRESHOLD == 0.02
+class TestMix50PilotPolicy:
+    """Declared v0 pilot policy on the H3-1 benchmark: 50% q_t + 50% p
+    (config ``pilot_policy.mix_50``; task Sec. 7 / 29.2 legal mixed pilot)."""
+    
+    def test_mix50_holds_on_single_mode(self, loop_kwargs):
+        # mixed sources must not change the HOLD decision on a covered mode
+        res = run_closed_loop(seed=2026, pilot_policy="mix_50", **loop_kwargs)
+        assert res.stop_reason == "no_missing_mode"
+        assert res.iterations[0].action == "HOLD"
+        assert res.final_proposal.n_components == 1
+        assert res.n_pilot_calls == loop_kwargs["pilot_n"]
+    
+    def test_mix50_discovers_dominant_secondary_mode(self):
+        # with the p half (P(S2|p) = 2.9e-2), S2 is observed abundantly and
+        # the gate triggers on the correct mode at the frozen pilot budget
+        n_ok = 0
+        for seed in (2026, 2027, 2028):
+            res = run_closed_loop(
+                seed=seed, pilot_policy="mix_50",
+                initial_proposal=MixtureProposal(
+                    centers=np.array([[M0]]), weights=np.array([1.0]),
+                    component_mode_ids=("S1",),
+                ),
+                label_oracle=_labels_double,
+                logp_fn=_logp,
+                nominal_topology="S0",
+                pilot_n=20_000,
+            )
+            it0 = res.iterations[0]
+            if it0.action == "ADD_COMPONENT" and it0.candidate_mode == "S2":
+                n_ok += 1
+            assert it0.candidate_mode in (None, "S2")   # never a wrong mode
+        assert n_ok >= 2
+    
+    def test_mix50_estimator_unbiased(self):
+        # end-to-end: mixed-source IS estimator stays unbiased for P(A1 union A2)
+        rng = np.random.default_rng(4242)
+        n = 500_000
+        centers = np.array([[M0]])
+        q0 = MixtureProposal(centers=centers, weights=np.array([1.0]))
+        half = n // 2
+        z1 = q0.sample(rng, half)
+        r1 = q0.log_density(z1)
+        z2 = rng.standard_normal((n - half, 1))
+        r2 = _logp(z2)
+        z = np.vstack([z1, z2])
+        logr = np.concatenate([r1, r2])
+        labels = _labels_double(z)
+        ind = (labels != "S0").astype(float)
+        w = np.exp(_logp(z) - logr) * ind
+        p_hat = float(np.mean(w))
+        from scipy.stats import norm
+        p_ref = norm.cdf(A1) + (1.0 - norm.cdf(A2))
+        assert p_hat == pytest.approx(p_ref, rel=1e-2)
+    
+    def test_unknown_policy_raises(self):
+        with pytest.raises(ValueError):
+            run_closed_loop(seed=2026, pilot_policy="nonsense", **self_loop_kwargs())
+    
+    
+def self_loop_kwargs():
+    return dict(
+        initial_proposal=MixtureProposal(
+            centers=np.array([[M0]]), weights=np.array([1.0]),
+            component_mode_ids=("S1",),
+        ),
+        label_oracle=_labels_single,
+        logp_fn=_logp,
+        nominal_topology="S0",
+        pilot_n=20_000,
+    )
+
+
+def test_stop_constants_frozen():
+    assert MAX_ADAPTATION_ITERATIONS == 3
+    assert M2_RELATIVE_STOP_THRESHOLD == 0.02

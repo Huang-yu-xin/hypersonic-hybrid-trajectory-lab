@@ -70,6 +70,13 @@
     "max_nominal_calls_per_method_seed": 160000,
     "actual_calls_must_be_recorded": true
   },
+  "pilot_policy": {
+    "name": "mix_50",
+    "structure": "per round: 50% of pilot calls from q_t (proposal), 50% from p (target MC)",
+    "rationale": "H3-1 L2 ground truth: P(S2|q0) = 3.2e-5 -> 20k q-only pilot expects 0.63 S2 observations (< min_mode_observations); the p half raises the expected S2 count to ~62 (Poisson) at unchanged frozen pilot budget. Task Sec.7 denominator q_t*r_i and Sec.29.2 mixed-pilot pooling make mixed sources legal; r_i is recorded per sample. This is an M1-v0 algorithm choice, NOT a preregistered parameter change (task Sec.37 lock list: sample COUNT, not pilot structure).",
+    "declared": true,
+    "amendment_required_if_changed": "docs/phase_m1/M1_PREREG_AMENDMENT_<date>.md"
+  },
   "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
   "stop_rule": {
     "m2_relative_reduction_threshold": 0.02,
