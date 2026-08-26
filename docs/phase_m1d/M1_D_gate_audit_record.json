@@ -1,0 +1,191 @@
+{
+ "schema_version": "raretopo-m1d-gate-record-v0",
+ "generated_utc": "2026-08-26T18:07:36+00:00",
+ "freeze_sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+ "headline_gates": {
+  "D0_validity": {
+   "freeze_before_adaptive_runs": true,
+   "freeze_hash_matches_batches": true,
+   "n_configs_frozen": 8,
+   "pytest_note": "pytest suites green at commit f127858 (see report)",
+   "pass": true,
+   "missing_trial_cells_d1a": []
+  },
+  "D1_conflict": {
+   "n_configs_top_conflict": 8,
+   "n_configs_strong_inversion": 8,
+   "pass": true
+  },
+  "D2_selection_advantage": {
+   "Acc_V@1_variance": {
+    "n_trials": 64,
+    "mean": 0.859375,
+    "std": 0.35038244411336755,
+    "min": 0.0,
+    "max": 1.0,
+    "median_global": 1.0,
+    "per_config_median": {
+     "m1d_b20260827_c000": 0.0,
+     "m1d_b20260827_c001": 1.0,
+     "m1d_b20260827_c004": 1.0,
+     "m1d_b20260827_c006": 1.0,
+     "m1d_b20260827_c007": 1.0,
+     "m1d_b20260827_c010": 1.0,
+     "m1d_b20260827_c017": 1.0,
+     "m1d_b20260827_c020": 1.0
+    },
+    "median_of_config_medians": 1.0
+   },
+   "Acc@1_probability": {
+    "n_trials": 64,
+    "mean": 0.0625,
+    "std": 0.2439750182371333,
+    "min": 0.0,
+    "max": 1.0,
+    "median_global": 0.0,
+    "per_config_median": {
+     "m1d_b20260827_c000": 0.0,
+     "m1d_b20260827_c001": 0.0,
+     "m1d_b20260827_c004": 0.0,
+     "m1d_b20260827_c006": 0.0,
+     "m1d_b20260827_c007": 0.0,
+     "m1d_b20260827_c010": 0.0,
+     "m1d_b20260827_c017": 0.5,
+     "m1d_b20260827_c020": 0.0
+    },
+    "median_of_config_medians": 0.0
+   },
+   "acc_gap_pp": 79.6875,
+   "thresholds": {
+    "acc_var_ge": 0.75,
+    "gap_ge_pp": 25.0
+   },
+   "pass": true
+  },
+  "D3_captured_variance": {
+   "CVS1_variance_median": 0.7505132826677755,
+   "CVS1_probability_median": 0.021289657513140096,
+   "median_CVS_ratio_V_over_P": 34.99425948488286,
+   "ratio_ci95": [
+    24.466358332795544,
+    45.086633988860676
+   ],
+   "thresholds": {
+    "strictly_greater": true,
+    "ratio_ge": 1.25
+   },
+   "pass": true
+  },
+  "D4_m2_gain_layerA": {
+   "median_M2_ratio_VarSel_over_ProbSel": 0.5069178485623217,
+   "ci95": [
+    0.3003058775243641,
+    0.6216090875691029
+   ],
+   "threshold_le": 0.9,
+   "pass": true
+  },
+  "D5_near_oracle": {
+   "median_M2_ratio_VarSel_over_OracleV": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "threshold_le": 1.1,
+   "pass": true
+  },
+  "D6_full_policy": {
+   "median_M2_ratio_M1Var_over_ProbFull": 0.3696601433996036,
+   "ci95": [
+    0.20387129777253593,
+    0.5507101887927077
+   ],
+   "median_VRFbudget_M1Var": 0.24020513864412488,
+   "median_VRFbudget_ProbFull": 0.05324945644163659,
+   "thresholds": {
+    "m2_ratio_le": 0.9,
+    "vrf_median_greater": true
+   },
+   "pass": true
+  }
+ },
+ "regret_vs_oracleV_layerA": {
+  "variance_selector": {
+   "R_M2_median": 0.0,
+   "R_CVS_median": 0.0
+  },
+  "probability_selector": {
+   "R_M2_median": 0.9727504144891177,
+   "R_CVS_median": 0.9728493675174575
+  },
+  "random_selector": {
+   "R_M2_median": 0.7035073368166164,
+   "R_CVS_median": 0.8397683611439651
+  },
+  "oracle_P": {
+   "R_M2_median": 1.3188695166602693,
+   "R_CVS_median": 0.9753349226529533
+  }
+ },
+ "ablation_tables_DC_DD": {
+  "D-C_hdr_center": {
+   "variance_selector": {
+    "n_paired": 64,
+    "median_dM2_vs_main": 0.005889721576679899,
+    "median_dCVS_vs_main": 0.0,
+    "selection_flips_when_signal_fixed": 0
+   },
+   "probability_selector": {
+    "n_paired": 64,
+    "median_dM2_vs_main": -0.04395397844858343,
+    "median_dCVS_vs_main": 0.0,
+    "selection_flips_when_signal_fixed": 0
+   }
+  },
+  "D-D_prob_weights": {
+   "variance_selector": {
+    "n_paired": 64,
+    "median_dM2_vs_main": 0.013401678209731469,
+    "median_dCVS_vs_main": 0.0,
+    "selection_flips_when_signal_fixed": 0
+   },
+   "probability_selector": {
+    "n_paired": 64,
+    "median_dM2_vs_main": 0.01817002017774537,
+    "median_dCVS_vs_main": 0.0,
+    "selection_flips_when_signal_fixed": 0
+   }
+  }
+ },
+ "ablation_DE_budget_contrast": {
+  "layer_A_gap_M2_B1": -0.500826576701203,
+  "layer_A_gap_M2_B2": -0.04214196319940178,
+  "variance_selector": {
+   "median_M2_B1": 0.1516679357537783,
+   "median_M2_B2": 0.03587768724378375,
+   "median_CVS_B1": 0.7505132826677755,
+   "median_CVS_B2": 0.9855420106083762
+  },
+  "probability_selector": {
+   "median_M2_B1": 0.6524945124549812,
+   "median_M2_B2": 0.07801965044318553,
+   "median_CVS_B1": 0.021289657513140096,
+   "median_CVS_B2": 0.3481379240850301
+  },
+  "layer_B_gap_M2_B1": -0.6413338239154607,
+  "layer_B_gap_M2_B2": -0.17889462186228963,
+  "variance_full_policy": {
+   "median_M2_B1": 0.17098503886806576,
+   "median_M2_B2": 0.043056046802947306,
+   "median_CVS_B1": 0.7673222318284937,
+   "median_CVS_B2": 0.9855420106083762
+  },
+  "probability_full_policy": {
+   "median_M2_B1": 0.8123188627835265,
+   "median_M2_B2": 0.22195066866523694,
+   "median_CVS_B1": 0.021289657513140096,
+   "median_CVS_B2": 0.2068622982311476
+  }
+ },
+ "headline_csv": "source,birth_tag,method,n,Acc_top1_mean,median_CVS1,median_CPS1,median_M2,median_VRF_prop,median_VRF_budget,median_of_cfgMedians_M2\nd1a,B1,oracle_P,64,0.0,0.01787,0.60058,0.71991,0.0921,0.0768,1.094699\nd1a,B1,oracle_V,64,1.0,0.76732,0.14174,0.159111,0.3249,0.2708,0.148065\nd1a,B1,probability_selector,64,0.0625,0.02129,0.60058,0.652495,0.1051,0.0876,0.78227\nd1a,B1,random_selector,64,0.3125,0.1346,0.30952,0.462386,0.129,0.1075,0.48596\nd1a,B1,variance_selector,64,0.8594,0.75051,0.14378,0.151668,0.3539,0.295,0.140914\nd1b,B1,probability_full_policy,64,0.0312,0.02129,0.60058,0.812319,0.0745,0.0532,1.454284\nd1b,B1,variance_full_policy,64,0.9688,0.76732,0.14174,0.170985,0.3363,0.2402,0.162669\nd2a,B2,oracle_P,64,0.0,0.29881,0.85826,0.083678,0.582,0.4157,0.084222\nd2a,B2,oracle_V,64,1.0,0.98906,0.41351,0.035926,2.2093,1.5781,0.035957\nd2a,B2,probability_selector,64,0.0625,0.34814,0.85826,0.07802,0.7242,0.5173,0.084222\nd2a,B2,random_selector,64,0.3125,0.78786,0.73681,0.071254,0.8385,0.5989,0.076617\nd2a,B2,variance_selector,64,0.8594,0.98554,0.56145,0.035878,2.2139,1.5814,0.035957\nd2b,B2,probability_full_policy,64,0.0312,0.20686,0.85571,0.221951,0.2371,0.1482,0.200139\nd2b,B2,variance_full_policy,64,0.9688,0.98554,0.56145,0.043056,1.7894,1.1184,0.040969\n"
+}
