@@ -17,7 +17,7 @@
 
 **Reason:** 原实现每轮 birth 后额外抽 20k 诊断样本。名义预算 `pilot_per_iteration × max_iterations + final_eval = 160k`（task §19）在"每轮都 birth"的满跑路径下会被突破（100k 适应 + 100k eval = 200k > 160k）。修复将诊断复用为下一轮 pilot（统计上合法：下一轮 pilot 从冻结的 q_{t+1} 独立抽取，与权重拟合样本独立，满足 §17 condition 3 "独立 diagnostic pilot" 语义）。
 
-**Impact:** 实际 adaptation calls 由 60k 降至 40k（两轮运行）；评估预算保持 100k；总 calls 140k ≤ 160k nominal。**预期影响：无结论性变化**（诊断口径等价），仅记账更紧。
+**Impact (intended):** 修复后每轮仅一次 pilot 采样（20k），不再有额外的独立诊断采样；适应调用上限严格为 `max_iterations × pilot_n = 60k`（assert 强制），加 100k 独立 eval 后总调用不超过 160k nominal。**预期影响：无结论性变化**（诊断口径等价），仅记账更紧。
 
 ---
 
@@ -32,11 +32,18 @@
 | 7. add_component 权重初始化 | 多组件路径 bug fix（J=1 主路径未受影响） | 无 |
 | 3. VRF 口径单一来源 + 报告分列 | 报告语义修正 | 无（公式未变，§24 原定义） |
 
-**Expected impact 汇总:** Benchmark B/C 四 Gate 判定预期不变（已验证：0.01596→0.01592 M2、VRF_budget 3.985→3.991、Discovery 8/8）；Ablation D 的 set-valued 优势预期扩大（HDR 修复使对照更严格：0.0224→0.0356）；Ablation A 结论预期不变。
+**Expected impact 汇总（pre-execution intent）:** Benchmark B/C 的四个 Gate（Discovery/Leakage/M2/Oracle）判定预期不变；Ablation D 的 set-valued 优势预期扩大（HDR 修复使对照更严格）；Ablation A 结论预期不变（概率信号仍不足以替代方差信号）。实际修复后数字不属于本 pre-execution 记录，见下文 Post-execution note。
 
 ---
 
-## 3. 执行记录
+## 3. Post-execution note
+
+本文件保持 **pre-execution 记录属性**（intent / expected impact），不承载修复后的观测数字。修复后的实际结果（semantic-corrected）统一记录于：
+
+- `docs/phase_m1/M1_v0_Semantic_Correction_Freeze_Audit.md`：C 节（B/C/D/E before-vs-after 对照表）、E 节（probability ablation 结果）、F 节（exploration sensitivity）、I 节（Gate 重新评估）；
+- `results/phase_m1_semantic_fix/`：全部机器可读结果（含 `semantic_fix_version = "m1-v0-semantic-fix-1"`、git_commit、config hash）。
+
+## 4. 执行记录
 
 - 所有修复后结果写入 `results/phase_m1_semantic_fix/`（原结果与原始 package 未覆盖、未删除）；
-- 本 amendment 作为 `M1_v0_Semantic_Correction_Freeze_Audit.md` 的 Annex 引用；semantic-fix 结果中标记 `semantic_fix_version = "m1-v0-semantic-fix-1"`。
+- 本 amendment 作为 `M1_v0_Semantic_Correction_Freeze_Audit.md` 的引用件。
