@@ -46,9 +46,12 @@ from hyptraj.m1.baselines import (
 )
 from hyptraj.m1.proposal_update import MixtureProposal
 
+import os
+
 REPO = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO / "configs" / "m1_closed_loop_v0.json"
-OUT_PATH = REPO / "results" / "phase_m1" / "m1_benchmark_c_curved_v0.json"
+OUT_SUFFIX = os.environ.get("M1_OUT_SUFFIX", "")
+OUT_PATH = REPO / "results" / ("phase_m1" + OUT_SUFFIX) / "m1_benchmark_c_curved_v0.json"
 
 D = 2
 A1 = -1.5

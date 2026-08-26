@@ -46,12 +46,18 @@ from hyptraj.m1.baselines import (
     run_m1_closed_loop,
     run_mc,
     run_single_geometry,
+    vrf_budget,
+    vrf_proposal,
 )
+
+import os
 
 REPO = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO / "configs" / "m1_closed_loop_v0.json"
-OUT_LEAK = REPO / "results" / "phase_m1" / "m1_closed_loop_leakage_v0.json"
-OUT_BASE = REPO / "results" / "phase_m1" / "m1_baseline_comparison_v0.json"
+OUT_SUFFIX = os.environ.get("M1_OUT_SUFFIX", "")
+OUT_DIR = REPO / "results" / ("phase_m1" + OUT_SUFFIX)
+OUT_LEAK = OUT_DIR / "m1_closed_loop_leakage_v0.json"
+OUT_BASE = OUT_DIR / "m1_baseline_comparison_v0.json"
 
 SEEDS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033]
 BUDGET = 160_000
@@ -71,13 +77,6 @@ def git_short_head() -> str:
 
 def sha256_hex(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _base_vrf(p_mc: float, budget: int, m2: float, p_hat: float, n_eval: int) -> float:
-    """VRF_budget (task Sec. 24): MC-at-budget over IS-at-eval."""
-    num = p_mc * (1.0 - p_mc) / budget
-    den = max(0.0, (m2 - p_hat**2)) / n_eval
-    return float(num / den) if den > 0 else float("inf")
 
 
 ORACLE_TABLE = {
@@ -112,16 +111,14 @@ def run_all_seed(seed: int, config, p_mc_ref: float) -> dict:
 
     for r in (mc, single, m2, m3, fixed, m1, cem):
         ev = r.eval
-        vrf_proposal = (
-            p_mc_ref * (1.0 - p_mc_ref) / ev["n_eval"]
-        ) / max(ev["var_hat"], 1e-300)
+        vrf_prop = vrf_proposal(p_mc_ref, ev["n_eval"], ev["var_hat"])
         out[r.method] = {
             **ev,
             "adaptation_calls": r.adaptation_calls,
             "total_calls": r.total_calls,
-            "VRF_proposal": float(vrf_proposal),
-            "VRF_budget": _base_vrf(p_mc_ref, BUDGET, ev["M2_hat"],
-                                    ev["P_hat"], ev["n_eval"]),
+            "VRF_proposal": float(vrf_prop),
+            "VRF_budget": vrf_budget(p_mc_ref, BUDGET, ev["M2_hat"],
+                                     ev["P_hat"], ev["n_eval"]),
             "extra": r.extra,
         }
     return out

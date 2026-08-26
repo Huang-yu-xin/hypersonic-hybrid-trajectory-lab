@@ -88,6 +88,7 @@ def diagnose_missing_mode(
     n_bootstrap: int = N_BOOTSTRAP_DEFAULT,
     rng: np.random.Generator | None = None,
     birth_signal: str = "variance",
+    source_strata: np.ndarray | None = None,
 ) -> DiscoveryResult:
     """Run one diagnosis: estimate the variance measure, then test every
     observed unrepresented mode against the frozen birth gate.
@@ -95,24 +96,48 @@ def diagnose_missing_mode(
     Returns a candidate mode (first, in stable label order) when the gate
     passes; otherwise ``action = HOLD``.
 
-    ``birth_signal="variance"`` (v0) gates on ``omega_k^V`` with the bootstrap
-    LCB; ``birth_signal="probability"`` (Ablation A, task Sec. 27) replaces
-    the variance-share gate by the topology-probability gate ``P_k_hat`` with
-    the SAME 0.10 threshold -- the ablation that demonstrates the necessity
-    of the variance signal on probability-small variance-dominant modes.
+    ``birth_signal`` (semantic audit issues 4):
+
+    - "variance" (v0): gates on ``omega_k^V`` with the bootstrap LCB;
+    - "probability" (Ablation A): gates on the CORRECT stratified-aware
+      target-probability estimate ``P_k_hat = (1/N) sum 1_{A_k} p / r_i``
+      with the SAME 0.10 threshold (the raw occurrence fraction
+      ``n_k / N`` is NOT the target probability under the fixed mixed
+      pilot and is banned);
+    - "probability_top" (probability-only comparator): picks the unobserved
+      TOP-RANKED unrepresented mode by ``P_k_hat`` -- threshold-free, fair
+      probability counterpart (semantic audit Issue 4, Sec. 6.3).
+
+    ``source_strata`` (1 = q-source, 0 = p-source) enables the stratified
+    bootstrap (semantic audit Issue 6); ignored for non-"variance" signals.
     """
     vm = estimate_variance_measure(
         z, centers, pi, logp, logr, labels, nominal_topology
     )
     mode_stats: list[ModeStat] = []
     candidates: list[str] = []
+
+    def _p_hat_topology(topo: str) -> float:
+        """(1/N) sum 1_{A_k} p / r_i -- target topology probability estimate
+        (valid for ANY fixed sampling design with recorded r_i)."""
+        mask = (labels == topo).astype(float)
+        return float(np.mean(mask * np.exp(np.asarray(logp, dtype=float)
+                                           - np.asarray(logr, dtype=float))))
+
+    # mode order for top-ranked selection: descending P_k_hat
+    top_rank = sorted(vm.mode_ids,
+                      key=lambda t: _p_hat_topology(str(t)), reverse=True)
+
     for topo in vm.mode_ids:
         represented = topo in component_mode_ids
         omega = vm.omega_k_V[vm.mode_ids.index(topo)]
         n_obs = vm.n_observed[vm.mode_ids.index(topo)]
-        p_k_hat = float(n_obs / vm.n_samples)
+        p_k_hat = _p_hat_topology(str(topo))
         if birth_signal == "probability":
             signal_ok = p_k_hat >= tau_birth_main
+            lcb = float("nan")
+        elif birth_signal == "probability_top":
+            signal_ok = False            # decided after the loop
             lcb = float("nan")
         elif birth_signal == "variance":
             # bootstrap LCB only for potential candidates: an unrepresented
@@ -122,16 +147,14 @@ def diagnose_missing_mode(
                 lcb, _ub = omega_bootstrap_lcb(
                     z, centers, pi, logp, logr, labels, nominal_topology,
                     mode=str(topo), n_bootstrap=n_bootstrap, rng=rng,
+                    source_strata=source_strata,
                 )
             signal_ok = omega >= tau_birth_main and lcb >= tau_birth_lower_confidence
         else:
             raise ValueError(f"unknown birth_signal {birth_signal!r}")
-        eligible = (
-            (not represented)
-            and signal_ok
-            and n_obs >= min_mode_observations
-            and n_obs > 0
-        )
+
+        n_ok = n_obs >= min_mode_observations and n_obs > 0
+        eligible = (not represented) and signal_ok and n_ok
         mode_stats.append(ModeStat(
             mode_id=str(topo),
             represented_by_component=represented,
@@ -145,6 +168,15 @@ def diagnose_missing_mode(
         ))
         if eligible:
             candidates.append(str(topo))
+
+    if birth_signal == "probability_top":
+        # threshold-free: TOP-RANKED unrepresented mode by P_k_hat (desc)
+        for topo in top_rank:
+            represented = topo in component_mode_ids
+            n_obs = vm.n_observed[vm.mode_ids.index(str(topo))]
+            if (not represented) and n_obs >= min_mode_observations and n_obs > 0:
+                candidates = [str(topo)]
+                break
     candidate = candidates[0] if candidates else None
     return DiscoveryResult(
         M2_hat=vm.M2_hat,

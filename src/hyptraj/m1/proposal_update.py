@@ -69,6 +69,66 @@ class MixtureProposal:
         return mixture_log_density(component_log_densities(z, self.centers), self.weights)
 
 
+def variance_mass_hdr_indices(
+    z: np.ndarray,
+    centers: np.ndarray,
+    pi: np.ndarray,
+    logp: np.ndarray,
+    logr: np.ndarray,
+    labels: np.ndarray,
+    nominal_topology: str,
+    mode: str,
+    eta: float,
+) -> tuple[np.ndarray, float]:
+    """H3-3A finite-sample ``L_eta``: smallest variance-mass prefix (HDR).
+
+    Frozen H3-3A semantics (``docs/phase_h/H3_3A_set_valued_variance_geometry.md``
+    Sec. 3.1-3.2): "**绝不取'前 20% 样本'**——HDR region 是按 rho_L 排序后
+    累计 omega^V 质量得到的最小 prefix".
+
+    Implementation:
+
+    1. order mode samples by ``log rho_V = 2 log p - log q_t`` DESCENDING
+       (``np.argsort(kind="stable")`` -- deterministic tie handling);
+    2. cumulative normalized variance mass ``w_tilde / sum(w_tilde)`` along
+       that order (``w_tilde = 1_A p^2/(q_t r)``, task Sec. 7);
+    3. ``L_eta = smallest prefix with cumulative mass >= eta``.
+
+    Returns ``(indices_into_z, cumulative_mass_achieved)``.
+    """
+    z = np.asarray(z, dtype=float)
+    labels = np.asarray(labels)
+    w = variance_mass_weights(
+        z, centers, pi, logp, logr, (labels == mode).astype(float)
+    )
+    logq = mixture_log_density(component_log_densities(z, centers), pi)
+    log_rho = 2.0 * np.asarray(logp, dtype=float) - logq
+    sub = np.flatnonzero(labels == mode)                # mode samples only
+    if sub.size == 0:
+        raise ValueError(f"no pilot samples for mode {mode!r}")
+    order = sub[np.argsort(-log_rho[sub], kind="stable")]  # rho desc, ties stable
+    cum = np.cumsum(w[order])
+    total = float(cum[-1])
+    if not np.isfinite(total) or total <= 0.0:
+        raise ValueError(f"zero variance mass for mode {mode!r}")
+    norm = cum / total
+    k = int(np.searchsorted(norm, eta, side="left")) + 1  # first prefix >= eta
+    k = min(k, order.size)
+    achieved = float(norm[k - 1])
+    return order[:k], achieved
+
+
+def variance_mass_region_centroid(
+    z: np.ndarray, w_full: np.ndarray, idx: np.ndarray
+) -> np.ndarray:
+    """Variance-mass weighted centroid of a region (H3-3A ``m_eta``)."""
+    w = np.asarray(w_full, dtype=float)[idx]
+    sw = float(w.sum())
+    if sw <= 0.0:
+        raise ValueError("zero variance mass in region")
+    return np.sum(w[:, None] * np.asarray(z, dtype=float)[idx], axis=0) / sw
+
+
 def eta_region_centroid(
     z: np.ndarray,
     logp: np.ndarray,
@@ -80,36 +140,34 @@ def eta_region_centroid(
     mode: str,
     eta: float = 0.8,
 ) -> tuple[np.ndarray, float]:
-    """Variance-mass weighted centroid ``m_eta,k`` (task Sec. 13).
+    """Variance-mass weighted centroid ``m_eta,k`` (task Sec. 13, frozen
+    H3-3A HDR semantics).
 
-    Computed over the born mode's samples restricted to the eta region:
-    ``L_eta,k = {x in z : label = mode, log rho_V(x) >= q_eta(region)}`` where
-    ``rho_V = p^2 / q_t`` and ``q_eta`` is the eta-quantile of ``log rho_V``
-    within the mode.  Uses normalized variance-mass weights (task Sec. 7).
+    ``L_eta,k`` = smallest prefix of the variance-mass-sorted pilot whose
+    cumulative normalized mass reaches ``eta`` (NOT a raw quantile);
+    ``m_eta,k`` = variance-mass weighted centroid inside that prefix.
+    Returns ``(centroid, eta_used)``.
 
     Engineering fallback (M1 implementation detail, stated explicitly): when
-    the eta region holds fewer than 2 samples (a rare born mode with a thin
+    the HDR prefix holds fewer than 2 samples (a rare born mode with a thin
     pilot), the centroid falls back to ALL mode samples (``eta_used = 1.0``).
-    The returned ``eta_used`` records which region was actually used.
     """
     z = np.asarray(z, dtype=float)
     labels = np.asarray(labels)
     mask = labels == mode
     if mask.sum() == 0:
         raise ValueError(f"no pilot samples for mode {mode!r}")
-    logq = mixture_log_density(component_log_densities(z, centers), pi)
-    log_rho = 2.0 * np.asarray(logp, dtype=float) - logq
-    thr = np.quantile(log_rho[mask], eta)
-    region = mask & (log_rho >= thr)
+    w_full = variance_mass_weights(
+        z, centers, pi, logp, logr, mask.astype(float)
+    )
+    idx, _achieved = variance_mass_hdr_indices(
+        z, centers, pi, logp, logr, labels, nominal_topology, mode, eta
+    )
     eta_used = eta
-    if region.sum() < 2:
-        region = mask
+    if idx.size < 2:
+        idx = np.flatnonzero(mask)
         eta_used = 1.0
-    w = variance_mass_weights(z, centers, pi, logp, logr, region.astype(float))
-    sw = float(w.sum())
-    if sw <= 0.0:
-        raise ValueError(f"zero variance mass in mode {mode!r} region")
-    return np.sum(w[:, None] * z, axis=0) / sw, float(eta_used)
+    return variance_mass_region_centroid(z, w_full, idx), float(eta_used)
 
 
 def add_component(
@@ -120,17 +178,19 @@ def add_component(
 ) -> MixtureProposal:
     """ADD_COMPONENT: append a unit-covariance component at ``new_center``.
 
-    New mixture weight: v0 naive split -- half of the uniform share is moved
-    to the new component when the proposal is single-component; otherwise the
-    new weight starts at ``pi_fallback / J_new`` and the rest is renormalized.
+    Weight initialization: old weights scaled jointly by ``(1 - alpha_new)``
+    and the new component gets ``alpha_new``:
+
+        pi_j^{new} = (1 - alpha_new) pi_j^{old}  (j = 1..J),  pi_{J+1} = alpha_new
+
+    so ``sum(pi_new) == 1`` exactly and the OLD RELATIVE WEIGHT RATIOS ARE
+    PRESERVED (a naive ``(1-a)/J`` renormalization breaks them for J >= 2).
     (Weight reallocation is refined by the UPDATE_WEIGHTS step that follows;
-    the initial value only sets the SLSQP starting point.)
+    this initial value only sets the SLSQP starting point.)
     """
     centers = np.vstack([proposal.centers, np.asarray(new_center, dtype=float).reshape(1, -1)])
-    j_new = centers.shape[0]
-    w = proposal.weights * (1.0 - pi_fallback) / proposal.n_components
+    w = (1.0 - pi_fallback) * proposal.weights
     w = np.append(w, pi_fallback)
-    w = w / w.sum()
     return MixtureProposal(
         centers=centers,
         weights=w,

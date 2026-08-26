@@ -33,10 +33,14 @@ import numpy as np
 from hyptraj.m1.baselines import Z_STAR, label_h3_1, logp, run_m1_closed_loop
 from hyptraj.m1.proposal_update import MixtureProposal
 
+import os
+
 REPO = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO / "configs" / "m1_closed_loop_v0.json"
-OUT_PATH = REPO / "results" / "phase_m1" / "m1_ablation_v0.json"
-B_JSON = REPO / "results" / "phase_m1" / "m1_closed_loop_leakage_v0.json"
+OUT_SUFFIX = os.environ.get("M1_OUT_SUFFIX", "")
+OUT_DIR = REPO / "results" / ("phase_m1" + OUT_SUFFIX)
+OUT_PATH = OUT_DIR / "m1_ablation_v0.json"
+B_JSON = OUT_DIR / "m1_closed_loop_leakage_v0.json"
 
 SEEDS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033]
 ADAPT_PILOT = 20_000
@@ -58,14 +62,17 @@ def sha256_hex(path: Path) -> str:
 
 def run_ablation(config, *, birth_signal="variance", reweight=True,
                  center_method="eta_centroid", eta_main=0.8,
+                 weight_mode="m2_opt", pilot_alpha=None,
                  seed_bootstrap_off=0) -> list[dict]:
     out = []
     for seed in SEEDS:
-        res = run_m1_closed_loop(
-            seed, ADAPT_PILOT, EVAL_N, config,
-            birth_signal=birth_signal, reweight_after_birth=reweight,
-            center_method=center_method, eta_main=eta_main,
-        )
+        kw = dict(birth_signal=birth_signal, reweight_after_birth=reweight,
+                 center_method=center_method, eta_main=eta_main,
+                 weight_mode=weight_mode)
+        if pilot_alpha is not None:
+            kw["pilot_policy"] = "mix"
+            kw["pilot_alpha"] = pilot_alpha
+        res = run_m1_closed_loop(seed, ADAPT_PILOT, EVAL_N, config, **kw)
         extra = res.extra
         ev = res.eval
         out.append({
@@ -88,6 +95,11 @@ def main() -> int:
     t0 = time.perf_counter()
 
     abl_a = run_ablation(config, birth_signal="probability")
+    # Issue 4 comparator: threshold-free top-ranked probability signal with
+    # probability-only internals (no variance geometry anywhere)
+    abl_a_top = run_ablation(config, birth_signal="probability_top",
+                             center_method="probability_centroid",
+                             weight_mode="probability")
     abl_b = run_ablation(config, reweight=False)
     abl_d = run_ablation(config, center_method="max_weight_point")
     abl_e = {str(eta): run_ablation(config, eta_main=eta)
@@ -115,8 +127,21 @@ def main() -> int:
             "births": [r["births"] for r in abl_a],
             "n_births": sum(1 for r in abl_a if r["births"]),
             "M2_median": _med([r["M2_hat"] for r in abl_a]),
-            "conclusion": "probability gate does NOT trigger on S2 "
-                          "(P_hat(S2) ~ 3e-3 << 0.10) -> variance signal necessary",
+            "conclusion": "correct P_k_hat(S2) ~ 6e-3 still << 0.10 -> the "
+                          "variance signal is necessary to gate birth by "
+                          "variance importance",
+        },
+        "ablation_A2_probability_top_comparator": {
+            "question": "threshold-free top-ranked probability comparator "
+                        "(no variance geometry anywhere): what does it do?",
+            "births": [r["births"] for r in abl_a_top],
+            "n_births": sum(1 for r in abl_a_top if r["births"]),
+            "M2_median": _med([r["M2_hat"] for r in abl_a_top]),
+            "center": "probability centroid (IS-weight p/r)",
+            "weights": "normalized P_k_hat",
+            "note": "top-ranked comparator always picks the only unrepresented "
+                    "mode when observed -- it cannot rank by variance "
+                    "importance; M2 outcome reported as-is",
         },
         "ablation_B": {
             "question": "improvement from component coverage or weight optimization?",
@@ -153,7 +178,9 @@ def main() -> int:
         "config_sha256": sha256_hex(CONFIG_PATH),
         "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "benchmark": "B_h3_1_leakage (ablation variants)",
-        "runs": {"A_probability_birth": abl_a, "B_add_no_reweight": abl_b,
+        "runs": {"A_probability_gate": abl_a,
+                 "A2_probability_top_comparator": abl_a_top,
+                 "B_add_no_reweight": abl_b,
                  "C_reweight_no_birth_fixed": abl_c,
                  "D_max_weight_point": abl_d, "E_eta_sensitivity": abl_e},
         "summary": summary,

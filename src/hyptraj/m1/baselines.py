@@ -55,6 +55,31 @@ def label_h3_1(z: np.ndarray) -> np.ndarray:
     return out
 
 
+def vrf_proposal(p_mc: float, n_eval: int, var_hat: float) -> float:
+    """Proposal-level VRF (task Sec. 24, semantic audit Issue 3):
+
+    MC estimator variance at the EVALUATION budget over the IS estimator
+    variance at the same evaluation budget -- adaptation overhead NOT
+    included.  ``var_hat = (M2(q) - P^2) / n_eval``.
+    """
+    num = p_mc * (1.0 - p_mc) / n_eval
+    return float(num / var_hat) if var_hat > 0 else float("inf")
+
+
+def vrf_budget(p_mc: float, budget: int, m2_hat: float, p_hat: float,
+               n_eval: int) -> float:
+    """Budget-adjusted VRF (task Sec. 24, semantic audit Issue 3):
+
+    MC estimator variance at the TOTAL budget B over the IS estimator
+    variance at the reduced evaluation budget N_eval = B - N_adapt --
+    adaptation overhead explicitly included.  NEVER to be confused with
+    ``vrf_proposal``.
+    """
+    num = p_mc * (1.0 - p_mc) / budget
+    den = max(0.0, (m2_hat - p_hat**2)) / n_eval
+    return float(num / den) if den > 0 else float("inf")
+
+
 def logp(z: np.ndarray) -> np.ndarray:
     z = np.asarray(z, dtype=float)
     return -np.sum(z**2, axis=1) / 2.0 - 0.5 * D * np.log(2.0 * np.pi)
@@ -289,7 +314,7 @@ def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
     q0 = MixtureProposal(centers=np.asarray(q0_center, dtype=float).reshape(1, -1),
                          weights=np.array([1.0]),
                          component_mode_ids=("S1",))
-    res = run_closed_loop(
+    kw = dict(
         seed=seed, initial_proposal=q0, label_oracle=oracle,
         logp_fn=logp_fn, nominal_topology=NOMINAL,
         pilot_n=pilot_n, pilot_policy="mix_50",
@@ -297,8 +322,9 @@ def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
         tau_birth_main=config["mode_birth"]["tau_birth_main"],
         tau_birth_lower_confidence=config["mode_birth"]["tau_birth_lower_confidence"],
         min_mode_observations=config["mode_birth"]["min_mode_observations"],
-        **ablation_kw,
     )
+    kw.update(ablation_kw)      # ablation / sensitivity switches override defaults
+    res = run_closed_loop(**kw)
     ev = _eval(res.final_proposal, eval_n, seed, oracle=oracle, logp_fn=logp_fn)
     births = [it.candidate_mode for it in res.iterations
               if it.action == "ADD_COMPONENT" and it.candidate_mode is not None]
@@ -310,10 +336,12 @@ def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
                "births": births,
                "final_components": res.final_proposal.component_mode_ids,
                "final_weights": list(map(float, res.final_proposal.weights)),
+               "budget": res.budget,
                "iterations": [
                    {"t": it.iteration, "action": it.action,
                     "M2_hat": it.M2_hat, "M2_hat_prev": it.M2_hat_prev,
-                    "weight": it.weight_result}
+                    "weight": it.weight_result,
+                    "cumulative_adaptation_calls": it.cumulative_adaptation_calls}
                    for it in res.iterations]},
     )
 

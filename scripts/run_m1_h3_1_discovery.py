@@ -40,9 +40,12 @@ from hyptraj.m1.mode_discovery import diagnose_missing_mode
 from hyptraj.m1.proposal_update import MixtureProposal
 from hyptraj.m1.variance_measure import estimate_variance_measure
 
+import os
+
 REPO = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO / "configs" / "m1_closed_loop_v0.json"
-OUT_PATH = REPO / "results" / "phase_m1" / "m1_h3_1_discovery_v0.json"
+OUT_SUFFIX = os.environ.get("M1_OUT_SUFFIX", "")
+OUT_PATH = REPO / "results" / ("phase_m1" + OUT_SUFFIX) / "m1_h3_1_discovery_v0.json"
 H3_DATASET = REPO / "tests" / "data" / "h3_variance_leakage_dataset_v1.json"
 
 D = 4

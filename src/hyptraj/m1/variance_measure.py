@@ -138,6 +138,7 @@ def omega_bootstrap_lcb(
     n_bootstrap: int = 500,
     rng: np.random.Generator | None = None,
     seed: int = 2026,
+    source_strata: np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Bootstrap 95% lower confidence bound of ``omega_k^V`` for one mode.
 
@@ -145,6 +146,12 @@ def omega_bootstrap_lcb(
     and recomputes ``w_tilde``, ``M2`` and ``omega_k^V`` from the resampled
     weights.  Returns ``(LB, UB)`` (2.5% / 97.5% quantiles of the replicate
     distribution).  ``mode`` must be a label observed in the pilot.
+
+    Stratified bootstrap (frozen fix, semantic audit Issue 6): when the pilot
+    is a fixed stratified design (``source_strata`` given; 1 = q-source,
+    0 = p-source), each replicate resamples WITHIN each stratum and keeps the
+    stratum sizes ``N_q`` / ``N_p`` EXACTLY -- plain pooled resampling would
+    destroy the design and bias the uncertainty estimate.
     """
     rng = np.random.default_rng(seed) if rng is None else rng
     z = np.asarray(z, dtype=float)
@@ -156,13 +163,30 @@ def omega_bootstrap_lcb(
     is_mode = (labels == mode).astype(float)
     if ind.sum() == 0:
         raise ValueError("no event samples to bootstrap")
+
+    if source_strata is not None:
+        strata = np.asarray(source_strata).astype(int)
+        if strata.size != n:
+            raise ValueError("source_strata length mismatch")
+        strata_ids = np.unique(strata)
+        sizes = {s: int(np.sum(strata == s)) for s in strata_ids}
+    else:
+        strata = None
+        strata_ids = [0]
+        sizes = {0: n}
+
     reps = np.empty(n_bootstrap)
     for b in range(n_bootstrap):
-        idx = rng.integers(0, n, size=n)
+        idx = []
+        for s in strata_ids:
+            sub = np.flatnonzero(strata == s) if strata is not None \
+                else np.arange(n)
+            idx.append(sub[rng.integers(0, sub.size, size=sizes[s])])
+        idx = np.concatenate(idx)
         wb = np.exp(logw_pre[idx]) * ind[idx]
         mb = float(np.sum(wb) / n)
-        lb = float(np.sum(wb * is_mode[idx]) / n)
-        reps[b] = lb / mb if mb > 0.0 else 0.0
+        lb_m = float(np.sum(wb * is_mode[idx]) / n)
+        reps[b] = lb_m / mb if mb > 0.0 else 0.0
     lb, ub = np.quantile(reps, [0.025, 0.975])
     return float(lb), float(ub)
 

@@ -26,10 +26,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+import os as _os
+
 REPO = Path(__file__).resolve().parents[1]
-OUT_DIR = REPO / "results" / "phase_m1" / "figures"
-B_JSON = REPO / "results" / "phase_m1" / "m1_closed_loop_leakage_v0.json"
-DISC_JSON = REPO / "results" / "phase_m1" / "m1_h3_1_discovery_v0.json"
+OUT_SUFFIX = _os.environ.get("M1_OUT_SUFFIX", "")
+RES_DIR = REPO / "results" / ("phase_m1" + OUT_SUFFIX)
+OUT_DIR = RES_DIR / "figures"
+B_JSON = RES_DIR / "m1_closed_loop_leakage_v0.json"
+DISC_JSON = RES_DIR / "m1_h3_1_discovery_v0.json"
+SENS_JSON = RES_DIR / "m1_exploration_sensitivity_v0.json"
 SEEDS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033]
 
 METHOD_LABELS = {
@@ -114,11 +119,12 @@ def fig3_trajectory() -> Path:
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.6))
     for seed_row in b["per_seed"]:
         its = seed_row["m1_closed_loop"]["extra"]["iterations"]
-        m2 = [its[0]["M2_hat_prev"] if its[0]["M2_hat_prev"] is not None else its[0]["M2_hat"]]
-        m2.append(its[0]["M2_hat"])
+        m2 = [it["M2_hat"] for it in its]
         axes[0].plot(range(len(m2)), m2, "o-", alpha=0.5, lw=1)
-    axes[0].set_xticks([0, 1])
-    axes[0].set_xticklabels(["t=0 (q0)", "t=1 (after Add+RW)"])
+    n_pts = max((len(s["m1_closed_loop"]["extra"]["iterations"])
+                 for s in b["per_seed"]), default=2)
+    axes[0].set_xticks(range(n_pts))
+    axes[0].set_xticklabels([f"t={t}" for t in range(n_pts)])
     axes[0].set_ylabel(r"$\widehat M_2$ (diagnostic pilot)")
     axes[0].set_title("(a) second moment")
     axes[0].grid(alpha=0.3)
@@ -221,10 +227,52 @@ def fig6_cost_efficiency() -> Path:
     return out
 
 
+def fig7_exploration_sensitivity() -> Path:
+    """Freeze audit Issue 5 -- discovery rate / M2 / VRF_budget vs alpha."""
+    if not SENS_JSON.exists():
+        return OUT_DIR / "fig_m1_7_exploration_sensitivity.png"  # skipped
+    import json as _json
+    sens = _json.loads(SENS_JSON.read_text(encoding="utf-8"))
+    alphas = sens["alphas"]
+    summ = sens["summary_per_alpha"]
+    disc = [summ[f"{a:.2f}"]["discovery_count"] / 8.0 for a in alphas]
+    m2 = [summ[f"{a:.2f}"]["median_M2"] for a in alphas]
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.8))
+    axes[0].plot(alphas, disc, "o-", color="#c00000")
+    axes[0].set_xlabel(r"exploration fraction $\alpha$")
+    axes[0].set_ylabel("discovery rate (8 seeds)")
+    axes[0].set_ylim(-0.05, 1.1)
+    axes[0].axhline(7 / 8, color="gray", ls=":")
+    axes[0].set_title("(a) variance-important mode discovery")
+    axes[0].grid(alpha=0.3)
+    axes[1].plot(alphas, m2, "o-", color="#4472c4")
+    axes[1].set_xlabel(r"$\alpha$")
+    axes[1].set_ylabel("median M2 (final eval)")
+    axes[1].axhline(0.0733, color="k", ls=":")
+    axes[1].set_yscale("log")
+    axes[1].set_title("(b) second moment")
+    axes[1].grid(alpha=0.3)
+    axes[2].plot(alphas, [0.996] * len(alphas), "--", color="gray",
+                 label="MC level")
+    axes[2].set_xlabel(r"$\alpha$")
+    axes[2].set_ylabel("median VRF_budget")
+    axes[2].set_title("(c) cost-adjusted efficiency")
+    axes[2].grid(alpha=0.3)
+    fig.suptitle("Figure M1-7: exploration sensitivity "
+                 "(semantic audit Issue 5; alpha = 0.5 main config)",
+                 fontsize=11)
+    fig.tight_layout(rect=(0, 0, 1, 0.92))
+    out = OUT_DIR / "fig_m1_7_exploration_sensitivity.png"
+    fig.savefig(out, dpi=160)
+    plt.close(fig)
+    return out
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     files = [fig1_schematic(), fig2_prob_vs_omega(), fig3_trajectory(),
              fig4_baseline_comparison(), fig5_oracle_gap(), fig6_cost_efficiency()]
+    files.append(fig7_exploration_sensitivity())
     for f in files:
         print(f"written {f.relative_to(REPO)}")
     return 0

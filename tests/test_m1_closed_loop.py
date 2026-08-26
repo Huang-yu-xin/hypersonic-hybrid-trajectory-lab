@@ -114,8 +114,10 @@ class TestAdaptiveBehavior:
             assert res.final_proposal.component_mode_ids[-1] == "S2"
             it0 = res.iterations[0]
             assert it0.action == "ADD_COMPONENT"
-            # second-moment reduced on the independent diagnostic pilot
-            assert it0.M2_hat < it0.M2_hat_prev
+            # second-moment reduced on the reused independent diagnostic pilot
+            # (round pilots: M2(q0) at t=0 > M2(q1) at the final round)
+            assert len(res.iterations) >= 2
+            assert res.iterations[0].M2_hat > res.iterations[-1].M2_hat
             # stop reason is a legal one (no crashes, no INVALID)
             assert res.stop_reason in (
                 "no_missing_mode", "m2_relative_improvement_below_threshold",
