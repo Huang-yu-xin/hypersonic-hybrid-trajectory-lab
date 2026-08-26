@@ -1,0 +1,83 @@
+{
+  "schema_version": "raretopo-m1d-candidate-generation-v0",
+  "parent_tag": "RareTopo-M1-v0",
+  "parent_commit": "a825863ec20f8dfe0f4011c0f1ec71faf2a893db",
+  "h3_tag": "RareTopo-H3-v1.0",
+  "h3_commit": "5faef86b9d0ff35eb2cee762ec24a363796f6ce1",
+  "task_file": "docs/phase_m1d/M1_D_Multi_Missing_Mode_Variance_Geometry_Benchmark_Task.md",
+  "task_sha256": "6cf51ae3d2893006faac8dd3e343ba77e4a48cbac5be5dfccdbc49fb058e6f91",
+
+  "family": {
+    "name": "rotated_cap_multi_mode_u_space",
+    "dim": 2,
+    "target_p": "N(0, I_2)",
+    "mode_form_linear": "A_k = { u . n_k > h_k }",
+    "mode_form_curved": "A_k = { u . n_k > h_k + c (v_k - o_k)^2 } (H3-2 surface family)",
+    "nominal": "S0",
+    "modes": ["S1", "S2", "S3", "S4"],
+    "missing_modes": ["S2", "S3", "S4"],
+    "primary_mode": "S1",
+    "label_precedence": "ascending mode index, later index overwrites earlier (frozen label_curved semantics)",
+    "initial_proposal_rule": "single unit-Gaussian component at the primary mode nearest-boundary design point z* = h_1 * n_1 (frozen rule); missing-mode apex points used only for the offline reference strata",
+    "curvature_allowed_on": "missing modes only; probability CURVED_PROB per mode, amplitude fixed"
+  },
+
+  "candidate_generation": {
+    "batch_1": { "seed": 20260827, "size": 64 },
+    "batch_2_fallback": {
+      "seed": 20260828,
+      "trigger": "fewer than 8 eligible configs after all earlier batches exhausted",
+      "size": 64
+    },
+    "determinism": "np.random.SeedSequence([batch_seed, batch_index]) -> spawn children for cfg/mc/is/boot streams",
+    "parameter_ranges": {
+      "primary_theta_deg": [120.0, 240.0],
+      "missing_theta_deg": [0.0, 360.0],
+      "min_pairwise_angle_sep_deg": 40.0,
+      "primary_h_range": [1.5, 2.0],
+      "missing_h_range": [1.5, 2.6],
+      "curved_probability": 0.25,
+      "curvature_c": 0.35,
+      "offset_o_range": [-1.0, 1.0]
+    }
+  },
+
+  "reference_characterization": {
+    "n_reference_total": 500000,
+    "uniform_rule_all_candidates": true,
+    "mc_block_fraction": 0.3,
+    "stratified_is": {
+      "allocation": "equal strata over the 4 mode-apex components, unit covariance",
+      "weights": "uniform 1/4 per stratum",
+      "estimators": {
+        "P_ref": "(1/K) sum_s mean_s( exp(log p - log r) 1_{A_k} )",
+        "L_ref": "(1/K) sum_s mean_s( exp(2 log p - log q0 - log r) 1_{A_k} ) (task Sec. 29 estimator)"
+      }
+    },
+    "bootstrap": {
+      "type": "stratified, within-stratum size-preserving resampling",
+      "reps": 200,
+      "interval": "95% percentile"
+    },
+    "cross_check": "plain-MC P_hat under p recorded per candidate (P_ref_mc_crosscheck); analytic anchors recorded for linear caps (diagnostic only)"
+  },
+
+  "eligibility": {
+    "E2": { "alpha_p": 0.5, "pilot_n": 20000, "min_expected_obs": 10 },
+    "E4_strong_inversion_ratio_min": 1.5,
+    "E5_omega_min": 0.35,
+    "E6_omega_max": 0.90,
+    "source_of_truth": "reference characterization only (benchmark-design oracle, task Sec. 9.1)"
+  },
+
+  "freeze_rule": {
+    "order": "sort eligible configs by config_id ascending across batches (batch_seed asc, then batch_index asc -- zero-padded ids make string order equal this order)",
+    "take": 8,
+    "artifacts": [
+      "results/phase_m1d/benchmark_freeze/M1_D_Benchmark_Freeze.json",
+      "results/phase_m1d/benchmark_freeze/M1_D_Benchmark_Freeze.md"
+    ],
+    "no_threshold_relaxation": true,
+    "no_config_removal_after_freeze": true
+  }
+}
