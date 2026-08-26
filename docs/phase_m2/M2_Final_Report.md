@@ -133,7 +133,7 @@ next gate = (per parent program) none preregistered for M2-v0
 
 **§40 测试名单 → `tests/test_m2_covariance_pipeline.py`**：`test_m2_weighted_variance_covariance_toy / covariance_symmetry / covariance_ess / covariance_hold_low_ess / eigen_projection / frozen_legality_checker / selection_lock / mean_lock / shape_only_same_weights / shape_reweight_same_optimizer / no_final_eval_leakage / no_extra_simulator_calls / result_schema / leakage_redistribution_metrics` —— 15 passed（selection_lock 参数化×2）。
 
-**全量回归证据行**：`{PYTEST_LINE}`
+**全量回归证据行**：`1113 passed, 3 warnings in 307.06s (0:05:07)`（exit 0；= 冻结基线 1098 + M2 新增 15）
 
 ## 9. 对后续阶段的建议（非承诺）
 
