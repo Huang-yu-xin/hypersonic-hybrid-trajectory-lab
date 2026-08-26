@@ -243,9 +243,95 @@ def safe_relative_error(analytic: float, fd: float,
     return float(abs(fd - analytic) / denom)
 
 
+# --------------------------------------------------------------------------- #
+# POOLED-design truth (sanity comparator)
+# --------------------------------------------------------------------------- #
+def pooled_design_moments(
+    spec: MixtureSpec,
+    k: int,
+    logp_fn,
+    region_fn,
+    reach: float,
+    alpha: float,
+    n_per_axis: int = 320,
+    box_center: np.ndarray | None = None,
+) -> dict:
+    """Quadrature truth of the FROZEN FIXED-STRATIFIED POOLING functional.
+
+    The project-wide pilot records ``r_i := logp`` on target-source rows and
+    ``logr`` on proposal-source rows (semantic-corrected fixed stratified
+    design, M1-D audit).  Target-source nodes are drawn from the STANDARD
+    NORMAL base measure phi_0, so their slot contributes ``phi_0 * p/q``;
+    proposal-source nodes sample from q itself and contribute ``p^2/q^2``
+    under Lebesgue.  The finite-sample stack therefore consumes
+
+        W     = alpha * mask * phi_0 * p/q + (1-alpha) * mask * p^2/q^2
+
+    (NOT textbook nu_V), and quantities normalise inside that pooled mass.
+    Ratio-shaped objects (responsibilities, D_k, the shape factor) are
+    design-invariant; a like-for-like sanity comparator must integrate the
+    SAME pooled functional:
+
+        omega = W / int(W) ;  mu_r = int(omega r_k)
+        D_pl  = tr(int(omega r_k delta delta')) / mu_r
+        g_pl  = (int(W)/2) * mu_r * (dim - D_pl / s2)"""
+    spec_dim = spec.dim
+    center = (np.zeros(spec_dim) if box_center is None
+              else np.asarray(box_center, dtype=float))
+    pts, ws = _gl_nodes_weights(center, float(reach), int(n_per_axis))
+
+    logq = mixture_log_density(spec, pts)
+    logp = np.asarray(logp_fn(pts), dtype=float).reshape(-1)
+    mask = np.asarray(region_fn(pts), dtype=float)
+
+    # Design measure on target-source rows is phi_0 = N(0,I) (standard-normal
+    # base draw), so their slot integrates against phi_0 * p/q -- NOT raw
+    # p/q, whose Lebesgue integral generally diverges. Proposal-source rows
+    # sample from q itself, so their slot stays p^2/q^2 under Lebesgue.
+    phi0 = -0.5 * np.sum(pts ** 2, axis=1)          # log phi_0 up to constant
+    loga_p = phi0 + logp - logq                     # log( phi_0 * p/q )
+    loga_q = 2.0 * logp - 2.0 * logq                # log( p^2 / q^2 )
+
+    # ONE GLOBAL log-shift keeps the TRUE exponential scale difference between
+    # the two source slots (per-slot normalisation would silently reweight
+    # alpha, corrupting every pooled moment).
+    finite_logp = np.where((mask > 0) & np.isfinite(loga_p), loga_p, -np.inf)
+    finite_logq = np.where((mask > 0) & np.isfinite(loga_q), loga_q, -np.inf)
+    big_m = max(float(np.max(finite_logp)), float(np.max(finite_logq)))
+    if not np.isfinite(big_m):
+        raise ValueError("region A carries no pooled design mass")
+    w_p = ws * mask * np.exp(loga_p - big_m)
+    w_q = ws * mask * np.exp(loga_q - big_m)
+
+    alpha_c = float(np.clip(alpha, 0.0, 1.0))
+    W = alpha_c * w_p + (1.0 - alpha_c) * w_q
+    tot_raw = float(W.sum())
+    if not np.isfinite(tot_raw) or tot_raw <= 0:
+        raise ValueError("pooled mass vanishes")
+    omega = W / tot_raw
+
+    r = component_responsibility(spec, pts, k)
+    mu_r = float(np.sum(omega * r))
+    diff = pts - spec.means[k][None, :]
+    rd = np.einsum("n,ni,nj->ij", omega * r, diff, diff)
+    sigma = np.asarray(spec.covs[k], dtype=float)
+    s2 = float(sigma[0, 0])
+    dim = spec_dim
+    d_iso = float(np.trace(rd) / mu_r) if mu_r > 0 else float("nan")
+    g_pl = 0.5 * tot_raw * mu_r * (dim - d_iso / s2)
+
+    return {
+        "M2_pooled": float(tot_raw),
+        "mu_r_pooled": mu_r,
+        "g_isotropic": float(g_pl),
+        "sigma_slice_s2": s2,
+        "quadrature_points": pts,
+    }
+
+
 __all__ = [
     "MixtureSpec", "with_component_covariance", "mixture_log_density",
     "component_responsibility", "VarianceMomentResult",
-    "variance_measure_moments", "m2_of_sigma",
+    "variance_measure_moments", "pooled_design_moments", "m2_of_sigma",
     "directional_finite_difference", "safe_relative_error",
 ]
