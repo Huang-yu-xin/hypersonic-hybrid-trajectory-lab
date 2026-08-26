@@ -26,7 +26,7 @@ gate verdict = D0 ✓ D1 ✓ D2 ✓ D3 ✓ D4 ✓ D5 ✓ D6 ✓
 | D0 | 任务预注册入册 | — | `docs/phase_m1d/…_Task.md`（`fba11db`） |
 | D1+D2 | 确定性候选生成 + offline oracle 特征化 | seed `20260827` ×64 候选，N_ref=500k/候选（150k MC + 分层 IS×4 层，boot200） | `hyptraj/m1d/benchmark_family.py`; pool JSON+CSV |
 | D3 | Frozen Benchmark Set | 21 eligible → 取 id 前 8 | `docs/phase_m1d/M1_D_Benchmark_Freeze.{json,md}`（`f7e4e82`） |
-| D4 | §40 测试套件（13 项含 no-oracle-leakage） | 554 passed（全仓回归） | `tests/test_m1d_{benchmark_family,adaptation}.py`（`f127858`） |
+| D4 | §40 测试套件（13 项含 no-oracle-leakage） | m1d 定向套件 22 passed；**全量 `pytest -q` = 1098 passed / 0 skipped / 0 deselected**（freeze 前 provenance 复核，5m42s） | `tests/test_m1d_{benchmark_family,adaptation}.py`（`f127858`） |
 | D5 | Layer A one-birth | 8 cfg × 8 seed × 5 法 = 320 trials | `results/phase_m1d/d1_selection_only/layer_a_one_birth_v1.json` |
 | D6 | Layer B full policy | 128 trials | `…/d1_full_policy/layer_b_one_birth_v1.json` |
 | D7 | two-birth challenge | Layer A 320 + Layer B 128 | `…/d2_two_birth/*.json` |
@@ -44,7 +44,7 @@ gate verdict = D0 ✓ D1 ✓ D2 ✓ D3 ✓ D4 ✓ D5 ✓ D6 ✓
 
 | Gate | 判据（preregistered） | 实测 | 结论 |
 |---|---|---|---|
-| **D0 Validity** | freeze 先行、hash 链一致、无缺格、测试全绿、泄漏隔离 | freeze `2026-08-26T17:22Z` < runs `01:57Z+`；4 批次 freeze-hash 匹配；missing cells=[]；554 passed；结构隔离通过 | **PASS** |
+| **D0 Validity** | freeze 先行、hash 链一致、无缺格、测试全绿、泄漏隔离 | freeze `2026-08-26T17:22Z` < runs `01:57Z+`；4 批次 freeze-hash 匹配；missing cells=[]；全量 `pytest -q` **1098 passed / 0 skipped / 0 deselected**（见 §8 provenance）；结构隔离通过 | **PASS** |
 | **D1 Conflict** | 8/8 满足 k\*_P≠k\*_V + 强反转 | 8/8 与 8/8 | **PASS** |
 | **D2 Selection** | Acc_V@1≥75% 且 gap≥25pp | **85.94% vs 6.25%，gap +79.7pp** | **PASS** |
 | **D3 CVS 优势** | median CVS₁^V > ^P 且 ratio≥1.25 | 0.7505 vs 0.0213，ratio **34.99** [24.47, 45.09] | **PASS** |
@@ -125,6 +125,12 @@ Sec. 25 之问——“概率策略第二次 birth 后能否追上？”答案�
 4. 审计脚本两处逻辑 bug（摘要循环键型错误致 csv 空；消融配对跨方法串扰致 flips=57 假象）→ 修复后真值 0 且 δM₂/δCVS 重新计算。
 
 以上修复均发生在相应下游结论固化之前，不影响已发表 gate 数值。
+
+### 8b. Provenance 审计（formal freeze 前复核，HEAD `2014fcb`）
+
+- **测试口径更正**：本报告早先出现在 D4/D0 行的 “554 passed（全仓回归）”为**错误措辞**——那是定向子集运行（显式 `--ignore=tests/{test_models,test_optimization,test_predictability,test_simulation,test_uncertainty}`），被忽略目录含 35+0+382+0+127=544 项；1098−544=554，数目完全闭合。正式 freeze 前（freeze audit）在 M1-D HEAD 上以裸 `pytest -q` 复核：**collected=1098, passed=1098, skipped=0, deselected=0, failed=0**（342.08s）。与 `RareTopo-M1-v0` 冻结时点的全量 1076 passed 关系为 1076 + 22 个新增 m1d 测试 = 1098，无删除/跳过/配置变化（`git diff RareTopo-M1-v0 -- tests` 仅新增 2 文件；pytest 配置 diff 为空）。
+- **缺陷修复 → 下游重跑溯源**：缺陷 (1)(2) 在批次一 pool 特征化运行之前修复，pool/freeze 工件即为修复后代码产出（崩溃的首次后台运行未落任何工件）；缺陷 (3) LayerB 记账与 DV3 语义在 commit `f127858` 内完成并先于全部五个 adaptive stage 启动，故所有原始 trial JSON 均出自最终代码路径；缺陷 (4) 仅属聚合/报告层，gate_audit.py 与 figures 在修复后直接从未改动的原始 batch JSON 重算（原始文件 freeze-hash 链在重跑时再次校验通过：四个 batch 的 `benchmark_freeze_hash` 与冻结正本一致）。因此**无需重跑任何实验 stage**，仅汇总与图被再生成。
+
 
 ## 9. Completion Checklist（任务 §48 全项核验）
 

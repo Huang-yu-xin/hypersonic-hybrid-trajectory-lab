@@ -139,7 +139,14 @@ def main() -> int:
                 RESULTS / "d2_two_birth" / "layer_a_two_birth_v1.json",
                 RESULTS / "d2_two_birth" / "layer_b_two_birth_v1.json")),
         "n_configs_frozen": len(frozen_ids),
-        "pytest_note": "pytest suites green at commit f127858 (see report)",
+        "pytest_note": ("full `pytest -q` at M1-D final HEAD: 1098 passed / "
+                        "0 skipped / 0 deselected (provenance re-check before "
+                        "formal freeze; earlier mid-phase '554' figures were "
+                        "the subset with tests/{models,optimization,"
+                        "predictability,simulation,uncertainty} ignored). All "
+                        "raw batch artifacts were produced after the last "
+                        "code-path fix; only this aggregation and figures "
+                        "were regenerated from those immutable raw files."),
         "pass": None,
     }
     g0_ok = gates["D0_validity"]["freeze_before_adaptive_runs"] \
