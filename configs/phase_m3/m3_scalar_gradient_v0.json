@@ -1,0 +1,143 @@
+{
+ "schema_version": "raretopo-m3-scalar-gradient-v0",
+ "document_type": "preregistered experiment configuration (M3 task Sec. 31/36); locked BEFORE any M3 scientific run",
+ "parent_tags": {
+  "h3": "RareTopo-H3-v1.0",
+  "m1_v0": "RareTopo-M1-v0",
+  "m1d": "RareTopo-M1-D-v1.0",
+  "m1d_frozen_head": "059964eb3b8b927301776ae5505bc3ac8593ed94",
+  "m2": "RareTopo-M2-v0",
+  "m2_frozen_head": "0a00f4459609f712aa76dc4d14349d9cd0d58fc9"
+ },
+ "provenance": {
+  "task_file": "docs/phase_m3/M3_Second_Moment_Gradient_Covariance_Control_Task.md",
+  "task_sha256": "6c3cf811fe54e164c2821228797a2e2c5e03dfc18589971d53b6ca2ac2753db0",
+  "benchmark_freeze": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+  "benchmark_freeze_sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+  "benchmark_hash_verification": "sha256 of docs/phase_m1d/M1_D_Benchmark_Freeze.json re-computed at every driver start and matched before any run (inherited from M2 discipline)",
+  "m2_freeze_requirement": "M2 frozen as RareTopo-M2-v0 at tag commit 0a00f44 with full pytest exit 0 (docs/phase_m2/M2_Freeze_Summary.md) BEFORE any M3 scientific work; verified at driver start",
+  "firewall_note": "no M2 lambda retuning; no benchmark/config change; no policy learning; no joint mean/covariance/weight/component optimization; no component deletion; no global optimality claim; scalar isotropic control only"
+ },
+ "frozen_configs": [
+  "m1d_b20260827_c000",
+  "m1d_b20260827_c001",
+  "m1d_b20260827_c004",
+  "m1d_b20260827_c006",
+  "m1d_b20260827_c007",
+  "m1d_b20260827_c010",
+  "m1d_b20260827_c017",
+  "m1d_b20260827_c020"
+ ],
+ "protocol_locked": {
+  "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+  "n_trials_paired": 64,
+  "pilot_n_per_round": 20000,
+  "alpha_p": 0.5,
+  "final_eval_n": 100000,
+  "eval_rng_tag": 900001,
+  "pilot_rng_rule": "np.random.default_rng([seed, 101]); frozen draw_mix_pilot order (target first, then current proposal); ONE shared pilot per (config, seed) reused for selection lock, gradient estimation, and Layer B refit -- zero extra simulator calls for the gradient",
+  "rng_sequence_rule": "counterfactual variants share CRN: identical component structure/order + fixed weights => rng.choice and standard_normal streams match; only the selected component Cholesky scaling differs",
+  "eval_generator_rule": "np.random.default_rng([seed, eval_rng_tag]); proposal.sample then log_density via frozen eval_proposal_is semantics"
+ },
+ "gradient_point_locked": {
+  "definition": "frozen M1-D variance-policy proposal immediately after the variance-critical component has been added and the frozen M1-v0 SLSQP mixture weights established, BEFORE any M3 covariance change (task Sec. 16)",
+  "selected_component_covariance_at_gradient": "Sigma_base read from frozen proposal metadata (= I_2 unit family, metadata-certified; never hardcoded without check)",
+  "layer": "fixed_weights",
+  "layer_A_locks": ["selected mode", "all component means", "all mixture weights (= pi_C0 frozen SLSQP output)", "all other covariances (unit I_2)", "component count"],
+  "recorded_state_fields": ["selected_mode", "component_index", "component_mean", "component_weight", "base_covariance", "full mixture state"]
+ },
+ "gradient_formula_locked": {
+  "second_moment": "M2(q) = integral_A p^2/q dx",
+  "variance_measure": "nu_V(dx) = 1_A p^2/q / M2 dx",
+  "responsibility": "r_k(x) = pi_k q_k(x) / q(x), 0<=r<=1, sum r = 1",
+  "matrix_candidate_theorem": "grad_{Sigma_k} M2 = (M2/2) Sigma_k^{-1} [ E_nuV[r_k] Sigma_k - E_nuV[r_k (X-m_k)(X-m_k)^T] ] Sigma_k^{-1}",
+  "isotropic_derivative_theta_log_s_squared": "g_k = dM2/dtheta_k = (M2/2) E_nuV[ r_k (dim - ||X-m_k||^2 / s_k^2) ]",
+  "stationary_target": "T_k = E_nuV[r_k (X-m_k)(X-m_k)^T] / E_nuV[r_k]; stationary condition Sigma_k = T_k under fixed (m, pi)",
+  "finite_sample_estimator": {
+   "a_i": "1_A(x_i) p(x_i)^2 / (q(x_i) r_i(x_i)) on the shared pilot (frozen variance-mass importance values; recorded source density r_i at draw time)",
+   "a_bar": "a_i / sum_j a_j",
+   "responsibility_hat": "pi_k q_k(x_i)/q(x_i) evaluated at the gradient-point mixture (unit covariances)",
+   "mu_r_k": "sum_i a_bar_i rhat_ki",
+   "D_hat": "sum_i a_bar_i rhat_ki ||x_i - m_k||^2 / mu_r_k",
+   "g_hat": "(M2_hat / 2) * mu_r_k * (dim - D_hat / s_k^2)"
+  },
+  "ess_grad": {
+   "weights_c": "c_i = a_bar_i rhat_ki / sum_j a_bar_j rhat_kj",
+   "formula": "ESS_grad = 1 / sum_i c_i^2",
+   "threshold": 20.0,
+   "breach_action": "HOLD_LOW_ESS"
+  }
+ },
+ "bootstrap_locked": {
+  "scheme": "frozen fixed-stratified bootstrap (mirrors hyptraj.m1.variance_measure.omega_bootstrap_lcb resampling discipline): resample WITHIN p-source stratum and WITHIN q-source stratum, preserve stratum sizes exactly, recompute g_hat per replicate",
+  "n_bootstrap_replicates": 500,
+  "bootstrap_seed_rule": "np.random.default_rng([seed, 424243])",
+  "ci_level": 0.95,
+  "decision_precedence_locked": ["HOLD_INVALID", "HOLD_LOW_ESS", "CI rule"],
+  "ci_sign_rule": {
+   "WIDEN": "g_ci_high < 0",
+   "SHRINK": "g_ci_low > 0",
+   "HOLD_UNCERTAIN": "CI contains 0"
+  },
+  "headline_rule": "point-sign alone never used in headline experiments"
+ },
+ "step_policy_locked": {
+  "delta_theta_main": 0.20,
+  "theta_definition": "theta_k = log s_k^2; s_new^2 = s_old^2 * exp(+-delta_theta)",
+  "action_map": {"WIDEN": "+0.20", "SHRINK": "-0.20", "HOLD": "0"},
+  "sensitivity_values_sensitivity_stage_only": [0.10, 0.20, 0.40],
+  "legality_rule": "every perturbed component covariance passes the FROZEN checker (min eig >= LEGALITY_MIN_EIG = 0.5 of hyptraj.m1.proposal_update, verbatim reuse); e^{+/-0.40} * I_2 min-eig = 0.670 >= 0.5 so all preregistered steps are legal by construction; any violation recorded HOLD_INVALID"
+ },
+ "comparators_locked": [
+  {"method": "HOLD", "rule": "no covariance change"},
+  {"method": "SHRINK", "rule": "fixed -0.20 isotropic on the selected component only"},
+  {"method": "WIDEN", "rule": "fixed +0.20 isotropic on the selected component only"},
+  {"method": "GRADIENT", "rule": "CI-sign decision; step +-0.20 in predicted direction; otherwise HOLD"}
+ ],
+ "counterfactual_protocol_locked": {
+  "arms_evaluated_independently": ["BASE", "WIDEN", "SHRINK"],
+  "pred_opposite_mapping": "if GRADIENT predicts WIDEN: pred=WIDEN arm, opposite=SHRINK arm; if SHRINK: reversed; CRN-matched",
+  "evaluation_best_direction": {
+   "WIDEN": "M2(widen) < M2(base) AND M2(widen) < M2(shrink) with relative tie tolerance",
+   "SHRINK": "M2(shrink) < M2(base) AND M2(shrink) < M2(widen) with relative tie tolerance",
+   "HOLD": "neither perturbation improves base by > relative_tie_tolerance"
+  },
+  "relative_tie_tolerance": 0.01
+ },
+ "simulator_call_accounting_locked": {
+  "scientific_audit_calls_per_trial": "pilot_n + 3 * final_eval_n = 320000 (one shared pilot + independent evaluations of BASE/WIDEN/SHRINK diagnostic arms)",
+  "deployable_method_calls_per_trial": "pilot_n + chosen_GRADIENT_action_path_final_eval = 120000 (pilot + one evaluation of the action the deployable method would take; opposite-direction scientific diagnostics NOT counted toward deployable VRF)",
+  "reported_keys": ["scientific_audit_calls", "deployable_method_calls"]
+ },
+ "primary_metrics_locked": [
+  "gradient sign and CI", "ESS_grad", "WIDEN/SHRINK/HOLD frequency",
+  "direction accuracy Acc_dir among active trials",
+  "predicted-step success rate P(M2(pred)<M2(base)) among active trials",
+  "M2(pred)/M2(base)", "M2(pred)/M2(opposite)", "selected-mode leakage ratio",
+  "off-target leakage redistribution max_{j!=k} L_j(pred)/L_j(base)",
+  "proposal-level VRF", "deployable budget-adjusted VRF"
+ ],
+ "m2_diagnostic_locked": {
+  "purpose": "for each M3 trial compute the FAILED M2 descriptive HDR covariance C_eta_k^V for reporting only; NEVER used for control (task Sec. 17)",
+  "reported_conflict_case": "M2 descriptive covariance suggests narrowing (tr(C_eta)<trace/scale below base) while M3 gradient predicts WIDEN",
+  "estimator_source": "hyptraj.m2.variance_covariance.estimate_variance_region verbatim on the same shared pilot"
+ },
+ "gates_locked": {
+  "M3_0_validity": "M2 frozen; parent tags unchanged incl. RareTopo-M2-v0; task committed before runs; derivation present; no oracle leakage into estimators; fixed-weight Layer A; full pytest pass",
+  "M3_1_numerical_gradient_validity": {"sign_agreement": "100%", "relative_error_max": 5e-03, "fd_h_main": 0.001, "failure_action": "STOP"},
+  "M3_2_direction_identifiability": {"confident_non_HOLD_fraction_of_64_min": 0.50},
+  "M3_3_direction_accuracy": {"acc_dir_active_min": 0.75, "advantage_over_preregistered_nonadaptive_comparator_pp": 25},
+  "M3_4_predicted_step_m2_gain": {"success_rate_active_min": 0.75, "median_M2_pred_over_base_max": 0.90},
+  "M3_5_counterfactual_ordering": {"median_M2_pred_over_opposite_max": 0.85},
+  "M3_6_no_catastrophic_leakage_redistribution": {"configs_ok_min": 7, "of_configs": 8, "median_seed_max_offtarget_ratio_max": 2.0},
+  "STRONG_budget_adjusted_vrf": {"median_deployable_vrf_gt": 1.0, "required_for_core_validity": false}
+ },
+ "advantage_comparator_definition_locked": "nonadaptive comparator = ALWAYS-WIDEN vs ALWAYS-SHRINK direction accuracies measured on the SAME active-trial set; advantage computed against the better (max) of the two fixed rules",
+ "outputs_locked": {
+  "record_schema_version": "raretopo-m3-v0",
+  "dirs": ["results/phase_m3/theory_checks", "results/phase_m3/sanity", "results/phase_m3/scalar_layer_a", "results/phase_m3/scalar_layer_b", "results/phase_m3/sensitivity", "results/phase_m3/summary"],
+  "figures_dir": "figures/phase_m3",
+  "docs": ["M3_Methodology.md", "M3_Gradient_Validity_Audit.md", "M3_Final_Report.md"]
+ },
+ "amendment_policy_locked": "any change to any locked constant above requires docs/phase_m3/M3_PREREG_AMENDMENT_<date>.md with old/new/reason/outcome-inspection/untouched-rerun fields, committed BEFORE further runs"
+}

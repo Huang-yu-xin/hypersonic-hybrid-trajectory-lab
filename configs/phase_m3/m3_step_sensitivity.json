@@ -1,0 +1,11 @@
+{
+ "schema_version": "raretopo-m3-step-sensitivity-v0",
+ "document_type": "preregistered step-size sensitivity configuration (M3 task Sec. 11); SENSITIVITY STAGE ONLY -- the MAIN step stays 0.20 everywhere",
+ "main_delta_theta": 0.20,
+ "delta_theta_values": [0.10, 0.20, 0.40],
+ "semantics_locked": {
+  "purpose": "dose-response of the GRADIENT action under the CI-sign rule; explanatory only, never overrides main",
+  "reuse_rule": "same shared pilot, same gradient decision per trial, zero additional simulator calls for arms that coincide with the main-grid counterfactuals (+-0.10 requires one extra arm evaluation at final_eval_n)",
+  "no_post_hoc_step_retuning": "negative or positive results at 0.20 are never repaired by switching to another delta post hoc (task Sec. 27)"
+ }
+}
