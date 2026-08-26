@@ -87,12 +87,19 @@ def diagnose_missing_mode(
     min_mode_observations: int = 5,
     n_bootstrap: int = N_BOOTSTRAP_DEFAULT,
     rng: np.random.Generator | None = None,
+    birth_signal: str = "variance",
 ) -> DiscoveryResult:
     """Run one diagnosis: estimate the variance measure, then test every
     observed unrepresented mode against the frozen birth gate.
 
     Returns a candidate mode (first, in stable label order) when the gate
     passes; otherwise ``action = HOLD``.
+
+    ``birth_signal="variance"`` (v0) gates on ``omega_k^V`` with the bootstrap
+    LCB; ``birth_signal="probability"`` (Ablation A, task Sec. 27) replaces
+    the variance-share gate by the topology-probability gate ``P_k_hat`` with
+    the SAME 0.10 threshold -- the ablation that demonstrates the necessity
+    of the variance signal on probability-small variance-dominant modes.
     """
     vm = estimate_variance_measure(
         z, centers, pi, logp, logr, labels, nominal_topology
@@ -103,25 +110,32 @@ def diagnose_missing_mode(
         represented = topo in component_mode_ids
         omega = vm.omega_k_V[vm.mode_ids.index(topo)]
         n_obs = vm.n_observed[vm.mode_ids.index(topo)]
-        # bootstrap LCB only for potential candidates: an unrepresented mode
-        # with enough observations (saves ~10x bootstrap cost on HOLD rounds)
-        lcb = float("nan")
-        if (not represented) and n_obs >= min_mode_observations and n_obs > 0:
-            lcb, _ub = omega_bootstrap_lcb(
-                z, centers, pi, logp, logr, labels, nominal_topology,
-                mode=str(topo), n_bootstrap=n_bootstrap, rng=rng,
-            )
+        p_k_hat = float(n_obs / vm.n_samples)
+        if birth_signal == "probability":
+            signal_ok = p_k_hat >= tau_birth_main
+            lcb = float("nan")
+        elif birth_signal == "variance":
+            # bootstrap LCB only for potential candidates: an unrepresented
+            # mode with enough observations (saves ~10x cost on HOLD rounds)
+            lcb = float("nan")
+            if (not represented) and n_obs >= min_mode_observations and n_obs > 0:
+                lcb, _ub = omega_bootstrap_lcb(
+                    z, centers, pi, logp, logr, labels, nominal_topology,
+                    mode=str(topo), n_bootstrap=n_bootstrap, rng=rng,
+                )
+            signal_ok = omega >= tau_birth_main and lcb >= tau_birth_lower_confidence
+        else:
+            raise ValueError(f"unknown birth_signal {birth_signal!r}")
         eligible = (
             (not represented)
-            and omega >= tau_birth_main
-            and lcb >= tau_birth_lower_confidence
+            and signal_ok
             and n_obs >= min_mode_observations
             and n_obs > 0
         )
         mode_stats.append(ModeStat(
             mode_id=str(topo),
             represented_by_component=represented,
-            P_k_hat=float(vm.n_observed[vm.mode_ids.index(topo)] / vm.n_samples),
+            P_k_hat=p_k_hat,
             L_k_hat=float(vm.L_k[vm.mode_ids.index(topo)]),
             omega_k_V_hat=float(omega),
             omega_lcb95=float(lcb),

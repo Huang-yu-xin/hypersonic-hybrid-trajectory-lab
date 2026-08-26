@@ -271,12 +271,14 @@ def run_cem(seed: int, rounds: int, pilot_n: int, eval_n: int) -> BaselineResult
 
 def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
                        q0_center: np.ndarray | None = None,
-                       oracle=None, logp_fn=None) -> BaselineResult:
+                       oracle=None, logp_fn=None, **ablation_kw) -> BaselineResult:
     """M1 closed-loop Discover + Add + Reweight (mix_50 pilot policy).
 
     ``q0_center`` defaults to the H3-1 L2 primary design point (d=4);
     ``oracle``/``logp_fn`` default to the H3-1 L2 label/density pair.
     Benchmark C passes the curved H3-2 oracle and its own d=2 density.
+    ``**ablation_kw`` forwards M1-6 switches (birth_signal / reweight_after_birth
+    / center_method / eta_main) to ``run_closed_loop`` (task Sec. 27).
     """
     if q0_center is None:
         q0_center = Z_STAR
@@ -295,6 +297,7 @@ def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
         tau_birth_main=config["mode_birth"]["tau_birth_main"],
         tau_birth_lower_confidence=config["mode_birth"]["tau_birth_lower_confidence"],
         min_mode_observations=config["mode_birth"]["min_mode_observations"],
+        **ablation_kw,
     )
     ev = _eval(res.final_proposal, eval_n, seed, oracle=oracle, logp_fn=logp_fn)
     births = [it.candidate_mode for it in res.iterations

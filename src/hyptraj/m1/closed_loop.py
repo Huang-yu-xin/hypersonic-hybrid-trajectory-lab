@@ -40,7 +40,7 @@ from hyptraj.m1.proposal_update import (
     eta_region_centroid,
     update_weights,
 )
-from hyptraj.m1.variance_measure import estimate_variance_measure
+from hyptraj.m1.variance_measure import estimate_variance_measure, variance_mass_weights
 
 # frozen v0 stop rule constants (config m1_closed_loop_v0.json)
 MAX_ADAPTATION_ITERATIONS = 3
@@ -91,6 +91,10 @@ def run_closed_loop(
     n_bootstrap: int = 200,
     seed_bootstrap: int = 2026,
     rng_in: np.random.Generator | None = None,
+    eta_main: float = ETA_MAIN,
+    birth_signal: str = "variance",
+    reweight_after_birth: bool = True,
+    center_method: str = "eta_centroid",
 ) -> ClosedLoopResult:
     """Run the v0 closed loop: Discover + Add + Reweight until the stop rule.
 
@@ -106,6 +110,19 @@ def run_closed_loop(
 
     All pilots are independent of previous ones (adaptation firewall); the
     weight-fit samples are the frozen pilot of the birth round.
+
+    Ablation switches (task Sec. 27, defaults = v0 main configuration):
+
+    - ``birth_signal``: "variance" (v0, omega_k^V gate) or "probability"
+      (Ablation A: birth by topology probability P_k with the same 0.10
+      threshold -- expected to fail on probability-small variance-dominant
+      secondary modes);
+    - ``reweight_after_birth``: False disables UPDATE_WEIGHTS (Ablation B:
+      Discover + Add only, naive split weights);
+    - ``center_method``: "eta_centroid" (v0, eta-main region centroid) or
+      "max_weight_point" (Ablation D: single highest variance-mass point);
+    - ``eta_main``: eta used for the centroid region (Ablation E;
+      frozen sensitivity set 0.5 / 0.8 / 0.9, main = 0.8).
     """
     rng = np.random.default_rng(seed) if rng_in is None else rng_in
     proposal = initial_proposal
@@ -146,6 +163,7 @@ def run_closed_loop(
             min_mode_observations=min_mode_observations,
             n_bootstrap=n_bootstrap,
             rng=np.random.default_rng(seed_bootstrap + t),
+            birth_signal=birth_signal,
         )
 
         m2_prev = iterations[-1].M2_hat if iterations else None
@@ -181,10 +199,23 @@ def run_closed_loop(
 
         # ---- ADD_COMPONENT + UPDATE_WEIGHTS ----
         try:
-            new_center, centroid_eta_used = eta_region_centroid(
-                z, logp, logr, proposal.weights, proposal.centers,
-                labels, nominal_topology, mode=diag.candidate_mode, eta=ETA_MAIN,
-            )
+            if center_method == "eta_centroid":
+                new_center, centroid_eta_used = eta_region_centroid(
+                    z, logp, logr, proposal.weights, proposal.centers,
+                    labels, nominal_topology, mode=diag.candidate_mode,
+                    eta=eta_main,
+                )
+            elif center_method == "max_weight_point":
+                # Ablation D: single highest variance-mass pilot observation
+                wt = variance_mass_weights(
+                    z, proposal.centers, proposal.weights, logp, logr,
+                    (labels == diag.candidate_mode).astype(float),
+                )
+                i_max = int(np.argmax(wt))
+                new_center = z[i_max]
+                centroid_eta_used = 1.0
+            else:
+                raise ValueError(f"unknown center_method {center_method!r}")
         except ValueError as exc:
             stop_reason = f"centroid_failed: {exc}"
             iterations.append(ClosedLoopIteration(
@@ -197,19 +228,29 @@ def run_closed_loop(
         proposal_next = add_component(
             proposal, new_center, mode_id=str(diag.candidate_mode)
         )
-        try:
-            proposal_next, wres = update_weights(
-                proposal_next, z, logp, logr, indicators, floor=weight_floor
-            )
-        except RuntimeError:
-            stop_reason = "optimizer_non_convergence"
-            iterations.append(ClosedLoopIteration(
-                iteration=t, pilot_n=pilot_n, action="HOLD",
-                M2_hat=vm.M2_hat, M2_hat_prev=m2_prev,
-                candidate_mode=diag.candidate_mode, mode_stats=diag.mode_stats,
-                stop_reason=stop_reason,
-            ))
-            break
+        if not reweight_after_birth:
+            # Ablation B: Discover + Add only -- naive split weights kept
+            wres = {
+                "success": True, "message": "ablation_B_no_reweight",
+                "kkt_residue": float("nan"),
+                "objective_init": float("nan"),
+                "objective_final": float("nan"),
+                "n_iter": 0,
+            }
+        else:
+            try:
+                proposal_next, wres = update_weights(
+                    proposal_next, z, logp, logr, indicators, floor=weight_floor
+                )
+            except RuntimeError:
+                stop_reason = "optimizer_non_convergence"
+                iterations.append(ClosedLoopIteration(
+                    iteration=t, pilot_n=pilot_n, action="HOLD",
+                    M2_hat=vm.M2_hat, M2_hat_prev=m2_prev,
+                    candidate_mode=diag.candidate_mode, mode_stats=diag.mode_stats,
+                    stop_reason=stop_reason,
+                ))
+                break
 
         # independent diagnostic pilot for the relative-improvement stop rule:
         z_diag, logr_diag = _draw_pilot(pilot_n, proposal_next)
@@ -221,20 +262,19 @@ def run_closed_loop(
             logp_diag, logr_diag, labels_diag, nominal_topology,
         )
         rel_improvement = (vm.M2_hat - vm_next.M2_hat) / vm.M2_hat if vm.M2_hat > 0 else 0.0
+        _wres = wres if isinstance(wres, dict) else {
+            "success": wres.success, "message": wres.message,
+            "kkt_residue": wres.kkt_residue,
+            "objective_init": wres.objective_init,
+            "objective_final": wres.objective_final,
+            "n_iter": wres.n_iter,
+        }
         iterations.append(ClosedLoopIteration(
             iteration=t, pilot_n=pilot_n, action="ADD_COMPONENT",
             M2_hat=vm_next.M2_hat, M2_hat_prev=vm.M2_hat,
             candidate_mode=diag.candidate_mode, mode_stats=diag.mode_stats,
             proposal_after=proposal_next,
-            weight_result={
-                "success": wres.success,
-                "message": wres.message,
-                "kkt_residue": wres.kkt_residue,
-                "objective_init": wres.objective_init,
-                "objective_final": wres.objective_final,
-                "n_iter": wres.n_iter,
-                "centroid_eta_used": centroid_eta_used,
-            },
+            weight_result={**_wres, "centroid_eta_used": centroid_eta_used},
             stop_reason=None,
         ))
         proposal = proposal_next
