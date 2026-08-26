@@ -1,0 +1,24 @@
+{
+  "schema_version": "raretopo-m1d-d2-two-birth-v0",
+  "parent_tag": "RareTopo-M1-v0",
+  "h3_tag": "RareTopo-H3-v1.0",
+  "task_file": "docs/phase_m1d/M1_D_Multi_Missing_Mode_Variance_Geometry_Benchmark_Task.md",
+  "benchmark_freeze": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+
+  "challenge": { "name": "D2_two_birth", "max_new_components": 2,
+                 "requires_K_missing_ge3": true },
+  "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+
+  "dynamic_reranking_sec26": {
+    "variance_policy": "second birth ranks by L_k RE-ESTIMATED under q_1 from the round-2 pilot (never reuses q_0 leakage)",
+    "probability_policy": "P_hat re-estimated on the same round-2 pilot for online symmetry",
+    "oracle_V_note": "Oracle-V D2 keeps the q_0 reference ordering (deviation D2-O1, see Methodology); ref(q_1) per-trial re-characterization is NOT exercised in this preregistered batch"
+  },
+
+  "protocol_same_as_d1_except": { "max_new_components": 2 },
+  "outputs": {
+    "dir": "results/phase_m1d/d2_two_birth/",
+    "reported_metrics": ["CVS_2", "M2_hat", "VRF_budget"],
+    "gate_status": "secondary, not a headline gate (task Sec. 25)"
+  }
+}

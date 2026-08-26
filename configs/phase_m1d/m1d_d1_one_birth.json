@@ -1,0 +1,43 @@
+{
+  "schema_version": "raretopo-m1d-d1-one-birth-v0",
+  "parent_tag": "RareTopo-M1-v0",
+  "h3_tag": "RareTopo-H3-v1.0",
+  "task_file": "docs/phase_m1d/M1_D_Multi_Missing_Mode_Variance_Geometry_Benchmark_Task.md",
+  "benchmark_freeze": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+
+  "challenge": { "name": "D1_one_birth", "max_new_components": 1 },
+  "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+
+  "protocol": {
+    "n_pilot_per_round": 20000,
+    "alpha_p": 0.5,
+    "pilot_source_mix": "10k from p + 10k from current q_t (frozen mix_50)",
+    "n_eval_final_independent": 100000,
+    "eval_rng": "default_rng([seed, 900001])",
+    "declared_adaptation_cap_rounds": "birth_budget + 1 trailing diagnostic round (see Methodology DV2)",
+    "candidate_gate_sec16": { "min_mode_observations": 5, "no_birth_threshold_prefilter": true }
+  },
+
+  "layer_A_methods": [
+    "probability_selector", "variance_selector", "random_selector",
+    "oracle_P", "oracle_V"
+  ],
+  "layer_B_methods": ["variance_full_policy", "probability_full_policy"],
+  "common_action_layerA": {
+    "center_rule": "probability_conditional_centroid (Sec. 30)",
+    "covariance": "unit I (frozen family)",
+    "weight_rule": "frozen M1-v0 SLSQP on the same pilot (Sec. 32)"
+  },
+  "full_policy_switches": {
+    "variance":   { "birth_signal": "variance",         "center_method": "eta_centroid",        "weight_mode": "m2_opt" },
+    "probability":{"birth_signal": "probability_top",   "center_method": "probability_centroid","weight_mode": "probability" }
+  },
+  "budget_accounting": {
+    "VRF_semantics": "frozen semantic-corrected vrf_proposal / vrf_budget (baselines.py)",
+    "P_mc_denominator": "reference missing-mode union probability, identical across methods of one config"
+  },
+  "outputs": {
+    "dir": "results/phase_m1d/d1_selection_only/ and results/phase_m1d/d1_full_policy/",
+    "record_schema": "raretopo-m1d-v0 (task Sec. 37)"
+  }
+}
