@@ -1,0 +1,15 @@
+{
+  "schema_version": "raretopo-m2-lambda-sensitivity-v0",
+  "document_type": "preregistered ablation configuration (Ablation M2-D, task Sec. 15 / 35 / 36)",
+  "parent_config": "configs/phase_m2/m2_covariance_v0.json",
+  "note": "Explanatory sensitivity ONLY. Main result stays C4 with lambda = 0.50 recorded in m2_covariance_v0.json. Final-evaluation-based choice of a better lambda is FORBIDDEN and must not replace the main result.",
+  "lambda_values": [0.25, 0.5, 0.75],
+  "main_value": 0.5,
+  "variant": "C4 shrunk full variance geometry only",
+  "layers_run": ["shape_only", "shape_reweight"],
+  "protocol": "identical paired design as headline: shared pilot, locked selection, locked mean, CRN evaluation (configs/phase_m2/m2_covariance_v0.json)",
+  "outputs": {
+    "dir": "results/phase_m2/ablations/",
+    "prefix": "lambda_sensitivity"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": "raretopo-m2-covariance-v0",
+  "document_type": "preregistered experiment configuration (task Sec. 44/50)",
+  "parent_tags": {
+    "h3": "RareTopo-H3-v1.0",
+    "m1_v0": "RareTopo-M1-v0",
+    "m1d": "RareTopo-M1-D-v1.0",
+    "m1d_frozen_head": "059964eb3b8b927301776ae5505bc3ac8593ed94"
+  },
+  "provenance": {
+    "task_file": "docs/phase_m2/M2_Variance_Geometry_Covariance_Adaptation_Task.md",
+    "task_sha256": "36932a9feb5e8fccd26bb2d8beec8daabab3e1ab6a977dfa7d6b8eeafa39c144",
+    "benchmark_freeze": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+    "benchmark_freeze_sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+    "benchmark_hash_verification": "sha256 of docs/phase_m1d/M1_D_Benchmark_Freeze.json re-computed at every driver start and matched against archived results/phase_m1d/* benchmark_freeze_hash fields before any run",
+    "frozen_base_covariance_source": "read from frozen proposal metadata (unit I_2 family of hyptraj.m1.proposal_update.MixtureProposal); code must NOT hardcode the value without checking metadata (task Sec. 13)"
+  },
+  "frozen_configs": [
+    "m1d_b20260827_c000",
+    "m1d_b20260827_c001",
+    "m1d_b20260827_c004",
+    "m1d_b20260827_c006",
+    "m1d_b20260827_c007",
+    "m1d_b20260827_c010",
+    "m1d_b20260827_c017",
+    "m1d_b20260827_c020"
+  ],
+  "protocol_locked": {
+    "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+    "eta_main": 0.8,
+    "pilot_n_per_round": 20000,
+    "alpha_p": 0.5,
+    "final_eval_n": 100000,
+    "eval_rng_tag": 900001,
+    "pilot_rng_rule": "np.random.default_rng([seed, 101]); frozen draw_mix_pilot order (target first, then current proposal)",
+    "birth_budget": 1,
+    "cost_accounting": {
+      "budget_total_declared": "n_pilot * adaptation_rounds + final_eval_n (= 120000 for one-birth trials, identical to M1-D d1 trials)",
+      "extra_simulator_calls_for_covariance_estimation": 0
+    }
+  },
+  "selection_policy_locked": {
+    "selector": "frozen M1-D variance selector: eligible_candidates (Sec. 16 gate, min_mode_observations=5, no birth-threshold prefilter) then argmax L_hat (Sec. 17.2)",
+    "selection_lock": "selected mode computed EXACTLY ONCE per (config, seed) from the shared pilot; C0-C4 all reuse it (task Sec. 19)",
+    "mean_lock": "all variants share m_eta=0.8,k^V = frozen variance-mass HDR centroid (task Sec. 20); no variant may recompute a different centroid",
+    "cross_check_anchor": "results/phase_m1d/d1_selection_only/layer_a_one_birth_v1.json method=variance_selector records use the same pilot stream rng=[seed,101]; M2 drivers verify equality of the selected mode offline (audit only, never feeds back online)"
+  },
+  "covariance_family_locked": {
+    "C0_frozen_base": "Sigma_base read from frozen proposal metadata (expected unit I_2)",
+    "C1_isotropic_scale": "s_V^2 * I, s_V^2 = tr(C_eta)/d, then legality projection",
+    "C2_diagonal": "diag(C_eta), then legality projection",
+    "C3_full_raw": "C_eta verbatim, then legality projection",
+    "C4_shrunk_full_MAIN": "(1 - lambda) * Sigma_base + lambda * C_eta, lambda_main = 0.50, then legality projection",
+    "lambda_main": 0.5,
+    "lambda_sensitivity_set": [0.25, 0.5, 0.75],
+    "no_post_hoc_lambda_selection": true
+  },
+  "ess_hold_rule_locked": {
+    "n_region_min": "d + 2 = 4",
+    "ess_v_region_min": 20,
+    "hold_action": "HOLD_BASE_COVARIANCE -> Sigma_new = Sigma_base (recorded as finite-sample HOLD behavior, NOT a failed trial)",
+    "scope": "gate applies to C1/C2/C3/C4 construction inside each trial; C0 unaffected by definition"
+  },
+  "legality_gate_locked": {
+    "numerical_symmetrization": "C <- (C + C^T)/2 before every use",
+    "eigenvalue_floor": 0.55,
+    "eigenvalue_cap": 4.0,
+    "projection": "Sigma = U diag(clip(eig_j, 0.55, 4.00)) U^T applied AFTER candidate construction, BEFORE use",
+    "frozen_checker": "reuse hyptraj.m1.proposal_update LEGALITY_MIN_EIG discipline (min eig >= 0.5) as second-stage check; never redefine an inconsistent version",
+    "validity_failures_recorded": ["NaN", "Inf", "negative numerical eigenvalue below tolerance"]
+  },
+  "projection_metadata_required": [
+    "eigenvalues_pre", "eigenvalues_post", "n_eigen_clipped_low",
+    "n_eigen_clipped_high", "projection_frobenius_norm", "legality_passed"
+  ],
+  "two_layers_locked": {
+    "layer_A_shape_only": "pi = pi_C0 from frozen M1-D update for ALL variants; isolated covariance effect",
+    "layer_B_shape_reweight": "each candidate refit by the SAME frozen SLSQP weight optimizer on the declared pilot fit data; headline performance layer",
+    "weight_optimizer": "hyptraj.m1.mixture_weights.optimize_mixture_weights (SLSQP, analytic gradient, ftol=1e-12, maxiter=500, floor=0) -- UNMODIFIED"
+  },
+  "primary_metrics": [
+    "M2_hat(q_final)",
+    "R_M2_shape = M2(method)/M2(C0)",
+    "VRF_budget (frozen semantic-corrected)",
+    "VRF_proposal (reported separately)"
+  ],
+  "leakage_metrics": [
+    "L_j(q) per topology mode j",
+    "R_L_j = L_j(method)/L_j(C0)",
+    "selected-mode leakage ratio", "max off-target leakage ratio", "sum off-target leakage"
+  ],
+  "gates_locked": {
+    "M2_0_validity": "parent tags unchanged; benchmark hash matched; selection lock; mean lock; source density correct; covariance SPD; frozen legality checker pass; no final-eval leakage; full pytest exit 0; no missing result cells; estimator probability consistency",
+    "M2_1_estimator_stability": ">= 7/8 configs median-trial {ESS_V_region >= 20 or legal HOLD; covariance finite; projection finite; no systematic NaN/singularity}; report HOLD frequency",
+    "M2_2_core_second_moment_gain": "median_config[median_seed M2(C4)/M2(C0)] <= 0.85 AND >= 6/8 configs median_seed M2(C4) < median_seed M2(C0)",
+    "M2_3_shape_only_evidence": "Layer A median M2(C4)/M2(C0) < 1",
+    "M2_4_no_leakage_redistribution": ">= 7/8 configs median_seed max_{j != k_sel} R_L_j <= 2.0",
+    "M2_5_relative_budget_efficiency": "median VRF_budget(C4) > median VRF_budget(C0) AND median VRF_budget(C4)/VRF_budget(C0) >= 1.25",
+    "strong_gate_reported_separately": "median VRF_budget(C4) > 1"
+  },
+  "ablations_locked": {
+    "A_scale_only": "C0 vs C1",
+    "B_diagonal_vs_full": "C2 vs C3/C4",
+    "C_raw_vs_shrinkage": "C3 vs C4",
+    "D_lambda_sensitivity": "[0.25, 0.50, 0.75], main stays 0.50",
+    "E_shape_only_vs_reweight": "Layer A vs Layer B",
+    "F_ess_stratification": "covariance gain stratified by low/medium/high ESS_V_region"
+  },
+  "isotropic_vs_anisotropic_gate": {
+    "comparison": "C4 vs C1, >= 5/8 configs per-config median M2(C4) < M2(C1) supports anisotropy claim; otherwise conclusion tightens to scale effect (not a main-method failure)"
+  },
+  "outputs": {
+    "results_dirs": [
+      "results/phase_m2/sanity/",
+      "results/phase_m2/layer_a_shape_only/",
+      "results/phase_m2/layer_b_shape_reweight/",
+      "results/phase_m2/ablations/",
+      "results/phase_m2/summary/"
+    ],
+    "figures_dir": "figures/phase_m2/",
+    "record_schema_version": "raretopo-m2-v0"
+  }
+}
