@@ -60,14 +60,24 @@ def logp(z: np.ndarray) -> np.ndarray:
     return -np.sum(z**2, axis=1) / 2.0 - 0.5 * D * np.log(2.0 * np.pi)
 
 
-def _eval(prop: MixtureProposal, n_eval: int, seed: int) -> dict:
-    """Independent IS evaluation of a frozen proposal (task Sec. 23)."""
+def _eval(prop: MixtureProposal, n_eval: int, seed: int,
+          oracle=None, logp_fn=None) -> dict:
+    """Independent IS evaluation of a frozen proposal (task Sec. 23).
+
+    ``oracle``/``logp_fn`` default to the H3-1 pair; Benchmark C passes its
+    own curved oracle and d=2 density (the dimension constant must match the
+    proposal space -- a mismatch scales all IS weights by a constant and
+    biases P_hat).
+    """
+    if oracle is None:
+        oracle = label_h3_1
+    if logp_fn is None:
+        logp_fn = logp
     rng = np.random.default_rng(seed + 500_000)
     z = prop.sample(rng, n_eval)
-    labels = label_h3_1(z)
+    labels = oracle(z)
     ind = (labels != NOMINAL).astype(float)
-    logw = logp(z) - prop.log_density(z)
-    w = np.exp(logw) * ind
+    w = np.exp(logp_fn(z) - prop.log_density(z)) * ind
     p_hat = float(np.mean(w))
     m2_hat = float(np.mean(w**2))
     var_hat = max(0.0, (m2_hat - p_hat**2) / n_eval)
@@ -259,20 +269,34 @@ def run_cem(seed: int, rounds: int, pilot_n: int, eval_n: int) -> BaselineResult
     )
 
 
-def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config) -> BaselineResult:
-    """M1 closed-loop Discover + Add + Reweight (mix_50 pilot policy)."""
-    q0 = MixtureProposal(centers=Z_STAR.reshape(1, -1), weights=np.array([1.0]),
+def run_m1_closed_loop(seed: int, pilot_n: int, eval_n: int, config,
+                       q0_center: np.ndarray | None = None,
+                       oracle=None, logp_fn=None) -> BaselineResult:
+    """M1 closed-loop Discover + Add + Reweight (mix_50 pilot policy).
+
+    ``q0_center`` defaults to the H3-1 L2 primary design point (d=4);
+    ``oracle``/``logp_fn`` default to the H3-1 L2 label/density pair.
+    Benchmark C passes the curved H3-2 oracle and its own d=2 density.
+    """
+    if q0_center is None:
+        q0_center = Z_STAR
+    if oracle is None:
+        oracle = label_h3_1
+    if logp_fn is None:
+        logp_fn = logp
+    q0 = MixtureProposal(centers=np.asarray(q0_center, dtype=float).reshape(1, -1),
+                         weights=np.array([1.0]),
                          component_mode_ids=("S1",))
     res = run_closed_loop(
-        seed=seed, initial_proposal=q0, label_oracle=label_h3_1,
-        logp_fn=logp, nominal_topology=NOMINAL,
+        seed=seed, initial_proposal=q0, label_oracle=oracle,
+        logp_fn=logp_fn, nominal_topology=NOMINAL,
         pilot_n=pilot_n, pilot_policy="mix_50",
         max_iterations=config["budget"]["max_adaptation_iterations"],
         tau_birth_main=config["mode_birth"]["tau_birth_main"],
         tau_birth_lower_confidence=config["mode_birth"]["tau_birth_lower_confidence"],
         min_mode_observations=config["mode_birth"]["min_mode_observations"],
     )
-    ev = _eval(res.final_proposal, eval_n, seed)
+    ev = _eval(res.final_proposal, eval_n, seed, oracle=oracle, logp_fn=logp_fn)
     births = [it.candidate_mode for it in res.iterations
               if it.action == "ADD_COMPONENT" and it.candidate_mode is not None]
     return BaselineResult(
