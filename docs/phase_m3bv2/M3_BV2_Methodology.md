@@ -114,7 +114,7 @@ After outcome inspection the following are forbidden (task Sec. 31): changing th
 | decision freeze | `docs/phase_m3bv2/M3_BV2_Decision_Benchmark_Freeze.md/.json` |
 | value freeze | `docs/phase_m3bv2/M3_BV2_Value_Benchmark_Freeze.md/.json` |
 | benchmark configs | `configs/phase_m3bv2/m3bv2_decision_benchmark.json`, `m3bv2_value_benchmark.json` |
-| figures | `figures/phase_m3bv2/` (BV2-D1…D3, BV2-V1…V5; D4/V6 are controller-stage figures) |
+| figures | `figures/phase_m3bv2/` (all 10: BV2-D1…D4, BV2-V1…V6; D4 confusion matrix and V6 captured headroom are controller-stage figures produced post-freeze) |
 | tests | `tests/test_m3bv2_benchmark.py` (18 required names, task Sec. 27) |
 
 All freeze JSONs carry a self-recorded `freeze_sha256_of_body_above` (hash of the JSON with that field stripped, `json.dumps(indent=1)`), the repo-standard pattern also used by the M3-D freeze.

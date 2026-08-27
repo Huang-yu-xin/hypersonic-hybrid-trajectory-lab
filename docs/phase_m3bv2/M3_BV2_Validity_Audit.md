@@ -80,4 +80,16 @@ python -m pytest -q
 
 ## 11. Verdict
 
-> **All BV2-D0 / BV2-V0 validity items PASS. Both benchmarks are constructed from byte-identical prior characterization, all gates are recorded, and controller runs on BV2 remain 0.**
+> **All BV2-D0 / BV2-V0 validity items PASS. Both benchmarks are constructed from byte-identical prior characterization, all gates are recorded, and controller runs on BV2 were 0 at freeze time.**
+
+## 12. Post-freeze controller-evaluation integrity (task Sec. 22–25)
+
+| Check | Evidence | Result |
+|---|---|---|
+| matched-stream bit identity | controller-eval per-replicate M2 of any arm differs from the frozen stored value by ≤ 3.7e-10 (pure 9-decimal rounding; same `crn_batched_eval` draw order, same RNG keys `[701001+idx, 10000+r]`) | **PASS** |
+| frozen J reproduction | J(ALWAYS_WIDEN) = −0.014791, J(ALWAYS_SHRINK) = +0.022431, J(ALWAYS_HOLD) = 0.0, J(ORACLE) = −0.068943 re-measured on the evaluation streams — exact match with the freeze (`freeze_records_unchanged` all True) | **PASS** |
+| frozen controller only | M3-G-v1 = GA1/rho=0.02 gain gate over the frozen M3-D direction layer; frozen confirmatory seeds 3031..3038 (disjoint from discovery 2026..2033); pilot 20k alpha 0.5; bootstrap `[seed,424243]`; ESS ≥ 20; legality floor | **PASS** |
+| decision correctness recomputed from raw per-trial records | balanced accuracy, macro-F1, confusion matrix reproduced by independent recomputation in the test suite (tolerance 1e-12) | **PASS** |
+| value capture recomputed from raw per-trial records | J(M3-G-v1), G_v1, Capture reproduced (tolerance 1e-9); BV2-C1 gate recomputed and PASS | **PASS** |
+| no benchmark amendment | freeze artifacts byte-unchanged after controller evaluation (seal); controller evaluation commit is the last stage commit | **PASS** |
+| M3-Q not started | no M3-Q artifact, script, or run exists | **PASS** |

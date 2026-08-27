@@ -18,6 +18,8 @@ import statistics
 import subprocess
 from pathlib import Path
 
+import numpy as np
+
 REPO = Path(__file__).resolve().parents[1]
 
 POOL = REPO / "results" / "phase_m3bv" / "reference" / "m3bv_candidate_pool.json"
@@ -514,6 +516,96 @@ def test_m3bv2_no_controller_selection_leakage():
         for k, v in an["source"].items():
             assert v in allowed, f"unexpected source {k}: {v}"
 
+
+# --------------------------------------------------------------------------
+# controller evaluation (post-freeze stage; task Sec. 22-25)
+# --------------------------------------------------------------------------
+
+CE = REPO / "results" / "phase_m3bv2" / "controller_evaluation.json"
+
+
+def _load_ce() -> dict:
+    return json.loads(CE.read_text(encoding="utf-8"))
+
+
+def _recompute_controller_J(ce: dict, controller: str) -> float:
+    van = load(VAN)
+    keys = sorted({f"{fs['state_key']['config_id']}|{fs['state_key']['s2']}"
+                   for fs in van["freeze_selection"]})
+    per_state = []
+    for k in keys:
+        reps = ce["states"][k]["replicates"]
+        if controller == "M3-G-v1":
+            arm_of = [r["v1_arm"] for r in reps]
+        else:
+            arm_of = [{"WIDEN": "widen", "SHRINK": "shrink",
+                       "HOLD": "base"}[r["m3d_action"]] for r in reps]
+        lrs = [math.log(r["arm_M2"][a] / r["base_M2_frozen"])
+               for r, a in zip(reps, arm_of)]
+        per_state.append(med(lrs))
+    return med(per_state)
+
+
+def test_m3bv2_controller_protocol_recorded():
+    ce = _load_ce()
+    p = ce["protocol"]
+    assert p["pilot_n"] == 20000 and p["eval_n"] == 100000
+    assert p["n_replicates"] == 8
+    assert "3031 + (r - 1)" in p["decision_seed_rule"]
+    assert "701001 + idx, 10000 + r" in p["eval_streams"]
+    assert ce["controller_runs_on_bv2"]["unique_state_blocks"] == 32
+    assert ce["controller_runs_on_bv2"]["axisA_state_replicate_trials"] == 192
+    assert ce["controller_runs_on_bv2"]["axisB_state_replicate_trials"] == 192
+    # frozen J values reproduced exactly on the matched streams
+    assert all(ce["freeze_records_unchanged"].values()), \
+        "fixed/oracle J must reproduce the frozen freeze values"
+
+
+def test_m3bv2_v1_decision_accuracy():
+    ce = _load_ce()
+    dan = load(DAN)
+    cls = {f"{fs['state_key']['config_id']}|{fs['state_key']['s2']}":
+           fs["class"] for fs in dan["freeze_selection"]}
+    classes = ("WIDEN", "HOLD", "SHRINK")
+    preds = []
+    for k, fs_cls in cls.items():
+        for r in ce["states"][k]["replicates"]:
+            preds.append((fs_cls, r["v1_action"]))
+    assert len(preds) == 192
+    cm = {t: {p: 0 for p in classes} for t in classes}
+    for t, p in preds:
+        cm[t][p] += 1
+    recall = {c: cm[c][c] / sum(cm[c].values()) for c in classes}
+    bal = float(np.mean(list(recall.values())))
+    assert math.isclose(bal, ce["axis_a"]["M3-G-v1"]["balanced_accuracy"],
+                        abs_tol=1e-12)
+    assert math.isclose(
+        sum(1 for t, p in preds if t == p) / len(preds),
+        ce["axis_a"]["M3-G-v1"]["accuracy"], abs_tol=1e-12)
+    stored = ce["axis_a"]["M3-G-v1"]["confusion_matrix"]
+    for t in classes:
+        for p in classes:
+            assert cm[t][p] == stored[t][p]
+
+
+def test_m3bv2_c1_value_capture():
+    ce = _load_ce()
+    van = load(VAN)
+    ufc = ce["unified_functional"]
+    j_v1 = _recompute_controller_J(ce, "M3-G-v1")
+    j_d = _recompute_controller_J(ce, "M3-D")
+    assert math.isclose(j_v1, ce["J"]["M3-G-v1"], abs_tol=1e-9)
+    assert math.isclose(j_d, ce["J"]["M3-D"], abs_tol=1e-9)
+    j_bf = van["unified_functional"]["J"][ufc["best_fixed"]]
+    g_o = van["unified_functional"]["G_Oracle"]
+    g_v1 = j_bf - j_v1
+    assert math.isclose(g_v1, ufc["G_v1"], abs_tol=1e-9)
+    capture = g_v1 / g_o
+    assert math.isclose(capture, ufc["capture_v1"], abs_tol=1e-8)
+    # BV2-C1 hard gate (task Sec. 25)
+    assert capture >= 0.5
+    assert j_v1 < j_bf
+    assert ufc["c1_gate_capture_ge_0.5_and_Jv1_lt_Jbf"] is True
 
 # --------------------------------------------------------------------------
 # 18. freeze schema (+ self-consistency)
