@@ -1,61 +1,79 @@
-# M3-G Validity Audit
+# M3-G Validity Audit（freeze-audit 修正版）
 
-> **Stage:** M3-G ｜ **Audit date:** 2026-08-27 ｜ **Data:** sealed online batch `results/phase_m3g/layer_a/m3g_online_v1.json`（192 试次，160s，位一致重放）
-> **Gate audit JSON:** `results/phase_m3g/summary/gate_audit_m3g.json`（schema `raretopo-m3g-gate-audit-v0`）
+> **Stage:** M3-G ｜ **Audit date:** 2026-08-27 ｜ **Data:** sealed batch `results/phase_m3g/layer_a/m3g_online_v1.json`（192 试次，位一致重放）
+> **权威门来源:** `M3_G_Gain_Aware_HOLD_Decision_Task.md` @ `9720456` ｜ **偏差审计:** `M3_G_Protocol_Deviation_Audit.md`
+> **Gate audit JSON:** `results/phase_m3g/summary/gate_audit_m3g.json`（修正版，schema `raretopo-m3g-gate-audit-v0`）
+> **最终裁决:** **M3-G-v0 = NOT FREEZE READY**
 
 ---
 
-## 1. 证据矩阵（M3G-0..5 + Strong）
+## 1. Table A — 权威预注册门证据矩阵（commit `9720456` 原阈值）
 
 | 门 | 判定 | 证据 |
 |---|---|---|
-| **M3G-0 有效性** | **PASS** | 双父 tag 解引用提交 == 任务文档记录（32b2856…/7bd58c5…）；任务先于科学提交（9720456）；标定仅用存储数据；标定期间额外模拟调用 = 0（monkeypatch 守卫测试）；标定冻结 `48fe50b` 先于密封评估提交；无 oracle 泄漏（结构测试：gate/proxy 源禁 oracle 符号，metrics 仅评估用途）；全量 pytest **1166 passed / exit 0**；密封基准哈希 `b613f45d…` 自校验一致 |
-| **M3G-1 方向保持** | **PASS** | WIDEN recall = 1.000（64/64），SHRINK recall = 1.000（64/64），≥ 0.90 硬门 |
-| **M3G-2 HOLD 恢复** | **FAIL** | HOLD recall = 0.28125（需 ≥ 0.70）；vs 冻结 M3-D 提升 +3.125pp（需 ≥ +30pp） |
-| **M3G-3 均衡质量** | **FAIL** | 均衡精度 0.7604（需 ≥ 0.80）；macro-F1 0.7117（需 ≥ 0.80） |
-| **M3G-4 M2 非劣性** | **PASS** | 池化中位数 M2(M3G)/M2(M3D) = 1.0000 ≤ 1.00（层级聚合亦 = 1.0000）；优选 ≤ 0.98 未达成（单独报告，非硬门） |
-| **M3G-5 自适应价值** | **FAIL** | 最优固定规则 = ALWAYS_WIDEN；中位数 M2(M3G)/M2(BEST FIXED) = 1.0000（需 ≤ 0.95）；逐态种子中位胜 9/24（需 ≥ 16；5 负 10 平） |
-| **STRONG（预算 VRF）** | **PASS（不作优势表述）** | deployable 会计下中位 VRF_budget = 1.0304 > 1；按 M3-D 教训，仅报告成本效率，**不构成自适应优越性** |
+| **M3G-0 有效性** | **PASS** | 双父 tag 解引用 == 任务文档记录（32b2856…/7bd58c5…）；任务先于科学提交（9720456）；密封基准哈希 `b613f45d…` 自校验一致；无 oracle 泄漏结构测试（决定层源无 oracle 符号，metrics 仅评估用途）；全量 pytest **1166 passed / exit 0**；标定 `extra_simulator_calls=0` |
+| **M3G-1 基线奇偶** | **PASS** | 密封重放冻结基线行集与存储 M3-D layer_a **192/192 单元逐位相等，0 失配**（g_hat/g_ci_low/g_ci_high/ESS_grad/action；运行时断言，批元数据留档） |
+| **M3G-2 非回归** | **PASS** | Acc3_gain = 0.7604 ≥ 0.75；WIDEN recall = 1.000 ≥ 0.90；SHRINK recall = 1.000 ≥ 0.90 |
+| **M3G-3 HOLD 恢复** | **FAIL** | HOLD recall = 0.28125 < 0.50（从 0.250）；act-but-indifferent 48 → 46（−4.2% > −30% 要求） |
+| **M3G-4 价值方向** | **PASS** | R_fixed(GA) = 1.0000 ≤ R_fixed(baseline CI-sign) = 1.0000（同一聚合） |
+| **M3G-5 near-oracle** | **PASS** | 中位 R_M2 = 0.0000 ≤ 0.05 |
+| **Strong（诊断）** | **PASS（诊断）** | deployable 中位 VRF_budget = 1.0304 > 1；**措辞 = 保留 M3-D 的 crude-MC 预算效率穿越；不构成优越性/新增效率**（值与 M3-D 相同） |
 
-### 任务文档（committed task）交叉引用门
+## 2. Table B — Secondary / Strengthened Audit Criteria（非原始官方门）
 
-| 条目 | 值 | 判定 |
+| 准则 | 判定 | 实测 |
 |---|---|---|
-| Acc3_gain ≥ 0.75（非回归） | 0.7604 | ✓ |
-| act-but-indifferent 相对下降 ≥ −30% | 48 → 46（−4.2%） | ✗ |
-| near-oracle 中位 R_M2 ≤ 0.05 | 0.0000 | ✓ |
-| value-direction：R_fixed(GA) ≤ R_fixed(baseline) | 1.0000 ≤ 1.0000 | ✓（不劣于） |
+| 方向保持 W/S ≥ 0.90 | PASS | 1.000 / 1.000 |
+| HOLD 强恢复 ≥ 0.70 / +30pp | FAIL | 0.28125（+3.125pp） |
+| 均衡质量 ≥ 0.80 / 0.80 | FAIL | 0.7604 / 0.7117 |
+| M2 非劣 ≤ 1.00（优选 0.98） | PASS（硬）/ 优选未达 | 1.0000 / 1.0000 |
+| 自适应价值 ≤ 0.95 且 ≥16/24 | FAIL | 1.0000；9 胜/5 负/10 平 |
 
-## 2. 泄漏与完整性审计
+## 3. 协议偏差审计摘要（详见 `M3_G_Protocol_Deviation_Audit.md`）
 
-- **重放奇偶校验**：192/192 单元，冻结 gradient 块（g_hat/g_ci/ESS/action）与存储 M3-D Layer-A **逐位相等，0 失配**（运行时断言，证据入批元数据）。
-- **身份闭合** `M2 = Σ_j L_j`：1152 次臂检查（192×6），相对容差 1e-9，**0 违例**；`validate_m3g_trial_record` 全程校验。
-- **合法分母**：仅合法臂进入聚合；无非法臂作为 base/平手处理（s2=0.55 的 SHRINK 臂非法 → 确定性折叠 HOLD_INVALID 逻辑在线生效；本批次无此类激活，0 折叠，机制测试覆盖）。
-- **无 oracle 泄漏**：门 API 签名白名单（direction/variant/rho/g_hat/g_ci_* /m2/delta_theta/arm_legal）；决策层源无 oracle 符号；oracle 标签仅用于评估预测动作（与 M3-D 记账一致）。
-- **标定零模拟调用**：结构 + 运行时（monkeypatch 将 draw/eval 替换为 raise）双守卫；冻结 JSON `extra_simulator_calls = 0`。
-- **网格锁定**：rho_grid 恰为预注册四值；变体恰为 GA1/GA2；标签/基准未重表征（哈希自校验）。
-
-## 3. 操作化风险与量化
-
-| 风险 | 量化 | 处置 |
+| 偏差 | 状态 | 证据 |
 |---|---|---|
-| M2 归一化替代（pilot M2_hat → 基准臂评估 M2） | 标定-在线代理保真度：**176/176 激活试次门决策一致**；归一化最大相对差 214×（c000_s2_00255/seed2028：pilot 估计在稀有事件区间高方差，评估估计更稳定；该试次两种归一化下代理均远在阈值外，决策不变） | 替代记录于冻结配置；pilot M2_hat 每在线记录留档 |
-| GA2 CI 线性传播 vs 真逐 replicate | **0/192 决策分歧**；上端差距中位 0.001（P95 0.0146，最大 0.039） | 事后诊断（`run_m3g_ga2_diagnostic.py`，无臂评估，非科学诊断） |
-| rho 灵敏度平坦 | 四档 GA2 行完全相同（批次内无试次保守端落在 (−0.02, −0.0025)） | 如实报告；tie-break 按预注册执行 |
+| **A — M2 分母**（评估臂 M2 ⊳ pilot M2_hat） | **MATERIAL，非 result-preserving** | exact-proxy 重放选择 **GA1-0.02 ≠ 冻结 GA2-0.0025**；封闭策略 9/192 动作分歧（归因 9/9）；分母相对差极端 ~215×；原义网格样本内 Acc3 可达 1.000 vs 冻结 0.7604 |
+| **B — GA2 CI 传播**（g-CI 线性 ⊳ 逐 replicate） | 选定 rho=0.0025 下 **result-preserving（0/192）** | 修正方向诊断（逐试次取实际方向 Δθ=±0.20，pilot M2）：线性上端 vs 逐 replicate 上端决策分歧 0/192，|gap| 中位 0.001 |
 
-## 4. 统计正确性
+```text
+new simulator scientific calls = 0        （标定与重放均零新增）
+raw scientific results changed? NO
+benchmark / rho / controller changed? NO
+```
 
-- 192 行按 NOT-IID 处理：配对 (state, seed) 单元；Acc3 增量配对 bootstrap（n=10,000，seed [20260827]）：均值 +0.0104，95% CI **[0.0000, 0.0260]**（含 0 → 分类提升不具统计显著性，如实报告）。
-- M2 比值聚合按预注册层级（逐态种子中位数 → 再取中位数）与池化中位数双轨报告。
+## 4. 泄漏与完整性审计（已执行批次，事实不变）
 
-## 5. 威胁与局限
+- 重放奇偶校验：192/192，0 失配；身份闭合 M2=ΣL_j：1152 臂检查 0 违例（1e-9）；合法分母纪律（无非法臂作 base）；门 API 白名单 + 源级禁 oracle 符号；标定零模拟调用双守卫；rho 网格锁定预注册四值；冻结提交 `48fe50b` 早于密封评估。
 
-1. 结论域 = 单一生化 24 态基准（8/8/8）；无跨基准外推声明。
-2. 增益代理为局部一阶量；曲率/二阶分量未建模（超出 v0 范围，标量策略按负结果政策关闭）。
-3. 密封运行使用的统一 M2 归一化（评估臂）与冻结公式中的 M2_hat 存在估计器差异；已量化（§3），决策层不受影响。
-4. Strong VRF>1 仅支持「在本冻结合成基准上实现成本效率」；明确禁止「梯度被证明」「自适应优越」等表述。
-5. 全量 pytest 证据：1166 passed / exit 0（G2 阶段记录）。
+## 5. 统计正确性（修正表述）
 
-## 6. 结论
+- 192 行 NOT-IID；(state, seed) 配对单元。
+- **in-sample 披露**：标定与密封重放共用同一冻结单元 → 所测提升为 **in-sample calibrated performance**；Acc3 增量区间（n=10,000，种子 [20260827]）定名为 **descriptive paired bootstrap interval after policy selection**：均值 +0.0104，95% [0.0000, 0.0260]——不赋予独立 holdout 验证含义。
 
-有效性链完整：**冻结 → 标定（零模拟）→ 冻结提交 → 密封评估 → 位一致重放 → 门控审计 → 泄漏审计**。所有 PASS/FAIL 判定基于密封批次的直接测量与预注册阈值；无事后调参、无标签/基准改动、无 oracle 泄漏、无额外模拟调用。
+## 6. 哈希 / 溯源审计（复测一致）
+
+| 文件 | SHA-256 | 状态 |
+|---|---|---|
+| m3g_online_v1.json | `647c3e6a…b2f2662` | 未变 |
+| m3g_calibration_v0.json | `c8f2482e…c481c4` | 未变 |
+| m3d_layer_a_v1.json | `d9b0d6b5…f6ce0` | 未变 |
+| M3_D_Benchmark_Freeze.json | `b785190e…a95495` | 未变 |
+| m3g_gain_gate_v0.json / m3g_protocol.json | `821dc8a9…15e49` / `8545492f…98b0d` | 未变 |
+| exact_proxy_calibration_replay.json | （新增审计产物） | 新增 |
+
+## 7. 威胁与局限
+
+1. 结论域 = 单一生化 24 态基准；无跨基准外推。
+2. **操作化替代改变结论**（Deviation A 实质）→ 已执行批次的科学检验地位降级为「特定操作化策略的描述性研究」。
+3. 残余误差源（包络内）均未被触发：方向层位一致、门不翻转、决策层无 oracle、PASS/FAIL 仅基于密封批次测量。
+4. 全量 pytest 证据：1166 passed / exit 0（修正轮复测见 §8）。
+
+## 8. 测试证据（修正轮）
+
+- 靶向 M3-G 测试：22 passed。
+- 全量 pytest：见修正轮产物记录（collected/passed/failed/exit）。
+
+## 9. 结论
+
+有效性链事实（冻结→标定零模拟→冻结提交→密封评估→位一致→泄漏审计）全部成立；**权威门 5/6 PASS + Strong 诊断 PASS，M3G-3 FAIL → 分支 C**；叠加协议偏差审计 → **NOT FREEZE READY**：修正路径为预注册实现直接采用原义代理并重走完整预注册周期。

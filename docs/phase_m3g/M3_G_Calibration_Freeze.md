@@ -5,6 +5,7 @@
 > **Parent frozen tags:** `RareTopo-M3-v0 @ 32b285625494d9b3da08be3c559db3855df77667` 、 `RareTopo-M3-D-v0 @ 7bd58c5992615b8579b1814a3a3fcbea3cda9659` （均验证为 HEAD 祖先，annotated tag 解引用提交哈希与任务文档逐字一致）
 > **Task commit:** `9720456` ｜ **Benchmark freeze sha:** `b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3`
 > **Freeze timestamp:** 2026-08-27 ｜ 机器可读镜像：`M3_G_Calibration_Freeze.json`（self-sha `cdc1304c…`）
+> **⚠ FREEZE-AUDIT 增注（2026-08-27 修正轮）:** 本冻结的选择（GA2, 0.0025）基于「评估-M2」操作化分母；exact-proxy 标定重放（预注册原义 pilot M2_hat + 逐 replicate CI）选择了 **GA1-0.02**，封闭策略 9/192 动作分歧 → **Deviation A 实质、非 result-preserving** → **M3-G-v0 = NOT FREEZE READY**。本文件记录的是实际执行过的冻结（描述性有效），不再给出后续科学授权；权威裁决见 `M3_G_Protocol_Deviation_Audit.md`。
 
 ---
 

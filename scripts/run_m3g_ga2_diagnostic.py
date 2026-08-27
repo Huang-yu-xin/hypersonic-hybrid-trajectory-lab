@@ -38,6 +38,11 @@ DEST = REPO / "results" / "phase_m3g" / "summary" \
     / "m3g_ga2_propagation_diagnostic.json"
 
 SEEDS = list(range(2026, 2034))
+STORED_RAW = json.loads((REPO / "results" / "phase_m3d" / "layer_a"
+                         / "m3d_layer_a_v1.json").read_text(
+                             encoding="utf-8"))
+stored_raw = {(r["state_id"], int(r["seed"])): r["gradient"]["action"]
+              for r in STORED_RAW["records"]}
 
 
 def _git() -> str:
@@ -75,17 +80,20 @@ def main() -> int:
                                            dim=st.dim)
             if not est["valid_pointwise"]:
                 continue
+            raw = str(stored_raw[(s_rec["state_id"], int(seed))])
+            dtheta = (+DELTA_THETA_MAIN if raw == "WIDEN"
+                      else -DELTA_THETA_MAIN)
             delr = bootstrap_gain_replicates(
                 a, resp, sq, strata, s2=st.s2, dim=st.dim,
-                dtheta=+DELTA_THETA_MAIN,
+                dtheta=dtheta,
                 bootstrap_seed_key=(seed, 424243))
             g_ci_low, g_ci_high = delr["g_ci_low"], delr["g_ci_high"]
             m2_pilot = float(est["M2_hat"])
             # decision A (locked linear form, pilot-M2 normaliser):
             upper_linear = ga2_upper_end(g_ci_low, g_ci_high,
-                                         +DELTA_THETA_MAIN, m2_pilot)
+                                         dtheta, m2_pilot)
             dec_linear = (upper_linear <= -rho)
-            # decision B (true per-replicate upper end):
+            # decision B (true per-replicate upper end, acted direction):
             upper_rep = float(delr["delta_rel_signed_ci_high"])
             dec_rep = (upper_rep <= -rho)
             rows.append({

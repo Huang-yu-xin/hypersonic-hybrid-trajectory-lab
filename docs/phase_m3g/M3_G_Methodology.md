@@ -1,10 +1,10 @@
 # M3-G Methodology — Gain-Aware HOLD Decision
 
 > **Project:** RareTopo — Topology-Aware Uncertainty & Risk Propagation
-> **Stage:** M3-G (scalar, v0) ｜ **Status:** COMPLETE — sealed evaluation executed, audit finalized
+> **Stage:** M3-G (scalar, v0) ｜ **Status:** SEALED EVALUATION COMPLETE — **FREEZE AUDIT: NOT FREEZE READY**（见 `M3_G_Protocol_Deviation_Audit.md`）
 > **Parent frozen tags:** `RareTopo-M3-v0 @ 32b2856…` 、 `RareTopo-M3-D-v0 @ 7bd58c5…` （已验证）
 > **Task doc:** `M3_G_Gain_Aware_HOLD_Decision_Task.md`（commit `9720456`） ｜ **Calibration freeze:** commit `48fe50b`
-> **Coefficients:** variant **GA2**, rho **0.0025**, delta_theta_main **0.20**
+> **GATE 口径（修正）:** 权威门 = `9720456` 任务文档 M3G-0..5 + Strong；执行任务中的更严格指标一律称为 **Secondary / Strengthened Audit Criteria**（非原始预注册官方门）
 
 ---
 
@@ -75,6 +75,7 @@ EXECUTE frozen direction  |  HOLD_GAIN  |  HOLD_INVALID (legality fold)
 - 分类：Acc3、各类 recall、macro-F1、均衡精度、混淆矩阵，均附带 vs 冻结 CI 策略的 Δ。
 - 动作价值：M2(M3G)/M2(M3D)（池化中位数 + 层级聚合）、R_fixed（同一聚合 vs 三个固定规则）、中位后悔 R_M2 vs oracle。
 - 诊断：每类增益代理分布；act-but-indifferent 前后计数；HOLD_GAIN 正确率；false-HOLD 率；W/S 转换份额；标定-在线代理保真度；GA2 传播诊断。
+- **口径修正（freeze-audit）**：统计量定位为 in-sample calibrated performance；Acc3 增量区间为 descriptive paired bootstrap interval after policy selection；原报告中「结论对操作化替代稳健」表述因 exact-proxy 重放选择不一致而**撤销**（见 `M3_G_Protocol_Deviation_Audit.md` §4-5）。
 
 ## 7. 记录模式
 
@@ -84,16 +85,18 @@ EXECUTE frozen direction  |  HOLD_GAIN  |  HOLD_INVALID (legality fold)
 
 ```text
 docs/phase_m3g/
-├── M3_G_Gain_Aware_HOLD_Decision_Task.md     (preregistration, 9720456)
+├── M3_G_Gain_Aware_HOLD_Decision_Task.md     (authoritative prereg, 9720456)
 ├── M3_G_Calibration_Freeze.md + .json        (48fe50b; sha cdc1304c…)
+├── M3_G_Protocol_Deviation_Audit.md          (freeze-audit; NOT FREEZE READY)
 ├── M3_G_Methodology.md                       (this file)
-├── M3_G_Validity_Audit.md
-└── M3_G_Final_Report.md
-configs/phase_m3g/m3g_gain_gate_v0.json       (LOCKED GA2/0.0025)
+├── M3_G_Validity_Audit.md                    (Table A authoritative gates)
+└── M3_G_Final_Report.md                      (Table A/B + verdict)
+configs/phase_m3g/m3g_gain_gate_v0.json       (executed policy LOCK GA2/0.0025)
 configs/phase_m3g/m3g_protocol.json
 src/hyptraj/m3g/{gain_proxy,gain_gate,metrics,calibration}.py
 tests/test_m3g_covariance_pipeline.py         (22 tests)
-scripts/run_m3g_{calibration,online,gate_audit,figures,ga2_diagnostic}.py
+scripts/run_m3g_{calibration,online,gate_audit,figures,ga2_diagnostic,
+                 exact_proxy_replay}.py
 results/phase_m3g/{calibration,layer_a,summary}/  (untracked per repo policy)
 figures/phase_m3g/m3g1..m3g8.png              (untracked per repo policy)
 ```
