@@ -3,6 +3,7 @@
 > **Stage:** M3-BV — Adaptive-Value Benchmark Redesign
 > **Outcome:** **BV-3 FAIL** ⇒ benchmark = **VALUE-INFEASIBLE** ⇒ **STOP before controller evaluation** (task Sec. 13, 26 Case A, 30)
 > **Date:** 2026-08-27 ｜ Branch `feature/phase-m3bv-adaptive-value-benchmark`
+> **Correction (2026-08-28):** SHRINK headroom interpretation corrected and structural-gate diagnosis added (Sec. 5 note, Sec. 8 items 3–4). All result numbers, gates, and the negative verdict are unchanged; this is a wording correction only.
 
 ---
 
@@ -61,7 +62,7 @@ Oracle wins / losses / ties                                       = 14 / 2 / 8  
 | Class | Wins | Ratio structure | Why |
 |---|---|---|---|
 | WIDEN | 0/8 | 8 **constructive ties** (ratio 1.0000) | Oracle arm ≡ ALWAYS_WIDEN arm on every WIDEN state → identical M2; a tie is architecturally unavoidable whenever the globally best fixed policy is ALWAYS_WIDEN |
-| SHRINK | 8/8 | ratios 0.867–0.937 | Real headroom ≈ −9% to −13%, fully captured by a fixed SHRINK policy on those states |
+| SHRINK | 8/8 | ratios 0.867–0.937 | Real headroom ≈ −9% to −13% **relative to BestFixed = ALWAYS_WIDEN → genuine adaptive headroom** (corrected 2026-08-28: not capturable by a fixed policy, because the globally best fixed policy is the fixed widener, not a fixed shrinker) |
 | HOLD | 6/8 | ratios ≈ 0.991–0.999 | Real but marginal headroom (margins ~0.1–1.5%); 2 losses: c006 s2=2.3 (**−0.66%**), c010 s2=3.0 (**−0.08%**) |
 
 Even in the best case (HOLD 8/8), constructive WIDEN ties cap wins at 8 + 8 + 8 = 16 with two ratio-1.0 states — and here 2 HOLD losses drop wins to 14 while the ratio median is pinned at 0.9946 by the 8 ties plus near-unity HOLD ratios.
@@ -93,7 +94,16 @@ headroom under the frozen evaluation protocol.
 
 1. **WIDEN-class constructive ties are irreducible while BestFixed = ALWAYS_WIDEN.** Any benchmark whose WIDEN states select the widen arm as reference makes the Oracle coincide with the fixed widener on those states. The gate's win logic then cannot count them. (M3-VA already showed this on the old benchmark; the new benchmark reproduces it at 8/8 states.)
 2. **HOLD headroom is real but below evaluation-budget noise resolution.** Median HOLD margins ≈ 0.1–1.5% at the 100k/arm headline budget produce ratios ≈ 0.99–1.00 and occasional ±0.7% flips — the exact "label resolution ≳ evaluation noise resolution" imbalance the task (Sec. 8) targeted, but the frozen event family + 100k/arm budget cannot separate them at 0.95-level.
-3. **The only class with decisive headroom (SHRINK, −9–13%) is already capturable by a fixed policy**, so it contributes no *adaptive* value over BestFixed once a fixed SHRINK arm is available.
+3. **SHRINK states provide genuine and decisive headroom relative to the globally best fixed policy, ALWAYS_WIDEN**, but that headroom is concentrated in only one-third of the balanced benchmark and is therefore insufficient to move the current median-of-state-ratios adaptive-value metric below the frozen 0.95 threshold. (Corrected 2026-08-28: the previous wording implied a fixed SHRINK policy could capture this headroom and thereby erase its adaptive value; that implication was wrong, because BestFixed is defined as one globally selected fixed rule and the actual globally best fixed policy is ALWAYS_WIDEN.)
+4. **Structural-gate diagnosis (2026-08-28):** In an 8W/8H/8S benchmark where BestFixed = ALWAYS_WIDEN:
+
+   ```text
+   - all 8 WIDEN states are constructive Oracle/BestFixed ties;
+   - HOLD states are intentionally near-indifferent and therefore tend to have ratios near 1;
+   - decisive Oracle headroom is concentrated mainly in SHRINK states.
+   ```
+
+   Therefore the frozen median-ratio ≤ 0.95 gate is **close to structurally unattainable** for this balanced decision benchmark, even when the benchmark has valid sign diversity and stable labels. Likewise, `wins ≥ 16/24` is knife-edge because the 8 WIDEN ties cap strict Oracle wins at 16 even in the best possible case. **This is a benchmark-metric architecture issue, not a controller result.**
 
 ## 9. Diagnostics & figures
 
