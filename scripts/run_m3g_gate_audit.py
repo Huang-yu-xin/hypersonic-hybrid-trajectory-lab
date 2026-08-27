@@ -153,7 +153,7 @@ def main() -> int:
         gate_by_state.setdefault(r["state_id"], []).append(
             float(r["arms"]["gate"]["M2"]))
     gate_med = state_seed_medians(gate_by_state)
-    bf_by_state = state_seed_medians(agg[best_fixed])
+    bf_by_state = agg[best_fixed]            # already per-state medians
     ratio_gate_bf = {k: gate_med[k] / bf_by_state[k]
                      for k in gate_med if k in bf_by_state
                      and bf_by_state[k] > 0}

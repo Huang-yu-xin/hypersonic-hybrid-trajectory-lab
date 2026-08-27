@@ -176,12 +176,13 @@ def main() -> int:
                 g_ci_high=float(gr["g_ci_high"]),
                 m2=m2_norm, delta_theta=DELTA, arm_legal=bool(arm_legal))
             final = gain["final_action"]
-            gate_arm = final_arm_key(final)
+            gate_arm_phys = {"WIDEN": "widen", "SHRINK": "shrink",
+                             "HOLD": "base"}[final]
             deployed = ("WIDEN" if final == "WIDEN"
                         else "SHRINK" if final == "SHRINK" else "HOLD")
             grad_M2 = ev[g_arm]["M2_hat"]
             oracle_M2 = ev[o_arm]["M2_hat"]
-            gate_M2 = ev[gate_arm]["M2_hat"]
+            gate_M2 = ev[gate_arm_phys]["M2_hat"]
             regret = ((gate_M2 - oracle_M2) / oracle_M2
                       if oracle_M2 else float("nan"))
 
@@ -198,12 +199,12 @@ def main() -> int:
                 gain_block=gain,
                 arms_block={"hold": A2("base"), "widen": A2("widen"),
                             "shrink": A2("shrink"), "gradient": A2(g_arm),
-                            "oracle": A2(o_arm), "gate": A2(gate_arm)},
+                            "oracle": A2(o_arm), "gate": A2(gate_arm_phys)},
                 metrics_block={
                     "action_correct": bool(deployed == oracle_action),
                     "regret_M2": regret,
-                    "VRF_proposal": float(ev[gate_arm]["VRF_proposal"]),
-                    "VRF_budget": float(ev[gate_arm]["VRF_budget"]),
+                    "VRF_proposal": float(ev[gate_arm_phys]["VRF_proposal"]),
+                    "VRF_budget": float(ev[gate_arm_phys]["VRF_budget"]),
                     "M2_gate_over_base": gate_M2 / float(ev["base"]["M2_hat"]),
                     "M2_gate_over_oracle": (gate_M2 / oracle_M2
                                             if oracle_M2 else None),
@@ -213,7 +214,7 @@ def main() -> int:
                     "raw_decision_code": raw,
                     "deployed_action": deployed,
                     "gradient_mapped_arm": g_arm,
-                    "gate_mapped_arm": gate_arm,
+                    "gate_mapped_arm": gate_arm_phys,
                     "gain_variant": VARIANT,
                     "gain_rho": RHO,
                     "gain_config_file": "configs/phase_m3g/"
