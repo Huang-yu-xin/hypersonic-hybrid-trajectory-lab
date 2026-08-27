@@ -1,0 +1,726 @@
+{
+ "schema_version": "raretopo-m3bv2-decision-freeze-v0",
+ "document_type": "M3-BV2 Axis A (Decision) benchmark freeze: frozen 8W/8H/8S state set for WIDEN/HOLD/SHRINK action-correctness evaluation; NO controller run before this freeze commit",
+ "stage": "B9_decision_freeze",
+ "frozen_at_utc": "2026-08-27T16:50:20+00:00",
+ "git_commit": "37d17bc",
+ "parent_tags": {
+  "m3g_v1": "RareTopo-M3-G-v1 (peeled commit 4505a36)",
+  "m3d_v0": "RareTopo-M3-D-v0 (7bd58c5992615b8579b1814a3a3fcbea3cda9659)",
+  "m3bv_v0": "RareTopo-M3-BV-v0 (frozen negative benchmark-design result, annotated tag on commit 1eea183)"
+ },
+ "source_hashes": {
+  "candidate_pool": "7fe306504207196ec5a830ec5246330db199f622a71521fe333de36b2cf23a28",
+  "headline_stability": "9d1822e7dc34c25a4f20db39b8ff3aea691cb9b7e93bcce3ad50fdc7ca4e3a87",
+  "reuse_record": "70d36241ab759630dcdafe7c007c15730445d492f7c1340277fd869573850efd"
+ },
+ "benchmark_semantics": {
+  "axis": "A_decision",
+  "structure": {
+   "WIDEN": 8,
+   "HOLD": 8,
+   "SHRINK": 8
+  },
+  "eligibility_rule": "frozen label (support + margin >= 0.05 embedded) AND headline stability >= 0.80; HOLD adds the frozen indifference-stability rule",
+  "selection_rule": "task Sec. 11 + construction lock axis_a_decision (deterministic, coverage-aware, config_id ascending, stability/margin/s2 sort)",
+  "headline_budget": "100000/arm x 8 matched replicates (frozen final_eval_n)",
+  "reference_budget": "500000/arm x 20 CRN batches (prior characterization, B2 reuse record)"
+ },
+ "selection_executed": {
+  "WIDEN": [
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.5967159946241739
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.39500593031443776
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.45612285653899864
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.49547240734474113
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.3751315316087779
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.31389779254979766
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.2454047990295118
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.18664850797042057
+   }
+  ],
+  "SHRINK": [
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.1250997087469075
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.14617335659281044
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.1445359682272961
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.16494870266368278
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.14249352934576084
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.16548435181935647
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.0664841997548112
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.06883022761900166
+   }
+  ],
+  "HOLD": [
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.010302967994354022
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.008984891584846076
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 2.3,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": -0.00045317988334909505
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": -0.009140826145898076
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 2.3,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": -0.007615944918853166
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": -0.0003631176637201455
+   },
+   {
+    "config_id": "m1d_b20260827_c007",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.004117791132540385
+   },
+   {
+    "config_id": "m1d_b20260827_c010",
+    "s2": 3.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": -0.00043829678092966107
+   }
+  ]
+ },
+ "selection_sizes": {
+  "WIDEN": 8,
+  "SHRINK": 8,
+  "HOLD": 8
+ },
+ "coverage": {
+  "WIDEN": {
+   "n_configs": 4,
+   "per_config": {
+    "m1d_b20260827_c000": 2,
+    "m1d_b20260827_c001": 2,
+    "m1d_b20260827_c004": 2,
+    "m1d_b20260827_c006": 2
+   },
+   "coverage_ok": true
+  },
+  "SHRINK": {
+   "n_configs": 4,
+   "per_config": {
+    "m1d_b20260827_c000": 2,
+    "m1d_b20260827_c001": 2,
+    "m1d_b20260827_c004": 2,
+    "m1d_b20260827_c006": 2
+   },
+   "coverage_ok": true
+  },
+  "HOLD": {
+   "n_configs": 6,
+   "per_config": {
+    "m1d_b20260827_c000": 1,
+    "m1d_b20260827_c001": 1,
+    "m1d_b20260827_c004": 2,
+    "m1d_b20260827_c006": 2,
+    "m1d_b20260827_c007": 1,
+    "m1d_b20260827_c010": 1
+   },
+   "coverage_ok": true
+  }
+ },
+ "gates": {
+  "D0_validity": "B2 reuse record (source hashes, legality, M2=sum L) + test_m3bv2_* suite + full pytest",
+  "D1_diversity_8_8_8": true,
+  "D2_stability_all_selected_ge_0.80": true,
+  "coverage_pass": true
+ },
+ "states": [
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.65
+   },
+   "state_id": "c000_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.5967159946241739,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 9.7708337075,
+    "widen": 8.2289575705,
+    "shrink": 11.4805535805
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.85
+   },
+   "state_id": "c000_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.39500593031443776,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 7.796059317999999,
+    "widen": 6.6610411585,
+    "shrink": 9.188758944500002
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 3.0
+   },
+   "state_id": "c000_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": 0.010302967994354022,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 4.5082530435,
+    "widen": 4.555957685,
+    "shrink": 4.564253233
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 6.4
+   },
+   "state_id": "c000_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.1250997087469075,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.16449372,
+    "widen": 5.529038958999999,
+    "shrink": 4.8788864955
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 8.0
+   },
+   "state_id": "c000_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.14617335659281044,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.501457288,
+    "widen": 5.9320252635,
+    "shrink": 5.142391701
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.65
+   },
+   "state_id": "c001_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.45612285653899864,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 11.3830290275,
+    "widen": 9.314291105,
+    "shrink": 14.039083197
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.85
+   },
+   "state_id": "c001_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.49547240734474113,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 8.7161882475,
+    "widen": 7.3012109684999995,
+    "shrink": 10.612399076500001
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 3.0
+   },
+   "state_id": "c001_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": 0.008984891584846076,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 4.579077481500001,
+    "widen": 4.6276545675000005,
+    "shrink": 4.6446169345
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 6.4
+   },
+   "state_id": "c001_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.1445359682272961,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.220268474,
+    "widen": 5.5857876345,
+    "shrink": 4.937947762
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 8.0
+   },
+   "state_id": "c001_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.16494870266368278,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.6452304735,
+    "widen": 6.1156092525000005,
+    "shrink": 5.2569175165
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.65
+   },
+   "state_id": "c004_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.3751315316087779,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 7.621081128,
+    "widen": 6.4145076025000005,
+    "shrink": 9.236499219999999
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.85
+   },
+   "state_id": "c004_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.31389779254979766,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 6.172333226,
+    "widen": 5.42665532,
+    "shrink": 7.195575023
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 2.3
+   },
+   "state_id": "c004_s2_00230",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": -0.00045317988334909505,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": false,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 4.24794026,
+    "widen": 4.2544658425,
+    "shrink": 4.336377479
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 3.0
+   },
+   "state_id": "c004_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": -0.009140826145898076,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 4.274428221000001,
+    "widen": 4.3967133185,
+    "shrink": 4.254798376
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 6.4
+   },
+   "state_id": "c004_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.14249352934576084,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.124441395,
+    "widen": 5.4806620185,
+    "shrink": 4.8172093154999995
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 8.0
+   },
+   "state_id": "c004_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.16548435181935647,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 5.546841419,
+    "widen": 6.0119358599999995,
+    "shrink": 5.1411556265
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.65
+   },
+   "state_id": "c006_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.2454047990295118,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 10.8215748055,
+    "widen": 10.1192220655,
+    "shrink": 11.841854987
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.85
+   },
+   "state_id": "c006_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.18664850797042057,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 9.570092446,
+    "widen": 8.998321798500001,
+    "shrink": 10.317496171
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 2.3
+   },
+   "state_id": "c006_s2_00230",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": -0.007615944918853166,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 7.962260266,
+    "widen": 7.9099158285,
+    "shrink": 8.1246004795
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 3.0
+   },
+   "state_id": "c006_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": -0.0003631176637201455,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": false,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 7.761054001,
+    "widen": 7.847277675,
+    "shrink": 7.76194091
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 6.4
+   },
+   "state_id": "c006_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.0664841997548112,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 8.5066120145,
+    "widen": 8.789821543999999,
+    "shrink": 8.232227644
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 8.0
+   },
+   "state_id": "c006_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.06883022761900166,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": true
+   },
+   "reference_median_M2": {
+    "base": 8.7334970195,
+    "widen": 9.020683919,
+    "shrink": 8.4462382665
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c007",
+    "s2": 3.0
+   },
+   "state_id": "c007_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": 0.004117791132540385,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": false,
+    "base_vs_widen_supported": true,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 8.1720310975,
+    "widen": 8.1896904605,
+    "shrink": 8.234354674
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c010",
+    "s2": 3.0
+   },
+   "state_id": "c010_s2_00300",
+   "class": "HOLD",
+   "oracle_action": "HOLD",
+   "margin_Delta_dir": -0.00043829678092966107,
+   "stability_fraction": 1.0,
+   "support": {
+    "base_vs_shrink_supported": true,
+    "base_vs_widen_supported": false,
+    "hold_window_satisfied": true
+   },
+   "reference_median_M2": {
+    "base": 4.129246803,
+    "widen": 4.1260957860000005,
+    "shrink": 4.198963948499999
+   }
+  }
+ ],
+ "online_trials_run_before_this_freeze": 0,
+ "controller_runs_on_bv2": 0,
+ "seal_declaration": [
+  "no state replacement",
+  "no metric change",
+  "no functional change",
+  "no margin change",
+  "no controller-informed amendment"
+ ],
+ "freeze_sha256_of_body_above": "f3d3a62463757db7f21d3fe2d5dac89655c24738255cdee788c8795fc73215dc"
+}

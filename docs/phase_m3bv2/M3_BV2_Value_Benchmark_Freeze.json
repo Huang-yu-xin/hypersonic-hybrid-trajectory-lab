@@ -1,0 +1,815 @@
+{
+ "schema_version": "raretopo-m3bv2-value-freeze-v0",
+ "document_type": "M3-BV2 Axis B (Value) benchmark freeze: frozen 12W/12S state set for adaptive WIDEN/SHRINK value over one globally fixed scalar rule under the unified functional; Oracle feasibility PASS required before this freeze",
+ "stage": "B9_value_freeze",
+ "frozen_at_utc": "2026-08-27T16:50:20+00:00",
+ "git_commit": "37d17bc",
+ "parent_tags": {
+  "m3g_v1": "RareTopo-M3-G-v1 (peeled commit 4505a36)",
+  "m3d_v0": "RareTopo-M3-D-v0 (7bd58c5992615b8579b1814a3a3fcbea3cda9659)",
+  "m3bv_v0": "RareTopo-M3-BV-v0 (frozen negative benchmark-design result, annotated tag on commit 1eea183)"
+ },
+ "source_hashes": {
+  "candidate_pool": "7fe306504207196ec5a830ec5246330db199f622a71521fe333de36b2cf23a28",
+  "headline_stability": "9d1822e7dc34c25a4f20db39b8ff3aea691cb9b7e93bcce3ad50fdc7ca4e3a87",
+  "reuse_record": "70d36241ab759630dcdafe7c007c15730445d492f7c1340277fd869573850efd"
+ },
+ "unified_functional": {
+  "definition": "J(pi) = median_state [ median_replicate log( M2(pi)/M2(BASE) ) ] over the 24 selected states; paired per replicate",
+  "one_functional_only": true,
+  "J": {
+   "ORACLE": -0.0689433,
+   "ALWAYS_WIDEN": -0.014791285,
+   "ALWAYS_SHRINK": 0.022430941,
+   "ALWAYS_HOLD": 0.0
+  },
+  "best_fixed": "ALWAYS_WIDEN",
+  "G_Oracle": 0.054152015,
+  "equivalent_ratio_exp(-G)": 0.947288094,
+  "threshold_minus_log095": 0.051293294
+ },
+ "benchmark_semantics": {
+  "axis": "B_value",
+  "structure": {
+   "WIDEN": 12,
+   "SHRINK": 12
+  },
+  "no_hold_states": true,
+  "hold_as_fixed_comparator": true,
+  "eligibility_rule": "frozen label WIDEN/SHRINK (statistical support AND direction margin >= 0.05 embedded) AND headline stability >= 0.80",
+  "selection_rule": "task Sec. 13/14 + construction lock axis_b_value (deterministic, coverage-aware, >=4 configs/class, <=3 states/config/class)",
+  "oracle_per_state": "frozen reference action arm",
+  "fixed_policies": [
+   "ALWAYS_WIDEN",
+   "ALWAYS_SHRINK",
+   "ALWAYS_HOLD"
+  ],
+  "best_fixed_definition": "argmin over the fixed policies of J (same functional as Oracle headroom)",
+  "headline_budget": "100000/arm x 8 matched replicates (frozen final_eval_n)",
+  "reference_budget": "500000/arm x 20 CRN batches (prior characterization, B2 reuse record)"
+ },
+ "selection_executed": {
+  "WIDEN": [
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.5967159946241739
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.39500593031443776
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 1.1,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.33106818182146935
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.45612285653899864
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.49547240734474113
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 1.1,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.35155073950421645
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.3751315316087779
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.31389779254979766
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 1.1,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.24910598532332087
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.65,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.2454047990295118
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.85,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.18664850797042057
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 1.1,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.14621147711822985
+   }
+  ],
+  "SHRINK": [
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 5.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.0975415885122164
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.1250997087469075
+   },
+   {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.14617335659281044
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 5.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.10469278200170647
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.1445359682272961
+   },
+   {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.16494870266368278
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 5.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.11940911037165165
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.14249352934576084
+   },
+   {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.16548435181935647
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 5.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.05497584587682052
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 6.4,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.0664841997548112
+   },
+   {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 8.0,
+    "stability_fraction": 1.0,
+    "margin_Delta_dir": 0.06883022761900166
+   }
+  ]
+ },
+ "selection_sizes": {
+  "WIDEN": 12,
+  "SHRINK": 12
+ },
+ "coverage": {
+  "WIDEN": {
+   "n_configs": 4,
+   "per_config": {
+    "m1d_b20260827_c000": 3,
+    "m1d_b20260827_c001": 3,
+    "m1d_b20260827_c004": 3,
+    "m1d_b20260827_c006": 3
+   },
+   "coverage_ok": true
+  },
+  "SHRINK": {
+   "n_configs": 4,
+   "per_config": {
+    "m1d_b20260827_c000": 3,
+    "m1d_b20260827_c001": 3,
+    "m1d_b20260827_c004": 3,
+    "m1d_b20260827_c006": 3
+   },
+   "coverage_ok": true
+  }
+ },
+ "margin_diagnostic_ge_0.10": {
+  "WIDEN": 12,
+  "SHRINK": 8
+ },
+ "fixed_rule_tradeoff_V1": {
+  "class_conditional_J": {
+   "WIDEN": {
+    "ORACLE": -0.136089973,
+    "ALWAYS_WIDEN": -0.136089973,
+    "ALWAYS_SHRINK": 0.157917887,
+    "ALWAYS_HOLD": 0.0
+   },
+   "SHRINK": {
+    "ORACLE": -0.054139658,
+    "ALWAYS_WIDEN": 0.064982611,
+    "ALWAYS_SHRINK": -0.054139658,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  "best_fixed_per_class": {
+   "WIDEN": "ALWAYS_WIDEN",
+   "SHRINK": "ALWAYS_SHRINK"
+  },
+  "weak_flag_one_fixed_rule_dominates_both_classes": false
+ },
+ "oracle_feasibility_V2": {
+  "pass": true,
+  "G_Oracle_ge_minus_log095": true,
+  "equivalent_ratio_le_0.95": true,
+  "strong_target_ratio_le_0.90_report_only": false,
+  "direct_paired_median_ratio_diagnostic": 0.975191159
+ },
+ "opposite_class_regret_V3": {
+  "pass": true,
+  "R_opp_W": 1.34724533,
+  "R_opp_S": 1.126839278,
+  "threshold": 1.05,
+  "semantics": "paired ratio M2(num)/M2(den) per replicate, median over 8 replicates per state, median over class states"
+ },
+ "gates": {
+  "V0": true,
+  "V1_diagnostic": {
+   "weak_flag": false,
+   "recorded": true
+  },
+  "V2_oracle_feasibility": true,
+  "V3_opposite_class_regret": true
+ },
+ "states": [
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.65
+   },
+   "state_id": "c000_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.5967159946241739,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 9.7708337075,
+    "widen": 8.2289575705,
+    "shrink": 11.4805535805
+   },
+   "state_J": {
+    "ORACLE": -0.15939144103422692,
+    "ALWAYS_WIDEN": -0.15939144103422692,
+    "ALWAYS_SHRINK": 0.16066554034248057,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 0.85
+   },
+   "state_id": "c000_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.39500593031443776,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 7.796059317999999,
+    "widen": 6.6610411585,
+    "shrink": 9.188758944500002
+   },
+   "state_J": {
+    "ORACLE": -0.1599737090918335,
+    "ALWAYS_WIDEN": -0.1599737090918335,
+    "ALWAYS_SHRINK": 0.16644650019112078,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 1.1
+   },
+   "state_id": "c000_s2_00110",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.33106818182146935,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 6.422596978,
+    "widen": 5.6372300725,
+    "shrink": 7.505957959
+   },
+   "state_J": {
+    "ORACLE": -0.12984003109767928,
+    "ALWAYS_WIDEN": -0.12984003109767928,
+    "ALWAYS_SHRINK": 0.15517023354093948,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.65
+   },
+   "state_id": "c001_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.45612285653899864,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 11.3830290275,
+    "widen": 9.314291105,
+    "shrink": 14.039083197
+   },
+   "state_J": {
+    "ORACLE": -0.1980219833432847,
+    "ALWAYS_WIDEN": -0.1980219833432847,
+    "ALWAYS_SHRINK": 0.19676359958511344,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 0.85
+   },
+   "state_id": "c001_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.49547240734474113,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 8.7161882475,
+    "widen": 7.3012109684999995,
+    "shrink": 10.612399076500001
+   },
+   "state_J": {
+    "ORACLE": -0.17978636040984047,
+    "ALWAYS_WIDEN": -0.17978636040984047,
+    "ALWAYS_SHRINK": 0.19008790068010917,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 1.1
+   },
+   "state_id": "c001_s2_00110",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.35155073950421645,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 6.815287317999999,
+    "widen": 5.9024965215,
+    "shrink": 8.042485929
+   },
+   "state_J": {
+    "ORACLE": -0.14233991579660707,
+    "ALWAYS_WIDEN": -0.14233991579660707,
+    "ALWAYS_SHRINK": 0.17026237838662517,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.65
+   },
+   "state_id": "c004_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.3751315316087779,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 7.621081128,
+    "widen": 6.4145076025000005,
+    "shrink": 9.236499219999999
+   },
+   "state_J": {
+    "ORACLE": -0.15576947594208435,
+    "ALWAYS_WIDEN": -0.15576947594208435,
+    "ALWAYS_SHRINK": 0.2109067492535455,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 0.85
+   },
+   "state_id": "c004_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.31389779254979766,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 6.172333226,
+    "widen": 5.42665532,
+    "shrink": 7.195575023
+   },
+   "state_J": {
+    "ORACLE": -0.12709210051386055,
+    "ALWAYS_WIDEN": -0.12709210051386055,
+    "ALWAYS_SHRINK": 0.15067089557475905,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 1.1
+   },
+   "state_id": "c004_s2_00110",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.24910598532332087,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.3261355695,
+    "widen": 4.8201742845,
+    "shrink": 6.0292199315
+   },
+   "state_J": {
+    "ORACLE": -0.10049726355208533,
+    "ALWAYS_WIDEN": -0.10049726355208533,
+    "ALWAYS_SHRINK": 0.12592533111338045,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.65
+   },
+   "state_id": "c006_s2_00065",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.2454047990295118,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 10.8215748055,
+    "widen": 10.1192220655,
+    "shrink": 11.841854987
+   },
+   "state_J": {
+    "ORACLE": -0.07663661936305666,
+    "ALWAYS_WIDEN": -0.07663661936305666,
+    "ALWAYS_SHRINK": 0.07103956500180308,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 0.85
+   },
+   "state_id": "c006_s2_00085",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.18664850797042057,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 9.570092446,
+    "widen": 8.998321798500001,
+    "shrink": 10.317496171
+   },
+   "state_J": {
+    "ORACLE": -0.06693492352124567,
+    "ALWAYS_WIDEN": -0.06693492352124567,
+    "ALWAYS_SHRINK": 0.07801733919997265,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 1.1
+   },
+   "state_id": "c006_s2_00110",
+   "class": "WIDEN",
+   "oracle_action": "WIDEN",
+   "margin_Delta_dir": 0.14621147711822985,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 8.961778608500001,
+    "widen": 8.4745227875,
+    "shrink": 9.5792475145
+   },
+   "state_J": {
+    "ORACLE": -0.05813594007070995,
+    "ALWAYS_WIDEN": -0.05813594007070995,
+    "ALWAYS_SHRINK": 0.06720477399311209,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 5.0
+   },
+   "state_id": "c000_s2_00500",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.0975415885122164,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 4.8160459165,
+    "widen": 5.0906345835,
+    "shrink": 4.6149516854999995
+   },
+   "state_J": {
+    "ORACLE": -0.04249773660868834,
+    "ALWAYS_WIDEN": 0.055247088715497356,
+    "ALWAYS_SHRINK": -0.04249773660868834,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 6.4
+   },
+   "state_id": "c000_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.1250997087469075,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.16449372,
+    "widen": 5.529038958999999,
+    "shrink": 4.8788864955
+   },
+   "state_J": {
+    "ORACLE": -0.05688209658247574,
+    "ALWAYS_WIDEN": 0.06608207976913091,
+    "ALWAYS_SHRINK": -0.05688209658247574,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c000",
+    "s2": 8.0
+   },
+   "state_id": "c000_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.14617335659281044,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.501457288,
+    "widen": 5.9320252635,
+    "shrink": 5.142391701
+   },
+   "state_J": {
+    "ORACLE": -0.06594978867052291,
+    "ALWAYS_WIDEN": 0.07205815196207196,
+    "ALWAYS_SHRINK": -0.06594978867052291,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 5.0
+   },
+   "state_id": "c001_s2_00500",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.10469278200170647,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 4.8932210225,
+    "widen": 5.1737566335,
+    "shrink": 4.6891876835
+   },
+   "state_J": {
+    "ORACLE": -0.04124448810866525,
+    "ALWAYS_WIDEN": 0.05700190875138907,
+    "ALWAYS_SHRINK": -0.04124448810866525,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 6.4
+   },
+   "state_id": "c001_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.1445359682272961,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.220268474,
+    "widen": 5.5857876345,
+    "shrink": 4.937947762
+   },
+   "state_J": {
+    "ORACLE": -0.05736993615955403,
+    "ALWAYS_WIDEN": 0.0683770655238172,
+    "ALWAYS_SHRINK": -0.05736993615955403,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c001",
+    "s2": 8.0
+   },
+   "state_id": "c001_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.16494870266368278,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.6452304735,
+    "widen": 6.1156092525000005,
+    "shrink": 5.2569175165
+   },
+   "state_J": {
+    "ORACLE": -0.07095167563743195,
+    "ALWAYS_WIDEN": 0.07964006578920418,
+    "ALWAYS_SHRINK": -0.07095167563743195,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 5.0
+   },
+   "state_id": "c004_s2_00500",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.11940911037165165,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 4.7467624595,
+    "widen": 5.058163909999999,
+    "shrink": 4.502978847
+   },
+   "state_J": {
+    "ORACLE": -0.051397219997783336,
+    "ALWAYS_WIDEN": 0.06388314286832754,
+    "ALWAYS_SHRINK": -0.051397219997783336,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 6.4
+   },
+   "state_id": "c004_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.14249352934576084,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.124441395,
+    "widen": 5.4806620185,
+    "shrink": 4.8172093154999995
+   },
+   "state_J": {
+    "ORACLE": -0.06351576255444782,
+    "ALWAYS_WIDEN": 0.07114289853491715,
+    "ALWAYS_SHRINK": -0.06351576255444782,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c004",
+    "s2": 8.0
+   },
+   "state_id": "c004_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.16548435181935647,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 5.546841419,
+    "widen": 6.0119358599999995,
+    "shrink": 5.1411556265
+   },
+   "state_J": {
+    "ORACLE": -0.07269575430889859,
+    "ALWAYS_WIDEN": 0.07721346088076445,
+    "ALWAYS_SHRINK": -0.07269575430889859,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 5.0
+   },
+   "state_id": "c006_s2_00500",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.05497584587682052,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 8.158467305,
+    "widen": 8.4238391365,
+    "shrink": 7.9738454385
+   },
+   "state_J": {
+    "ORACLE": -0.022342892195772065,
+    "ALWAYS_WIDEN": 0.028553370381728095,
+    "ALWAYS_SHRINK": -0.022342892195772065,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 6.4
+   },
+   "state_id": "c006_s2_00640",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.0664841997548112,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 8.5066120145,
+    "widen": 8.789821543999999,
+    "shrink": 8.232227644
+   },
+   "state_J": {
+    "ORACLE": -0.02967565556953313,
+    "ALWAYS_WIDEN": 0.03353296721170305,
+    "ALWAYS_SHRINK": -0.02967565556953313,
+    "ALWAYS_HOLD": 0.0
+   }
+  },
+  {
+   "state_key": {
+    "config_id": "m1d_b20260827_c006",
+    "s2": 8.0
+   },
+   "state_id": "c006_s2_00800",
+   "class": "SHRINK",
+   "oracle_action": "SHRINK",
+   "margin_Delta_dir": 0.06883022761900166,
+   "stability_fraction": 1.0,
+   "reference_median_M2": {
+    "base": 8.7334970195,
+    "widen": 9.020683919,
+    "shrink": 8.4462382665
+   },
+   "state_J": {
+    "ORACLE": -0.030405429184119988,
+    "ALWAYS_WIDEN": 0.033440878934994075,
+    "ALWAYS_SHRINK": -0.030405429184119988,
+    "ALWAYS_HOLD": 0.0
+   }
+  }
+ ],
+ "online_trials_run_before_this_freeze": 0,
+ "controller_runs_on_bv2": 0,
+ "seal_declaration": [
+  "no state replacement",
+  "no metric change",
+  "no functional change",
+  "no margin change",
+  "no controller-informed amendment"
+ ],
+ "freeze_sha256_of_body_above": "61ce24d2f512639e0a66eb6f7a8f15233a473035ba91d472677c04d5bb03052e"
+}
