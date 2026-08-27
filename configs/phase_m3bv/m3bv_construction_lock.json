@@ -1,0 +1,83 @@
+{
+  "schema_version": "raretopo-m3bv-construction-lock-v0",
+  "document_type": "M3-BV benchmark construction lock: candidate grid, reference & headline budgets, replicate RNG rule, label/stability thresholds, oracle definition, selection rule -- committed BEFORE any M3-BV characterization run (task Sec. 5/6/8/9/13/15)",
+  "stage": "M3_BV_preregistration",
+  "created_utc": "2026-08-27",
+  "status": "PREREGISTERED -- BENCHMARK CONSTRUCTION NOT STARTED",
+  "parent_tags": {
+    "m3g_v1": "RareTopo-M3-G-v1 (peeled commit 4505a36)",
+    "m3d_v0": "RareTopo-M3-D-v0 (7bd58c5992615b8579b1814a3a3fcbea3cda9659)",
+    "freeze_reference": "docs/phase_m3d/M3_D_Benchmark_Freeze.json sha256 b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3"
+  },
+  "candidate_grid": {
+    "source": "task Sec. 5 recommended scalar grid; frozen event family = the 8 frozen M1-D event configs (same family, NOT the old 24-state benchmark)",
+    "frozen_configs": [
+      "m1d_b20260827_c000", "m1d_b20260827_c001", "m1d_b20260827_c004",
+      "m1d_b20260827_c006", "m1d_b20260827_c007", "m1d_b20260827_c010",
+      "m1d_b20260827_c017", "m1d_b20260827_c020"
+    ],
+    "s2_grid_bv": [0.65, 0.85, 1.10, 1.40, 1.80, 2.30, 3.00, 4.00, 5.00, 6.40, 8.00],
+    "n_candidates_max": 88,
+    "no_amendment_after_outcomes": true
+  },
+  "reference_evaluation": {
+    "n_ref_per_arm": 500000,
+    "n_batches": 20,
+    "rng_rule": "[701001 + candidate_idx] over states sorted by (config_id, s2) ascending (same pattern as M3-D reference pool)",
+    "crn_rule": "one shared Generator per state across base/shrink/widen within each batch; only the selected component's Cholesky differs",
+    "estimator": "FROZEN eval_proposal_is semantics: w = exp(logp - logq)*1_A; M2 = mean(w^2); L_j = mean((w*1_j)^2); verify M2 = sum_j L_j",
+    "label_rule": "FROZEN label_state(tau=0.01, margin_min=0.05, hold_window=0.03, se_mult=2.0) -> oracle_action / direction_margin_Delta_dir / support",
+    "delta_theta": 0.20
+  },
+  "headline_budget": {
+    "n_per_arm": 100000,
+    "source": "frozen final_eval_n = 100000 per arm (M3-G-v1 protocol; the actual headline evaluation budget used by controller evaluation)",
+    "n_batches": 10,
+    "n_replicates": 8,
+    "rng_rule": "[701001 + candidate_idx, 10000 + replicate]  replicate in 1..8",
+    "semantics": "same frozen estimator semantics; matched = the three arms of one replicate share one stream (CRN), replicates are independent blocks"
+  },
+  "eligibility_rules": {
+    "WIDEN_SHRINK": "label_state returns WIDEN or SHRINK (statistically supported contrasts at >= 2x paired SE AND direction margin Delta_dir >= 0.05) -- both embedded in the frozen label rule",
+    "HOLD_reference_indifference": "frozen hold_window: |widen_over_base| <= 0.03 AND |shrink_over_base| <= 0.03 at reference budget (task Sec. 8.1: within the frozen HOLD tolerance)",
+    "HOLD_headline_stability": ">= 0.8 of the 8 matched headline replicates place BOTH perturbation arms within +-5% of BASE (|widen_over_base| <= 0.05 AND |shrink_over_base| <= 0.05)",
+    "WIDEN_SHRINK_action_stability": "reference action is the realized best action in >= 0.8 of the 8 matched headline replicates",
+    "no_threshold_relaxation": true
+  },
+  "oracle_and_fixed": {
+    "oracle_per_state": "take the frozen reference action: WIDEN arm / SHRINK arm / BASE arm for HOLD",
+    "fixed_policies": ["ALWAYS_WIDEN", "ALWAYS_SHRINK", "ALWAYS_HOLD"],
+    "best_fixed_definition": "among the three fixed policies, the one minimizing the global median (median over states of the per-state median over the 8 replicates) of headline M2",
+    "value_metric_per_trial": "headline-budget replicate M2 of the acted arm (same property minimized by labels and by M2 estimator)",
+    "aggregation": "trial unit = (state, replicate); per-state summary = median over 8 replicates; global summary = median over 24 states"
+  },
+  "gates": {
+    "BV0_validity": "M3-G-v1 tag exists; task committed before characterization; grid locked; all required arms legal; reference + headline estimators frozen; CRN frozen; M2 = sum L verified; no controller outputs used; full pytest PASS",
+    "BV1_sign_diversity": ">= 8 stable WIDEN / >= 8 stable SHRINK / >= 8 stable HOLD in the eligible pool",
+    "BV2_action_stability": "per selected state: WIDEN/SHRINK realized-best fraction >= 0.8; HOLD headline indifference >= 0.8",
+    "BV3_oracle_headroom": "median_state median_replicate M2(Oracle)/M2(BestFixed) <= 0.95 AND oracle wins >= 16 of 24 states (win = per-state median strictly lower than BestFixed)",
+    "strong_target_report_only": "Oracle/BestFixed <= 0.90"
+  },
+  "selection_rule": {
+    "n_each_class": 8,
+    "hierarchy": [
+      "1. eligible + stable candidates only",
+      "2. maximize config coverage: >= 4 distinct event configs per class AND <= 2 states per (config, class)",
+      "3. within equal coverage prefer larger headline-budget stability",
+      "4. then larger reference direction margin",
+      "5. final deterministic tie-break (config_id, s2) ascending"
+    ],
+    "algorithm_deterministic": "per class: process configs in (config_id) ascending; within each config take eligible candidates sorted by (stability_desc, margin_desc, s2_asc) up to 2; accumulate across configs until 8; if short, fill from remaining eligible candidates by the same sort; selection uses ONLY reference action / margin / stability / legality / config coverage -- no controller performance",
+    "if_insufficient": "STOP benchmark construction (negative result), report limitation"
+  },
+  "outputs": {
+    "candidate_pool": "results/phase_m3bv/reference/m3bv_candidate_pool.json",
+    "headline_stability": "results/phase_m3bv/reference/m3bv_headline_stability.json",
+    "oracle_audit": "results/phase_m3bv/reference/m3bv_oracle_audit.json",
+    "freeze_doc": "docs/phase_m3bv/M3_BV_Benchmark_Freeze.md",
+    "freeze_json": "docs/phase_m3bv/M3_BV_Benchmark_Freeze.json",
+    "benchmark_config": "configs/phase_m3bv/m3bv_benchmark_v0.json",
+    "record_schema_version": "raretopo-m3bv-v0"
+  },
+  "one_line_state": "M3-BV construction lock preregistered; candidate grid 8 configs x 11 s2 values = 88 max; N_ref=500k/arm (20 batches); headline 100k/arm x 8 replicates; no characterization run executed yet"
+}
