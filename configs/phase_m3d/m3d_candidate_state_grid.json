@@ -1,0 +1,49 @@
+{
+ "schema_version": "raretopo-m3d-candidate-grid-v0",
+ "document_type": "preregistered benchmark-state configuration (M3-D task Sec. 4-6, 11, 43); locked BEFORE any M3-D scientific run",
+ "parent_tags": {
+  "h3": "RareTopo-H3-v1.0",
+  "m1_v0": "RareTopo-M1-v0",
+  "m1d": "RareTopo-M1-D-v1.0",
+  "m1d_frozen_head": "059964eb3b8b927301776ae5505bc3ac8593ed94",
+  "m2": "RareTopo-M2-v0",
+  "m2_frozen_head": "0a00f4459609f712aa76dc4d14349d9cd0d58fc9",
+  "m3_v0": "RareTopo-M3-v0",
+  "m3_v0_tag_object": "a36972b515edfdde76eb7fc728edafc721d9c79a",
+  "m3_v0_frozen_head": "32b285625494d9b3da08be3c559db3855df77667"
+ },
+ "provenance": {
+  "task_file": "docs/phase_m3d/M3_D_Sign_Diverse_Scalar_Covariance_Control_Task.md",
+  "task_sha256_canonical": "f90f8b10296070fb92346813c8ca64dcee5df0851644143a46246de890d6c55e",
+  "task_as_received_archive": "docs/phase_m3d/received/M3_D_Task.as-received.md",
+  "task_as_received_sha256": "78b4a4a90429e96d11599e733a1d9069a5f5278645c7ca418e061b9ff287a3f3",
+  "task_ingest_note": "handoff copy had TeX backslashes consumed into control chars by an upstream escaping pass; deterministic structural repair ONLY (21 inserted backslashes, inventory in scripts/ingest_m3d_task.py output docs/phase_m3d/task_ingest_provenance.json); zero prose/constants altered",
+  "m3v0_freeze_requirement": "M3-v0 frozen as RareTopo-M3-v0 at tag commit 32b2856 with full pytest exit 0 (docs/phase_m3/M3_Freeze_Summary.md) BEFORE any M3-D scientific work; verified at every driver start",
+  "benchmark_freeze": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+  "benchmark_freeze_sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de"
+ },
+ "frozen_configs": [
+  "m1d_b20260827_c000", "m1d_b20260827_c001", "m1d_b20260827_c004",
+  "m1d_b20260827_c006", "m1d_b20260827_c007", "m1d_b20260827_c010",
+  "m1d_b20260827_c017", "m1d_b20260827_c020"
+ ],
+ "benchmark_state_definition_locked": {
+  "unit": "one benchmark state = frozen event/topology config + frozen mixture means and weights (pi_C0 SLSQP output) + selected controlled component (M1-D variance_selector choice, identical to M3-v0 gradient point) + candidate scalar covariance s^2 * I on that component",
+  "varied_object": "the PROPOSAL STATE only; the controller (M3-v0 frozen estimator/policy) is never varied",
+  "selected_component_source": "frozen M1-D variance-selector record per config (selection lock cross-check against archived selected_modes mandatory)",
+  "other_components": "means, weights, remaining covariances (= I_2 unit family) fixed exactly as the M3-v0 Layer A gradient point"
+ },
+ "s2_grid_locked": [0.55, 0.70, 0.85, 1.00, 1.25, 1.60, 2.00],
+ "legality_contract_locked": {
+  "checker": "FROZEN hyptraj.m1.proposal_update legality checker verbatim; LEGALITY_MIN_EIG = 0.5",
+  "precheck": "every (config, s2) candidate passes/fails BEFORE any reference characterization; failure recorded ILLEGAL_PRE_FREEZE and NEVER replaced post hoc (task Sec. 6)",
+  "note": "min(s2_grid)=0.55 > 0.5 => expected legal by construction, verdict still recorded per state",
+  "pool_cap": "8 configs x 7 states = 56 maximum candidates"
+ },
+ "outputs_locked": {
+  "candidate_pool": "results/phase_m3d/reference/m3d_candidate_pool.json",
+  "record_schema_version": "raretopo-m3d-v0",
+  "state_id_convention": "<config_short>_s2_<5-digit-scaled> e.g. c000_s2_055"
+ },
+ "amendment_policy_locked": "any change requires docs/phase_m3d/M3_D_PREREG_AMENDMENT_<date>.md committed before further runs"
+}

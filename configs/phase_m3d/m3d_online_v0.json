@@ -1,0 +1,105 @@
+{
+ "schema_version": "raretopo-m3d-online-v0",
+ "document_type": "preregistered ONLINE adaptive-value experiment configuration (M3-D task Sec. 13-21, 22-31, 33-35, 43); locked BEFORE any online trial; consumes the committed 24-state benchmark freeze",
+ "controller_parity_locked": {
+  "principle": "the M3-v0 controller is reused VERBATIM: same modules, formulas, seeds, bootstrap, thresholds; M3-D varies only the benchmark states (proposal states), never the controller",
+  "estimator": "hyptraj.m3.gradient_estimator.scalar_gradient_estimate / stratified_bootstrap_gradient_ci unchanged (task Sec. 2 immutable list)",
+  "gradient_formula": "g_hat = (M2_hat/2) mu_r (dim - D_hat/s_k^2), theta = log s^2, responsibility r_k = pi_k q_k/q -- unchanged",
+  "layer_A_locks": ["selected mode", "all component means", "all mixture weights (pi_C0)", "all other covariances", "component count"],
+  "parity_test": "test_m3d_controller_parity_with_m3 must reproduce identical g_hat/ci/action on an identical synthetic pilot"
+ },
+ "protocol_locked": {
+  "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+  "n_states": 24,
+  "n_trials_total": 192,
+  "paired_unit": "(state, seed)",
+  "pilot_n_per_round": 20000,
+  "alpha_p": 0.5,
+  "pilot_rng_rule": "np.random.default_rng([seed, 101]); frozen draw_mix_pilot order (target first, then current proposal); ONE shared pilot per (state, seed) feeds gradient estimation and all arm evaluations",
+  "final_eval_n": 100000,
+  "eval_rng_tag": 900001,
+  "crn_rule": "all arms within a trial share the generator stream (identical structure/order); only selected-component scaling differs"
+ },
+ "online_action_policy_locked": {
+  "ess_grad_threshold": 20.0,
+  "ci_sign_rule": {"WIDEN": "g_ci_high < 0", "SHRINK": "g_ci_low > 0", "HOLD_UNCERTAIN": "CI contains 0"},
+  "precedence": ["HOLD_INVALID", "HOLD_LOW_ESS", "CI rule"],
+  "deployment_fold": {"HOLD_LOW_ESS": "HOLD", "HOLD_UNCERTAIN": "HOLD", "HOLD_INVALID": "HOLD"},
+  "reason_codes_preserved": true,
+  "step_map": {"WIDEN": "+0.20", "SHRINK": "-0.20", "HOLD": "0"}
+ },
+ "arms_locked": {
+  "physical_arms_evaluated_per_trial": ["BASE", "WIDEN", "SHRINK"],
+  "GRADIENT": "maps to WIDEN/SHRINK physical arm per CI-sign action; maps to BASE when deployment action is HOLD",
+  "ORACLE_ACTION": "SECONDARY OFFLINE comparator: maps to the frozen reference label's arm (WIDEN->widen, SHRINK->shrink, HOLD->base); NEVER enters online action logic (task Sec. 17)",
+  "fixed_rules": {"ALWAYS_WIDEN": "+0.20 always", "ALWAYS_SHRINK": "-0.20 always", "ALWAYS_HOLD": "no change"}
+ },
+ "no_oracle_leakage_locked": {
+  "online_api_whitelist": ["pilot samples", "recorded sample source densities", "current proposal q parameters", "selected component metadata", "current covariance"],
+  "forbidden_everywhere_online": ["oracle_action", "reference M2 values", "reference uncertainty", "direction margin", "action class", "any results/phase_m3d/reference field"],
+  "structural_test": "test_m3d_no_oracle_leakage must prove the online estimator/policy signature cannot accept reference fields"
+ },
+ "primary_metrics_locked": {
+  "Acc3": "P(gradient action == oracle action) over all active trials of the 24-state benchmark",
+  "class_reports": ["per-class recall", "macro-F1", "balanced accuracy", "confusion matrix"],
+  "report_rule": "raw accuracy alone never reported as headline"
+ },
+ "adaptive_regret_locked": {
+  "R_M2": "(M2(GRADIENT) - M2(ORACLE)) / M2(ORACLE)",
+  "reported": ["global median", "per-class median", "paired bootstrap 95% CI"]
+ },
+ "best_fixed_rule_metric_locked": {
+  "aggregate": "median over states of per-state seed medians",
+  "BEST_FIXED": "argmin fixed rule under that aggregate (among ALWAYS_WIDEN / ALWAYS_SHRINK / ALWAYS_HOLD)",
+  "headline_ratio_R_fixed": "M2(GRADIENT) / M2(BEST FIXED) under the same aggregate"
+ },
+ "statistical_hierarchy_locked": {
+  "level_1": "within state: 8 seeds -> seed median",
+  "level_2": "within action class: 8 states",
+  "level_3": "global: 24 states",
+  "headline_aggregate": "median of per-state seed medians",
+  "also_reported": ["paired bootstrap 95% CI", "state win counts", "seed win counts", "per-class results"],
+  "iid_warning": "192 rows are NOT treated as IID"
+ },
+ "bootstrap_spec_locked": {
+  "n_replicates": 10000,
+  "rng_seed": [20260827],
+  "unit_resampled": "(state, seed) pairs for global contrasts; state-level bootstrap for R_fixed aggregate"
+ },
+ "simulator_call_accounting_locked": {
+  "scientific_audit_calls_per_trial": "pilot_n + 3 * final_eval_n = 320000 (shared pilot + BASE/WIDEN/SHRINK diagnostic evaluations)",
+  "deployable_method_calls_per_trial": "pilot_n + chosen_GRADIENT_action_final_eval = 120000",
+  "reported_keys": ["scientific_audit_calls", "deployable_method_calls"]
+ },
+ "ablations_locked": {
+  "D_A": "Gradient vs every fixed rule per class",
+  "D_B": "ESS_grad stratification vs correctness",
+  "D_C": "frozen step sensitivity delta in {0.10, 0.40} extra diagnostic arms; MAIN STAYS 0.20",
+  "D_D": "point-sign vs CI-sign diagnostic; main stays CI-sign",
+  "D_E": "oracle-action regret decomposition",
+  "D_F": "M3-v0 replay control on original unit-scale states: expect mostly WIDEN + Gradient ~= Always-Widen; NEVER enters headline gates"
+ },
+ "m3v0_replay_control_locked": {
+  "source_states": "M3-v0 Layer A gradient points (frozen metadata reloaded verbatim)",
+  "expectation_reporting_only": ["mostly WIDEN decisions", "Gradient ~= Always-Widen value"],
+  "gate_exclusion": true
+ },
+ "gates_locked": {
+  "M3D_0_validity": "RareTopo-M3-v0 frozen first; task committed before reference characterization; benchmark freeze committed before online runs; parent tags unchanged incl. RareTopo-M3-v0; no oracle leakage; 24-state balanced benchmark complete with no missing cells; valid source-density accounting; CRN pairing verified; full python -m pytest -q pass",
+  "M3D_1_sign_diversity": {"composition_exact": {"WIDEN": 8, "SHRINK": 8, "HOLD": 8}, "reference_ambiguous_max": 0, "illegal_in_benchmark_max": 0},
+  "M3D_2_adaptive_action_accuracy": {"acc3_min": 0.75, "recall_widen_min": 0.70, "recall_shrink_min": 0.70, "recall_hold_min": 0.60},
+  "M3D_3_beat_best_fixed_rule": {"median_of_state_seed_medians_ratio_max": 0.90, "states_won_min": 16, "of_states": 24, "win_definition": "per-state seed median M2(GRADIENT) < M2(rule)"},
+  "M3D_4_near_oracle": {"global_median_M2_gradient_over_oracle_max": 1.10},
+  "M3D_5_cross_class_robustness": {"widen_class_median_grad_over_base_max": 0.95, "shrink_class_median_grad_over_base_max": 0.95, "hold_class_median_grad_over_base_max": 1.02},
+  "M3D_6_leakage_safety": {"states_ok_min": 22, "of_states": 24, "per_state_median_seed_max_Lj_ratio_max": 2.0, "identity_closure_required": "M2 = sum_j L_j within relative tol 1e-9 for EVERY evaluated arm"},
+  "STRONG_budget_adjusted_vrf": {"median_deployable_vrf_gt": 1.0, "required_for_core_success": false}
+ },
+ "claim_boundary_locked": "verbatim from task Sec. 40: three conditional headline texts by gate outcome; forbidden claims list enforced in report lint",
+ "outputs_locked": {
+  "dirs": ["results/phase_m3d/reference", "results/phase_m3d/layer_a", "results/phase_m3d/layer_b", "results/phase_m3d/ablations", "results/phase_m3d/summary"],
+  "figures_dir": "figures/phase_m3d",
+  "docs": ["M3_D_Methodology.md", "M3_D_Validity_Audit.md", "M3_D_Final_Report.md"],
+  "record_schema_version": "raretopo-m3d-v0"
+ },
+ "amendment_policy_locked": "any change requires docs/phase_m3d/M3_D_PREREG_AMENDMENT_<date>.md committed before further runs"
+}

@@ -1,0 +1,25 @@
+{
+ "source_sha256": "78b4a4a90429e96d11599e733a1d9069a5f5278645c7ca418e061b9ff287a3f3",
+ "as_received_sha256": "78b4a4a90429e96d11599e733a1d9069a5f5278645c7ca418e061b9ff287a3f3",
+ "canonical_sha256": "f90f8b10296070fb92346813c8ca64dcee5df0851644143a46246de890d6c55e",
+ "corruption_inventory_in_source": {
+  "'\\x08oxed'": 2,
+  "'\\text'": 8,
+  "'\\times'": 1,
+  "'\\theta'": 3,
+  "'\\x0crac'": 6,
+  "'\\right]'": 1
+ },
+ "repairs_applied": {
+  "\\boxed": 2,
+  "\\text": 8,
+  "\\times": 1,
+  "\\theta": 3,
+  "\\frac": 6,
+  "\\right]": 1
+ },
+ "leftover_control_chars_canonical": {},
+ "accept": true,
+ "bytes_source": 19965,
+ "bytes_canonical": 19986
+}

@@ -1,0 +1,55 @@
+{
+ "schema_version": "raretopo-m3d-reference-characterization-v0",
+ "document_type": "preregistered OFFLINE reference/oracle-label protocol (M3-D task Sec. 7-12, 43); locked BEFORE any characterization run; oracle outputs permanently barred from the online controller (Sec. 13)",
+ "reference_protocol_locked": {
+  "arms": ["SHRINK", "BASE", "WIDEN"],
+  "delta_theta_ref": 0.20,
+  "note_delta": "identical constant to frozen delta_theta_main; NOT retuned anywhere in M3-D",
+  "arm_covariances": "Sigma_k = s_k^2 * exp(-/+0.20) I on the SELECTED component only; all other components untouched",
+  "reference_mode": "stochastic matched-CRN Monte Carlo (default preregistered route)",
+  "n_ref_per_arm": 500000,
+  "crn_rule": "within a state the three arms share one generator stream with identical component structure/order so rng.choice and standard_normal sequences match and only the selected-component Cholesky scaling differs (same discipline as M3-v0 counterfactual protocol)",
+  "reference_rng_rule": "np.random.default_rng([701001 + lexicographic_state_index]) drawn fresh per state, shared by the three arms of that state",
+  "uncertainty_estimator": "batched standard error: each arm split into 20 equal sub-batches, SE from batch means; paired contrasts use SE of per-batch differences",
+  "support_requirement": "every contrast REQUIRED by the label decision must satisfy |contrast| >= 2 * SE_paired(contrast); failing any requirement marks the state REFERENCE_AMBIGUOUS and INELIGIBLE (no replacement)"
+ },
+ "oracle_label_rule_locked": {
+  "tie_tolerance_tau": 0.01,
+  "WIDEN": "M2(widen)/M2(base) - 1 < -tau  AND  M2(widen) < M2(shrink)",
+  "SHRINK": "M2(shrink)/M2(base) - 1 < -tau  AND  M2(shrink) < M2(widen)",
+  "HOLD": "neither perturbation improves base by more than tau (relative)",
+  "ambiguity_precedence": "support failures above override any tentative label -> REFERENCE_AMBIGUOUS"
+ },
+ "direction_margin_gate_locked": {
+  "Delta_dir_definition": "(M2(second_best) - M2(best)) / M2(best) computed over the TWO PERTURBATION ARMS {WIDEN, SHRINK}; best = argmin = labeled action for WIDEN/SHRINK states (operationalization fixed before any data was seen)",
+  "threshold": 0.05,
+  "applies_to": ["WIDEN", "SHRINK"],
+  "failure_action": "state excluded from that class (cannot be relabeled)"
+ },
+ "hold_neighborhood_locked": {
+  "rule": "|M2(widen)/M2(base) - 1| <= 0.03 AND |M2(shrink)/M2(base) - 1| <= 0.03",
+  "applies_to": ["HOLD"],
+  "failure_action": "state excluded from HOLD class"
+ },
+ "sign_diversity_gate_locked": {
+  "minimum_states": {"WIDEN": 8, "SHRINK": 8, "HOLD": 8},
+  "distribution_rule": "eligible states spread across MULTIPLE frozen configs; single-config monoculture fails the gate",
+  "failure_action": "STOP before adaptive trials; redesign requires preregistration amendment (task Sec. 10)"
+ },
+ "headline_benchmark_selection_locked": {
+  "per_class": 8,
+  "total_states": 24,
+  "ordering_within_class": "sort eligible states by (config_id, s2) ascending; take FIRST 8; no adaptive-result-driven substitution",
+  "freeze_artifacts": [
+   "docs/phase_m3d/M3_D_Benchmark_Freeze.md",
+   "docs/phase_m3d/M3_D_Benchmark_Freeze.json"
+  ],
+  "freeze_commit_before_online_runs": true
+ },
+ "candidate_pool_record_fields_locked": [
+  "config_id", "state_id", "s2", "legality",
+  "M2_shrink_ref", "M2_base_ref", "M2_widen_ref",
+  "reference_uncertainty", "oracle_action", "direction_margin"
+ ],
+ "amendment_policy_locked": "any change requires docs/phase_m3d/M3_D_PREREG_AMENDMENT_<date>.md committed before further runs"
+}
