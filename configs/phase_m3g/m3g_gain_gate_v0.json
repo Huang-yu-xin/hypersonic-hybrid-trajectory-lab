@@ -1,0 +1,51 @@
+{
+  "schema_version": "raretopo-m3g-gain-gate-config-v0",
+  "document_type": "M3-G gain-aware execution gate PREREGISTERED LOCK; variant and rho are IMMUTABLE after the calibration-freeze commit (handoff Sec. 9); no further tuning allowed",
+  "stage": "M3_G_calibration_freeze",
+  "created_utc": "2026-08-27",
+  "parent_tags": {
+    "RareTopo-M3-v0": "32b285625494d9b3da08be3c559db3855df77667",
+    "RareTopo-M3-D-v0": "7bd58c5992615b8579b1814a3a3fcbea3cda9659"
+  },
+  "task_commit": "9720456",
+  "benchmark_freeze_sha256": "b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3",
+  "gain_gate_locked": {
+    "variant": "GA2",
+    "rho": 0.0025,
+    "delta_theta_main": 0.20,
+    "decision_rule_GA1": "act iff |g_hat*dtheta|/M2 >= rho  (dtheta=+0.20 WIDEN, -0.20 SHRINK)",
+    "decision_rule_GA2": "act iff upper end of signed-gain CI <= -rho; WIDEN: g_ci_high*0.20/M2 <= -rho; SHRINK: g_ci_low*(-0.20)/M2 <= -rho",
+    "passthrough": "HOLD_* directions keep HOLD with the raw reason code preserved",
+    "legality_floor": "acted state must remain legal under the frozen checker at the mapped arm; illegal -> fold HOLD_INVALID (M3-D audit discipline)"
+  },
+  "operationalization_register": {
+    "m2_normalizer": {
+      "locked_form": "base-arm EVALUATION M2 (n_eval=100k, matched CRN [seed,900001]) at the current covariance",
+      "preregistered_form": "pilot-based M2_hat inside the frozen estimator (task Sec. 3: Delta_rel = g_hat*dtheta/M2_hat)",
+      "rationale": "the D6 Layer-A record schema stores only per-arm evaluation M2 values; pilot M2_hat is not persisted in results/phase_m3d/layer_a/m3d_layer_a_v1.json. Both quantities estimate the SAME functional (variance mass at the current covariance); using the identical normaliser in offline calibration and in the online gate keeps the calibrated policy exactly equal to the evaluated policy.",
+      "audit_plan": "pilot M2_hat is recorded in every online record as a diagnostic; the audit quantifies gate-decision agreement under the alternative normaliser."
+    },
+    "ga2_ci_propagation": {
+      "locked_form": "linear propagation of the FROZEN g-CI through the sign-stable factor dtheta/M2 (upper end of signed gain)",
+      "preregistered_form": "per-replicate (g_r, M2_r) bootstrap propagation of Delta_rel (task Sec. 3)",
+      "rationale": "per-replicate arrays are not persisted in the D6 record schema; linear propagation through the frozen g-CI is the conservative CI-sign-style rule available from stored data and identical in both phases. The full per-replicate propagation is available ONLINE via bootstrap_gain_replicates and is recorded as a diagnostic for the audit.",
+      "audit_plan": "quantify |upper_end_linear - upper_end_per_replicate| and gate-decision agreement on the online batch."
+    }
+  },
+  "selection_evidence_summary": {
+    "rule": "eligible = WIDEN recall>=0.90 AND SHRINK recall>=0.90 each (pooled, 192 trials); among eligible maximize accuracy (Acc3); tie-break balanced accuracy, macro-F1, smaller rho, GA1 before GA2",
+    "eligible_candidates": 8,
+    "ineligible_candidates": 0,
+    "all_candidate_results_file": "results/phase_m3g/calibration/m3g_calibration_v0.json",
+    "selected": "GA2-0.0025",
+    "selected_accuracy": 0.7604166666666666,
+    "baseline_accuracy": 0.75,
+    "baseline_recalls": {"WIDEN": 1.0, "SHRINK": 1.0, "HOLD": 0.25},
+    "selected_recalls": {"WIDEN": 1.0, "SHRINK": 1.0, "HOLD": 0.28125},
+    "action_change_count": 2,
+    "hold_gain_count": 2,
+    "mechanism_note": "ALL GA1 rows equal the baseline (every frozen active decision has |Delta_rel| far above 0.02 on this benchmark); GA2 converts exactly 2 over-acting WIDEN-on-HOLD trials (c004_s2_00250 seed 2030, c006_s2_00250 seed 2029) whose conservative CI upper end (~-0.0011, -0.0014) falls inside the indifference band at every locked rho; rho sensitivity is FLAT on the four-grid: all four GA2 rows coincide, so the preregistered tie-break (smaller rho) selects 0.0025.",
+    "extra_simulator_calls": 0
+  },
+  "immutable_after_commit": true
+}

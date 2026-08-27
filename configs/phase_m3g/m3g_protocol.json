@@ -1,0 +1,72 @@
+{
+  "schema_version": "raretopo-m3g-protocol-v0",
+  "document_type": "M3-G protocol constants copied from the frozen M3-D online config + M3-G-specific constants; frozen BEFORE online evaluation",
+  "stage": "M3_G_preregistration",
+  "parent_tags": {
+    "RareTopo-M3-v0": "32b285625494d9b3da08be3c559db3855df77667",
+    "RareTopo-M3-D-v0": "7bd58c5992615b8579b1814a3a3fcbea3cda9659"
+  },
+  "task_commit": "9720456",
+  "benchmark": {
+    "freeze_doc": "docs/phase_m3d/M3_D_Benchmark_Freeze.json",
+    "freeze_sha256": "b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3",
+    "labels": "results/phase_m3d/reference/m3d_labels_corrected_v2.json",
+    "composition": {"n_states": 24, "WIDEN": 8, "SHRINK": 8, "HOLD": 8}
+  },
+  "protocol_locked_reused_from_m3d": {
+    "seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+    "n_states": 24,
+    "n_trials_total": 192,
+    "paired_unit": "(state, seed)",
+    "pilot_n_per_round": 20000,
+    "alpha_p": 0.5,
+    "pilot_rng_rule": "np.random.default_rng([seed, 101]); frozen draw_mix_pilot order; ONE shared pilot per (state, seed)",
+    "final_eval_n": 100000,
+    "eval_rng_tag": 900001,
+    "crn_rule": "all arms within a trial share the generator stream; only selected-component scaling differs",
+    "ess_grad_threshold": 20.0,
+    "bootstrap": {"n_bootstrap": 500, "seed_rule": "[seed, 424243]", "scheme": "frozen fixed-stratified"},
+    "ci_sign_rule": {"WIDEN": "g_ci_high < 0", "SHRINK": "g_ci_low > 0", "HOLD_UNCERTAIN": "CI contains 0"},
+    "precedence": ["HOLD_INVALID", "HOLD_LOW_ESS", "CI rule"],
+    "deployment_fold": {"HOLD_LOW_ESS": "HOLD", "HOLD_UNCERTAIN": "HOLD", "HOLD_INVALID": "HOLD"},
+    "step_map": {"WIDEN": "+0.20", "SHRINK": "-0.20", "HOLD": "0"},
+    "delta_theta_main": 0.2,
+    "call_accounting": {"scientific_audit_calls_per_trial": 320000, "deployable_method_calls_per_trial": 120000}
+  },
+  "m3g_calibration_protocol_locked": {
+    "uses_only": ["stored M3-D Layer-A batch", "sealed benchmark metadata"],
+    "data_file": "results/phase_m3d/layer_a/m3d_layer_a_v1.json",
+    "rho_grid": [0.0025, 0.005, 0.01, 0.02],
+    "variants": ["GA1", "GA2"],
+    "recall_min_each": 0.9,
+    "selection_rule": "eligible = WIDEN recall>=0.90 AND SHRINK recall>=0.90 each; among eligible maximize accuracy (Acc3); tie-break balanced accuracy, macro-F1, smaller rho, GA1 before GA2",
+    "extra_simulator_calls": 0,
+    "stop_rule": "no eligible candidate -> STOP M3-G-v0, no sealed evaluation"
+  },
+  "m3g_online_evaluation_locked": {
+    "policy": "frozen M3-D direction decision + locked gain gate (configs/phase_m3g/m3g_gain_gate_v0.json)",
+    "comparators": ["M3-D baseline", "M3-G selected", "ALWAYS_WIDEN", "ALWAYS_SHRINK", "ALWAYS_HOLD", "ORACLE_ACTION"],
+    "statistical_hierarchy": {"level_1": "within state: 8 seeds -> seed median", "level_2": "within action class: 8 states", "level_3": "global: 24 states", "headline_aggregate": "median of per-state seed medians"},
+    "bootstrap_spec": {"n_replicates": 10000, "rng_seed": [20260827], "unit_resampled": "(state, seed) pairs"}
+  },
+  "gates_m3g_locked": {
+    "M3G_0_validity": "RareTopo-M3-v0@32b2856 + RareTopo-M3-D-v0@7bd58c5 verified; task committed first; calibration uses existing data only; extra sim calls during calibration = 0; calibration freeze committed before sealed evaluation; no oracle leakage; full pytest pass; sealed benchmark hash unchanged",
+    "M3G_1_direction_preservation": {"recall_widen_min": 0.9, "recall_shrink_min": 0.9, "hard": true},
+    "M3G_2_hold_recovery": {"recall_hold_min": 0.7, "improvement_pp_min": 30, "vs": "frozen M3-D (0.25)"},
+    "M3G_3_balanced_quality": {"balanced_accuracy_min": 0.8, "macro_F1_min": 0.8},
+    "M3G_4_m2_noninferiority": {"median_M2_M3G_over_M3D_max": 1.0, "preferred_max": 0.98},
+    "M3G_5_adaptive_value": {"median_state_seed_median_M2_M3G_over_best_fixed_max": 0.95, "states_won_min": 16, "of_states": 24, "win_definition": "per-state seed median M2(M3G) < M2(rule)"},
+    "STRONG_budget_vrf": {"median_deployable_vrf_gt": 1.0, "note": "PASSING IT CONFERS NO SUPERIORITY CLAIM (M3-D lesson)"}
+  },
+  "interpretation_branches": {
+    "A": "M3G-2..5 all PASS -> gain-aware value SUPPORTED (scalar)",
+    "B": "hold recovers but classes degrade -> threshold needs class conditioning; future prereg only",
+    "C": "nothing recovers -> action-value must come from a different signal; scalar policy closed as-is",
+    "D": "gates pass but R_fixed still >> 0.90 -> adaptive advantage over AW remains unproven"
+  },
+  "m3v0_replay_control_locked": {
+    "source_states": "M3-v0 Layer A gradient points (frozen metadata reloaded verbatim)",
+    "expectation_reporting_only": ["mostly WIDEN decisions", "Gradient ~= Always-Widen value"],
+    "gate_exclusion": true
+  }
+}
