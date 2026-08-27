@@ -83,6 +83,18 @@ median deployable VRF(gradient path) = 0.326  (> 1 required)
 ```
 独立评估口径下，预算调整 VRF 低于粗 MC 边界——M3 不获成本效率宣称。
 
+### §23 指标清单完备性（summary_tables.json）
+```text
+selected-mode leakage : median L_k(pred)/L_k(base) = 1.099 (max 1.227, n=62)
+off-target leakage    : median trial-max L_j(pred)/L_j(base) = 1.000
+                        (global max 1.035)  -> M3-6 PASS, 无灾难性再分布
+proposal-level VRF    : recorded per arm (`_arms.*.VRF_proposal`)
+deployable budget VRF : recorded per trial (`evaluation.VRF_budget_grad_path`)
+gradient sign & CI    : `gradient.g_hat / g_ci_low / g_ci_high`
+WIDEN/SHRINK/HOLD 频次: 62 / 0 / 2 (HOLD_LOW_ESS)
+方向准确率 / 步长成功率 / pred-base / pred-opposite：见上表
+```
+
 ## 4. §17 M2 诊断（描述性 vs 梯度）
 
 60/64 试验发生 `hdr_isotropic_scale ≪ s²_base=1` 而梯度判定 WIDEN 的显式冲突——**M2 教训在最干净的尺度上复现：top-η HDR 描述性散布指向收窄（0.06–0.3 量级），二阶矩导数指向放宽**，且放宽确实降低 M₂（Gate M3-4/5 全数据）。
@@ -104,7 +116,7 @@ FD 有效 | 方向准确 | 预测步降 M2 | 击败反向 | (自适应增值/VRF
 
 ## 6. Layer B / 敏感性 / 稳健性
 
-- **Layer B**：每臂冻结 SLSQP 重加权后独立评估，决策 64/64 与 A 层一致；`median M2(pred)/M2(opposite) = 0.723`（B 层不改变主结论，也不拯救方向假设失败——符合 §12 设计）。
+- **Layer B**：每臂冻结 SLSQP 重加权后独立评估，决策 64/64 与 A 层一致；活跃集成功率 80.6%、`median M2(pred)/M2(base) = 0.834`、`median M2(pred)/M2(opposite) = 0.722`（与 A 层 0.721 几乎同值——重加权不改变方向结论，也不拯救方向假设失败，符合 §12 设计）。
 - **敏感性（解释性）**：主步长 0.20 全网格不变；剂量单调：δ=0.10/0.20/0.40 下 `median pred/base = 0.923/0.846/0.730`、`median pred/opp = 0.864/0.721/0.544`（一步到位的放宽对偏移质量收益更大）。无怪异非线性，不作主判据修订。
 - 泄漏、合法性、选择/均值锁在全三层数据中无异常。
 
