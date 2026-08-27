@@ -208,6 +208,52 @@ def main() -> int:
     ax.set_title("V5 — Oracle headroom distribution over the 24 value "
                  "states")
     save(fig, "BV2-V5_oracle_headroom_distribution.png")
+
+    # ---------------- D4: controller confusion matrix (Axis A) --------------
+    ce = json.loads((REPO / "results" / "phase_m3bv2"
+                     / "controller_evaluation.json").read_text(encoding="utf-8"))
+    axis_a = ce["axis_a"]["M3-G-v1"]
+    cm = axis_a["confusion_matrix"]
+    classes = ["WIDEN", "HOLD", "SHRINK"]
+    M = np.array([[cm[t][p] for p in classes] for t in classes])
+    fig, ax = plt.subplots(figsize=(6.2, 5.2))
+    im = ax.imshow(M, cmap="Blues")
+    ax.set_xticks(range(3), classes)
+    ax.set_yticks(range(3), classes)
+    ax.set_xlabel("predicted (M3-G-v1 deployed action)")
+    ax.set_ylabel("frozen reference label")
+    for i in range(3):
+        for j in range(3):
+            ax.text(j, i, f"{M[i, j]}\n({M[i, j] / M[i].sum():.0%})",
+                    ha="center", va="center",
+                    color="white" if M[i, j] > M.max() / 2 else "black")
+    ax.set_title(f"D4 — M3-G-v1 decision confusion matrix (Axis A, "
+                 f"{axis_a['n_decisions']} decisions)\n"
+                 f"balanced accuracy {axis_a['balanced_accuracy']:.3f} · "
+                 f"macro-F1 {axis_a['macro_F1']:.3f}")
+    save(fig, "BV2-D4_confusion_matrix.png")
+
+    # ---------------- V6: M3-G-v1 captured headroom (Axis B) ----------------
+    ufc = ce["unified_functional"]
+    order = [ufc["best_fixed"], "M3-G-v1", "ORACLE"]
+    labels = [f"BestFixed\n({ufc['best_fixed']})", "M3-G-v1", "Oracle"]
+    jmap = {ufc["best_fixed"]: ufc["J_BestFixed"],
+            "M3-G-v1": ufc["J_M3-G-v1"],
+            "ORACLE": ufc["J_Oracle"]}
+    fig, ax = plt.subplots(figsize=(7.4, 4.8))
+    x3 = np.arange(3)
+    vals = [jmap[o] for o in order]
+    colors = ["#b0b0b0", "#4472c4", "#333333"]
+    ax.bar(x3, vals, .5, color=colors)
+    ax.axhline(0, color="grey", lw=1)
+    ax.set_xticks(x3, labels)
+    ax.set_ylabel("J(π) = median_state median_rep log M2(π)/M2(BASE)")
+    ax.set_title(f"V6 — M3-G-v1 captured headroom\n"
+                 f"G_Oracle = {ufc['G_Oracle']:.4f} · "
+                 f"G_v1 = {ufc['G_v1']:.4f} · "
+                 f"Capture = {ufc['capture_v1']:.1%} "
+                 f"(gate: >= 50% and J(v1) < J(BestFixed))")
+    save(fig, "BV2-V6_captured_headroom.png")
     return 0
 
 
