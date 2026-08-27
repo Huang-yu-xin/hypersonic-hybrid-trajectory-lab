@@ -87,7 +87,7 @@ def main() -> int:
     assert abs(RHO - 0.02) < 1e-12 and V1_PROTO["candidate_locked"][
         "variant"] == "GA1"
 
-    freeze_doc = json.loads(FREEZE_DOC.read_text(encoding="utf-8"))
+    freeze_doc = FREEZE_DOC
     body = {k: v for k, v in freeze_doc.items()
             if k != "freeze_sha256_of_body_above"}
     assert hashlib.sha256(json.dumps(body, indent=1).encode()).hexdigest() \
