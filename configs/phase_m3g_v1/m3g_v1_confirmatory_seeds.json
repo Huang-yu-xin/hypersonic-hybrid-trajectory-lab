@@ -1,0 +1,12 @@
+{
+  "schema_version": "raretopo-m3g-v1-confirmatory-seeds-v0",
+  "stage": "M3_G_v1_preregistration",
+  "created_utc": "2026-08-27",
+  "confirmatory_seeds": [3031, 3032, 3033, 3034, 3035, 3036, 3037, 3038],
+  "discovery_seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+  "disjoint": true,
+  "n_seeds": 8,
+  "locked_before_science": true,
+  "no_replacement_after_outcomes": true,
+  "note": "unseen relative to discovery seeds 2026..2033; committed BEFORE any confirmatory simulator call; no seed replacement after outcomes are observed"
+}

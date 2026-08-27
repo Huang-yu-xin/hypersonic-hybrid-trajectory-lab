@@ -1,0 +1,84 @@
+{
+  "schema_version": "raretopo-m3g-v1-protocol-v0",
+  "document_type": "M3-G-v1 confirmatory protocol; constants frozen BEFORE any v1 scientific run",
+  "stage": "M3_G_v1_preregistration",
+  "created_utc": "2026-08-27",
+  "parent_frozen": {
+    "RareTopo-M3-D-v0": "7bd58c5992615b8579b1814a3a3fcbea3cda9659",
+    "v0_audit_HEAD": "1a31f8b83133e57cebae0ed27f7e35deb9c475e2",
+    "v0_status": "NOT FREEZE READY (Deviation A material; discovery-only)"
+  },
+  "benchmark": {
+    "freeze_doc": "docs/phase_m3d/M3_D_Benchmark_Freeze.json",
+    "freeze_sha256": "b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3",
+    "states": 24,
+    "composition": {"WIDEN": 8, "SHRINK": 8, "HOLD": 8},
+    "note": "headline generalization = out-of-sample over Monte-Carlo/pilot randomness ONLY; NOT over proposal states; no state-level generalization claim"
+  },
+  "seed_sets": {
+    "discovery_seeds": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033],
+    "confirmatory_seeds_file": "configs/phase_m3g_v1/m3g_v1_confirmatory_seeds.json",
+    "disjoint_required": true,
+    "no_replacement_after_outcomes": true
+  },
+  "candidate_locked": {
+    "variant": "GA1",
+    "rho": 0.02,
+    "delta_theta": 0.2,
+    "denominator": "pilot M2_hat (mass/n from the frozen estimator pipeline, 20k pilot)",
+    "proxy": "Delta_rel = |g_hat * dtheta| / M2_hat_pilot",
+    "decision": "HOLD_LOW_ESS passthrough; HOLD_UNCERTAIN passthrough; Delta_rel < 0.02 -> HOLD_GAIN; else EXECUTE frozen direction",
+    "no_calibration_grid": true,
+    "no_ga2": true,
+    "no_eval_m2_in_gate": true,
+    "no_post_hoc_tuning": true
+  },
+  "protocol_locked_reused_from_m3d": {
+    "pilot_n_per_round": 20000,
+    "alpha_p": 0.5,
+    "pilot_rng_rule": "np.random.default_rng([seed, 101]); frozen draw_mix_pilot order",
+    "final_eval_n": 100000,
+    "eval_rng_tag": 900001,
+    "crn_rule": "all arms within a trial share the generator stream; only selected-component scaling differs",
+    "ess_grad_threshold": 20.0,
+    "bootstrap": {"n_bootstrap": 500, "seed_rule": "[seed, 424243]", "scheme": "frozen fixed-stratified"},
+    "ci_sign_rule": {"WIDEN": "g_ci_high < 0", "SHRINK": "g_ci_low > 0", "HOLD_UNCERTAIN": "CI contains 0"},
+    "precedence": ["HOLD_INVALID", "HOLD_LOW_ESS", "CI rule"],
+    "step_map": {"WIDEN": "+0.20", "SHRINK": "-0.20", "HOLD": "0"},
+    "legality": "frozen checker; acted arm must remain legal (illegal -> HOLD_INVALID fold, M3-D audit discipline)",
+    "call_accounting": {"scientific_audit_calls_per_trial": 320000, "deployable_method_calls_per_trial": 120000}
+  },
+  "gates_locked": {
+    "V1_0_validity": "task/config/seeds committed before science; confirmatory seeds unseen+disjoint; sealed benchmark unchanged; GA1/rho=0.02 fixed before run; pilot M2_hat online; no eval-M2 into gate; no oracle leakage; direction parity test PASS; full pytest PASS; 192 complete trials",
+    "V1_1_direction_preservation": {"recall_widen_min": 0.9, "recall_shrink_min": 0.9, "hard": true},
+    "V1_2_hold_recovery": {"recall_hold_min": 0.7, "improvement_pp_min": 30, "vs": "frozen M3-D baseline re-evaluated on the SAME new seeds"},
+    "V1_3_balanced_quality": {"balanced_accuracy_min": 0.8, "macro_F1_min": 0.8},
+    "V1_4_m2_noninferiority": {"median_M2_v1_over_M3D_max": 1.0, "preferred_max": 0.98},
+    "V1_5_adaptive_value": {"median_state_seed_median_M2_v1_over_best_fixed_max": 0.95, "states_won_min": 16, "of_states": 24},
+    "STRONG_budget_vrf": {"median_deployable_vrf_gt": 1.0, "note": "report only; superiority requires V1-5"}
+  },
+  "statistical_hierarchy": {
+    "trial_unit": "(state, seed)",
+    "state_summary": "median across 8 new seeds",
+    "global_summary": "median across 24 state summaries",
+    "note": "same 24 proposal states reused -> no state-level generalization claim"
+  },
+  "stop_rules": [
+    "prereg not committed before science",
+    "confirmatory seeds overlap discovery seeds",
+    "benchmark hash changes",
+    "rho changes",
+    "GA1 changes",
+    "eval-M2 enters online gate",
+    "oracle leakage",
+    "full pytest fails",
+    "post-outcome: no rho retuning / seed replacement / benchmark replacement / GA2 rescue / post-hoc threshold search"
+  ],
+  "outputs": {
+    "dirs": ["results/phase_m3g_v1/layer_a", "results/phase_m3g_v1/summary"],
+    "figures_dir": "figures/phase_m3g_v1",
+    "docs": ["M3_G_v1_Exact_Proxy_Recovery_Task.md", "M3_G_v1_Methodology.md", "M3_G_v1_Validity_Audit.md", "M3_G_v1_Final_Report.md"],
+    "record_schema_version": "raretopo-m3g-v1"
+  },
+  "one_line_state": "M3-G-v1 preregistered; candidate GA1/rho=0.02 pilot-M2; discovery-only data; confirmatory scientific runs = 0"
+}
