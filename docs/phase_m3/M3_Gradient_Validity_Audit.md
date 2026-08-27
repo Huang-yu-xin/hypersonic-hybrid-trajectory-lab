@@ -72,6 +72,13 @@ test_m3_result_schema                    ✅  §31 键集/enum/聚合正确性
 
 ## 7. 已知限制（如实保留）
 
-- 估计器 δ̂ 对池化极限具有可预期重尾插件偏差（ESS 中位 189，高置信区间窄；偏差随 N 收缩但绝对量级不代表教科书 M₂）——方向判别与排序结论不受影响，绝对 VRF 结论以独立评估为准；
+- 估计器 ĝ 对池化极限具有可预期重尾插件偏差（ESS 中位 189，高置信区间窄；偏差随 N 收缩但绝对量级不代表教科书 M₂）。**措辞边界（freeze-audit 2026-08-27 收紧）**：不声称"插件偏差一般不影响梯度方向/sign"——有限样本下偏差在一般情况下完全可能翻转 sign；本基准上的方向结论之所以成立，是因为它由**有限差分数值验证（M3-1）与配对反事实独立评估（M3-5）双重独立支撑**，而非依赖无偏性论证；
 - S3 为解释性演示，不构成硬门；
 - 本审计不覆盖全矩阵控制、策略学习或其他基准。
+
+## 8. Freeze-audit 理论修正记录（2026-08-27）
+
+- **梯度主公式一致性复审（不改任何公式）**：推导文档 boxed (4) `(M2/2)·Σ⁻¹[E r Σ − E r δδ′]Σ⁻¹` 与 isotropic (5) `g=(M2/2)E[r](dim−D/s²)` 逐项核对实现 `src/hyptraj/m3/covariance_gradient.py`（矩阵形式 L193、各向同性 L197–198）与 `gradient_estimator.py::scalar_gradient_estimate`（M2̂=(1/N)Σa、μ̂_r=Σâβr̂、D̂、ĝ 同式）——三方一致；既有 finite-difference 证据（49/49 探针、符号 100%、max rel err 1.064e-3 ≤ 5e-3、恒等锚 8.2e-14）为原始冻结结果原样引用，未重跑调参。
+- **(A3) 假设修正**：推导文档原"compact SPD 参数邻域 ⇒ q_Σ 在整个状态空间有逐点下界 c_U>0"的论证**错误并已撤回**（Gaussian 密度随 ‖x‖→∞ 衰减为零，参数空间 compactness 不能产生全空间一致下界；该论证颠倒了先取 infimum 与固定 x 的次序）。已替换为显式**局部可积支配包络假设**（存在 U∋Σ_k 与 h∈L¹(A) 使 sup_{Σ∈U}‖∂_Σ[𝟏_A p²/q_Σ]‖≤h(x)，差商被同一包络控制，dominated convergence 授权积分号下求导），并保留两条 family-specific 充分条件注记（有界盒上 q 连续正 ⇒ 包络存在；单vs单族轴向 s²>λᵢ(P)/2 合法窗——S1 探针遵循的正是该窗）。定理 scope（固定均值/权重/其余协方差、局部 SPD 邻域、所需可积性）与 (4)/(5) 一字未改。
+- **M₂=ΣL 分解闭合**：新增 `scripts/run_m3_leakage_decomposition.py` 从未改动 raw Layer A records 重聚合 BASE/PREDICTED 逐模式泄漏，192 臂上 max |Σ_j L_j − M̂₂| = 2.2e-16（rel ≤ 3.9e-16）；机制=off-target 泄漏下降主导（median sum-off-target ratio 0.846 vs selected-mode rise 1.099、中位 loss share 仅 1.4%）。详见 `results/phase_m3/summary/m2_leakage_decomposition.json` 与 Final Report §23.1。
+- **措辞微调（freeze-audit 第二批）**：推导文档三处——① §0 对事件区 `A` 的描述由 "union of missing-mode supports" 改为"全冻结拓扑模式（S1..S4）的分区，M3 受控分量仅关联其中一个选定缺失模式"，与闭合恒等式 `M₂ = Σ_{j∈{S1..S4}} L_j` 一致（原措辞易误读为把 primary 模式排除在 M₂ 外）；② (A2) 记号笔误 `(1-A) ⊆ {q>0}` 修正为 `A ⊆ {q>0}` 并整体改写为 **support-positivity 假设**：正权重 SPD 混合族下 q(x)>0 对全空间逐点成立，显式声明 **global positivity ≠ global positive lower bound**（inf_x q=0），一切一致下界职责完全移交 (A3) 的局部支配包络条件；③ "numerical proof obligation" 统一更名为 "**numerical validation obligation**"（§5 尾句与 §12 标题及正文）：有限差分门独立验证 formula↔implementation 在被测实例上一致，不完成数学证明——定理边界=推导+A1–A5。公式 (1)–(6)、定理 scope、nonclaims 一字未动；科学代码与既有 FD 证据未触碰。

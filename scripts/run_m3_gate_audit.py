@@ -254,8 +254,9 @@ def interpret(fd_valid: bool, gates: dict) -> str:
 
 def main() -> int:
     full_pytest_note = ("python -m pytest -q : 1128 passed / 0 failed, "
-                        "3 warnings, 347.70 s, exit code 0 (evidence "
-                        "collected after all M3 scientific runs)")
+                        "3 warnings, 331.42 s, exit code 0 (freeze-audit "
+                        "full-suite rerun 2026-08-27 after all M3 "
+                        "scientific runs; no scientific run touched)")
     theory = _load(RES / "theory_checks" / "theory_checks_v1.json")
     fd_valid = theory["summary"]["gate_M3_1"] == "PASS"
 

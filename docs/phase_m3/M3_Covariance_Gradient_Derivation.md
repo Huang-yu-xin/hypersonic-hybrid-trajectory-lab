@@ -1,6 +1,6 @@
 # M3 Covariance Gradient Derivation — Second-Moment Gradient Covariance Control
 
-> **Schema:** `raretopo-m3-v0` ｜ **Date:** 2026-08-27 ｜ **Status:** candidate theorem + audit (task Sec. 18)
+> **Schema:** `raretopo-m3-v0` ｜ **Date:** 2026-08-27 ｜ **Status:** candidate theorem + audit (task Sec. 18); freeze-audit corrections applied 2026-08-27 — A-description aligned to full topology-mode partition, A2 rewritten as support-positivity (positivity ≠ lower bound), A3 as local dominated envelope, numerical proof→validation obligation renamed
 > **Parent frozen science:** `RareTopo-H3-v1.0` ／ frozen methods: `RareTopo-M1-v0`, `RareTopo-M1-D-v1.0`, `RareTopo-M2-v0`
 > **Task file:** `M3_Second_Moment_Gradient_Covariance_Control_Task.md` (Sec. 4–7, 18)
 > **Validation:** `results/phase_m3/theory_checks/` (`run_m3_theory_checks.py`) must show 100% finite-difference sign agreement and relative error <= 5e-3 BEFORE any benchmark run (Stop/Go, task Sec. 19/34).
@@ -25,10 +25,17 @@ Everything here is POPULATION-level analysis of differentiable densities; no
 finite-sample estimator appears before Sec. 9-note, and estimator error bounds
 are out of scope (they are what bootstrap CI + gates measure empirically).
 
-Notation: dimension ``dim = d``; ``A`` is the frozen event region (union of
-missing-mode supports) with positive measure; all densities are measurable,
-strictly positive on the interior of ``A`` where required, and ``p`` is square
-integrable against ``1/q`` on ``A`` (assumption A3 below makes this precise).
+Notation: dimension ``dim = d``; ``A`` is the frozen event region,
+PARTITIONED into all frozen topology event modes (S1..S4 on the M1-D
+benchmark); the M3-controlled proposal component is associated with ONE
+selected missing mode among them. ``M2(q)`` integrates ``p^2/q`` over ALL of
+``A``, so the frozen identity ``M2(q) = sum_j L_j(q)`` spans every topology
+mode, selected or not (closure verified at machine precision in the freeze
+audit, machine-readable record in
+``results/phase_m3/summary/m2_leakage_decomposition.json``, Final Report
+Sec. 23.1). All densities are measurable, strictly positive on ``A``
+(assumption A2 below makes this precise), and ``p`` is square integrable
+against ``1/q`` on ``A`` (assumption A3 below makes this precise).
 
 ---
 
@@ -101,21 +108,54 @@ where the last line uses the **responsibility identity** (Sec. 4):
 (A1) *SPD interior*: ``Sigma_k`` ranges over the open SPD cone; log-det and the
 inverse are C-infinity there, so (1) is valid.
 
-(A2) *Zero-set safety*: all identities below are taken over ``A`` intersect
-``{q > 0}``. Assumption: ``(1-A) subset {q > 0}`` up to Lebesgue-null sets, and
-``q`` is locally bounded away from 0 wherever needed. Violation surfaces as
-non-finite weights in the estimator and fires HOLD_INVALID (never silently
-repaired).
+(A2) *Support positivity* (notation corrected in the freeze audit): all
+identities below are taken over ``A``, and the required inclusion is
+``A subseteq {q > 0}`` (an earlier draft wrote ``(1-A) subset {q > 0}``,
+which was a notation slip for exactly this inclusion). For the frozen
+mixture family -- positive weights ``pi_j > 0`` with SPD component
+covariances -- ``q(x) > 0`` holds at EVERY ``x in R^d`` and every admissible
+parameter value, so the inclusion holds identically, with no null-set
+qualification needed. EXPLICIT BOUNDARY: global positivity is NOT a global
+positive LOWER bound -- ``inf_x q(x) = 0`` for every Gaussian mixture -- and
+no uniform boundedness-from-below is claimed here; such duties belong
+EXCLUSIVELY to the A3 local dominated-envelope / integrability condition.
+Estimator-side violations of mass/positivity surface as non-finite weights
+or vanishing variance mass and fire HOLD_INVALID via validity gates V1-V3
+(Sec. 9), never silently repaired.
 
-(A3) *Integrability*: ``M2(q) < infinity``. Under (A2)+(A3) the integrand
-``g(Sigma, x) = 1_A p^2/q_Sigma`` is dominated on any compact SPD-neighbourhood
-``U`` of ``Sigma_k`` by an integrable bound: on ``U``, ``q_Sigma >= c_U > 0``
-pointwise-minimum argument over the compact set (continuous q, closed level
-set), giving ``|p^2/q| <= p^2/c_U`` integrable by (A3); derivatives behave the
-same way after applying (1), because ``|d log q_k/dSigma|`` grows at most
-polynomially in ``||x||`` while ``p^2`` carries the decay. Differentiation under
-the integral sign (dominated convergence on the difference quotient) is thus
-licensed on ``U``.
+(A3) *Integrability and local dominated envelope* (freeze-audit correction
+2026-08-27): ``M2(q) < infinity``. IMPORTANT — no uniform STATE-space lower
+bound exists: for every SPD ``Sigma``, ``inf_x N(x; m, Sigma) = 0`` because
+the Gaussian density decays to zero as ``||x|| -> infinity``, so compactness
+of the PARAMETER neighbourhood ``U`` can never produce a constant
+``c_U > 0`` with ``q_Sigma(x) >= c_U`` for ALL ``x``. (An earlier draft
+derived such a ``c_U`` from the closedness of a level set in ``Sigma``; that
+argument fixes ``x`` before taking the infimum and silently reverses the two
+quantifiers — it proves nothing uniform in ``x`` and is RETRACTED.) Instead,
+differentiation under the integral sign rests on an explicit **local
+dominated-envelope assumption**: there exist a neighbourhood ``U`` of
+``Sigma_k`` within the open SPD cone and an envelope ``h in L^1(A, dx)``,
+with
+
+    sup over Sigma in U of
+      || d/dSigma [ 1_A(x) p(x)^2 / q_Sigma(x) ] ||  <=  h(x)
+
+pointwise on ``A``, together with one integrable function dominating every
+entrywise difference quotient ``|g(Sigma', x) - g(Sigma, x)| /
+|Sigma'_{ab} - Sigma_{ab}|`` for ``Sigma', Sigma in U``. Under this local
+integrable-envelope assumption, differentiation under the integral sign is
+justified by dominated convergence on the difference quotient. Two
+FAMILY-SPECIFIC sufficient conditions are recorded as remarks (not part of
+the theorem): on any bounded quadrature box the envelope exists whenever
+``q`` is continuous and positive on the box; along unbounded axes, Gaussian
+tails give domination e.g. for single-vs-single target/proposal families
+precisely when the proposal scale obeys ``s^2 > lambda_i(P)/2`` per axis —
+the legal-window condition the finite-difference probes respect
+(``lambda_max(P) = 0.72`` in the S1 half-space family; probes below the
+window violate A3 rather than refute the theorem). Estimator-side violations
+of integrability/mass surface as non-finite weights or vanishing mass and
+fire HOLD_INVALID via validity gates V1–V3 (Sec. 9); they are never silently
+repaired.
 
 (A4) *Fixed-parameter discipline*: the derivative is taken holding
 ``m_j, pi, Sigma_{j != k}`` fixed. Any joint move (means, weights, adding or
@@ -166,8 +206,11 @@ grad_{Sigma_k} M2
 Equivalently ``= (M2/2) E_nuV[ r_k (Sigma^-1 - Sigma^-1 delta delta' Sigma^-1) ]``.
 PROOF-CHECK of the factoring step: left-multiplying constant matrices past the
 x-expectation is linear algebra (expectation is elementwise); symmetric entrywise
-form is recovered by taking ``ab`` entries of (4). QED-as-audit; numerical proof
-obligation discharged by the finite-difference gate.
+form is recovered by taking ``ab`` entries of (4). QED-as-audit: the analytic
+identity is established under A1-A5; the finite-difference gate INDEPENDENTLY
+VALIDATES formula-to-implementation agreement at the tested numerical
+instances -- it is a numerical VALIDATION obligation and discharges no part
+of the mathematical proof.
 
 Sign sanity: if the responsibility-scaled scatter ``E[r_k delta delta']`` exceeds
 ``E[r_k] Sigma_k`` "on average" (component too NARROW for the variance mass it
@@ -277,11 +320,14 @@ V6 CRN pairing:     pred/opposite arms evaluated on matched generator streams
 - The theorem does not repair or reinterpret M2; the M2 negative result stays
   verbatim frozen (`RareTopo-M2-v0`).
 
-## 12. Numerical proof obligation (hard gate)
+## 12. Numerical validation obligation (hard gate)
 
 `scripts/run_m3_theory_checks.py` validates (4)-(5) against central finite
 differences on deterministic quadrature-computed toy cases (half-space events,
-one/two-component mixtures, narrow-HDR explanatory case):
+one/two-component mixtures, narrow-HDR explanatory case). This validates the
+FORMULA-TO-IMPLEMENTATION correspondence and the tested numerical instances;
+it does not complete the mathematical proof of the theorem, which rests on
+the derivation plus assumptions A1-A5 alone:
 
 ```text
 h = 1e-3 ;  requirement: 100% sign agreement AND max relative error <= 5e-3
