@@ -34,6 +34,10 @@ GENERATIONS = [
     REFDIR / "m3d_candidate_pool_ext_round1.json",
     REFDIR / "m3d_candidate_pool_ext_round2.json",
 ]
+# implementation-conformance repair (2026-08-27): corrected oracle blocks
+# recomputed from stored batch arrays with the FIXED label_state; overrides
+# generation-stored labels everywhere.  See sidecar provenance block.
+LABELS_V2 = REFDIR / "m3d_labels_corrected_v2.json"
 PER_CLASS = 8
 
 
@@ -68,6 +72,18 @@ def main() -> int:
                     and "arms" in v:
                 sk = v["state_key"]
                 refs[(sk["config_id"], round(float(sk["s2"]), 10))] = v
+
+    # corrected-label overlay (implementation conformance repair)
+    labels_v2_sha = None
+    if LABELS_V2.exists():
+        corr = json.loads(LABELS_V2.read_text(encoding="utf-8"))
+        labels_v2_sha = corr.get("schema_version") + "@" \
+            + _sha(LABELS_V2)[:16]
+        for k, o in corr["corrected_oracle"].items():
+            cid, s2v = k.rsplit("|", 1)
+            key = (cid, round(float(s2v), 10))
+            if key in refs:
+                refs[key]["oracle"] = o
 
     classes = {"WIDEN": [], "SHRINK": [], "HOLD": []}
     for key, r in refs.items():
@@ -143,7 +159,11 @@ def main() -> int:
                                      "5df0851644143a46246de890d6c55e",
             "amendment_1_commit_subject":
                 "AMENDMENT_1_UPWARD_SCALE_EXTENSION (c79d2c8)",
-            "prereg_lock_commit": "0dc9188"},
+            "prereg_lock_commit": "0dc9188",
+            "labels_corrected_v2":
+                ("not applied" if labels_v2_sha is None
+                 else f"{labels_v2_sha} (margin def + support gating "
+                      "conformance repair; freeze v1 d9a0e16 superseded)")},
         "candidate_pool_generations": generations_meta,
         "selection_rule_locked": (
             "eligible = oracle_action in {WIDEN,SHRINK,HOLD}; within class "

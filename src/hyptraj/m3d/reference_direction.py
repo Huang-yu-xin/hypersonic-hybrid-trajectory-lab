@@ -121,10 +121,38 @@ def label_state(refs: dict, batches: dict, tau: float = 0.01,
     widen_ok = (r_wi < -tau) and (wi < sh)
     shrink_ok = (r_sh < -tau) and (sh < wi)
 
+    # LOCKED RULE: every contrast REQUIRED by the label decision must be
+    # resolvable at >= se_mult x its batched paired SE.  A WIDEN label
+    # requires both the base-vs-widen improvement contrast AND the
+    # base-vs-shrink contrast (the ordering argument); SHRINK mirrored.
+    if widen_ok:
+        if not (support["base_vs_widen_supported"]
+                and support["base_vs_shrink_supported"]):
+            return {"oracle_action": "REFERENCE_AMBIGUOUS",
+                    "direction_margin_Delta_dir":
+                        float((sh - wi) / wi) if wi > 0 else float("inf"),
+                    "support": support,
+                    "ratios": {"shrink_over_base": float(r_sh),
+                               "widen_over_base": float(r_wi)},
+                    "ambiguity_reason": "unsupported_required_contrast"}
+    if shrink_ok:
+        if not (support["base_vs_shrink_supported"]
+                and support["base_vs_widen_supported"]):
+            return {"oracle_action": "REFERENCE_AMBIGUOUS",
+                    "direction_margin_Delta_dir":
+                        float((wi - sh) / sh) if sh > 0 else float("inf"),
+                    "support": support,
+                    "ratios": {"shrink_over_base": float(r_sh),
+                               "widen_over_base": float(r_wi)},
+                    "ambiguity_reason": "unsupported_required_contrast"}
+
+    # direction margin operates over the TWO PERTURBATION ARMS ONLY
+    # (locked operationalization in m3d_reference_characterization.json):
+    #   best = labeled action, second-best = the OTHER perturbation
     if widen_ok and not shrink_ok:
-        action, best, second = "WIDEN", wi, min(b, sh)
+        action, best, second = "WIDEN", wi, sh
     elif shrink_ok and not widen_ok:
-        action, best, second = "SHRINK", sh, min(wi, b)
+        action, best, second = "SHRINK", sh, wi
     elif not widen_ok and not shrink_ok:
         # HOLD requires both perturbations inside the +-3% window
         inside = (abs(r_wi) <= hold_window) and (abs(r_sh) <= hold_window)
