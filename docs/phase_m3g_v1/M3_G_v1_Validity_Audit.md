@@ -40,3 +40,15 @@
 ## 5. 结论
 
 有效性链完整：预注册提交 → 检查点（0 科学运行）→ 确认性评估 → 门控审计 → 泄漏/合法性审计。**V1-0..V1-4 全 PASS、V1-5 FAIL、Strong 诊断 PASS**——HOLD 恢复声明得到确认性支持，自适应价值声明不成立。
+
+## 6. 冻结审计锚（freeze audit，供 M3-BV 对照）
+
+- **冻结时 HEAD**：`5daee0f`（M3-VA 审计提交；事后纯分析，未触碰 v1 科学结果）。
+- **父标签** `RareTopo-M3-D-v0^{}` = `7bd58c5`（与 `m3g_v1_protocol.json` 记录一致）。
+- **原始科学结果文件 sha256**（文件 untracked per repo policy；内容指纹另含 `prereg_commit=55fb5ec`、`git_commit=7f19d2b`、`benchmark_freeze_sha256=b613f45d…`）：
+  - `results/phase_m3g_v1/layer_a/m3g_v1_confirmatory_v1.json` → `75c83eaff5a36b5688a8285a16da4d5d0eef424e3160cef92f56541f746b4d54`
+  - `results/phase_m3g_v1/summary/gate_audit_m3g_v1.json` → `657f41c4547b77c43551a2d2cc3a6d6e0a024ae8eecc20bfc7d0a0e09c82a49d`
+- **M3-VA verdict**（审计提交 `5daee0f`）：Oracle 自身无法通过 V1-5 式门（中位比 1.0000、胜场 10/24）⇒ **基准自适应 headroom 不足**；V1-5 FAIL 属基准限制；基准重设计（M3-BV）为优先事项。
+- **M3-Q**：保持阻塞（以 v1 结论封存为先决条件；本次冻结完成前不启动）。
+- **工作树**：无已跟踪意外修改（仅仓库政策允许的未跟踪产物：zip 存档、figures）。
+- **冻结门控汇总**：V1-1..V1-4 PASS ｜ V1-5 FAIL ｜ Strong PASS（VRF_budget 1.0304，仅成本效率，不构成优越性）。

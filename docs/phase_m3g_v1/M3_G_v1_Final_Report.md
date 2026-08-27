@@ -83,3 +83,18 @@ M3-G-v1 confirmatory validation COMPLETE: HOLD recovery replicates on unseen
 seeds (V1-2 PASS), direction preserved (V1-1 PASS), M2 noninferior (V1-4
 PASS), adaptive superiority UNSUPPORTED (V1-5 FAIL); M3-Q not started
 ```
+
+## 9. 冻结附加记录（M3-VA 事后审计摘录，提交 `5daee0f`）
+
+M3-VA 独立审计（纯分析、零新增模拟）结论：
+
+```text
+Oracle 自身在冻结基准上无法通过 V1-5 式自适应价值门：
+median_state median_seed M2(Oracle)/M2(BestFixed) = 1.0000 (> 0.95)
+Oracle wins = 10 / 24 (< 16)
+⇒ M3-VA verdict = 基准自适应 headroom 不足
+⇒ V1-5 FAIL 解读为基准限制，而非控制器失败
+⇒ 基准重设计为优先事项（M3-BV）
+```
+
+冻结记录汇总：V1-1..V1-4 PASS ｜ V1-5 FAIL（基准 headroom 受限）｜ Strong（VRF_budget 1.0304）PASS（仅成本效率）｜ M3-VA verdict = benchmark adaptive headroom insufficient ｜ M3-Q remains blocked（以 v1 冻结为先决条件）。
