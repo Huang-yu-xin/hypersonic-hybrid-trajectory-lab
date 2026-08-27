@@ -1,0 +1,157 @@
+{
+  "schema_version": "raretopo-m3bv2-construction-lock-v0",
+  "document_type": "M3-BV2 dual-axis benchmark construction lock: Axis A (decision 8W/8H/8S) + Axis B (value 12W/12S), candidate source reuse contract, frozen reference/headline semantics, unified value functional, BestFixed definition, Oracle feasibility + opposite-class regret gates, deterministic selection rules -- committed BEFORE any M3-BV2 characterization or analysis (task Sec. 1/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19)",
+  "stage": "M3_BV2_preregistration",
+  "created_utc": "2026-08-28",
+  "status": "PREREGISTERED -- DUAL-AXIS BENCHMARK CONSTRUCTION NOT STARTED",
+  "parent_tags": {
+    "m3g_v1": "RareTopo-M3-G-v1 (peeled commit 4505a36)",
+    "m3d_v0": "RareTopo-M3-D-v0 (7bd58c5992615b8579b1814a3a3fcbea3cda9659)",
+    "m3bv_v0": "RareTopo-M3-BV-v0 (frozen NEGATIVE benchmark-design result, annotated tag on commit 1eea183)",
+    "freeze_reference": "docs/phase_m3d/M3_D_Benchmark_Freeze.json body sha256 b613f45dc6645c6da26ab58b5185764f14d771ca6b996bffed88fea1f467a5f3 (self-recorded in freeze_sha256_of_body_above; verified reproducible by stripping that field from the current file and re-serializing with json.dumps(indent=1) -- whole-file sha256 differs by design because the hash field is appended after hashing)"
+  },
+  "candidate_source": {
+    "type": "REUSE_bv0_pool_as_prior_characterization",
+    "authorized_by": "task Sec. 5: legal proposal-state pool from BV-v0 may be reused only if raw state definitions are byte-identical AND reuse is explicitly recorded as prior characterization data",
+    "source_files": [
+      "results/phase_m3bv/reference/m3bv_candidate_pool.json",
+      "results/phase_m3bv/reference/m3bv_headline_stability.json"
+    ],
+    "byte_identity_anchors": [
+      "pool.task_sha256 == sha256(docs/phase_m3bv/M3_BV_Adaptive_Value_Benchmark_Redesign_Task.md)",
+      "pool.construction_lock_sha256 == sha256(configs/phase_m3bv/m3bv_construction_lock.json)",
+      "pool.m3g_v1_tag == RareTopo-M3-G-v1",
+      "pool.frozen_configs == the 8 frozen event configs recorded in configs/phase_m3d/m3d_candidate_state_grid.json",
+      "pool.s2_grid_bv == the frozen 11-value scalar grid [0.65,0.85,1.10,1.40,1.80,2.30,3.00,4.00,5.00,6.40,8.00]",
+      "state keys (config_id, s2) form exactly the 8 x 11 = 88 grid; 88/88 legal; 0 illegal"
+    ],
+    "reuse_record_output": "results/phase_m3bv2/reuse_record.json (sha256 of both source files + anchor verification results + reference_semantics re-checks, written at B2 before any analysis)",
+    "no_new_characterization_required": true
+  },
+  "reference_semantics_frozen": {
+    "estimator": "FROZEN eval_proposal_is semantics: w = exp(logp - logq) * 1_A; M2 = mean(w^2); L_j = mean((w * 1_j)^2); verify M2 = sum_j L_j",
+    "delta_theta": 0.2,
+    "n_ref_per_arm": 500000,
+    "n_ref_batches": 20,
+    "rng_rule": "[701001 + candidate_idx] over states sorted by (config_id, s2) ascending",
+    "crn_rule": "one shared Generator per state across base/shrink/widen within each batch; only the selected component's Cholesky differs",
+    "label_rule": "FROZEN label_state(tau=0.01, margin_min=0.05, hold_window=0.03, se_mult=2.0) -> oracle_action / direction_margin_Delta_dir / support / ratios",
+    "headline_budget": {
+      "n_per_arm": 100000,
+      "source": "frozen final_eval_n = 100000 per arm (M3-G-v1 protocol; the actual headline evaluation budget for later controller evaluation)",
+      "n_batches": 10,
+      "n_replicates": 8,
+      "rng_rule": "[701001 + candidate_idx, 10000 + replicate], replicate in 1..8",
+      "semantics": "matched per replicate (the three arms of one replicate share one stream, CRN), replicates are independent blocks"
+    }
+  },
+  "axis_a_decision": {
+    "purpose": "test WIDEN / HOLD / SHRINK action correctness only; NO adaptive-value claim based on Axis A (task Sec. 3/10/11/15/23)",
+    "structure": {"WIDEN": 8, "HOLD": 8, "SHRINK": 8},
+    "n_states": 24,
+    "eligibility": {
+      "WIDEN_SHRINK": "frozen label WIDEN/SHRINK (embeds statistical support >= 2x paired SE AND direction margin Delta_dir >= 0.05) AND frozen-reference action is the realized-best action in >= 0.80 of the 8 headline replicates",
+      "HOLD": "frozen label HOLD (reference indifference: |widen_over_base| <= 0.03 AND |shrink_over_base| <= 0.03) AND >= 0.80 of the 8 headline replicates place BOTH perturbation arms within +-5% of BASE",
+      "reference_margin_min": 0.05
+    },
+    "coverage": {"min_configs_per_class": 4, "max_states_per_config_per_class": 2},
+    "selection_rule": [
+      "1. eligible + stable candidates only",
+      "2. maximize config coverage: >= 4 distinct event configs per class AND <= 2 states per (config, class)",
+      "3. within equal coverage prefer larger headline-budget stability",
+      "4. then larger reference direction margin",
+      "5. final deterministic tie-break (config_id, s2) ascending"
+    ],
+    "algorithm_deterministic": "per class: process configs in (config_id) ascending; within each config take eligible candidates sorted by (stability_desc, margin_desc, s2_asc) up to 2; accumulate across configs until 8; if short, fill from remaining eligible candidates by the same sort. Verbatim replay of the BV-v0 locked selection algorithm; expected result equals the recorded BV-v0 8/8/8 selection (cross-checked deterministically). Selection uses ONLY reference label / margin / stability / legality / config coverage -- no controller performance.",
+    "gates": {
+      "BV2-D0": "RareTopo-M3-BV-v0 tag exists; BV2 task + construction lock committed before science; all parent tags unchanged; candidate source hashes recorded; all three arms legal; no controller leakage; M2 = sum L verified; full pytest PASS",
+      "BV2-D1": "selection exactly 8 WIDEN / 8 HOLD / 8 SHRINK",
+      "BV2-D2": "every selected state headline-budget action stability >= 0.80; all HOLD states satisfy the frozen indifference-stability rule",
+      "no_oracle_vs_fixed_gate": true
+    }
+  },
+  "axis_b_value": {
+    "purpose": "test whether state-dependent WIDEN/SHRINK switching has measurable economic value over ONE globally fixed scalar rule (task Sec. 3/12/13/14/16/17/18/24)",
+    "structure": {"WIDEN": 12, "SHRINK": 12},
+    "n_states": 24,
+    "no_hold_states": true,
+    "hold_as_fixed_comparator": "ALWAYS_HOLD remains a candidate fixed policy for BestFixed even though HOLD states are absent",
+    "eligibility": {
+      "label": "frozen label WIDEN or SHRINK (statistical support AND direction margin >= 0.05 embedded)",
+      "stability": "reference action is the realized-best action in >= 0.80 of the 8 headline replicates",
+      "reference_margin_min": 0.05,
+      "margin_diagnostic": "report count of selected states with reference margin >= 0.10 (preferred stronger diagnostic; NOT a gate)"
+    },
+    "coverage": {"min_configs_per_class": 4, "max_states_per_config_per_class": 3},
+    "selection_rule": [
+      "1. eligible + stable candidates only",
+      "2. maximize config coverage: >= 4 distinct event configs per class AND <= 3 states per (config, class)",
+      "3. within equal coverage prefer larger headline-budget action stability",
+      "4. then larger reference economic margin",
+      "5. final deterministic tie-break (config_id, s2) ascending"
+    ],
+    "algorithm_deterministic": "per class: process configs in (config_id) ascending; within each config take eligible candidates sorted by (stability_desc, margin_desc, s2_asc) up to 3; accumulate across configs until 12; if short, fill from remaining eligible candidates by the same sort. Oracle feasibility is checked AFTER deterministic selection; manual selection to improve Oracle headroom is FORBIDDEN (task Sec. 14/19). Selection uses ONLY reference label / margin / stability / legality / config coverage -- no controller performance.",
+    "no_hold_without_amendment": "no HOLD states unless a future amendment defines a distinct measurable-value HOLD concept BEFORE any controller run"
+  },
+  "unified_functional": {
+    "definition": "J(pi) = median_state [ median_replicate log( M2(pi, state) / M2(BASE, state) ) ] over the 24 selected Axis-B states",
+    "per_replicate": "replicate-level paired log-ratio of the acted arm's M2 over that replicate's BASE-arm M2 (CRN-matched within replicate)",
+    "median_order": "median over the 8 replicates per state, then median over the 24 states",
+    "fixed_policy_arms": {"ALWAYS_WIDEN": "widen", "ALWAYS_SHRINK": "shrink", "ALWAYS_HOLD": "base"},
+    "oracle_per_state": "frozen reference action arm of that state",
+    "best_fixed_definition": "BestFixed = argmin over f in {ALWAYS_WIDEN, ALWAYS_SHRINK, ALWAYS_HOLD} of J(f); J(ALWAYS_HOLD) = 0 by construction (log(M2(BASE)/M2(BASE)) per replicate)",
+    "adaptive_gain": "G_Oracle = J(BestFixed) - J(Oracle)",
+    "one_functional_only": true,
+    "no_dual_aggregation": "BestFixed selection and Oracle headroom measurement use the SAME functional J; no other aggregation is used for either"
+  },
+  "value_gates": {
+    "BV2-V0": "12 WIDEN + 12 SHRINK selected deterministically; all states legal; all states stable; all states satisfy the value-margin threshold; config coverage constraints pass; no controller outputs used",
+    "BV2-V1": "fixed-rule tradeoff report: J(ALWAYS_WIDEN), J(ALWAYS_SHRINK), J(ALWAYS_HOLD) + class-conditional performance; if one fixed rule is simultaneously near-optimal on both W and S classes, mark benchmark WEAK (diagnostic flag, not a hard gate)",
+    "BV2-V2": "Oracle feasibility via the unified functional in ONE mathematically equivalent form: G_Oracle >= -log(0.95) = 0.0512933 (equivalently exp(-G_Oracle) <= 0.95); strong target (report only): equivalent ratio <= 0.90",
+    "BV2-V3": "opposite-class regret: R_opp,W = median over W states of median-replicate M2(ALWAYS_SHRINK)/M2(ALWAYS_WIDEN) >= 1.05 AND R_opp,S = median over S states of median-replicate M2(ALWAYS_WIDEN)/M2(ALWAYS_SHRINK) >= 1.05; paired ratio computed per replicate, then median over the 8 replicates, then median over class states (same pairing semantics as the frozen BV-v0 Oracle ratio)",
+    "freeze_requires": ["BV2-V0 PASS", "BV2-V1 PASS", "BV2-V2 PASS", "BV2-V3 PASS", "full pytest PASS"],
+    "if_v2_fails": "VALUE benchmark = infeasible; STOP before controller evaluation; NO threshold relaxation (task Sec. 20/31)"
+  },
+  "firewall": {
+    "do_not_change": [
+      "M3-D gradient estimator",
+      "M3-G-v1 GA1/rho=0.02",
+      "delta_theta = 0.20",
+      "ESS_grad = 20",
+      "bootstrap direction rule",
+      "fixed-weight Layer A",
+      "CRN semantics",
+      "M2 estimator",
+      "leakage decomposition",
+      "VRF definitions",
+      "legality checker"
+    ],
+    "no_m3q": "M3-Q not started",
+    "no_controller_tuning": true,
+    "no_rho_tuning": true,
+    "no_controller_performance_in_selection": "no use of controller performance during benchmark selection"
+  },
+  "negative_result_discipline": [
+    "change 12W/12S balance",
+    "reintroduce HOLD to rescue the Oracle metric",
+    "change the unified objective",
+    "change the Oracle threshold",
+    "change the opposite-class regret threshold",
+    "change config coverage",
+    "drop difficult states",
+    "change the evaluation budget",
+    "change the margin threshold"
+  ],
+  "amendment_rule": "any amendment must be committed BEFORE additional characterization and must explicitly state observed outcomes; NO amendment after controller results exist (task Sec. 31)",
+  "outputs": {
+    "reuse_record": "results/phase_m3bv2/reuse_record.json",
+    "decision_analysis": "results/phase_m3bv2/decision_analysis.json",
+    "value_analysis": "results/phase_m3bv2/value_analysis.json",
+    "freeze_docs": ["docs/phase_m3bv2/M3_BV2_Decision_Benchmark_Freeze.md", "docs/phase_m3bv2/M3_BV2_Decision_Benchmark_Freeze.json", "docs/phase_m3bv2/M3_BV2_Value_Benchmark_Freeze.md", "docs/phase_m3bv2/M3_BV2_Value_Benchmark_Freeze.json"],
+    "benchmark_configs": ["configs/phase_m3bv2/m3bv2_decision_benchmark.json", "configs/phase_m3bv2/m3bv2_value_benchmark.json"],
+    "reports": ["docs/phase_m3bv2/M3_BV2_Methodology.md", "docs/phase_m3bv2/M3_BV2_Validity_Audit.md", "docs/phase_m3bv2/M3_BV2_Benchmark_Report.md", "docs/phase_m3bv2/M3_BV2_Final_Report.md"],
+    "figures_dir": "figures/phase_m3bv2/",
+    "controller_runs_on_bv2": 0
+  },
+  "one_line_state": "M3-BV2 construction lock preregistered: Axis A 8W/8H/8S decision benchmark + Axis B 12W/12S value benchmark, reusing the BV-v0 candidate characterization as prior data (byte-identity anchors locked), unified functional J = median_state median_replicate log(M2(pi)/M2(BASE)), BestFixed = argmin J over the three fixed rules, gates BV2-V2 (G_Oracle >= -log(0.95)) and BV2-V3 (opposite-class regret >= 1.05); NO BV2 characterization or analysis run executed yet"
+}
