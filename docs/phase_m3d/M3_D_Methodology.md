@@ -44,3 +44,7 @@ Acc3 + 各类 recall/macro-F1/balanced/confusion;R_M2=(M2(G)/M2(O))-1 全局+分
 ## 7. 防火墙承继
 
 控制器零改；oracle/reference 字段结构性隔离(测试证：API 白名单+模块源扫描)；Layer A 固定权重；ESS_grad=20;bootstrap 固定分层 [seed,424243];delta_theta=0.20 主值贯穿(含 sensitivity 与 refinement 中点语义)。
+
+## 8. 局限声明（freeze audit 增补）
+
+WIDEN/SHRINK 冻结态的事件构型覆盖集中于 {c000,c001}——符号切换证据不外推至全部 8 个 config；`c000@0.55` 的 Always-Shrink 臂违反 frozen legality floor，其统计使用合法分母（全通道排除、永不作为 tie/base）；HOLD oracle 定义为参考预算处的有限步长收益不足（action-indifference），而非符号不确定——诊断该缺口是 M3-G 阶段的动机。Freeze v1→v2 溯源核验详见 Validity Audit §5。

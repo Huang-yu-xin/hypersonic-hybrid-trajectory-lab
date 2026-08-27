@@ -69,9 +69,9 @@ STRONG budget VRF                  PASS   deployable 中位 1.0304 > 1
 ## 3. 关键现象解读(由数据决定)
 
 - **方向自适应真实发生**:SHRINK 类 64/64 判对(WIDEN 类亦然),证明有限样本二阶矩导数在宽 proposal 区间可靠地给出收缩信号——这是 M3-v0 widening-dominant 几何下不可能观察到的;
-- **失效模式集中在 HOLD 类**:16/64 触发动作中 48 错认(oracle=HOLD)。 Worst regrets 全部来自 s²≈3.20 的近驻点带——那里的真差异在 tau=0.01 边界内,CI 宽度使其频繁跨过 0 而落入 WIDEN/SHRINK 判定,损失 ~5–13%;
-- **为什么仍打不过 Always-Widen**:聚合被两段几何主导——WIDEN 类上 GRADIENT≡AW(同为放宽,逐值一致),而 HOLD 类上"不动"更优(AW 在该类反而 -2.8%)。梯度唯一的可赢空间(SHRINK 类中位 +8.8pp 于 AW)不足以把 24 态聚合的 R_fixed 从 0.988 推到 ≤0.90;
-- **成本效率首次转正**: Strong PASS(1.030)与 SHRINK/HOLD 态上预算节省一致,但依 §29 其本身不构成 adaptive-value 成功。
+- **HOLD 失效的正确机制(修正后表述)**:`gradient-sign confidence != finite-step action-indifference`。oracle 的 HOLD 定义是**预注册有限步长下的收益不足**(以参考预算判定),而非"符号不确定"。数据事实:(a) WIDEN/SHRINK recall 均为 1.00 ⇒ 符号本身估计正确;(b) 48/64 个 oracle-HOLD 试验上 CI-sign 仍自信地动作——符号置信度对"固定步长是否值得执行"不携带任何信息;(c) 这些态恰好处于 ±1%/±3% 无差别边界带,跨种子实现在线效应中位 r_w=−0.028、r_s=+0.052,68.8% 的试验至少一个扰动在线上越过 1% 改善线而参考端判为 indifferent。因此缺口不是"CI 太宽",而是控制器**缺少『预计有限步长增益太小则 HOLD』的 action-value gate**——这正是 M3-G 阶段的动机;
+- **为什么仍打不过 Always-Widen**:聚合被两段几何主导——WIDEN 类上 GRADIENT≡AW(同为放宽,逐值一致),而 HOLD 类上"不动"更优(AW 在该类反而 −2.8%)。梯度唯一的可赢空间(SHRINK 类相对 AW 中位约 −8.8pp 绝对差)不足以把 24 态聚合的 R_fixed 从 0.988 推到 ≤0.90;
+- **成本效率首次转正**:Strong PASS(1.030)。⚠️ 该数字仅说明 deployable 口径下预算效率超过粗 MC 边界,**不得解读为 adaptive superiority 或对固定规则的价值优势**——M3D-3 同时 FAIL。
 
 ## 4. 消融(D8)
 
@@ -83,7 +83,13 @@ STRONG budget VRF                  PASS   deployable 中位 1.0304 > 1
 
 > **Sign diversity exists, but the current finite-sample gradient policy does not convert it into robust adaptive value.**
 
-同时允许如实记录:方向自适应发生且近 oracle(regret 中位 0)、WIDEN/SHRINK 两类判定完美、成本效率门通过。**不主张**:Gradient 优于全部固定规则(M3D-3 FAIL)、universal optimality/global convergence/full-matrix/real-system cost efficiency。
+同时允许如实记录:方向自适应发生且近 oracle(regret 中位 0)、WIDEN/SHRINK 两类判定完美、成本效率门通过(VRF_budget>1 是预算效率事实,**非** adaptive superiority)。**不主张**:Gradient 优于全部固定规则(M3D-3 FAIL)、universal optimality/global convergence/full-matrix/real-system cost efficiency。
+
+### 5.1 局限(freeze audit 增补)
+
+- **事件构型覆盖集中**:冻结基准的 WIDEN 态全部来自 {c000,c001},SHRINK 态全部来自 {c000,c001}——符号切换的实证仅在两个 event configs 上成立;**不得声称 sign switching 已跨全部 8 个事件构型泛化**(HOLD 类覆盖较广但类性能未达标);
+- **协议局限(illegal comparator arm)**:`c000@0.55` 的 ALWAYS_SHRINK 臂违反 frozen legality floor(min-eig 0.450<0.5);其统计采用合法分母(该 trial 在 ALL 规则通道排除,永不作为 tie/base/win 证据);不改选 benchmark state;
+- 门判定维持:M3D-2 FAIL、M3D-3 FAIL、M3D-5 FAIL、Strong PASS。
 
 ## 6. 后续状态
 

@@ -154,23 +154,45 @@ def dd_point_sign_vs_ci(recs) -> dict:
 
 
 def da_gradient_vs_rules_per_class(recs) -> dict:
+    """Per-class medians of each rule against its own BASE arm.
+
+    LEGAL-DENOMINATOR DISCIPLINE (freeze audit 2026-08-27): trials whose
+    comparator arm fails the FROZEN legality checker (always-shrink from
+    s^2=0.55 -> min-eig 0.450 < 0.5) are EXCLUDED from that rule's channel
+    entirely -- they may neither count as losses, wins, ties nor baseline
+    for the fixed rule.  Raw layer_a records remain untouched."""
     out = {}
+    n_excluded_as = 0
     by_class = {}
     for r in recs:
         by_class.setdefault(r["oracle_action"], []).append(r)
     for cls, rs in sorted(by_class.items()):
         ratios = {"GRADIENT": [], "ALWAYS_WIDEN": [], "ALWAYS_SHRINK": [],
                   "ALWAYS_HOLD": []}
+        excluded_cls = 0
         for r in rs:
             b = r["arms"]["hold"]["M2"]
+            if not r["validity"]["arm_legality_all_passed"]:
+                # illegal comparator arm (shrink): counts for NO channel,
+                # never as tie/base/value evidence
+                excluded_cls += 1
+                n_excluded_as += 1
+                continue
             ratios["GRADIENT"].append(r["arms"]["gradient"]["M2"] / b)
             ratios["ALWAYS_WIDEN"].append(r["arms"]["widen"]["M2"] / b)
             ratios["ALWAYS_SHRINK"].append(r["arms"]["shrink"]["M2"] / b)
             ratios["ALWAYS_HOLD"].append(1.0)
         out[cls] = {k: {"median_ratio_to_BASE": float(np.median(v)),
-                        "mean_ratio_to_BASE": float(np.mean(v))}
+                        "mean_ratio_to_BASE": float(np.mean(v)),
+                        "n_legal": len(v)}
                     for k, v in ratios.items()}
-    return _stamp("D_A_gradient_vs_fixed_per_class", out)
+        out[cls]["_excluded_illegal_shrink_trials"] = excluded_cls
+    return _stamp("D_A_gradient_vs_fixed_per_class", {
+        "legal_denominator_policy":
+            "trials failing the frozen arm-legality checker are excluded "
+            "from ALL rule channels at that trial (never tie/base/win)",
+        "total_illegal_trials_excluded": n_excluded_as,
+        "per_class": out})
 
 
 def db_ess_stratification(recs) -> dict:
