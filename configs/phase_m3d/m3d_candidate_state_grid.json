@@ -34,6 +34,25 @@
   "other_components": "means, weights, remaining covariances (= I_2 unit family) fixed exactly as the M3-v0 Layer A gradient point"
  },
  "s2_grid_locked": [0.55, 0.70, 0.85, 1.00, 1.25, 1.60, 2.00],
+ "amendments": [
+  {
+   "id": "AMENDMENT_1_UPWARD_SCALE_EXTENSION",
+   "doc": "docs/phase_m3d/M3_D_PREREG_AMENDMENT_Upward_Scale_Extension.md",
+   "date": "2026-08-27",
+   "type": "benchmark-construction (NOT controller tuning)",
+   "s2_grid_extension_locked": [2.50, 3.20, 4.00, 5.00, 6.40, 8.00],
+   "effective_search_space_rule": "union of s2_grid_locked and s2_grid_extension_locked; original 56 characterized states retained byte-exact in m3d_candidate_pool.json (never deleted/overwritten/recomputed); extension states recorded in separate artifacts m3d_candidate_pool_extension1.json and m3d_candidate_pool_ext_round{1,2}.json",
+   "bracket_refinement_locked": {
+    "trigger": "adjacent WIDEN->SHRINK label bracket within ONE config while global eligible HOLD < 8",
+    "candidate_rule": "s2_mid = sqrt(s2_W * s2_S) over ADJACENT opposite-labeled states sorted by s2 within the same config; no extrapolation",
+    "max_rounds": 2,
+    "no_threshold_relaxation": true,
+    "protocol_inherited": "N_ref=500k/arm CRN batched; tau=0.01; margin>=0.05; HOLD +-3%; support |contrast|>=2x paired SE"
+   },
+   "permanent_stop_clause": "if after extension + <=2 refinement rounds eligible labels remain <8 WIDEN or <8 SHRINK or <8 HOLD => M3-D-v0 PERMANENT STOP, no further grid change",
+   "commit_before_any_new_reference_characterization": true
+  }
+ ],
  "legality_contract_locked": {
   "checker": "FROZEN hyptraj.m1.proposal_update legality checker verbatim; LEGALITY_MIN_EIG = 0.5",
   "precheck": "every (config, s2) candidate passes/fails BEFORE any reference characterization; failure recorded ILLEGAL_PRE_FREEZE and NEVER replaced post hoc (task Sec. 6)",
