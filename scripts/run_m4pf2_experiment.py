@@ -503,6 +503,43 @@ def summarize(raw: dict, protocol: dict) -> None:
         "state_source_hash": raw["state_source_hash"],
         "anchor_source_hash": raw["anchor_source_hash"],
     }, indent=2), encoding="utf-8")
+    manifest_sources = []
+    fixed_sources = (
+        "configs/phase_m4pf2/m4pf2_protocol.json",
+        "configs/phase_m4pf2/m4pf2_states.json",
+        "configs/phase_m4pf2/m4pf2_seeds.json",
+        "configs/phase_m3bv2/m3bv2_value_benchmark.json",
+        "results/phase_m4pf1/m4pf1_confirmation_raw.json",
+        "results/phase_m4pf2/m4pf2_discovery.json",
+        "results/phase_m4pf2/m4pf2_confirmation_raw.json",
+    )
+    for rel in fixed_sources:
+        path = REPO / rel
+        manifest_sources.append({
+            "path": rel, "sha256": sha256_file(path),
+            "role": "protocol_or_parent" if "configs" in rel or "m4pf1" in rel
+                    else "PF2 experiment record",
+            "read_only_after_confirmation": True,
+        })
+    for state in raw["states"]:
+        artifact = state["sample_artifact"]
+        path = REPO / artifact["path"]
+        actual_hash = sha256_file(path)
+        if actual_hash != artifact["sha256"]:
+            raise RuntimeError(f"PF2 sample artifact hash mismatch: {path}")
+        manifest_sources.append({
+            "path": artifact["path"], "sha256": actual_hash,
+            "role": "fresh anchor sample arrays",
+            "state_id": state["state_id"],
+            "proposal_anchor": state["anchor_arm"],
+            "read_only_after_confirmation": True,
+        })
+    (SUMMARY / "m4pf2_source_manifest.json").write_text(json.dumps({
+        "schema_version": "raretopo-m4pf2-source-manifest-v0",
+        "source_count": len(manifest_sources),
+        "sources": manifest_sources,
+        "sources_unchanged": True,
+    }, indent=2), encoding="utf-8")
     write_csv(SUMMARY / "m4pf2_family_summary.csv", cell_rows)
     write_csv(SUMMARY / "m4pf2_state_table.csv", state_rows)
     write_csv(SUMMARY / "m4pf2_tail_diagnostics.csv", tail_rows)
