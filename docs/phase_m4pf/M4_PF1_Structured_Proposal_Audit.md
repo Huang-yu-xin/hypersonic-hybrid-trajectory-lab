@@ -134,7 +134,14 @@ not added to the FreeOracle deployable denominator because the endpoint
 deliberately isolates proposal-family feasibility. The cost ledger records
 shared gradient construction once, preventing double counting across S1/S2.
 
-## 9. Figures
+## 9. Verification
+
+All 15 focused PF1 protocol, update, state/seed lock, scalar reproduction,
+accounting, tail and output-schema tests passed. The closing repository-wide
+regression passed all 1,262 tests in `310.73 s`, with only the same three
+pre-existing pytest fixture deprecation warnings observed at PF0 opening.
+
+## 10. Figures
 
 The required result figures are under `figures/phase_m4pf1/`:
 
@@ -152,7 +159,7 @@ The required result figures are under `figures/phase_m4pf1/`:
 Every absolute-efficiency figure includes the `VRF = 1` reference, and the
 family/gate figures also identify the material `VRF = 0.1` threshold.
 
-## 10. Verdict and claim boundary
+## 11. Verdict and claim boundary
 
 The locked verdict is:
 
@@ -171,4 +178,3 @@ the frozen regime.
 The next permissible scientific stage is a separately preregistered M4-PF2
 joint mean-plus-covariance objective-gradient study. PF2 is not executed here.
 `M3-Q` remains blocked.
-
