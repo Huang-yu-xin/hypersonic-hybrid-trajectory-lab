@@ -139,10 +139,15 @@ def test_m4pf1_scalar_baseline_reproduction():
 
 def test_m4pf1_cost_accounting():
     rows = _csv("m4pf1_cost_ledger.csv")
-    assert len(rows) == 72
+    deployable = [row for row in rows
+                  if row["record_type"] == "counterfactual_deployable"]
+    audit = [row for row in rows if row["record_type"].startswith("AUDIT_")]
+    assert len(deployable) == 72
+    assert len(audit) == 97
     assert all(int(row["pilot_cost"]) == 0 for row in rows)
     assert all(int(row["decision_cost"]) == 0 for row in rows)
-    assert all(int(row["deployable_cost"]) == 100000 for row in rows)
+    assert all(int(row["deployable_cost"]) == 100000 for row in deployable)
+    assert sum(int(row["audit_only_cost"]) for row in audit) == 129720000
 
 
 def test_m4pf1_state_count_and_class_split():
@@ -160,4 +165,3 @@ def test_m4pf1_output_schema():
     assert summary["schema_version"] == "raretopo-m4pf1-family-summary-v0"
     assert summary["verdict"] in {"PF1-A", "PF1-B", "PF1-C", "PF1-D"}
     assert len(summary["families"]) == 3
-

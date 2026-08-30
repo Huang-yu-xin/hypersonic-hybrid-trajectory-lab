@@ -372,22 +372,38 @@ def summarize(raw: dict, protocol: dict, m3ca: dict, state_lock: dict) -> None:
                         rec["event_weight_underflow_count"],
                 })
             ledger.append({
+                "record_type": "counterfactual_deployable",
                 "state_id": state["state_id"], "family": family,
                 "pilot_cost": 0, "decision_cost": 0,
                 "selected_arm_cost":
                     confirmation["selected_arm_deployable_budget"],
                 "deployable_cost":
                     confirmation["selected_arm_deployable_budget"],
-                "audit_only_gradient_cost":
-                    protocol["gradient_construction"]["pooled_sample_count_per_state"]
-                    if family in ("S1", "S2") else 0,
-                "audit_only_probability_cost":
-                    confirmation["structured_probability_characterization_n"]
-                    if family in ("S1", "S2") else 0,
-                "audit_only_unselected_eval_cost":
-                    confirmation["evaluation_n_per_replicate"] *
-                    confirmation["evaluation_replicates"],
+                "audit_only_cost": 0,
                 "cost_semantics": "FreeOracle: only selected final arm is deployable",
+            })
+        audit_blocks = (
+            ("AUDIT_SHARED_GRADIENT", "SHARED", protocol[
+                "gradient_construction"]["pooled_sample_count_per_state"]),
+            ("AUDIT_S0_REPLAY", "S0",
+             3 * confirmation["evaluation_n_per_replicate"] *
+             confirmation["evaluation_replicates"]),
+            ("AUDIT_S1_CHARACTERIZATION", "S1",
+             confirmation["structured_probability_characterization_n"] +
+             confirmation["evaluation_n_per_replicate"] *
+             confirmation["evaluation_replicates"]),
+            ("AUDIT_S2_CHARACTERIZATION", "S2",
+             confirmation["structured_probability_characterization_n"] +
+             confirmation["evaluation_n_per_replicate"] *
+             confirmation["evaluation_replicates"]),
+        )
+        for kind, family, cost in audit_blocks:
+            ledger.append({
+                "record_type": kind, "state_id": state["state_id"],
+                "family": family, "pilot_cost": 0, "decision_cost": 0,
+                "selected_arm_cost": 0, "deployable_cost": 0,
+                "audit_only_cost": int(cost),
+                "cost_semantics": "actual scientific characterization; excluded from FreeOracle deployable VRF",
             })
 
     family_rows = []
@@ -456,6 +472,26 @@ def summarize(raw: dict, protocol: dict, m3ca: dict, state_lock: dict) -> None:
         "state_source_hash": state_lock["source_sha256"],
         "claim_boundary": "FreeOracle proposal-family feasibility; not deployable controller efficiency",
     }
+    ledger.append({
+        "record_type": "AUDIT_DISCOVERY", "state_id": "PF1-D",
+        "family": "SHARED", "pilot_cost": 0, "decision_cost": 0,
+        "selected_arm_cost": 0, "deployable_cost": 0,
+        "audit_only_cost": 120000,
+        "cost_semantics": "two locked discovery states; excluded from confirmatory FreeOracle VRF",
+    })
+    summary["cost_accounting"] = {
+        "deployable_cost_per_state_family":
+            confirmation["selected_arm_deployable_budget"],
+        "confirmation_audit_only_samples": sum(
+            int(row["audit_only_cost"]) for row in ledger
+            if row["record_type"].startswith("AUDIT_") and
+            row["record_type"] != "AUDIT_DISCOVERY"),
+        "discovery_audit_only_samples": 120000,
+        "total_actual_pf1_samples": sum(
+            int(row["audit_only_cost"]) for row in ledger
+            if row["record_type"].startswith("AUDIT_")),
+        "oracle_search_and_unselected_arms_excluded_from_deployable": True,
+    }
     SUMMARY.mkdir(parents=True, exist_ok=True)
     (SUMMARY / "m4pf1_family_summary.json").write_text(
         json.dumps(summary, indent=2, allow_nan=False), encoding="utf-8")
@@ -467,10 +503,21 @@ def summarize(raw: dict, protocol: dict, m3ca: dict, state_lock: dict) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--stage", choices=("discovery", "confirmation"),
+    parser.add_argument("--stage", choices=("discovery", "confirmation",
+                                             "summarize"),
                         required=True)
     args = parser.parse_args()
-    return run_discovery() if args.stage == "discovery" else run_confirmation()
+    if args.stage == "discovery":
+        return run_discovery()
+    if args.stage == "confirmation":
+        return run_confirmation()
+    protocol, state_lock, _seeds = load_locks(REPO)
+    raw = json.loads((RESULT / "m4pf1_confirmation_raw.json").read_text(
+        encoding="utf-8"))
+    m3ca = json.loads(M3CA_PATH.read_text(encoding="utf-8"))
+    summarize(raw, protocol, m3ca, state_lock)
+    print("[saved] PF1 summary tables from frozen raw confirmation")
+    return 0
 
 
 if __name__ == "__main__":
