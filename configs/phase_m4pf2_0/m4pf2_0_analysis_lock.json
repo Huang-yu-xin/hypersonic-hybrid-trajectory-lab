@@ -1,0 +1,35 @@
+{
+  "schema_version": "raretopo-m4pf2-0-analysis-lock-v0",
+  "stage": "M4-PF2-0",
+  "parent_tag": "RareTopo-M4-PF1-v0",
+  "parent_commit": "e6885bb59a8437cd5834a3a60ccf07c9c89624fe",
+  "analysis_only": true,
+  "extra_simulator_calls": 0,
+  "mean_gradient": "grad_mu M2 = -M2 Sigma^(-1/2) a",
+  "dimensionless_mean_gradient": "a = E_nuV[r_k z_k]",
+  "whitened_directional_derivative": "dM2/depsilon = -M2 a^T u",
+  "descent_direction": "+a/||a||",
+  "preferred_anchor": "frozen S0 scalar FreeOracle-selected proposal per state",
+  "anchor_mismatch_rule": "never apply a gradient from q_A at q_B without exact validated reweighting",
+  "identifiability_required": [
+    "numeric sample x or whitened z",
+    "component mean and covariance",
+    "per-sample responsibility or exact reconstruction inputs",
+    "per-sample second-moment tilted weights and normalization",
+    "state identity",
+    "proposal identity"
+  ],
+  "forbidden": [
+    "simulator calls",
+    "new pilot generation",
+    "new seeds",
+    "new trajectories",
+    "proposal evaluations",
+    "controller tuning",
+    "pilot-cost tuning",
+    "mean-step tuning",
+    "rank above one",
+    "mixture-weight redesign",
+    "M3-Q"
+  ]
+}
