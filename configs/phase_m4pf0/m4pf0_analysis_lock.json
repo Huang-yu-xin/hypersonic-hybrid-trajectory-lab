@@ -1,0 +1,40 @@
+{
+  "schema_version": "raretopo-m4pf0-analysis-lock-v0",
+  "stage": "M4-PF0",
+  "parent_tag": "RareTopo-M3-CA-v0",
+  "parent_commit": "6b1ce6e1e99acc176df6b787e9cd5566fccc29bf",
+  "analysis_only": true,
+  "extra_simulator_calls": 0,
+  "matrix_gradient": "G=(M2/2) E_nuV[r_k (I-z_k z_k^T)]",
+  "directional_gradient": "g_B=<G,B>_F",
+  "scalar_recovery": "g_scalar=trace(G)",
+  "rank1_recovery": "g_v=v^T G v",
+  "eigen_order": "descending absolute eigenvalue",
+  "spd_update": "Sigma'=Sigma^(1/2) exp(-eta G_rank) Sigma^(1/2)",
+  "identifiability_required_fields": [
+    "sample_or_whitened_coordinates",
+    "variance_mass_weights_or_exact_inputs",
+    "component_responsibility",
+    "component_mean_and_covariance",
+    "event_indicator",
+    "source_strata_if_required"
+  ],
+  "pf0_verdicts": [
+    "GO",
+    "GO-WITHOUT-FROZEN-RECONSTRUCTION",
+    "NO-GO"
+  ],
+  "forbidden_pf0": [
+    "simulator_calls",
+    "new_seeds",
+    "new_pilot_generation",
+    "new_final_evaluation",
+    "new_benchmark_states",
+    "controller_tuning",
+    "pilot_size_sweep",
+    "mean_shift",
+    "mixture_allocation_change",
+    "rank_tuning",
+    "M3-Q"
+  ]
+}
