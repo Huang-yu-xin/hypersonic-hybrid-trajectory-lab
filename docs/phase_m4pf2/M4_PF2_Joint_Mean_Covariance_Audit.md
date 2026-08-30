@@ -216,5 +216,7 @@ The final package includes:
 - twelve required figures in `figures/phase_m4pf2/`
 - experiment, provenance and analytic-gradient tests in `tests/`
 
-The closing full-repository regression result and final freeze tag are recorded
-after this audit is committed.
+The closing full-repository regression passed with `1289 passed, 3 warnings`
+in `299.60 s`. The three warnings are unchanged pytest deprecation warnings in
+the pre-existing H3 fixtures and are unrelated to PF2. The final frozen stage
+is tagged `RareTopo-M4-PF2-v0` after this closing result is committed.
