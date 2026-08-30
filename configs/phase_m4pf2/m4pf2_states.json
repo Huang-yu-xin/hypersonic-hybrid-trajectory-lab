@@ -1,0 +1,11 @@
+{
+  "schema_version": "raretopo-m4pf2-state-lock-v0",
+  "source_path": "configs/phase_m3bv2/m3bv2_value_benchmark.json",
+  "source_sha256": "fa42d60d4dc78330cdf6fc99cf68f5f81a1986588c6aeb1d25edded17525225c",
+  "selection_rule": "all source states in stored order without additions, exclusions, replacements or reclassification",
+  "anchor_action_source": "results/phase_m4pf1/m4pf1_confirmation_raw.json",
+  "anchor_action_source_sha256": "f21d63746fdd519c5dba4d7f45fd449240c57019fe08c534cd86fe270018b6cb",
+  "expected_state_count": 24,
+  "expected_class_counts": {"WIDEN": 12, "SHRINK": 12, "HOLD": 0},
+  "state_ids_sha256_ordered_utf8_newline_join": "2b277aa621d67ec4318c2889cd37f6e156cbba47dbe0301ae762c42dac461345"
+}

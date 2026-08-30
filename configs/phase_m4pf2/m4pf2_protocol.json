@@ -1,0 +1,131 @@
+{
+  "schema_version": "raretopo-m4pf2-protocol-v0",
+  "stage": "M4-PF2",
+  "pf2_0_parent_tag": "RareTopo-M4-PF2-0-v0",
+  "pf2_0_parent_commit": "ff57f0d39cc79f697f1cd41596381f9e1e21c21a",
+  "state_lock": "configs/phase_m4pf2/m4pf2_states.json",
+  "seed_lock": "configs/phase_m4pf2/m4pf2_seeds.json",
+  "anchor": {
+    "definition": "per-state frozen S0 FreeOracle-selected scalar proposal from PF1",
+    "source": "results/phase_m4pf1/m4pf1_confirmation_raw.json",
+    "source_sha256": "f21d63746fdd519c5dba4d7f45fd449240c57019fe08c534cd86fe270018b6cb",
+    "selected_component_covariance": "s2*exp(+0.20)I for WIDEN and s2*exp(-0.20)I for SHRINK",
+    "means_weights_other_covariances": "frozen",
+    "gradient_source_exactly_equals_anchor": true,
+    "fresh_gradient_construction_required": true
+  },
+  "gradient_construction": {
+    "samples_per_seed": 100000,
+    "seed_count": 4,
+    "pooled_samples_per_state": 400000,
+    "pilot_source_mix_alpha": 0.5,
+    "mean_formula": "a=sum_i abar_i responsibility_i z_i",
+    "covariance_formula": "G=(M2/2)sum_i abar_i responsibility_i(I-z_i z_i^T)",
+    "same_samples_for_mean_and_covariance": true,
+    "persist_sample_level_arrays": true,
+    "persisted_array_fields": ["samples", "variance_mass", "responsibility", "whitened", "source_strata", "proposal_identity"],
+    "audit_only_cost": true
+  },
+  "mean_update": {
+    "delta_mu_mahalanobis": 0.2,
+    "normalization": "a/||a||",
+    "numerical_zero_threshold": 1e-12,
+    "numerical_zero_action": "identity update; not a learned HOLD",
+    "covariance_frame": "anchor covariance"
+  },
+  "covariance_update": {
+    "rank": 1,
+    "eigen_order": "descending absolute eigenvalue",
+    "raw_gradient_eigenvalue_clip_abs": 1000000.0,
+    "normalization": "rank-truncated matrix divided by Frobenius norm",
+    "eta_sigma": 0.2,
+    "max_abs_log_step": 0.2,
+    "matrix_exponential": true,
+    "minimum_covariance_eigenvalue": 0.5,
+    "condition_number_ceiling": 4.0,
+    "semantics_source": "frozen PF1 rank-1 update"
+  },
+  "joint_update": {
+    "gradient_point": "common anchor for both a and G",
+    "mean_frame": "anchor covariance square root",
+    "covariance_frame": "anchor covariance and anchor G",
+    "application": "simultaneous",
+    "recompute_after_mean_move": false,
+    "sequential_optimization": false
+  },
+  "cells": {
+    "P00": {"mean_on": false, "cov_rank1_on": false},
+    "P10": {"mean_on": true, "cov_rank1_on": false},
+    "P01": {"mean_on": false, "cov_rank1_on": true},
+    "P11": {"mean_on": true, "cov_rank1_on": true}
+  },
+  "discovery": {
+    "purpose": "implementation and numerical safety only",
+    "state_ids": ["c000_s2_00065", "c000_s2_00500"],
+    "gradient_samples_per_seed": 10000,
+    "gradient_seed_count": 2,
+    "evaluation_samples_per_replicate": 10000,
+    "evaluation_replicates": 2,
+    "may_change_protocol": false
+  },
+  "confirmation": {
+    "state_count": 24,
+    "class_split": {"WIDEN": 12, "SHRINK": 12},
+    "evaluation_n_per_cell_replicate": 100000,
+    "evaluation_replicates": 8,
+    "evaluation_batches": 10,
+    "new_cell_probability_characterization_n": 500000,
+    "P00_probability": "frozen 500k S0-selected arm probability",
+    "common_random_numbers": "same new component-choice and standard-normal blocks across P00/P10/P01/P11 within state and replicate",
+    "deployable_selected_arm_budget": 100000,
+    "deployable_pilot_budget": 0,
+    "deployable_decision_budget": 0
+  },
+  "p00_reproduction": {
+    "proposal_identity_exact": true,
+    "event_budget_probability_conventions_exact": true,
+    "median_vrf_relative_tolerance_vs_pf1_anchor": 0.1,
+    "reason_for_statistical_tolerance": "PF2 confirmation uses new disjoint evaluation streams",
+    "failure_verdict": "PF2-D"
+  },
+  "freeoracle": {
+    "candidate_set": ["P00", "P10", "P01", "P11"],
+    "statewise_rule": "choose cell with minimum median replicate estimator variance; exact ties use P00,P10,P01,P11 order",
+    "primary_endpoint": "median statewise selected-cell FreeOracle VRF_budget",
+    "deployable_cost": "selected 100k final arm only"
+  },
+  "factorial_contrasts": {
+    "mean_without_covariance": "median_state log(VRF_P10/VRF_P00)",
+    "mean_with_covariance": "median_state log(VRF_P11/VRF_P01)",
+    "covariance_without_mean": "median_state log(VRF_P01/VRF_P00)",
+    "covariance_with_mean": "median_state log(VRF_P11/VRF_P10)",
+    "interaction": "mean_with_covariance - mean_without_covariance",
+    "approximately_neutral_abs_log_threshold": 0.009950330853168092
+  },
+  "verdicts": {
+    "PF2-A": "median PF2 FreeOracle VRF > 1",
+    "PF2-B": "0.1 < median PF2 FreeOracle VRF <= 1",
+    "PF2-C": "median PF2 FreeOracle VRF <= 0.1",
+    "PF2-D": "parent, protocol, P00, numerical, CRN or accounting invalid"
+  },
+  "safety": {
+    "finite_weights_required": true,
+    "spd_required": true,
+    "condition_number_guard_required": true,
+    "tail_schema_required": true,
+    "event_support_loss_indicator": "event count zero or event-weight ESS < 20",
+    "invalid_cell_action": "record fallback to P00 and trigger PF2-D"
+  },
+  "forbidden": [
+    "controller tuning",
+    "pilot-cost tuning",
+    "mean-step tuning",
+    "rank above one",
+    "posthoc state or seed changes",
+    "sequential joint optimization",
+    "mixture-weight redesign",
+    "descriptive moment matching",
+    "PF3",
+    "M3-Q"
+  ]
+}

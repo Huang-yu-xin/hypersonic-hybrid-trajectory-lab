@@ -1,0 +1,20 @@
+{
+  "schema_version": "raretopo-m4pf2-seed-lock-v0",
+  "discovery": {
+    "gradient_seeds": [50001, 50002],
+    "evaluation_replicate_ids": [1, 2],
+    "gradient_rng_rule": "mixed pilot [seed,101] at exact S0 anchor",
+    "evaluation_rng_rule": "[850001+full_grid_idx,40000+replicate]"
+  },
+  "confirmation": {
+    "gradient_seeds": [51001, 51002, 51003, 51004],
+    "evaluation_replicate_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+    "gradient_rng_rule": "mixed pilot [seed,101] at exact S0 anchor",
+    "evaluation_rng_rule": "[901001+full_grid_idx,30000+replicate]",
+    "probability_rng_rule": "[910001+full_grid_idx,cell_code] where P10=10,P01=1,P11=11"
+  },
+  "disjoint_from_pf1_discovery": true,
+  "disjoint_from_pf1_confirmation": true,
+  "pf2_discovery_confirmation_disjoint": true,
+  "changes_after_commit_forbidden": true
+}

@@ -119,3 +119,32 @@ treated as a gradient at the S0-selected widen/shrink proposal.
 
 The confirmatory protocol, seeds and complete 2x2 design will be appended only
 after the PF2-0 identifiability and anchor-compatibility audit is frozen.
+
+## 7. Confirmatory preregistration
+
+PF2-0 found that the PF1 sample arrays are unavailable and the gradient source
+does not match the preferred anchor in any of the 24 states. PF2 therefore
+locks fresh gradient construction at the exact per-state S0-selected scalar
+anchor. The same four pooled 100k mixed-pilot streams construct both `a_k` and
+`G_k`; their cost is audit-only and their sample arrays are persisted for
+future provenance.
+
+The mean step is fixed at 0.20 Mahalanobis units with numerical-zero threshold
+`1e-12`. The covariance cell reuses the PF1 rank-1 update exactly. P11 forms
+both updates from the common anchor and applies them simultaneously.
+
+The primary design contains only P00, P10, P01 and P11 on all 24 frozen
+Value-Axis states. Confirmation uses eight new paired 100k replicates per cell,
+with CRN shared across the four cells. All PF2 seeds are disjoint from PF1 and
+from PF2 discovery.
+
+P00 is proposal-identical to the frozen S0 selected arm. Because the
+confirmatory streams are new, its aggregate median VRF must agree with the PF1
+anchor within a preregistered 10% relative Monte Carlo tolerance in addition
+to passing exact proposal, event, probability and budget identity checks.
+
+For each state, FreeOracle selects the cell with minimum median replicate
+estimator variance; exact ties use P00, P10, P01, P11 order. The primary result
+is the median statewise selected-cell VRF. Only the selected 100k arm is charged
+as deployable; all construction, cell search and unselected evaluations are
+reported separately as actual audit-only scientific cost.
