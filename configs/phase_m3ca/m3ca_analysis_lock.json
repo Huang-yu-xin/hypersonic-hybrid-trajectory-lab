@@ -1,0 +1,47 @@
+{
+  "schema_version": "raretopo-m3ca-analysis-lock-v0",
+  "stage": "M3-CA",
+  "parent_tag": "RareTopo-M3-BV2-v0",
+  "parent_commit": "912ed9771c34c50cc05825c7a5f3590553b5dfb0",
+  "analysis_only": true,
+  "extra_simulator_calls": 0,
+  "pilot_n": 20000,
+  "eval_n": 100000,
+  "deployable_budget_m3g_v1": 120000,
+  "free_adaptation_budget": 100000,
+  "free_oracle_budget": 100000,
+  "best_fixed_budget": 100000,
+  "best_fixed": "ALWAYS_WIDEN",
+  "primary_endpoint": "VRF_budget_free_oracle > 1",
+  "value_axis_expected_states": 24,
+  "value_axis_expected_class_split": {
+    "WIDEN": 12,
+    "SHRINK": 12
+  },
+  "headline_anchors": {
+    "J_oracle": -0.0689433,
+    "J_best_fixed": -0.014791285,
+    "oracle_headroom": 0.054152015,
+    "v1_headroom": 0.05255944,
+    "capture_fraction": 0.970590655,
+    "vrf_budget_median_rounded": 0.0084
+  },
+  "forbidden": [
+    "simulator_calls",
+    "pilot_generation",
+    "final_evaluation",
+    "new_seeds",
+    "new_benchmark_states",
+    "controller_changes",
+    "rho_changes",
+    "proposal_changes",
+    "budget_changes",
+    "M3-Q"
+  ],
+  "verdict_rules": {
+    "A": "VRF_budget_free_oracle <= 1",
+    "B": "VRF_budget_free_oracle > 1 and deployed M3-G-v1 VRF << 1",
+    "C": "headline reproduction failure",
+    "D": "free Oracle approximately 1 and adaptation overhead material"
+  }
+}
