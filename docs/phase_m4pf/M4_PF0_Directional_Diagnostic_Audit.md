@@ -22,6 +22,8 @@ itself establish that rank-1 or rank-2 proposals improve efficiency.
 - Working branch: `feature/phase-m4pf-structured-objective-gradient`.
 - Opening full regression: 1,234 tests passed with three pre-existing pytest
   fixture deprecation warnings.
+- Closing full regression: 1,247 tests passed with the same three pre-existing
+  warnings (`331.12 s`).
 - PF0 simulator-call invariant: `extra_simulator_calls = 0`.
 - Frozen-input manifest: 11 read-only artifacts; all post-analysis SHA-256
   checks match their pre-analysis values.
@@ -84,7 +86,8 @@ The following checks passed:
 - rejection of unsafe updates exceeding a locked condition-number ceiling;
 - source-manifest re-hashing and sample-level identifiability classification.
 
-Thirteen focused PF0 tests passed.
+Thirteen focused PF0 tests passed; the closing full suite passed all 1,247
+tests.
 
 ## 5. Deterministic finite-difference validation
 
@@ -126,4 +129,3 @@ set, disjoint seeds, budgets, sample-level data schema, S0/S1/S2 construction,
 rank rule, normalization, step size, clipping, condition-number ceiling,
 FreeOracle evaluation, cost accounting and A/B/C/D verdict gates. No PF1
 choice may be tuned from final evaluation outcomes.
-
