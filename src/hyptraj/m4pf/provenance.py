@@ -104,22 +104,54 @@ def _structural_keys(value: Any, found: set[str]) -> None:
             _structural_keys(child, found)
 
 
+def _candidate_array_lengths(value: Any, accepted: set[str],
+                             found: list[tuple[str, int]]) -> None:
+    """Collect only persisted numeric arrays, never formula/metadata strings."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if str(key) in accepted and isinstance(child, list):
+                numeric = all(isinstance(item, (int, float)) for item in child)
+                matrix_numeric = all(
+                    isinstance(item, list) and
+                    all(isinstance(x, (int, float)) for x in item)
+                    for item in child)
+                if numeric or matrix_numeric:
+                    found.append((str(key), len(child)))
+            _candidate_array_lengths(child, accepted, found)
+    elif isinstance(value, list):
+        for child in value:
+            _candidate_array_lengths(child, accepted, found)
+
+
 def identifiability_audit(repo: Path) -> dict:
     json_sources = [repo / rel for rel, _, _ in SOURCE_SPECS
                     if rel.endswith(".json") and "m3ca_cost" not in rel]
-    found_by_file: dict[str, list[str]] = {}
     all_keys: set[str] = set()
+    documents = []
     for path in json_sources:
         doc = json.loads(path.read_text(encoding="utf-8"))
+        documents.append(doc)
         keys: set[str] = set()
         _structural_keys(doc, keys)
         all_keys.update(keys)
-        found_by_file[str(path.relative_to(repo)).replace("\\", "/")] = sorted(keys)
 
     groups = {}
     for label, accepted in SAMPLE_KEY_GROUPS.items():
-        present = sorted(accepted & all_keys)
-        groups[label] = {"identifiable": bool(present), "structural_keys": present}
+        candidates: list[tuple[str, int]] = []
+        for doc in documents:
+            _candidate_array_lengths(doc, accepted, candidates)
+        # A real M3 pilot array has 20k rows. Requiring >=100 rejects tiny
+        # configuration vectors and algebra metadata while still recognizing
+        # a deliberately downsampled persisted sample fixture.
+        usable = sorted({(key, length) for key, length in candidates
+                         if length >= 100})
+        groups[label] = {
+            "identifiable": bool(usable),
+            "numeric_sample_arrays": [
+                {"key": key, "length": length} for key, length in usable
+            ],
+            "matching_key_names_any_type": sorted(accepted & all_keys),
+        }
 
     # Persisted aggregate fields are not substitutes for sample arrays.
     aggregate_only = sorted({"g_hat", "ESS_grad", "M2_hat",
