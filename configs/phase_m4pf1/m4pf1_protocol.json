@@ -1,0 +1,111 @@
+{
+  "schema_version": "raretopo-m4pf1-protocol-v0",
+  "stage": "M4-PF1",
+  "parent_tag": "RareTopo-M4-PF0-v0",
+  "parent_commit": "a18a6a5a5f501ba236c2541e83b659d8d6cca021",
+  "scientific_question": "Does a low-rank objective-gradient covariance degree of freedom materially improve absolute FreeOracle budget efficiency?",
+  "state_lock": "configs/phase_m4pf1/m4pf1_states.json",
+  "seed_lock": "configs/phase_m4pf1/m4pf1_seeds.json",
+  "families": {
+    "S0": {
+      "label": "scalar_isotropic_baseline",
+      "rank": 0,
+      "candidates": ["base", "widen_log_step_+0.20", "shrink_log_step_-0.20"],
+      "freeoracle_rule": "reuse the frozen per-state M3-BV2 oracle action and frozen 500k arm probability; evaluation replay must be bit-identical"
+    },
+    "S1": {
+      "label": "rank1_objective_gradient",
+      "rank": 1,
+      "candidates": ["base", "structured_descent"],
+      "freeoracle_rule": "choose one candidate per state by minimum median replicate estimator variance; exact ties choose base"
+    },
+    "S2": {
+      "label": "rank2_objective_gradient",
+      "rank": 2,
+      "candidates": ["base", "structured_descent"],
+      "freeoracle_rule": "choose one candidate per state by minimum median replicate estimator variance; exact ties choose base"
+    }
+  },
+  "gradient_construction": {
+    "pilot_source_mix_alpha": 0.5,
+    "samples_per_seed": 100000,
+    "seed_count": 4,
+    "pooled_sample_count_per_state": 400000,
+    "variance_mass_formula": "a_i=1_A p^2/(q*r_source)",
+    "matrix_formula": "G=(M2/2) sum_i abar_i responsibility_i (I-z_i z_i^T)",
+    "controlled_component": "frozen M1-D selected newborn component only",
+    "means_weights_other_covariances": "frozen",
+    "audit_only_cost": true
+  },
+  "update": {
+    "eigen_order": "descending_absolute_eigenvalue",
+    "rank_is_fixed_by_family": true,
+    "raw_gradient_eigenvalue_clip_abs": 1000000.0,
+    "normalize": "rank-truncated matrix divided by Frobenius norm; zero norm yields base",
+    "eta": 0.2,
+    "max_abs_log_step": 0.2,
+    "matrix_exponential": true,
+    "minimum_covariance_eigenvalue": 0.5,
+    "condition_number_ceiling": 4.0,
+    "finite_and_spd_required": true,
+    "unsafe_update_action": "INVALID; family falls back to base and PF1-D is triggered"
+  },
+  "discovery": {
+    "purpose": "implementation validation only",
+    "state_ids": ["c000_s2_00065", "c000_s2_00500"],
+    "gradient_samples_per_seed": 10000,
+    "evaluation_samples_per_replicate": 10000,
+    "replicates": 2,
+    "may_change_protocol": false,
+    "pass_conditions": ["finite", "SPD", "minimum eigenvalue >= 0.5", "condition number <= 4", "tail schema complete"]
+  },
+  "confirmation": {
+    "state_count": 24,
+    "class_split": {"WIDEN": 12, "SHRINK": 12},
+    "evaluation_n_per_replicate": 100000,
+    "evaluation_replicates": 8,
+    "evaluation_batches": 10,
+    "structured_probability_characterization_n": 500000,
+    "common_random_numbers": "same full-grid state index and replicate streams as frozen M3-BV2; every arm receives the same component and standard-normal blocks",
+    "selected_arm_deployable_budget": 100000,
+    "pilot_deployable_budget": 0,
+    "decision_deployable_budget": 0
+  },
+  "primary_endpoint": {
+    "name": "median_state_FreeOracle_VRF_budget",
+    "formula": "median over 24 states of median over 8 replicates of [p_ref(1-p_ref)/100000] / [(M2_selected-P_selected^2)/100000]",
+    "best_structured_family": "max of the separately reported S1 and S2 medians; no rank pooling within states"
+  },
+  "verdicts": {
+    "PF1-A": "best structured median > 1",
+    "PF1-B": "0.1 < best structured median <= 1",
+    "PF1-C": "best structured median <= 0.1",
+    "PF1-D": "scalar reproduction, protocol, numerical safety, source lock or accounting invalid"
+  },
+  "secondary_endpoints": [
+    "statewise FreeOracle VRF",
+    "fraction states VRF > 1",
+    "fraction states VRF > 0.1",
+    "median log VRF",
+    "worst-state VRF",
+    "class medians",
+    "M2 ratio versus S0",
+    "ESS",
+    "max normalized weight",
+    "top 1 percent weight mass",
+    "top 0.1 percent weight mass",
+    "nonfinite weights",
+    "event-weight underflow count"
+  ],
+  "forbidden": [
+    "posthoc rank selection",
+    "posthoc eta selection",
+    "controller tuning",
+    "pilot-size sweep",
+    "mean shift",
+    "mixture allocation changes",
+    "new benchmark states",
+    "free full-matrix optimization",
+    "M3-Q"
+  ]
+}
