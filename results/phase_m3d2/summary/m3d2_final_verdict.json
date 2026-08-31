@@ -1,0 +1,17 @@
+{
+  "schema_version": "raretopo-m3d2-final-verdict-v0",
+  "M3D2_1": "FAIL",
+  "final_verdict": "D2-B",
+  "class_availability": {
+    "WIDEN": 12,
+    "HOLD": 3,
+    "SHRINK": 10
+  },
+  "class_selected": {
+    "WIDEN": 8,
+    "HOLD": 3,
+    "SHRINK": 8
+  },
+  "controller_online_trials": 0,
+  "next_authorized_action": "separate scientific decision on state/action family; no controller trial"
+}

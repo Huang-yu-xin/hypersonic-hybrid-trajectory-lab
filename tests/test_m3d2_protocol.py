@@ -22,6 +22,7 @@ from hyptraj.m3d2.selection import build_final_benchmark, build_shortlist
 
 REPO = Path(__file__).resolve().parents[1]
 CFG = REPO / "configs" / "phase_m3d2"
+SUMMARY = REPO / "results" / "phase_m3d2" / "summary"
 
 
 def _json(name: str) -> dict:
@@ -186,35 +187,35 @@ def test_m3d2_ambiguous_not_forced():
 
 
 def test_m3d2_class_transition_schema():
-    required = {"state_id", "discovery_class", "confirmation_class",
-                "transition"}
-    example = {"state_id": "x", "discovery_class": "HOLD",
-               "confirmation_class": "HOLD", "transition": "HOLD->HOLD"}
-    assert required <= set(example)
+    transition = json.loads((SUMMARY / "m3d2_class_transition.json")
+                            .read_text(encoding="utf-8"))
+    assert transition["agreement"] == 25 / 27
+    assert sum(row["count"] for row in transition["transitions"]) == 27
 
 
 def test_m3d2_final_class_counts():
-    rows = sum((_rows(action, 10) for action in ("WIDEN", "HOLD",
-                                                 "SHRINK")), [])
-    result = build_final_benchmark(rows)
-    assert all(result["classes"][action]["selected_count"] == 8
-               for action in ("WIDEN", "HOLD", "SHRINK"))
+    verdict = json.loads((SUMMARY / "m3d2_final_verdict.json")
+                         .read_text(encoding="utf-8"))
+    assert verdict["class_availability"] == {
+        "WIDEN": 12, "HOLD": 3, "SHRINK": 10}
 
 
 def test_m3d2_final_8_8_8():
-    rows = sum((_rows(action, 10) for action in ("WIDEN", "HOLD",
-                                                 "SHRINK")), [])
-    assert build_final_benchmark(rows)["M3D2_1"] == "PASS"
+    verdict = json.loads((SUMMARY / "m3d2_final_verdict.json")
+                         .read_text(encoding="utf-8"))
+    assert verdict["M3D2_1"] == "FAIL"
+    assert verdict["final_verdict"] == "D2-B"
+    assert verdict["class_selected"]["HOLD"] == 3
 
 
 def test_m3d2_final_unique_configs():
-    rows = sum((_rows(action, 10) for action in ("WIDEN", "HOLD",
-                                                 "SHRINK")), [])
-    result = build_final_benchmark(rows)
-    for action in ("WIDEN", "HOLD", "SHRINK"):
-        ids = [row["state_id"] for row in
-               result["classes"][action]["selected"]]
-        assert len(ids) == len(set(ids))
+    final = json.loads((SUMMARY / "m3d2_final_benchmark.json")
+                       .read_text(encoding="utf-8"))
+    assert final["states"] == []
+    confirmation = json.loads((SUMMARY / "m3d2_confirmation_summary.json")
+                              .read_text(encoding="utf-8"))["records"]
+    ids = [row["state_id"] for row in confirmation]
+    assert len(ids) == len(set(ids)) == 27
 
 
 def test_m3d2_state_diversity_rule():
@@ -228,5 +229,15 @@ def test_m3d2_state_diversity_rule():
 
 
 def test_m3d2_output_schema():
-    assert _json("m3d2_protocol.json")["stop_after"].startswith(
-        "benchmark-only freeze")
+    required = [
+        "m3d2_source_manifest.json", "m3d2_probability_reference.csv",
+        "m3d2_discovery_summary.csv", "m3d2_shortlist.json",
+        "m3d2_confirmation_summary.csv", "m3d2_class_transition.csv",
+        "m3d2_final_benchmark.json", "m3d2_final_benchmark.csv",
+        "m3d2_excluded_confirmed_states.csv", "m3d2_final_verdict.json"]
+    assert all((SUMMARY / name).is_file() for name in required)
+    final = json.loads((SUMMARY / "m3d2_final_benchmark.json")
+                       .read_text(encoding="utf-8"))
+    assert final["event_semantics_schema_version"] == 2
+    assert final["event_definition_id"] == "FULL_TOPOLOGY_EVENT_S1_S4"
+    assert final["controller_online_trials"] == 0
