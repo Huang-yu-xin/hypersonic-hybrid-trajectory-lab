@@ -1,0 +1,27 @@
+{
+  "schema_version": "raretopo-er1-contamination-boundary-v0",
+  "last_known_clean_commit": "098fbc1cad5a2b00c9ced12c1b008336bcf49e56",
+  "last_known_clean_stage": "M3-2 estimator stack / pre-benchmark; RareTopo-M2-v0 is the last clean frozen stage",
+  "first_known_contaminated_commit": "0f6cdfe8fb6fc938e73b555f55d758980c9510f2",
+  "first_known_contaminated_stage": "M3-v0 empirical scalar benchmark",
+  "contaminated_function": "scripts/run_m3_scalar_experiments.py event-mask construction at four call sites",
+  "contaminated_field": "ind_event / indicators",
+  "semantic_mismatch": "topology labels S0-S4 compared against non-domain literal NOMINAL",
+  "affected_metrics": [
+    "variance_mass",
+    "gradient",
+    "P_hat",
+    "M2",
+    "ESS",
+    "action",
+    "VRF",
+    "all downstream gates"
+  ],
+  "confidence": "HIGH",
+  "evidence": {
+    "first_commit_search": "git log --reverse -S'!= \"NOMINAL\"' -- scripts/run_m3_scalar_experiments.py",
+    "parent_contains_literal": false,
+    "first_commit_contains_literal": true,
+    "m2_uses_authoritative_nominal_constant": true
+  }
+}

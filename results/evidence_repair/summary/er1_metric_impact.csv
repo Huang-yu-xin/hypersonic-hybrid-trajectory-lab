@@ -1,0 +1,73 @@
+stage,metric,direct_or_indirect_impact,raw_data_sufficient_for_repair,new_simulation_required,reason
+M3-v0,P_hat,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,M2,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,ESS,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,gradient sign,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,gradient magnitude,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,action label,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,Oracle action,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-v0,BestFixed,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,P_hat,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,M2,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,ESS,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,gradient sign,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,gradient magnitude,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,action label,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,Oracle action,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-D,BestFixed,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,P_hat,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,M2,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,ESS,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,gradient sign,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,gradient magnitude,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,action label,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,Oracle action,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-G-v1,BestFixed,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,P_hat,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,M2,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,ESS,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,gradient sign,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,gradient magnitude,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,action label,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,Oracle action,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-BV/BV2,BestFixed,DIRECTLY_CONTAMINATED,NO,YES,sample-level final evaluation/pilot arrays are not persisted
+M3-CA,headroom,DERIVED_FROM_CONTAMINATED_PARENT,PARENT_REQUIRED,NO_DIRECT_CALLS,artifact-only audit can be rebuilt only after corrected BV2
+M3-CA,FreeOracle,DERIVED_FROM_CONTAMINATED_PARENT,PARENT_REQUIRED,NO_DIRECT_CALLS,artifact-only audit can be rebuilt only after corrected BV2
+M3-CA,VRF_budget,DERIVED_FROM_CONTAMINATED_PARENT,PARENT_REQUIRED,NO_DIRECT_CALLS,artifact-only audit can be rebuilt only after corrected BV2
+M3-CA,BestFixed,DERIVED_FROM_CONTAMINATED_PARENT,PARENT_REQUIRED,NO_DIRECT_CALLS,artifact-only audit can be rebuilt only after corrected BV2
+M4-PF1,P_hat,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,M2,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,ESS,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,gradient sign,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,gradient magnitude,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF1,FreeOracle,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,P_hat,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,M2,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,ESS,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF2,gradient sign,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF2,gradient magnitude,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF2,FreeOracle,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,P_hat,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,M2,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,VRF_proposal,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,VRF_budget,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,ESS,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,gradient sign,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF3,gradient magnitude,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF3,FreeOracle,DIRECTLY_CONTAMINATED,NO,YES_IF_STAGE_AUTHORIZED,final evaluation samples are not persisted
+M4-PF3,coverage U99/U999,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF3,allocation mismatch,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF3,birth score,DIRECTLY_CONTAMINATED,PARTIAL,NO_FOR_DIAGNOSTIC,gradient archives exist but final evaluation samples do not
+M4-PF0,gradient identities / SPD algebra,STRUCTURALLY_VALID,YES,NO,symbolic identities and safety proofs do not depend on event-label literal

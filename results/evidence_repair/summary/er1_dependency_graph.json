@@ -1,0 +1,62 @@
+{
+  "schema_version": "raretopo-er1-dependency-graph-v0",
+  "nodes": [
+    {
+      "stage": "M1-D/M2 event semantics",
+      "status": "UNAFFECTED",
+      "parent": null
+    },
+    {
+      "stage": "M3-v0 empirical",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M1-D/M2 event semantics"
+    },
+    {
+      "stage": "M3-D",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M3-v0 empirical"
+    },
+    {
+      "stage": "M3-G-v1",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M3-D"
+    },
+    {
+      "stage": "M3-BV/BV2",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M3-G-v1"
+    },
+    {
+      "stage": "M3-CA",
+      "status": "DERIVED_FROM_CONTAMINATED_PARENT",
+      "parent": "M3-BV/BV2"
+    },
+    {
+      "stage": "M4-PF0 theory",
+      "status": "PARTIALLY_VALID",
+      "parent": "M3-CA"
+    },
+    {
+      "stage": "M4-PF1",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M4-PF0 theory"
+    },
+    {
+      "stage": "M4-PF2",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M4-PF1"
+    },
+    {
+      "stage": "M4-PF3-0/PF3",
+      "status": "DIRECTLY_CONTAMINATED",
+      "parent": "M4-PF2"
+    },
+    {
+      "stage": "M5-AR parent freeze",
+      "status": "BLOCKED_BY_CONTAMINATED_PARENT",
+      "parent": "M4-PF3-0/PF3"
+    }
+  ],
+  "child_requires_corrected_parent_gate": true,
+  "m5ar_status": "BLOCKED"
+}

@@ -1,0 +1,14 @@
+{
+  "repair_stage": "ER-1",
+  "status": "FORENSICS_COMPLETE_REPLAY_PENDING",
+  "root_cause": "S0-S4 topology labels were compared with the non-domain literal NOMINAL",
+  "last_known_clean_stage": "M3-2 pre-benchmark / RareTopo-M2-v0 frozen empirical parent",
+  "first_contaminated_stage": "M3-v0 empirical scalar benchmark",
+  "event_semantics_schema_version": 2,
+  "historical_tags_mutated": false,
+  "stages": [],
+  "current_valid_frontier": "RareTopo-M2-v0 plus structurally valid M3 theory/estimator algebra",
+  "m5ar_authorized": false,
+  "m3q_authorized": false,
+  "repair_simulator_calls": 0
+}
