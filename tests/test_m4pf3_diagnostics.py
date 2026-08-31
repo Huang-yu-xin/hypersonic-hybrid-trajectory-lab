@@ -186,3 +186,16 @@ def test_m4pf3_schema_and_routing():
     result = routing_verdict(rows, PROTOCOL)
     assert result["route"] == "C"
     assert {"A", "B", "C", "D"}.issubset(PROTOCOL["routing"])
+
+
+def test_m4pf3_locked_output_schema():
+    path = (REPO / "results/phase_m4pf3_0/summary"
+            / "m4pf3_0_diagnostic_summary.json")
+    if not path.exists():
+        return
+    summary = json.loads(path.read_text(encoding="utf-8"))
+    assert summary["extra_simulator_calls"] == 0
+    assert summary["state_count"] == 24
+    assert summary["routing"]["route"] in {"A", "B", "C", "D"}
+    assert summary["source_manifest_sha256_before"] == \
+        summary["source_manifest_sha256_after"]

@@ -74,11 +74,15 @@ def load_locks() -> tuple[dict, dict, dict]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest["source_count"] != source_lock["source_count"]:
         raise RuntimeError("PF3-0 source count mismatch")
-    bad = [row["path"] for row in manifest["sources"]
-           if sha256_file(REPO / row["path"]) != row["sha256"]]
+    bad = source_mismatches(manifest)
     if bad:
         raise RuntimeError(f"PF3-0 source hash mismatch: {bad}")
     return protocol, source_lock, manifest
+
+
+def source_mismatches(manifest: dict) -> list[str]:
+    return [row["path"] for row in manifest["sources"]
+            if sha256_file(REPO / row["path"]) != row["sha256"]]
 
 
 def metadata() -> tuple[dict, dict]:
@@ -255,6 +259,7 @@ def summarize(protocol: dict, source_lock: dict, manifest: dict,
     sensitivity = [routing_verdict(states, protocol, multiplier)
                    for multiplier in protocol["routing"][
                        "sensitivity_multipliers"]]
+    after_mismatches = source_mismatches(manifest)
     return {
         "schema_version": "raretopo-m4pf3-0-diagnostic-summary-v0",
         "stage": "M4-PF3-0",
@@ -264,6 +269,7 @@ def summarize(protocol: dict, source_lock: dict, manifest: dict,
         "source_manifest_sha256_after": sha256_file(
             REPO / source_lock["manifest_path"]),
         "source_count": manifest["source_count"],
+        "source_hash_mismatches_after": after_mismatches,
         "state_count": len(states),
         "allocation": {
             "median_A_alloc": float(statistics.median(a)),
