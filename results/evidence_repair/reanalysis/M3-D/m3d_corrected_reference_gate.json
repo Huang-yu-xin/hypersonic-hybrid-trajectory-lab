@@ -1,0 +1,28 @@
+{
+  "schema_version": "raretopo-er1-m3d-reference-gate-v1",
+  "event_semantics_schema_version": 2,
+  "legacy_source_path": "docs/phase_m3d/M3_D_Benchmark_Freeze.json",
+  "legacy_source_sha256": "b785190e5a2ca8de305a4d66d1459f3c318ac00cd0ab06085f86395153a95495",
+  "corrected_freeze_path": "results/evidence_repair/reanalysis/M3-D/m3d_corrected_reference_freeze.json",
+  "corrected_freeze_sha256": "12a6e043cffb689aa98617334fef56b00bb418cd02f8bc83f4bf5f9fc4ced074",
+  "observed_composition": {
+    "WIDEN": 6,
+    "SHRINK": 7,
+    "HOLD": 3,
+    "REFERENCE_AMBIGUOUS": 8
+  },
+  "required_composition": {
+    "WIDEN": 8,
+    "SHRINK": 8,
+    "HOLD": 8,
+    "REFERENCE_AMBIGUOUS": 0
+  },
+  "gate": "FAIL",
+  "online_child_authorized": false,
+  "stop_old_lineage": true,
+  "repair_simulator_calls": 36000000,
+  "original_frozen_sample_count_per_arm": 500000,
+  "repair_sample_count_per_arm": 500000,
+  "seed_reuse_status": "EXACT",
+  "draw_order_status": "EXACT"
+}
