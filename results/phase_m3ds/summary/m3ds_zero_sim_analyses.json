@@ -1,0 +1,145 @@
+{
+  "schema_version": "raretopo-m3ds-zero-sim-analyses-v0",
+  "created_utc": "2026-08-31T16:57:56+00:00",
+  "directional_class_balance": {
+    "confirmed": {
+      "WIDEN": 12,
+      "SHRINK": 10
+    },
+    "selected": {
+      "WIDEN": 8,
+      "SHRINK": 8
+    }
+  },
+  "config_diversity": {
+    "WIDEN": {
+      "distinct_configs": 5,
+      "distinct_strata": [
+        "G-H",
+        "G-W"
+      ]
+    },
+    "SHRINK": {
+      "distinct_configs": 5,
+      "distinct_strata": [
+        "G-H",
+        "G-S"
+      ]
+    }
+  },
+  "s2_coverage": {
+    "WIDEN": {
+      "selected_s2": [
+        1.25,
+        1.25,
+        1.6,
+        1.6,
+        1.6,
+        2.0,
+        2.0,
+        2.5
+      ],
+      "candidate_s2": [
+        1.25,
+        1.25,
+        1.6,
+        1.6,
+        1.6,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.5,
+        2.5,
+        2.5
+      ]
+    },
+    "SHRINK": {
+      "selected_s2": [
+        4.0,
+        5.0,
+        6.4,
+        6.4,
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "candidate_s2": [
+        4.0,
+        5.0,
+        6.4,
+        6.4,
+        6.4,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ]
+    }
+  },
+  "support_margin_distribution": {
+    "WIDEN": [
+      2.8565563181863554,
+      3.494966775798541,
+      3.856604527431983,
+      3.899744315101791,
+      3.935707398027376,
+      4.163850880433365,
+      4.598540901199654,
+      5.278000394367868,
+      5.911114778700151,
+      6.196345114081621,
+      6.249108857893307,
+      7.895075085487496
+    ],
+    "SHRINK": [
+      0.4549867646581504,
+      1.2699690155517642,
+      1.5924511823908445,
+      1.7669283445174366,
+      1.805101412564807,
+      2.1672803975911816,
+      2.762416993961126,
+      2.864105749318755,
+      3.0126776062449916,
+      3.0475377988060406
+    ]
+  },
+  "safety_state_provenance": {
+    "source": "M3-D2 independent confirmation (zero new simulation)",
+    "states": [
+      {
+        "state_id": "c006_s2_00125",
+        "reference_status": "AMBIGUOUS",
+        "reason": "unsupported_required_contrast"
+      },
+      {
+        "state_id": "c006_s2_00800",
+        "reference_status": "AMBIGUOUS",
+        "reason": "unsupported_required_contrast"
+      },
+      {
+        "state_id": "c001_s2_00400",
+        "reference_status": "HOLD",
+        "reason": ""
+      },
+      {
+        "state_id": "c007_s2_00125",
+        "reference_status": "HOLD",
+        "reason": ""
+      },
+      {
+        "state_id": "c010_s2_00500",
+        "reference_status": "HOLD",
+        "reason": ""
+      }
+    ]
+  },
+  "hold_vs_ambiguous_composition": {
+    "AMBIGUOUS": 2,
+    "HOLD": 3
+  },
+  "extra_simulator_calls": 0
+}

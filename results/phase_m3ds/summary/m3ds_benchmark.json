@@ -1,0 +1,70 @@
+{
+  "schema_version": "raretopo-m3ds-benchmark-v0",
+  "name": "Corrected Directional-Sign Benchmark with Abstention Safety Axis",
+  "short_name": "M3-DS",
+  "created_utc": "2026-08-31T16:57:56+00:00",
+  "git_commit": "9a382f144ea1456cbacdab4c6a5b487e0ff89607",
+  "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+  "event_semantics_schema_version": 2,
+  "directional_primary": {
+    "widen": [
+      "c020_s2_00125",
+      "c010_s2_00250",
+      "c004_s2_00200",
+      "c000_s2_00160",
+      "c001_s2_00200",
+      "c020_s2_00160",
+      "c010_s2_00125",
+      "c010_s2_00160"
+    ],
+    "shrink": [
+      "c020_s2_00800",
+      "c000_s2_00400",
+      "c001_s2_00640",
+      "c004_s2_00800",
+      "c010_s2_00800",
+      "c000_s2_00500",
+      "c000_s2_00800",
+      "c000_s2_00640"
+    ]
+  },
+  "directional_reserve": {
+    "widen": [
+      "c001_s2_00250",
+      "c010_s2_00200",
+      "c020_s2_00200",
+      "c020_s2_00250"
+    ],
+    "shrink": [
+      "c001_s2_00800",
+      "c020_s2_00640"
+    ],
+    "policy": "future robustness only; forbidden for tuning"
+  },
+  "safety_primary": {
+    "confirmed_hold": [
+      "c001_s2_00400",
+      "c007_s2_00125",
+      "c010_s2_00500"
+    ],
+    "confirmed_ambiguous": [
+      "c006_s2_00125",
+      "c006_s2_00800"
+    ]
+  },
+  "safety_expansion": [],
+  "abstention_semantics": {
+    "ground_truth_class": false,
+    "protocol_behavior": true,
+    "fallback": "BASE"
+  },
+  "future_metrics_definitions_only": {
+    "A_safe": "#ABSTAIN on safety states / N_safety",
+    "U_safe": "#(W/S deployed on safety states) / N_safety",
+    "R_wrong": "(#W->SHRINK + #S->WIDEN) / N_directional",
+    "C_dir": "#non-abstained directional / N_directional",
+    "Acc_selective": "P(correct direction | not abstained)"
+  },
+  "controller_online_trials": 0,
+  "rarity_shift_authorized": false
+}
