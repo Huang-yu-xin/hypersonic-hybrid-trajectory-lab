@@ -197,5 +197,6 @@ anchor, current two-component mixtures, fixed one-step `eta_alpha=0.20`
 intervention and FreeOracle accounting. It is not a wall-clock, deployability,
 unseen-event or universal mixture-architecture claim.
 
-The closing full regression and final PF3 freeze tag are recorded after this
-audit is committed.
+The closing full regression passed with `1319 passed, 3 warnings` in
+`310.19 s`. The warnings are the unchanged H3 pytest fixture deprecations.
+The final stage is tagged `RareTopo-M4-PF3-v0` after this result is committed.
