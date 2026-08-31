@@ -84,7 +84,12 @@ def build_m3v0_gate(repo: Path) -> dict:
     g36 = gates["M3_6_no_catastrophic_leakage_redistribution"]
     g36["verdict"] = "PASS" if g36["configs_within_ratio_2"] >= g36["configs_required"] else "FAIL"
     strong = gates["STRONG_budget_adjusted_vrf"]
-    strong["verdict"] = "PASS" if strong["median"] > strong["required_gt"] else "NOT PASSED"
+    strong["verdict"] = "INVALID_REFERENCE_SEMANTICS"
+    strong["reason"] = (
+        "stored P_hat estimates the full S1-S4 topology event, while the "
+        "frozen p_ref supplied to VRF contains missing modes S2-S4 only"
+    )
+    strong["observed_median_CONTEXT_ONLY"] = strong.pop("median")
 
     # The original M3-D task was explicitly authorized by the widening-dominant
     # negative result, not by M3 core-gate success.  That premise survives.
@@ -121,7 +126,13 @@ def build_m3v0_gate(repo: Path) -> dict:
             "M3_2_direction_identifiability", "M3_3_direction_accuracy",
             "M3_4_predicted_step_m2_gain", "M3_5_counterfactual_ordering",
             "M3_6_no_catastrophic_leakage_redistribution")),
-        "headline": "Corrected estimator retains a widening-dominant local descent signal but has zero advantage over Always-Widen.",
+        "probability_reference_audit": {
+            "p_hat_semantics": "full topology event S1-S4",
+            "frozen_p_ref_semantics": "missing modes S2-S4 only",
+            "compatible": False,
+            "affected_metric": "VRF and Strong budget gate",
+        },
+        "headline": "Corrected estimator retains a widening-dominant local descent signal but has zero advantage over Always-Widen; VRF is invalid under the frozen cross-domain p_ref.",
         "child_stage": "M3-D",
         "child_authorized": child_authorized,
         "child_authorization_basis": "The preregistered M3-D benchmark extension addresses this exact widening-dominant negative result.",
@@ -136,7 +147,7 @@ def build_m3v0_gate(repo: Path) -> dict:
         ("acc_dir", legacy_agg["acc_dir"], agg["acc_dir"], "accuracy remains above gate"),
         ("median_M2_pred_over_base", legacy_agg["median_ratio_pred_base"], agg["median_ratio_pred_base"], "local step still improves M2"),
         ("median_M2_pred_over_opposite", legacy_agg["median_ratio_pred_opposite"], agg["median_ratio_pred_opposite"], "counterfactual ordering survives"),
-        ("median_deployable_vrf", legacy_agg["strong_median"], agg["strong_median"], "strong cost gate remains not passed"),
+        ("median_deployable_vrf", legacy_agg["strong_median"], agg["strong_median"], "invalid: full-event P_hat was paired with missing-mode-only p_ref"),
     ]
     csv_path = corrected_path.parents[1] / "m3v0_legacy_vs_corrected.csv"
     with csv_path.open("w", encoding="utf-8", newline="") as stream:

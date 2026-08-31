@@ -24,5 +24,24 @@
   "original_frozen_sample_count_per_arm": 500000,
   "repair_sample_count_per_arm": 500000,
   "seed_reuse_status": "EXACT",
-  "draw_order_status": "EXACT"
+  "draw_order_status": "EXACT",
+  "probability_scale_guard": {
+    "definition": "within-state same-event cross-arm consensus: |P_hat-median_arm(P_hat)| <= 8*SE + 0.05*consensus",
+    "event_reference_semantics": "full topology event S1-S4 for every compared arm",
+    "arms_checked": 72,
+    "all_passed": true,
+    "max_absolute_difference": 0.0006436018945189248,
+    "frozen_missing_mode_reference_compatible": false,
+    "frozen_missing_mode_reference_semantics": "S2-S4 only; cannot validate full-event P_hat",
+    "full_event_to_missing_mode_reference_ratio_range": [
+      1.137819396040873,
+      1.7586769340442212
+    ]
+  },
+  "m3d_online_metrics": {
+    "P_hat": "REFERENCE_ONLY_RECOMPUTED",
+    "M2": "REFERENCE_ONLY_RECOMPUTED",
+    "VRF": "NOT_RUN_PARENT_REFERENCE_GATE_FAILED",
+    "action_distribution": "NOT_RUN_PARENT_REFERENCE_GATE_FAILED"
+  }
 }

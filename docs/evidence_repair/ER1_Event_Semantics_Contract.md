@@ -47,6 +47,17 @@ identity.  It must still be exactly zero whenever `I_i` is false.  A field
 named `variance_mass` is not valid merely by name; it must be checked against
 the stage-specific formula.
 
+## Probability-reference contract
+
+The forensic replay identified a second domain mismatch. `P_hat` in the
+M1-D/M3 evaluation path estimates the full topology event `S1`–`S4`, whereas
+`ref_views(...)["P"]` is explicitly restricted to the three missing modes
+`S2`–`S4`. Their numerical values must not be compared or combined in a VRF.
+Historical VRF fields built from that pair are invalid even after repairing
+the event mask. Corrected M3-D reference arms instead pass a same-event,
+cross-arm probability consensus guard; the missing-mode reference is retained
+only as an explicitly incompatible historical field.
+
 ## Domain-separation rules
 
 - Changing `proposal_arm` cannot change `event_indicator`.

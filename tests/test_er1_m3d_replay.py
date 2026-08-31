@@ -24,6 +24,9 @@ def test_m3d_reference_gate_stops_online_replay() -> None:
     assert gate["gate"] == "FAIL"
     assert gate["online_child_authorized"] is False
     assert gate["stop_old_lineage"] is True
+    assert gate["probability_scale_guard"]["arms_checked"] == 72
+    assert gate["probability_scale_guard"]["all_passed"] is True
+    assert gate["m3d_online_metrics"]["VRF"].startswith("NOT_RUN")
 
 
 def test_m3d_replay_preserves_protocol_and_provenance() -> None:
@@ -53,3 +56,4 @@ def test_m3d_delta_table_covers_all_frozen_states() -> None:
     assert len(rows) == 24
     assert len({row["state_id"] for row in rows}) == 24
     assert sum(row["legacy_class"] != row["corrected_class"] for row in rows) == 12
+    assert all(row["legacy_P_base"] and row["corrected_P_base"] for row in rows)

@@ -20,6 +20,14 @@ but not the contaminated benchmark comparison.  `RareTopo-M2-v0` imports the
 authoritative `NOMINAL` constant whose value is `S0` and remains the last
 known clean frozen empirical stage.
 
+A second cross-domain mismatch was exposed by the mandatory probability-scale
+guard: evaluation `P_hat` is the full `S1`–`S4` event probability, while the
+`p_ref` passed to historical VRF formulas sums only missing modes `S2`–`S4`.
+Corrected M3-D full-event estimates are mutually consistent across 72 arms,
+but are 1.14–1.76 times the missing-mode-only reference. Thus historical VRF
+and Strong budget gates are invalid-reference-semantics fields, not corrected
+cost-efficiency evidence.
+
 ## Why tests missed it
 
 The failure was not caught because several tests independently repeated the
@@ -62,9 +70,24 @@ Their application to contaminated empirical gradients must still be replayed.
 ## Raw-data sufficiency
 
 The earliest contaminated stage did not persist its pilot or final evaluation
-sample arrays.  Its corrected metrics therefore cannot be reconstructed from
-stored JSON summaries.  PF2/PF3 preserve gradient archives, which permit
-partial diagnostic reanalysis, but their final evaluation samples are also
-absent.  ER-1 must first replay M3-v0 with the original states, seeds, sample
-counts, parameters and gates.  Descendants remain unauthorized until each
-corrected parent passes its original gate.
+sample arrays. Its corrected metrics therefore could not be reconstructed from
+stored JSON summaries. PF2/PF3 preserve gradient archives, which permitted
+partial diagnostic reanalysis, but their final evaluation samples are absent.
+
+M3-v0 was replayed with the original states, seeds, sample counts, parameters
+and gates. Its widening-dominant negative result still authorized only the
+preregistered M3-D benchmark question. M3-D then reused the original 24 states,
+exact reference seeds, 500,000 samples per arm and draw order. The corrected
+class composition became WIDEN 6 / SHRINK 7 / HOLD 3 / ambiguous 8, failing
+the exact 8/8/8 reference gate. No online M3-D or descendant stage was run.
+
+## Corrected scientific conclusions
+
+The local M3 covariance descent signal survives, but adaptive value over a
+fixed widening rule does not. Budget efficiency cannot be adjudicated from
+the historical VRF because its probability reference has different event
+semantics. The historical M3-D
+sign-diverse benchmark does not survive correction. Consequently, none of the
+historical M3-G, BV/BV2, CA or PF empirical conclusions may route a new
+proposal architecture. PF2/PF3 raw-archive reanalysis quantifies the error but
+does not repair their missing final evaluations.

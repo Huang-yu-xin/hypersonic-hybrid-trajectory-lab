@@ -16,7 +16,8 @@ def test_corrected_m3v0_gate_uses_locked_thresholds() -> None:
     assert gate["draw_order_status"] == "EXACT"
     assert gate["repair_simulator_calls"] == 64 * 320_000
     assert gate["gates"]["M3_3_direction_accuracy"]["verdict"] == "FAIL"
-    assert gate["gates"]["STRONG_budget_adjusted_vrf"]["verdict"] == "NOT PASSED"
+    assert gate["gates"]["STRONG_budget_adjusted_vrf"]["verdict"] == "INVALID_REFERENCE_SEMANTICS"
+    assert gate["probability_reference_audit"]["compatible"] is False
 
 
 def test_corrected_m3v0_authorizes_only_sign_diverse_benchmark() -> None:

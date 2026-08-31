@@ -93,13 +93,20 @@
       "verdict": "PASS"
     },
     "STRONG_budget_adjusted_vrf": {
-      "median": 0.29963690063396287,
       "required_gt": 1.0,
-      "verdict": "NOT PASSED"
+      "verdict": "INVALID_REFERENCE_SEMANTICS",
+      "reason": "stored P_hat estimates the full S1-S4 topology event, while the frozen p_ref supplied to VRF contains missing modes S2-S4 only",
+      "observed_median_CONTEXT_ONLY": 0.29963690063396287
     }
   },
   "core_gates_all_pass": false,
-  "headline": "Corrected estimator retains a widening-dominant local descent signal but has zero advantage over Always-Widen.",
+  "probability_reference_audit": {
+    "p_hat_semantics": "full topology event S1-S4",
+    "frozen_p_ref_semantics": "missing modes S2-S4 only",
+    "compatible": false,
+    "affected_metric": "VRF and Strong budget gate"
+  },
+  "headline": "Corrected estimator retains a widening-dominant local descent signal but has zero advantage over Always-Widen; VRF is invalid under the frozen cross-domain p_ref.",
   "child_stage": "M3-D",
   "child_authorized": true,
   "child_authorization_basis": "The preregistered M3-D benchmark extension addresses this exact widening-dominant negative result."
