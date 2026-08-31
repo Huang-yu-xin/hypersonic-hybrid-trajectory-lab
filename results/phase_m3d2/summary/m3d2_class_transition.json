@@ -1,0 +1,25 @@
+{
+  "transitions": [
+    {
+      "discovery": "HOLD",
+      "confirmation": "AMBIGUOUS",
+      "count": 2
+    },
+    {
+      "discovery": "HOLD",
+      "confirmation": "HOLD",
+      "count": 3
+    },
+    {
+      "discovery": "SHRINK",
+      "confirmation": "SHRINK",
+      "count": 10
+    },
+    {
+      "discovery": "WIDEN",
+      "confirmation": "WIDEN",
+      "count": 12
+    }
+  ],
+  "agreement": 0.9259259259259259
+}
