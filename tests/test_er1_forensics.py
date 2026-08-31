@@ -27,8 +27,15 @@ def test_er1_zero_simulator_forensics():
 def test_er1_source_hashes():
     manifest = _json("er1_source_manifest.json")
     assert manifest["sources_unchanged"] is True
+    freeze_commit = manifest["forensic_freeze_commit"]
     for source in manifest["sources"]:
-        assert _sha(REPO / source["path"]) == source["sha256"]
+        if source["hash_basis"] == "git_blob_at_forensic_freeze_commit":
+            frozen = subprocess.check_output(
+                ["git", "show", f"{freeze_commit}:{source['path']}"], cwd=REPO)
+            assert hashlib.sha256(frozen).hexdigest() == source["sha256"]
+        else:
+            assert source["hash_basis"] == "working_tree_at_forensic_freeze"
+            assert _sha(REPO / source["path"]) == source["sha256"]
 
 
 def test_er1_contamination_boundary():

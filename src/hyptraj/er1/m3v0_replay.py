@@ -108,6 +108,12 @@ def build_m3v0_gate(repo: Path) -> dict:
         "repair_sample_count_per_trial": {"pilot": 20_000, "final_per_arm": 100_000, "arms": 3},
         "seed_reuse_status": "EXACT",
         "draw_order_status": "EXACT",
+        "full_regression": {
+            "command": "python -m pytest -q -x",
+            "result": "1357 passed, 3 warnings",
+            "elapsed_seconds": 542.82,
+            "exit_code": 0,
+        },
         "decision_counts": batch["summary"]["decision_counts"],
         "aggregates": agg,
         "gates": gates,

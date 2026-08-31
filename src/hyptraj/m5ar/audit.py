@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -94,14 +95,28 @@ def build_manifest(repo: Path) -> dict[str, Any]:
     }
 
 
-def verify_manifest(repo: Path, manifest: dict[str, Any]) -> list[str]:
+def verify_manifest(repo: Path, manifest: dict[str, Any], *,
+                    frozen_sources: bool = False) -> list[str]:
     repo = Path(repo).resolve()
     mismatches = []
     for source in manifest["sources"]:
         path = repo / source["path"]
         if not path.is_file():
             mismatches.append(f"missing:{source['path']}")
-        elif sha256_file(path) != source["sha256"]:
+            continue
+        candidates = {sha256_file(path)}
+        if frozen_sources:
+            frozen = subprocess.run(
+                ["git", "show", f"{source['source_tag']}:{source['path']}"],
+                cwd=repo, capture_output=True,
+            )
+            if frozen.returncode == 0:
+                candidates.add(hashlib.sha256(frozen.stdout).hexdigest())
+                if b"\x00" not in frozen.stdout:
+                    candidates.add(hashlib.sha256(
+                        frozen.stdout.replace(b"\n", b"\r\n")
+                    ).hexdigest())
+        if source["sha256"] not in candidates:
             mismatches.append(f"hash:{source['path']}")
     return mismatches
 

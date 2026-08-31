@@ -1,372 +1,446 @@
 {
   "schema_version": "raretopo-er1-source-manifest-v0",
   "repair_stage": "ER-1",
+  "forensic_freeze_commit": "d1f62621fa263f1153f6762249ae12c3f1e918d7",
   "extra_simulator_calls": 0,
   "sources": [
     {
       "path": "configs/evidence_repair/er1_protocol.json",
       "sha256": "c9437740b1757b399eb1d9bdc753f0f837c21ec3086fa8abf636d287fe6a1166",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "docs/evidence_repair/ER1_Event_Semantics_Contract.md",
       "sha256": "20e2d4f372594d9b55598f93b54f90c285e117484459e3721af33dcf13c9f36a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
-      "sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
-      "read_only": true
+      "sha256": "2cc66118869ba067a1b8864aa46692cf8267ef1462e95fc77a4e8791836eafee",
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m1d/benchmark_family.py",
       "sha256": "01844d63bec8f1537dbb3ae2ac9fae5dd362f03b19d361a919dd5c788f4ed842",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m1d/metrics.py",
       "sha256": "a85ef0f94a23d9e2b8bec08f7d4a6849a9fa1d7dd71ecbd514c0ce06b32a7a09",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m2/covariance_policy.py",
       "sha256": "d20b92327ccf68d06f6d66f9134de60190c79a0ff5e17001855f1c056a684c7d",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/event_semantics.py",
       "sha256": "4b0d748414ca567fc1f464f952f9487a1744ad8311a73205bde75128e11912a4",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "scripts/run_m3_scalar_experiments.py",
-      "sha256": "607ac75385cd2640db7f264d642fa3d25c06b7bec332a4ca5b1dca0afe28e7b4",
-      "read_only": true
+      "sha256": "30b75444c52be93b367ff4cd1fece9d0b7e816ec580d9ae2fa19cf171dcf4767",
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m3d/adaptation.py",
       "sha256": "7a2251af2c39d54b67ed2a5f83483eda5e925827ec369f51920755c1d0dc6a1a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m3d/reference_direction.py",
       "sha256": "dd5f5194349ad1b1357e42f1c630998619473e2a69544f5d011f7dfe2202de05",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "scripts/run_m3g_exact_proxy_replay.py",
       "sha256": "af7b12cef237f0b7d228189de884f9730d6fd032f330b78076151f0d17e59372",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "scripts/run_m3g_ga2_diagnostic.py",
-      "sha256": "643fc70d977707aa8ba99a8d9ed4714df43835842e3ed33a27235969d76c721e",
-      "read_only": true
+      "sha256": "2aab665cb8eaaae8d319336c140a41f247280eb231f635706de2eac63c62c9d2",
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "scripts/run_m3bv2_controllers.py",
       "sha256": "21965d583b1a1b5fc5028c481033a05e5c7724f36f76819235088d9de0c21030",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m4pf1/experiment.py",
       "sha256": "4492200cb5d395ffdb07f310282ea0bf757d6dc86bcb6c51e311483cc2b58a79",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m4pf2/experiment.py",
       "sha256": "7b5f4f2c0eda87cb03b88f4754d94014de89a44d8dea5c8a095cd5fc10bb38f0",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "src/hyptraj/m4pf3/experiment.py",
       "sha256": "45e2356ef2c8cf918e9937ffcfc1349cb056541c5241315d257f61e5f95e49c4",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "git_blob_at_forensic_freeze_commit"
     },
     {
       "path": "results/phase_m3/scalar_layer_a/scalar_layer_a_v1.json",
       "sha256": "2ab02882ad839e20e9a7b2917c54fa8fd12c9536b0643dfdfc76ac4ca9581f30",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m3d/layer_a/m3d_layer_a_v1.json",
       "sha256": "d9b0d6b5e4c4cd4480b50210bbc39e89689e538990f478c3bc42ed2d090f6ce0",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m3g_v1/layer_a/m3g_v1_confirmatory_v1.json",
       "sha256": "75c83eaff5a36b5688a8285a16da4d5d0eef424e3160cef92f56541f746b4d54",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m3bv2/controller_evaluation.json",
       "sha256": "e447e47e59f2223e8ad033231909617b0fc35fcc792ef28f70140085c5aa3f46",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m3bv2/value_analysis.json",
       "sha256": "521832f4490820c2c480ebba442cfb5391d443f9e5a4ea4cb622adc83a9b8236",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m3ca/summary/m3ca_state_table.csv",
       "sha256": "d933a985235417eab7b39058709c3d4c137fdf3bd1ca9761c39370cad656ebf2",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf1/m4pf1_confirmation_raw.json",
       "sha256": "f21d63746fdd519c5dba4d7f45fd449240c57019fe08c534cd86fe270018b6cb",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/m4pf2_confirmation_raw.json",
       "sha256": "ba4bf0d5a2fcf8796bb02834ac8a6047ce316eff61cb4b6aec29f8495b15f9f7",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/m4pf3_confirmation_raw.json",
       "sha256": "4ef61e753520f4bcedcb0ec6f19b8113e0af3e96a29c06fd9451a2219add83fe",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00065.npz",
       "sha256": "767095eef44cc21964ae767277a8b43db0733ddcb70dda4364c6ae38e6bc7865",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00085.npz",
       "sha256": "cc279ae11db34d3a524bdda48cb3538fa3c1caa5c9e21be1db0a5dd4b3c4e0f4",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00110.npz",
       "sha256": "aa7ce66edf375c360d0bfb43499fc0613c60cf2a3c6703d5a928b06f216aab88",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00500.npz",
       "sha256": "23f01f35de2d31a0d50ada5610e3785a60792b664de1ed031c74b3975180d4ad",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00640.npz",
       "sha256": "6c55b30bec4d385d819b92f8808bba95fab5071ddc0c394d49699a87b3bd4ecc",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c000_s2_00800.npz",
       "sha256": "b642e19b2efb247793a95aa7f9ed52b597f29fbdc1ccb1eaffff90be57391027",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00065.npz",
       "sha256": "0e362def45cab543f91ce2c6c80c43fafa1576c252ac2e5b706e019cd0beb7bd",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00085.npz",
       "sha256": "39c95afba05c83139bcf6be938bbfc932f4dabe9db23639bcea22b7d2836af62",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00110.npz",
       "sha256": "41d88ffc9fe3762e21742ad50d72cd810e5cb7cd59c16bab4e1abc7d9062027a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00500.npz",
       "sha256": "2f1fe232ca322799fce9c8d4500c110223e042bd119d3381fc706729211c0a60",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00640.npz",
       "sha256": "850b14b10d9beb08831144479bf4066f19f02c7a379983d6d5f7cc7e095816f4",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c001_s2_00800.npz",
       "sha256": "3e1938cd3a1835faa0408caebaeeb02dff69b9ab08aa53f2a5dd0e51819a7d48",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00065.npz",
       "sha256": "24f5ece5a72077ca887209095aab84ddc8120b6fcf7e96730c085d87179870a3",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00085.npz",
       "sha256": "8158f75ade07e36d2069d2a811912da595b2a020be9d03d4ed40e49800a07f1c",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00110.npz",
       "sha256": "0cfb63be04451f1b51ac8ef32b736dbfed2c1631ed054c4423b3bf1418081f42",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00500.npz",
       "sha256": "abaaceb9eaaf057aae6ff17a9e358973f83bbc4eeade3edeccf85e0dfd46a7b7",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00640.npz",
       "sha256": "fb8cab804db386ba1c9ae6175dcd68297175431db8e28d7ddbc01b202e4a04ee",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c004_s2_00800.npz",
       "sha256": "bf7c9f83a61c3a9e15b4e526bc482e960b161091073d5e82e836e0890626dcf8",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00065.npz",
       "sha256": "cbf5425b0e03d85ad33c06a7d77670c738d148fc3921f99c9520e514abffa380",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00085.npz",
       "sha256": "1075811e555df6f6882c286a2a732fe9d8aaaf20a68833c4d85a83b9066a577a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00110.npz",
       "sha256": "02801573a016a48d3585473d751e0e6949ae84003f05b1a170e06282f1db070a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00500.npz",
       "sha256": "aea4fe430ec0512829a00a06693dc0a7ac863b366220ad66a0361c5d65704b6f",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00640.npz",
       "sha256": "5a52ce0bb0a8760eb4a5ddc3ec8facd6ae5583915ae93db8baa1e4ec8d241f2a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf2/gradient_samples/confirmation/c006_s2_00800.npz",
       "sha256": "44ae0c7cbecb1d2836adfc89da3f772a940df6070dffe51a6b21a0fe05cf909f",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00065.npz",
       "sha256": "ff8ca0b3977e047ce8461be089cb186eb4bb5d6ab7a8a6f29dbc9b34794d4d8b",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00085.npz",
       "sha256": "2eb211cb7f5704354f0baa15ab82da0b428a7960979028525a7c62421c1abd62",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00110.npz",
       "sha256": "5c6304173c1f91ad921742121416e66e6990a5437802cd470eb96554ca273a6d",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00500.npz",
       "sha256": "e2484ea2ab7b63dd29bcea03177a168518bbe51d31f86d037b0b8081807cc6ef",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00640.npz",
       "sha256": "5d4606a22165487d1242786ec2b15b07aae5fa1413c744a633e9a805d1f61c48",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00800.npz",
       "sha256": "986306ed661dcb3cd93429b928b2bbf0f91a83cedfcf1ff4d36438ab1f82332a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00065.npz",
       "sha256": "28e065b1d21e93e86738bb0cb6c741c69138f5ad9fe7e6cfd80f48bb7981ec96",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00085.npz",
       "sha256": "f8f49f5efce324c2742ac4c6b16d3733d721581bf974d354c30e5343a64c3a1a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00110.npz",
       "sha256": "34bffb00f429484d00b6a300fab2081877c439f0625fcfee2b3fed3aaa1ab8e7",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00500.npz",
       "sha256": "fcfcba3265c0118f28a3ef17307e7eb4c60a771d5793448ca1ef3741024b0784",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00640.npz",
       "sha256": "e806545eb387ced26391587b793f9041237fbc657644af7a3e79eb04e01db030",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00800.npz",
       "sha256": "8c76c5fbcd8f9e72bb71bca3ab0474c0985c05eced039b7dc8f80a75ffcceb2c",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00065.npz",
       "sha256": "9eb4d97c63f3690c669088fe477bb68e7c1a35e92d630e2fad60feafdcfd8d25",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00085.npz",
       "sha256": "8afc6b4076f7b0e95bd6671ce1583526b4a5beb97486c116c61e1e95dee61100",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00110.npz",
       "sha256": "91de43d9b0f13d741c869a8e8fe2753a39828737e2c06f81d6432056bb2c274c",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00500.npz",
       "sha256": "b540f4aead3929d68687731de8d5fcd1948e0cfab82f58132cbdbae37a970048",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00640.npz",
       "sha256": "885e8814408d7f4278b894e7b4cc1a8ad10304c55ed2d500b4d73a1cc10e581a",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00800.npz",
       "sha256": "2d99c57f368b8258e5a6e1508e12e17ae95db7560e2e5a0a7696f585b0b50c8c",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00065.npz",
       "sha256": "ef1bbbf96404dc5378f7ebab90bafdff539ac4cfb07029d5cc3ded12d851e968",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00085.npz",
       "sha256": "faae9c83e971fb0921b7237ac6303f3cbc0f30c6fa80f30d502341989879fee7",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00110.npz",
       "sha256": "6961b150fcad7421fffc1b2773f7750dc4cbd552fe7d6fe5603fa4e1fba14b05",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00500.npz",
       "sha256": "9e4f86a80c295f925e7f8c2d43ca51049d494e05e8b169d7beb982918eb7792c",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00640.npz",
       "sha256": "80f55bf43ea2cb7f336bdcb113f27f3ab671baa618562bd75a08c1e6718e928f",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     },
     {
       "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00800.npz",
       "sha256": "871871cdb72617d0ab0f711ec5a31f8d5695e53d8d4db0bd154895672c47ff47",
-      "read_only": true
+      "read_only": true,
+      "hash_basis": "working_tree_at_forensic_freeze"
     }
   ],
   "historical_tags": {

@@ -20,6 +20,12 @@
   },
   "seed_reuse_status": "EXACT",
   "draw_order_status": "EXACT",
+  "full_regression": {
+    "command": "python -m pytest -q -x",
+    "result": "1357 passed, 3 warnings",
+    "elapsed_seconds": 542.82,
+    "exit_code": 0
+  },
   "decision_counts": {
     "WIDEN": 37,
     "HOLD_LOW_ESS": 25,

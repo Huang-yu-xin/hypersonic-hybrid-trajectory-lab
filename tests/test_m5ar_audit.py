@@ -37,7 +37,7 @@ def test_m5ar_zero_simulator_calls():
 def test_m5ar_source_hashes():
     manifest = _json("m5ar_source_manifest.json")
     assert manifest["sources_unchanged"] is True
-    assert not verify_manifest(REPO, manifest)
+    assert not verify_manifest(REPO, manifest, frozen_sources=True)
     assert build_manifest(REPO)["source_count"] == manifest["source_count"]
 
 

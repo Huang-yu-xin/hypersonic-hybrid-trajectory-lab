@@ -141,13 +141,26 @@ def _metric_impact_rows() -> list[dict[str, Any]]:
 def run_forensics(repo: Path) -> dict[str, Any]:
     repo = Path(repo).resolve()
     out = repo / "results/evidence_repair/summary"
+    forensic_freeze_commit = "d1f62621fa263f1153f6762249ae12c3f1e918d7"
     tags = {tag: _git(repo, "rev-list", "-n", "1", tag)
             for tag in HISTORICAL_TAGS}
+    sources = _sources(repo)
+    for source in sources:
+        frozen = subprocess.run(
+            ["git", "show", f"{forensic_freeze_commit}:{source['path']}"],
+            cwd=repo, capture_output=True,
+        )
+        if frozen.returncode == 0:
+            source["sha256"] = hashlib.sha256(frozen.stdout).hexdigest()
+            source["hash_basis"] = "git_blob_at_forensic_freeze_commit"
+        else:
+            source["hash_basis"] = "working_tree_at_forensic_freeze"
     manifest = {
         "schema_version": "raretopo-er1-source-manifest-v0",
         "repair_stage": "ER-1",
+        "forensic_freeze_commit": forensic_freeze_commit,
         "extra_simulator_calls": 0,
-        "sources": _sources(repo),
+        "sources": sources,
         "historical_tags": tags,
         "historical_tags_mutated": False,
         "sources_unchanged": True,
