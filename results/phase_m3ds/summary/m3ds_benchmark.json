@@ -2,8 +2,8 @@
   "schema_version": "raretopo-m3ds-benchmark-v0",
   "name": "Corrected Directional-Sign Benchmark with Abstention Safety Axis",
   "short_name": "M3-DS",
-  "created_utc": "2026-08-31T16:57:56+00:00",
-  "git_commit": "9a382f144ea1456cbacdab4c6a5b487e0ff89607",
+  "created_utc": "2026-08-31T17:42:36+00:00",
+  "git_commit": "8184592f59647188689c6cabc8ea03695f0b02e2",
   "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
   "event_semantics_schema_version": 2,
   "directional_primary": {

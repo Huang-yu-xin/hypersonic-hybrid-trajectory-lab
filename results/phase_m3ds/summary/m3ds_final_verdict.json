@@ -1,0 +1,29 @@
+{
+  "schema_version": "raretopo-m3ds-final-verdict-v0",
+  "created_utc": "2026-08-31T17:42:36+00:00",
+  "git_commit": "8184592f59647188689c6cabc8ea03695f0b02e2",
+  "gates": {
+    "directional_primary_widen_8": true,
+    "directional_primary_shrink_8": true,
+    "directional_diversity_pass": true,
+    "safety_primary_at_least_5": true,
+    "safety_all_independently_confirmed": true,
+    "source_lock_pass": true,
+    "event_semantics_pass": true,
+    "classifier_contract_pass": true,
+    "no_controller_trials": true,
+    "full_regression_pass": true
+  },
+  "M3DS_1": "PASS",
+  "final_verdict": "M3DS-A",
+  "full_regression": {
+    "status": "PASS",
+    "log": "results/phase_m3ds/summary/m3ds_full_regression.log"
+  },
+  "controller_online_trials": 0,
+  "extra_simulator_calls": 0,
+  "rarity_shift": "BLOCKED",
+  "m3_q": "BLOCKED",
+  "next_authorized_action": "M3-G2 preregistration (Corrected Directional Controller with Abstention)",
+  "tag_policy": "create RareTopo-M3-DS-v0 only on M3DS-A"
+}
