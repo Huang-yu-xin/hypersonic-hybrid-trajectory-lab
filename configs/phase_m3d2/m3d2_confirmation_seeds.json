@@ -1,0 +1,8 @@
+{
+  "schema_version": "raretopo-m3d2-confirmation-seeds-v0",
+  "namespace": "D2-CONFIRMATION",
+  "shortlist_order": "class WIDEN,HOLD,SHRINK; within class frozen shortlist order",
+  "seed_rule": "numpy SeedSequence entropy [3202002, stable candidate index from the original 72-state pool]",
+  "candidate_index_range_inclusive": [0, 71],
+  "disjoint_from": ["D2-PREF", "D2-DISCOVERY", "all future controller seeds"]
+}

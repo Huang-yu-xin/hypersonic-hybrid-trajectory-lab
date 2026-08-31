@@ -1,0 +1,48 @@
+{
+  "schema_version": "raretopo-m3d2-protocol-v0",
+  "stage": "M3-D2 corrected sign-diverse benchmark reconstruction",
+  "parent_tags": {
+    "RareTopo-M2-v0": "0a00f4459609f712aa76dc4d14349d9cd0d58fc9",
+    "RareTopo-M3-v2": "f30e8bf52d69fb6327df7fa1487347f193543f22",
+    "RareTopo-M3-D-v1": "8204819bb3c5230f5940f410056cf43b8e44b89b",
+    "RareTopo-ER1-v0": "d7575c51fc0c14e88753ffb0208ef5885df76164"
+  },
+  "event_semantics_schema_version": 2,
+  "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+  "event_predicate": "topology != S0",
+  "nominal_topology": "S0",
+  "topology_domain": ["S0", "S1", "S2", "S3", "S4"],
+  "candidate_design": "one fixed 72-state pool (Option A), frozen before all D2 simulation",
+  "discovery": {
+    "n_per_arm": 100000,
+    "arms": ["BASE", "WIDEN", "SHRINK"],
+    "n_batches": 20,
+    "crn_within_state": true
+  },
+  "confirmation": {
+    "n_per_arm": 500000,
+    "arms": ["BASE", "WIDEN", "SHRINK"],
+    "n_batches": 20,
+    "crn_within_state": true,
+    "data_independent_of_discovery": true
+  },
+  "full_event_reference": {
+    "sampling_law": "independent direct target Monte Carlo N(0,I_2)",
+    "n_per_config": 1000000,
+    "n_batches": 20,
+    "shared_across_state_arms": true,
+    "justification": "event probability is a property of the frozen target/config and event predicate, not of the proposal arm"
+  },
+  "preregistration_hash_locks": {
+    "m3d2_classifier_contract.json": "663da48aa6f8126f679f7002b5e6fbdb96a5c7ad161e8dca59b279c92d107459",
+    "m3d2_candidate_states.json": "ebe34fb8723e9355f8521ec7b8d7fcfc996f0d620b6029d4662e844721cd8ba4",
+    "m3d2_discovery_seeds.json": "b21c120f57d82716ad68030b40e65a6c9321661787a88c69f3dfa991cfa7e441",
+    "m3d2_confirmation_seeds.json": "8eaad8a82d5c7e063603282353c142bcf540a430f0a4ae6eab12063b9a0d8225"
+  },
+  "firewall": {
+    "controller_online_trials": 0,
+    "forbidden_stages": ["M3-G2", "M3-G-v2", "BV", "BV2", "M3-CA", "PF", "M3-Q", "M5-AR"],
+    "benchmark_controller_blind": true
+  },
+  "stop_after": "benchmark-only freeze or a D2-B/C/D verdict"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "raretopo-m3d2-probability-contract-v0",
+  "event_semantics_schema_version": 2,
+  "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+  "nominal_topology": "S0",
+  "full_event": ["S1", "S2", "S3", "S4"],
+  "historical_missing_mode_reference_forbidden": true,
+  "reference": {
+    "method": "direct target Monte Carlo",
+    "target_law": "standard normal N(0,I_2), identical to BenchmarkConfig.logp",
+    "n_per_config": 1000000,
+    "batches": 20,
+    "ci": "normal batch-mean 95% CI",
+    "independent_seed_namespace": "D2-PREF"
+  },
+  "arm_estimates": {
+    "definition": "mean(I[S1-S4] * p/q_arm)",
+    "same_event_required": true,
+    "batches": 20
+  },
+  "sanity_gate": {
+    "z_multiplier": 4.0,
+    "reference_rule": "for every arm, abs(P_hat_arm-p_ref_full) <= 4*sqrt(SE_arm^2+SE_ref^2)",
+    "pairwise_rule": "for every arm pair, abs(P_hat_a-P_hat_b) <= 4*sqrt(SE_a^2+SE_b^2)",
+    "failure_class": "REFERENCE_INVALID",
+    "reference_swapping_forbidden": true
+  }
+}

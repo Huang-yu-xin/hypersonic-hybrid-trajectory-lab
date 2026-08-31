@@ -1,0 +1,9 @@
+{
+  "schema_version": "raretopo-m3d2-discovery-seeds-v0",
+  "namespace": "D2-DISCOVERY",
+  "candidate_order": "config_id ascending, then s2 ascending",
+  "seed_rule": "numpy SeedSequence entropy [3202001, zero_based_candidate_index]",
+  "index_range_inclusive": [0, 71],
+  "count": 72,
+  "disjoint_from": ["D2-PREF", "D2-CONFIRMATION", "all future controller seeds"]
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "raretopo-m3d2-balancing-rule-v0",
+  "target_classes": ["WIDEN", "HOLD", "SHRINK"],
+  "shortlist": {
+    "target_per_class": 12,
+    "invalid_discard_only": ["probability-domain fail", "numerical invalidity", "ESS below frozen minimum"],
+    "ambiguous_promoted": false,
+    "primary_order": "descending class_certainty_score",
+    "diversity_rule": "greedy deterministic selection with at most 4 states per config before any remaining slots; require at least 3 configs when class availability permits",
+    "tie_break": ["config_id ascending", "s2 ascending", "state_id ascending"]
+  },
+  "final": {
+    "required_confirmed_per_class": 8,
+    "exact_composition": {"WIDEN": 8, "HOLD": 8, "SHRINK": 8},
+    "primary_order": "descending confirmation class_certainty_score",
+    "diversity_rule": "greedy deterministic selection with at most 3 states per config; require at least 3 configs per class",
+    "tie_break": ["config_id ascending", "s2 ascending", "state_id ascending"],
+    "insufficient_or_diversity_failure": "D2-B"
+  },
+  "class_certainty_score": {
+    "WIDEN_SHRINK": "minimum normalized slack over improvement threshold, direction-margin threshold, and required paired-support threshold",
+    "HOLD": "minimum normalized distance of both arm/base ratios from the +/-0.03 HOLD boundary",
+    "AMBIGUOUS_INVALID": null
+  },
+  "future_controller_performance_used": false,
+  "posthoc_changes_allowed": false
+}

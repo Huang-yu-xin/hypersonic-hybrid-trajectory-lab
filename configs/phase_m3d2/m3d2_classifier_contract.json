@@ -1,0 +1,22 @@
+{
+  "schema_version": "raretopo-m3d2-classifier-contract-v0",
+  "source": "RareTopo-M3-D-v1 classifier, extracted from configs/phase_m3d/m3d_reference_characterization.json and src/hyptraj/m3d/reference_direction.py",
+  "finite_step_delta_theta": 0.20,
+  "m2_definition": "mean((I[topology != S0] * p/q_arm)^2)",
+  "batch_count": 20,
+  "paired_se_method": "SE of 20 paired CRN batch differences",
+  "support_multiplier": 2.0,
+  "tie_tolerance_tau": 0.01,
+  "direction_margin_min": 0.05,
+  "hold_window_relative": 0.03,
+  "min_arm_ess": 20.0,
+  "rules": {
+    "WIDEN": "M2(widen)/M2(base)-1 < -0.01 AND M2(widen) < M2(shrink), both required base contrasts supported, direction margin >= 0.05",
+    "SHRINK": "M2(shrink)/M2(base)-1 < -0.01 AND M2(shrink) < M2(widen), both required base contrasts supported, direction margin >= 0.05",
+    "HOLD": "neither improvement rule applies AND both arm/base relative differences have absolute value <= 0.03",
+    "AMBIGUOUS": "unsupported required contrast, failed direction margin, or no unique WIDEN/HOLD/SHRINK class",
+    "INVALID": "probability gate fail, non-finite arithmetic, illegal proposal, sample/draw mismatch, or ESS below 20"
+  },
+  "tie_handling": "ties that do not satisfy the unique preregistered class remain AMBIGUOUS",
+  "retuning_allowed": false
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "raretopo-m3d2-candidate-states-v0",
+  "generation_mode": "fixed Cartesian product; no outcome-adaptive expansion",
+  "state_family": "frozen M1-D/M2/M3-D proposal-state family",
+  "frozen_config_ids": [
+    "m1d_b20260827_c000",
+    "m1d_b20260827_c001",
+    "m1d_b20260827_c004",
+    "m1d_b20260827_c006",
+    "m1d_b20260827_c007",
+    "m1d_b20260827_c010",
+    "m1d_b20260827_c017",
+    "m1d_b20260827_c020"
+  ],
+  "s2_grid": [1.25, 1.60, 2.00, 2.50, 3.20, 4.00, 5.00, 6.40, 8.00],
+  "candidate_count": 72,
+  "state_id_rule": "<config_short>_s2_<round(100*s2),5 digits>",
+  "strata": {
+    "G-W": [1.25, 1.60, 2.00],
+    "G-H": [2.50, 3.20, 4.00],
+    "G-S": [5.00, 6.40, 8.00]
+  },
+  "strata_basis": "pre-existing M3/M3-D scalar-scale geometry: low s2 is negative-gradient/WIDEN-prior, the 2.5-4.0 band contains historical sign transitions, and high s2 is positive-gradient/SHRINK-prior",
+  "selected_component": "frozen M1-D variance-selector component",
+  "other_proposal_fields": "frozen exactly as benchmark_states.assemble_state",
+  "legality_min_eigenvalue": 0.5,
+  "post_discovery_changes_allowed": false
+}
