@@ -30,6 +30,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1.proposal_update import LEGALITY_MIN_EIG
 from hyptraj.m1d.experiments import (
     SEEDS,
@@ -183,7 +184,7 @@ def run_trial(bc, frec, cid: str, seed: int) -> dict:
     s2_base = float(np.trace(sigma_k0) / dim)
     pi_all = np.asarray(prop_point.weights, dtype=float)
 
-    ind_event = (stage.labels != "NOMINAL").astype(float)
+    ind_event = event_indicator_from_topology(stage.labels).astype(float)
     a_vec = variance_mass_importance(stage.z, pi_all,
                                      np.asarray(prop_point.centers,
                                                 dtype=float),
@@ -366,7 +367,7 @@ def _layer_b_proposal(stage, theta_shift: float) -> CovGaussianMixtureProposal:
     sigma_new = float(np.exp(theta_shift)) * np.eye(dim)
     grown = add_component_cov(stage.q0_cov, stage.region.centroid,
                               sigma_new, mode_id=str(stage.selected_mode))
-    indicators = (stage.labels != "NOMINAL").astype(float)
+    indicators = event_indicator_from_topology(stage.labels).astype(float)
     logq_ji = component_log_densities_cov(stage.z, grown.centers, grown.covs)
     res = optimize_mixture_weights(logq_ji, stage.logp, stage.logr,
                                    indicators, pi0=grown.weights.copy(),
@@ -417,7 +418,7 @@ def run_trial_layer_b(bc, frec, cid: str, seed: int) -> dict:
     s2_base = float(np.trace(np.asarray(prop_point.covs[k_idx])) / dim)
     pi_all = np.asarray(prop_point.weights, dtype=float)
 
-    ind_event = (stage.labels != "NOMINAL").astype(float)
+    ind_event = event_indicator_from_topology(stage.labels).astype(float)
     a_vec = variance_mass_importance(stage.z, pi_all,
                                      np.asarray(prop_point.centers,
                                                 dtype=float),
@@ -595,7 +596,7 @@ def run_trial_sensitivity(bc, frec, cid: str, seed: int) -> dict:
     s2_base = float(np.trace(np.asarray(prop_point.covs[k_idx])) / dim)
     pi_all = np.asarray(prop_point.weights, dtype=float)
 
-    ind_event = (stage.labels != "NOMINAL").astype(float)
+    ind_event = event_indicator_from_topology(stage.labels).astype(float)
     a_vec = variance_mass_importance(stage.z, pi_all,
                                      np.asarray(prop_point.centers,
                                                 dtype=float),

@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1d.adaptation import draw_mix_pilot
 from hyptraj.m2.covariance_policy import CovGaussianMixtureProposal
 from hyptraj.m3.covariance_gradient import MixtureSpec, component_responsibility
@@ -115,7 +116,7 @@ def construct_joint_gradients(state, anchor: CovGaussianMixtureProposal,
             rng, anchor, state.bench_cfg.logp, int(n_per_seed), float(alpha))
         logp = np.asarray(state.bench_cfg.logp(samples), dtype=float)
         labels = state.bench_cfg.label(samples)
-        indicators = (labels != "NOMINAL").astype(float)
+        indicators = event_indicator_from_topology(labels).astype(float)
         mass = variance_mass_importance(samples, pi, means, covs, logp, logr,
                                         indicators)
         responsibility = component_responsibility(spec, samples, k)

@@ -24,6 +24,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1.proposal_update import LEGALITY_MIN_EIG
 from hyptraj.m1d.experiments import (
     config_from_record,
@@ -256,7 +257,7 @@ def df_m3v0_replay() -> dict:
                 min_eig_sigma_minus_halfI=q0c.min_eig_sigma_minus_halfI)
 
             labels = bc.label(stage.z)
-            ind_event = (labels != "NOMINAL").astype(float)
+            ind_event = event_indicator_from_topology(labels).astype(float)
             a_vec = variance_mass_importance(
                 stage.z, w_new, centers, list(mk_prop.covs), stage.logp,
                 stage.logr, ind_event)

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1.proposal_update import LEGALITY_MIN_EIG
 from hyptraj.m1d.adaptation import draw_mix_pilot
 from hyptraj.m2.covariance_policy import CovGaussianMixtureProposal
@@ -57,7 +58,7 @@ def gradient_decision(st, seed: int, z, logp, logr, source_strata) -> dict:
     pi_all = np.asarray(prop.weights, dtype=float)
     k = st.component_index
     labels = st.bench_cfg.label(z)
-    ind_event = (labels != "NOMINAL").astype(float)
+    ind_event = event_indicator_from_topology(labels).astype(float)
 
     a_vec = variance_mass_importance(z, pi_all,
                                      np.asarray(prop.centers, dtype=float),

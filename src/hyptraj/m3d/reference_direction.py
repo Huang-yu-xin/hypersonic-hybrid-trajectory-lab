@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
+
 BATCHES_REF = 20            # locked: 20 sub-batches x 25k = N_ref per arm
 
 
@@ -49,7 +51,7 @@ def crn_batched_eval(arms: dict, bench_cfg, state_rng_key, n_ref: int,
                 "njk,nk->nj", np.stack([chols[c] for c in comp]), eps)
             logq = prop.log_density(z)
             lab = bench_cfg.label(z)
-            ind = (lab != "NOMINAL").astype(float)
+            ind = event_indicator_from_topology(lab).astype(float)
             logp = bench_cfg.logp(z)
             w = np.exp(logp - logq) * ind
             w_by_arm[name] = (w, lab)

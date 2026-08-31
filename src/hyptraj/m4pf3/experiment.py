@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1d.adaptation import draw_mix_pilot
 from hyptraj.m2.covariance_policy import CovGaussianMixtureProposal
 from hyptraj.m3.gradient_estimator import variance_mass_importance
@@ -108,7 +109,8 @@ def construct_allocation_gradient(state, anchor: CovGaussianMixtureProposal,
             rng, anchor, state.bench_cfg.logp, int(n_per_seed),
             float(pilot_alpha))
         logp = np.asarray(state.bench_cfg.logp(samples), dtype=float)
-        indicators = (state.bench_cfg.label(samples) != "NOMINAL").astype(float)
+        indicators = event_indicator_from_topology(
+            state.bench_cfg.label(samples)).astype(float)
         mass = variance_mass_importance(
             samples, alpha, means, covariances, logp, logr, indicators)
         responsibilities, _ = responsibility_matrix(

@@ -40,6 +40,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1d.experiments import config_from_record, load_freeze, ref_views
 from hyptraj.m1.baselines import vrf_budget
 from hyptraj.m2.covariance_projection import check_legality_frozen
@@ -117,7 +118,7 @@ def matched_arm_m2(prop, bench_cfg, rng_key, n_ref: int, n_batches: int,
             "njk,nk->nj", np.stack([chols[c] for c in comp]), eps)
         logq = prop.log_density(z)
         lab = bench_cfg.label(z)
-        ind = (lab != "NOMINAL").astype(float)
+        ind = event_indicator_from_topology(lab).astype(float)
         logp = bench_cfg.logp(z)
         w = np.exp(logp - logq) * ind
         m2b.append(float(np.mean(w ** 2)))

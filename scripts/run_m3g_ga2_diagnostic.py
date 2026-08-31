@@ -16,6 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1d.experiments import config_from_record, load_freeze
 from hyptraj.m3d.adaptation import draw_online_pilot
 from hyptraj.m3d.benchmark_states import assemble_state
@@ -68,7 +69,7 @@ def main() -> int:
         for seed in SEEDS:
             z, logp, logr, strata = draw_online_pilot(st, seed, 20_000, 0.5)
             labels = st.bench_cfg.label(z)
-            ind = (labels != "NOMINAL").astype(float)
+            ind = event_indicator_from_topology(labels).astype(float)
             a = variance_mass_importance(
                 z, np.asarray(prop.weights, float),
                 np.asarray(prop.centers, float),

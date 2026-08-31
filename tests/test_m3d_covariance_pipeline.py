@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m1d.experiments import config_from_record, load_freeze
 from hyptraj.m2.covariance_projection import check_legality_frozen
 from hyptraj.m3.direction_policy import DirectionRule
@@ -211,7 +212,7 @@ def test_m3d_controller_parity_with_m3(real_state, real_pilot):
     pi_all = np.asarray(prop.weights, dtype=float)
     k = st.component_index
     labels = st.bench_cfg.label(z)
-    ind_event = (labels != "NOMINAL").astype(float)
+    ind_event = event_indicator_from_topology(labels).astype(float)
     a_vec = variance_mass_importance(
         z, pi_all, np.asarray(prop.centers, dtype=float), list(prop.covs),
         logp, logr, ind_event)

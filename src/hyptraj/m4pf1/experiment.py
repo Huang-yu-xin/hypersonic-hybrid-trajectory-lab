@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from hyptraj.event_semantics import event_indicator_from_topology
 from hyptraj.m2.covariance_policy import CovGaussianMixtureProposal
 from hyptraj.m3.covariance_gradient import MixtureSpec, component_responsibility
 from hyptraj.m3.gradient_estimator import variance_mass_importance
@@ -81,7 +82,7 @@ def estimate_pooled_gradient(st, seeds: list[int], n_per_seed: int,
         samples, logp, logr, _strata = draw_online_pilot(
             st, int(seed), int(n_per_seed), float(alpha))
         labels = st.bench_cfg.label(samples)
-        indicators = (labels != "NOMINAL").astype(float)
+        indicators = event_indicator_from_topology(labels).astype(float)
         a = variance_mass_importance(samples, pi, means, covs, logp, logr,
                                      indicators)
         resp = component_responsibility(spec, samples, k)
@@ -188,7 +189,7 @@ def evaluate_proposal(prop: CovGaussianMixtureProposal, bench_cfg,
         z = prop.centers[comp] + np.einsum(
             "njk,nk->nj", np.stack([prop.chols[c] for c in comp]), eps)
         labels = bench_cfg.label(z)
-        event = labels != "NOMINAL"
+        event = event_indicator_from_topology(labels)
         logw = np.asarray(bench_cfg.logp(z), dtype=float) - prop.log_density(z)
         w = np.zeros(n_batch, dtype=float)
         with np.errstate(over="ignore", under="ignore", invalid="ignore"):
