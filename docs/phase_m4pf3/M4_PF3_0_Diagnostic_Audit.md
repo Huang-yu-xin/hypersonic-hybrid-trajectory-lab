@@ -149,5 +149,7 @@ two-component mixture parameterization, S0 diagnostic anchors and locked
 routing thresholds. It is a routing heuristic, not proof of universal
 allocation starvation or deployability.
 
-The closing PF3-0 full regression and freeze tag are recorded after this audit
-is committed.
+The closing PF3-0 full regression passed with `1304 passed, 3 warnings` in
+`301.91 s`. The three warnings are unchanged H3 pytest deprecation warnings.
+The frozen diagnostic stage is tagged `RareTopo-M4-PF3-0-v0` after this
+closing result is committed.
