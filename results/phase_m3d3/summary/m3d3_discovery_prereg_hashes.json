@@ -1,0 +1,53 @@
+{
+  "schema_version": "raretopo-m3d3-discovery-prereg-hashes-v0",
+  "entries": [
+    {
+      "path": "docs/phase_m3d3/M3_D3_HOLD_Boundary_Diagnosis.md",
+      "sha256": "cb2cc3c834079f324e06b38600bf05238701b6c5f9a401ea9666aea7cab1fbf1",
+      "role": "D3-0 diagnosis",
+      "locked": true
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_Classifier_Contract.md",
+      "sha256": "6a8916720f36870e670df6c737777cf1411f4f89c536a28b958d02cf714a7ca2",
+      "role": "D3 classifier contract",
+      "locked": true
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_D3_1_Pregistration.md",
+      "sha256": "0bb42e605260827bf0fc9f83b32e215c551ee4a770d97a2ec97687a35d4133cf",
+      "role": "D3-1 preregistration",
+      "locked": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_candidate_states.json",
+      "sha256": "d6b9b61fea9edb3f283216bfc5c26be33be46db7293c5f5945a4bc4fcbe1c877",
+      "role": "candidate list",
+      "locked": true
+    },
+    {
+      "path": "configs/phase_m3d3/m3d3_seeds.json",
+      "sha256": "ea736cdfc380f0219432cbfa398d08f8a3dea1af01999caf7abec934a01c2733",
+      "role": "seed file",
+      "locked": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_1_source_manifest.json",
+      "sha256": "f41046bbc307bc40681309217941c489be3889eeb1e0f7ed8cd837c54259d3e7",
+      "role": "source manifest",
+      "locked": true
+    },
+    {
+      "path": "configs/phase_m3d3/m3d3_diversity_gate.json",
+      "sha256": "adcad8031dd17d257158d5a6f429ec6d39ca75ec78c8b0d3ac11de17f104c408",
+      "role": "diversity gate",
+      "locked": true
+    },
+    {
+      "path": "configs/phase_m3d3/m3d3_protocol.json",
+      "sha256": "3b62bfbef348ee174dfeb5db1dd90605b49947091ce81dfedf6c314a0fdcdeae",
+      "role": "protocol",
+      "locked": true
+    }
+  ]
+}

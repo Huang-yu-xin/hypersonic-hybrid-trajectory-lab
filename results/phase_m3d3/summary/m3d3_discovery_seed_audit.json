@@ -1,0 +1,22 @@
+{
+  "namespace": "D3-DISCOVERY",
+  "seed_formula": "SeedSequence([3303001, candidate_index])",
+  "disjoint_from": [
+    "ER1",
+    "M3-D2 discovery",
+    "M3-D2 confirmation",
+    "D3 reference",
+    "future D3 confirmation"
+  ],
+  "registered_namespaces": {
+    "reference": "D3-REFERENCE",
+    "discovery": "D3-DISCOVERY",
+    "confirmation": "D3-CONFIRMATION"
+  },
+  "numeric_namespace_ids": {
+    "D3-REFERENCE": 3303000,
+    "D3-DISCOVERY": 3303001,
+    "D3-CONFIRMATION": 3303002
+  },
+  "pass": true
+}
