@@ -69,12 +69,16 @@ def main() -> int:
     ap.add_argument("--smoke", action="store_true",
                     help="single state x single seed, eval_n=20000, "
                          "writes preflight file")
+    ap.add_argument("--freeze-doc", type=Path, default=FREEZE_DOC)
+    ap.add_argument("--dest", type=Path, default=DEST)
+    ap.add_argument("--parent-tag", default="RareTopo-M3-v0")
     args = ap.parse_args()
     global PN, EVAL_N
     if args.smoke:
         EVAL_N = 20_000
 
-    freeze_doc = json.loads(FREEZE_DOC.read_text(encoding="utf-8"))
+    freeze_path = args.freeze_doc.resolve()
+    freeze_doc = json.loads(freeze_path.read_text(encoding="utf-8"))
     body = {k: v for k, v in freeze_doc.items()
             if k != "freeze_sha256_of_body_above"}
     assert hashlib.sha256(json.dumps(body, indent=1).encode()).hexdigest() \
@@ -180,7 +184,10 @@ def main() -> int:
         "stage": "D6_layer_a" + ("_SMOKE" if args.smoke else ""),
         "benchmark_freeze_sha256":
             freeze_doc["freeze_sha256_of_body_above"],
-        "m3v0_frozen_head": "32b285625494d9b3da08be3c559db3855df77667",
+        "m3v0_parent_tag": args.parent_tag,
+        "m3v0_frozen_head": subprocess.run(
+            ["git", "rev-parse", f"{args.parent_tag}^{{commit}}"], cwd=REPO,
+            check=True, capture_output=True, text=True).stdout.strip(),
         "git_commit": _git(),
         "timestamp_utc": datetime.now(timezone.utc).isoformat(
             timespec="seconds"),
@@ -194,10 +201,22 @@ def main() -> int:
                          "scientific_audit_calls_per_trial":
                              PN + 3 * EVAL_N,
                          "deployable_method_calls_per_trial": PN + EVAL_N}},
+        "event_semantics": {
+            "schema_version": 2,
+            "event_definition_id": "topology-label-non-nominal-v1",
+            "event_predicate_source": "hyptraj.event_semantics.event_indicator_from_topology",
+        },
+        "evidence_repair": {
+            "repair_id": "ER-1",
+            "run_kind": "isolated_corrected_replay",
+            "repair_simulator_calls": len(records) * (PN + 3 * EVAL_N),
+            "seed_reuse_status": "EXACT",
+            "draw_order_status": "EXACT",
+        },
         "records": records,
     }
-    dest = DEST.parent / ("m3d_layer_a_smoke.json" if args.smoke
-                          else "m3d_layer_a_v1.json")
+    dest = (args.dest.parent / "m3d_layer_a_smoke.json"
+            if args.smoke else args.dest).resolve()
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(batch, indent=1), encoding="utf-8")
     print(f"[saved] {dest.relative_to(REPO)} -- {len(records)} trials "
