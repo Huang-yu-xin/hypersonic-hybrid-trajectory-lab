@@ -1,0 +1,6 @@
+state_id,config_id,s2,candidate_stratum,reference_status,confirmation_support,r_w,r_s,probability_semantics_valid,reference_action_class_valid,ambiguity_or_invalid_reason,safe_protocol_behavior,independently_confirmed
+c006_s2_00125,m1d_b20260827_c006,1.25,G-W,AMBIGUOUS,,-0.013856703289111816,0.07537388077311502,True,False,unsupported_required_contrast,ABSTAIN / BASE (no adaptation),True
+c006_s2_00800,m1d_b20260827_c006,8.0,G-S,AMBIGUOUS,,-0.020676495222654356,-0.06100517658985438,True,False,unsupported_required_contrast,ABSTAIN / BASE (no adaptation),True
+c001_s2_00400,m1d_b20260827_c001,4.0,G-H,HOLD,0.23033950058339026,0.02308981498249829,0.004730874698992249,True,True,,ABSTAIN / BASE (no adaptation),True
+c007_s2_00125,m1d_b20260827_c007,1.25,G-W,HOLD,0.3636092084566158,0.019091723746301525,-0.0037616334100146753,True,True,,ABSTAIN / BASE (no adaptation),True
+c010_s2_00500,m1d_b20260827_c010,5.0,G-S,HOLD,0.33455442297681365,-0.005104122053461224,0.01996336731069559,True,True,,ABSTAIN / BASE (no adaptation),True
