@@ -1,0 +1,119 @@
+{
+  "schema_version": "raretopo-m3ds-source-manifest-v0",
+  "created_utc": "2026-08-31T16:54:51+00:00",
+  "git_commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+  "parent_audit": {
+    "er1_tag_reachable": true,
+    "m3_v2_tag_reachable": true,
+    "m3d_v1_tag_reachable": true,
+    "d2_d2b_close_reachable": true,
+    "d3_discovery_reachable": true,
+    "m3rf_route_is_rf_b": true,
+    "d2_verdict_is_d2b": true,
+    "d3_discovery_verdict_is_disc_b": true
+  },
+  "zero_simulator": {
+    "extra_simulator_calls": 0,
+    "controller_online_trials": 0
+  },
+  "entries": [
+    {
+      "path": "docs/evidence_repair/ER1_Event_Semantics_Contract.md",
+      "sha256": "6f97ba135dfd74bfb72a6ca007fb0a7a3ccd18f4fdd4d88e24ce8bd9bbe9c985",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "ER-1 semantic contract",
+      "read_only": true
+    },
+    {
+      "path": "docs/evidence_repair/ER1_Supersession_Ledger.md",
+      "sha256": "ff5b8ed499c3c8e08794747dea6f42992713dcc6aaea0ba098ba93d2e9c7477e",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "ER-1 corrected lineage status",
+      "read_only": true
+    },
+    {
+      "path": "results/evidence_repair/reanalysis/M3-v0/summary/m3v0_corrected_gate.json",
+      "sha256": "198bd15559ca82f3a436e9e224a623e56ecc9c533949b706018ba1a1dbe789cf",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-v2 corrected results",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d/reference/m3d_labels_corrected_v2.json",
+      "sha256": "7905040d12e3a4adf8526c41959e5231775fad75bea51800633a293fec4deed7",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D-v1 corrected reference records",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_confirmation_summary.json",
+      "sha256": "d26add58a002f984627acc7c595fccf661d9f5fb0af322e41a14f7298050e8ce",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D2 confirmation states",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_class_transition.json",
+      "sha256": "56b9e13c035513891ddce5926146e39dac78c3cd67ba4f987ba8dc7c1068bb3c",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D2 class-transition audit",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_final_verdict.json",
+      "sha256": "ee69fda886757f339fa13217b8ba7cb072d0c059f5eff755e3e24d3e1e7788a9",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D2 final verdict (D2-B)",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_discovery_states.csv",
+      "sha256": "b86c55e8aaa8e73e2ed7b6e241b31a04b41af5d2e8d42c4a57e705f7c0474676",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D3 discovery states",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_discovery_summary.json",
+      "sha256": "a5046acaa884f3eeea3fc2d24010ac91ff0d2dacc25ecbd8a03b1914ac20f2b2",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D3 discovery verdict (D3-DISC-B)",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3rf/summary/m3rf_route_decision.json",
+      "sha256": "f3d34aee61d9d45a9bc2dd4c82b47aa54763b555b5b7e978f49620b7c37b21d4",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-RF action-space decision (RF-B)",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_classifier_contract.json",
+      "sha256": "663da48aa6f8126f679f7002b5e6fbdb96a5c7ad161e8dca59b279c92d107459",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "corrected classifier contract (frozen, retuning not allowed)",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d/m3d_reference_characterization.json",
+      "sha256": "2ba5d4ad654a1666c493e8b3cdaef92c8bcb550f2b5620e8e8281cf0b5e3293a",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-D-v1 classifier characterization source",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m3d/reference_direction.py",
+      "sha256": "b579a620774184f991bfa8a86cb5790aee7ef06b5ebe4864148f32491446ce40",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "corrected classifier source",
+      "read_only": true
+    },
+    {
+      "path": "docs/phase_m3ds/M3_DS_Directional_Benchmark_Task.md",
+      "sha256": "aae5968856cbcc7e7e3c774ecc528845a9553ca1f8425cbc52aee0b77b92e9d9",
+      "commit": "4b63a10cef99ef8b499af94517f029c4bbcdbe14",
+      "role": "M3-DS preregistration taskbook",
+      "read_only": true
+    }
+  ]
+}
