@@ -1,0 +1,14 @@
+{
+  "schema_version": "raretopo-m5ar-routing-verdict-v0",
+  "status": "BLOCKED",
+  "primary_route": null,
+  "single_primary_route": false,
+  "routing_performed": false,
+  "blocker": "PF3 parent freeze event-indicator semantic mismatch",
+  "blocker_artifact": "results/phase_m5ar/summary/m5ar_pf3_parent_freeze_audit.json",
+  "required_action": "repair and separately re-freeze the affected M3-D through PF3 evidence before restarting M5-AR",
+  "extra_simulator_calls": 0,
+  "sources_unchanged": true,
+  "m3q_status": "BLOCKED",
+  "claim_boundary": "No AR0-AR4 result or architecture route is valid because the parent evidence failed the first hard gate."
+}

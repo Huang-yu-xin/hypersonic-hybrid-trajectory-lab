@@ -1,0 +1,35 @@
+{
+  "schema_version": "raretopo-m5ar-pf3-parent-freeze-audit-v0",
+  "status": "FAIL",
+  "frozen_nominal_label": "S0",
+  "downstream_comparison_literal": "NOMINAL",
+  "semantic_mismatch": true,
+  "affected_paths": [
+    "src/hyptraj/m3d/adaptation.py",
+    "src/hyptraj/m3d/reference_direction.py",
+    "scripts/run_m3bv2_controllers.py",
+    "scripts/run_m3_scalar_experiments.py",
+    "src/hyptraj/m4pf1/experiment.py",
+    "src/hyptraj/m4pf2/experiment.py",
+    "src/hyptraj/m4pf3/experiment.py"
+  ],
+  "pf3_A1_probability_median": 1.0000823667482976,
+  "frozen_event_probability_median": 0.07477567156154877,
+  "median_probability_ratio": 13.394160812297018,
+  "pf3_A1_probability_range": [
+    0.996078444413725,
+    1.004933118104163
+  ],
+  "event_probability_range": [
+    0.039185314842485997,
+    0.0776480402624824
+  ],
+  "median_true_event_share_of_stored_variance_mass": 0.019780638971306677,
+  "true_event_share_range": [
+    0.007347946602451037,
+    0.06504442174389631
+  ],
+  "interpretation": "The frozen predicate emits S0 for nominal samples, while M3-D/PF1/PF2/PF3 compare against the literal NOMINAL. Every label is therefore treated as event, making stored P_hat approximately one and stored variance_mass predominantly nominal.",
+  "gate": "STOP_DO_NOT_START_M5AR",
+  "extra_simulator_calls": 0
+}

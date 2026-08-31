@@ -1,0 +1,353 @@
+{
+  "schema_version": "raretopo-m5ar-source-manifest-v0",
+  "stage": "M5-AR",
+  "parent_tag": "RareTopo-M4-PF3-v0",
+  "source_count": 49,
+  "sources": [
+    {
+      "path": "results/phase_m3ca/summary/m3ca_state_table.csv",
+      "source_tag": "RareTopo-M3-CA-v0",
+      "role": "M3-CA state endpoint table",
+      "sha256": "d933a985235417eab7b39058709c3d4c137fdf3bd1ca9761c39370cad656ebf2",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3ca/summary/m3ca_cost_ledger.csv",
+      "source_tag": "RareTopo-M3-CA-v0",
+      "role": "M3-CA cost ledger",
+      "sha256": "083f36f6efdcdfa7fcde16bd7c4a57ea0b67cb37a9dab30cb932696c979e85bd",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf1/summary/m4pf1_state_table.csv",
+      "source_tag": "RareTopo-M4-PF1-v0",
+      "role": "PF1 state results",
+      "sha256": "0dc7971a518227f0b41d74f19010d370613ff148d90d42336de56ca2b8dc6c2a",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf1/m4pf1_confirmation_raw.json",
+      "source_tag": "RareTopo-M4-PF1-v0",
+      "role": "PF1 confirmation record",
+      "sha256": "f21d63746fdd519c5dba4d7f45fd449240c57019fe08c534cd86fe270018b6cb",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf2/summary/m4pf2_state_table.csv",
+      "source_tag": "RareTopo-M4-PF2-v0",
+      "role": "PF2 state results",
+      "sha256": "5a2c45aff74e3dedcbe68fe7cf94ee5301dfcb04d7f329e8f3e7c75ebcbf4132",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf2/m4pf2_confirmation_raw.json",
+      "source_tag": "RareTopo-M4-PF2-v0",
+      "role": "PF2 confirmation record",
+      "sha256": "ba4bf0d5a2fcf8796bb02834ac8a6047ce316eff61cb4b6aec29f8495b15f9f7",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf2_0/summary/m4pf2_0_diagnostic.json",
+      "source_tag": "RareTopo-M4-PF2-0-v0",
+      "role": "PF2-0 diagnostic",
+      "sha256": "ae0d6921629592186b7aa1081c9ea71490fee2b0bd50271aa377e698ff096354",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3_0/summary/m4pf3_0_state_diagnostics.csv",
+      "source_tag": "RareTopo-M4-PF3-0-v0",
+      "role": "PF3-0 state diagnostics",
+      "sha256": "373a18c2785cf88225e6cb79da539ab82bf3fbedbc55da1dcb21eb2875413cb1",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3_0/summary/m4pf3_0_diagnostic_summary.json",
+      "source_tag": "RareTopo-M4-PF3-0-v0",
+      "role": "PF3-0 route",
+      "sha256": "4bd2d32359144ebcf22b4a8147ca27dfa6f832510d9134a2c019926365dcf988",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/summary/m4pf3_state_results.csv",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "PF3 A0/A1 state results",
+      "sha256": "369f1e963020e53f0d22ec571846e745a8af89d49d567863102dace12413288e",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/summary/m4pf3_family_summary.json",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "PF3 family summary",
+      "sha256": "dd463d12928d62d96c99fce6e22d450a655187df3f08456a782ce657a260f77b",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/m4pf3_confirmation_raw.json",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "PF3 confirmation record",
+      "sha256": "4ef61e753520f4bcedcb0ec6f19b8113e0af3e96a29c06fd9451a2219add83fe",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3bv2/m3bv2_value_benchmark.json",
+      "source_tag": "RareTopo-M3-BV2-v0",
+      "role": "24-state definition",
+      "sha256": "fa42d60d4dc78330cdf6fc99cf68f5f81a1986588c6aeb1d25edded17525225c",
+      "read_only": true
+    },
+    {
+      "path": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+      "source_tag": "RareTopo-M1-D-v1.0",
+      "role": "event/topology freeze",
+      "sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m1d/benchmark_family.py",
+      "source_tag": "RareTopo-M1-D-v1.0",
+      "role": "event predicate",
+      "sha256": "01844d63bec8f1537dbb3ae2ac9fae5dd362f03b19d361a919dd5c788f4ed842",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m3d/adaptation.py",
+      "source_tag": "RareTopo-M3-D-v0",
+      "role": "M3-D event indicator",
+      "sha256": "ec93e36bcaa0e003514277df40a397407969e72210b51522bce96d93ad89d5e7",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m3d/reference_direction.py",
+      "source_tag": "RareTopo-M3-D-v0",
+      "role": "M3-D reference event indicator",
+      "sha256": "ef878ecad9be579843a52d713a41e1ec61f8dc9c2aad1be530151b8de0d23310",
+      "read_only": true
+    },
+    {
+      "path": "scripts/run_m3bv2_controllers.py",
+      "source_tag": "RareTopo-M3-BV2-v0",
+      "role": "M3-BV2 event indicator",
+      "sha256": "84fdd84212d50630f749393824299fd017a35b96eaf1fe07e71e6840636d3d7d",
+      "read_only": true
+    },
+    {
+      "path": "scripts/run_m3_scalar_experiments.py",
+      "source_tag": "RareTopo-M3-v0",
+      "role": "M3 event indicator",
+      "sha256": "66a669d7642778bbb694bc2a3cb43bf39d125a26c4d96dd0b347696dc4d31f5f",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m4pf1/experiment.py",
+      "source_tag": "RareTopo-M4-PF1-v0",
+      "role": "PF1 event indicator",
+      "sha256": "ad99d570d34175736d7af021ea350b762b1f5ee37a85e8e4289ceaa2a846ccb5",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m4pf2/experiment.py",
+      "source_tag": "RareTopo-M4-PF2-v0",
+      "role": "PF2 event indicator",
+      "sha256": "8ec031e94028c424d252f9518cc264bb1a5a8ad11a27aeb4225e2368423829ce",
+      "read_only": true
+    },
+    {
+      "path": "src/hyptraj/m4pf3/experiment.py",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "PF3 event indicator",
+      "sha256": "c82954122dfcd57fa73c9144f6d404e5081c3c6d2e137634bf0041eff02bdb52",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m4pf1/m4pf1_protocol.json",
+      "source_tag": "RareTopo-M4-PF1-v0",
+      "role": "PF1 protocol",
+      "sha256": "70f230e2926d47609aa2486489c30821a737e5f2baa2c37d0b8d401a15f71dc5",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m4pf2/m4pf2_protocol.json",
+      "source_tag": "RareTopo-M4-PF2-v0",
+      "role": "PF2 protocol",
+      "sha256": "f871b8268b27429d07731e0a2019ae11f2770274e77eaa1a9f22092369d3cee1",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m4pf3/m4pf3_protocol.json",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "PF3 protocol",
+      "sha256": "ffbcd7760b79289bed948c7ac43e90555565b09d1607978e7c8cea44961f7f4c",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00065.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "ff8ca0b3977e047ce8461be089cb186eb4bb5d6ab7a8a6f29dbc9b34794d4d8b",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00085.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "2eb211cb7f5704354f0baa15ab82da0b428a7960979028525a7c62421c1abd62",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00110.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "5c6304173c1f91ad921742121416e66e6990a5437802cd470eb96554ca273a6d",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00500.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "e2484ea2ab7b63dd29bcea03177a168518bbe51d31f86d037b0b8081807cc6ef",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00640.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "5d4606a22165487d1242786ec2b15b07aae5fa1413c744a633e9a805d1f61c48",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c000_s2_00800.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "986306ed661dcb3cd93429b928b2bbf0f91a83cedfcf1ff4d36438ab1f82332a",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00065.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "28e065b1d21e93e86738bb0cb6c741c69138f5ad9fe7e6cfd80f48bb7981ec96",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00085.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "f8f49f5efce324c2742ac4c6b16d3733d721581bf974d354c30e5343a64c3a1a",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00110.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "34bffb00f429484d00b6a300fab2081877c439f0625fcfee2b3fed3aaa1ab8e7",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00500.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "fcfcba3265c0118f28a3ef17307e7eb4c60a771d5793448ca1ef3741024b0784",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00640.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "e806545eb387ced26391587b793f9041237fbc657644af7a3e79eb04e01db030",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c001_s2_00800.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "8c76c5fbcd8f9e72bb71bca3ab0474c0985c05eced039b7dc8f80a75ffcceb2c",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00065.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "9eb4d97c63f3690c669088fe477bb68e7c1a35e92d630e2fad60feafdcfd8d25",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00085.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "8afc6b4076f7b0e95bd6671ce1583526b4a5beb97486c116c61e1e95dee61100",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00110.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "91de43d9b0f13d741c869a8e8fe2753a39828737e2c06f81d6432056bb2c274c",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00500.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "b540f4aead3929d68687731de8d5fcd1948e0cfab82f58132cbdbae37a970048",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00640.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "885e8814408d7f4278b894e7b4cc1a8ad10304c55ed2d500b4d73a1cc10e581a",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c004_s2_00800.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "2d99c57f368b8258e5a6e1508e12e17ae95db7560e2e5a0a7696f585b0b50c8c",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00065.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "ef1bbbf96404dc5378f7ebab90bafdff539ac4cfb07029d5cc3ded12d851e968",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00085.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "faae9c83e971fb0921b7237ac6303f3cbc0f30c6fa80f30d502341989879fee7",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00110.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "6961b150fcad7421fffc1b2773f7750dc4cbd552fe7d6fe5603fa4e1fba14b05",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00500.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "9e4f86a80c295f925e7f8c2d43ca51049d494e05e8b169d7beb982918eb7792c",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00640.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "80f55bf43ea2cb7f336bdcb113f27f3ab671baa618562bd75a08c1e6718e928f",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m4pf3/gradient_samples/confirmation/c006_s2_00800.npz",
+      "source_tag": "RareTopo-M4-PF3-v0",
+      "role": "stored PF3 P11 samples and variance mass",
+      "sha256": "871871cdb72617d0ab0f711ec5a31f8d5695e53d8d4db0bd154895672c47ff47",
+      "read_only": true
+    }
+  ],
+  "sources_unchanged": true,
+  "post_analysis_mismatches": []
+}

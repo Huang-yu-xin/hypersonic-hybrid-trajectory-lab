@@ -1,0 +1,70 @@
+{
+  "schema_version": "raretopo-m5ar-protocol-v0",
+  "stage": "M5-AR",
+  "parent_tag": "RareTopo-M4-PF3-v0",
+  "parent_commit": "dbe730d4a0cf12de253e2f46384d9abc99d9a60e",
+  "analysis_only": true,
+  "extra_simulator_calls": 0,
+  "state_count": 24,
+  "vrf_convention": "100k selected final-arm FreeOracle convention; discovery, gradients, probability characterization and unselected arms are audit-only",
+  "compatible_local_arms": ["S0", "S1", "S2", "P10", "P01", "P11", "A1"],
+  "local_ceiling": "statewise maximum VRF_proposal over compatible_local_arms",
+  "stage_ladder": {
+    "M3-CA": "stored statewise scalar-family FreeOracle VRF",
+    "PF1": "statewise maximum over S0/S1/S2",
+    "PF2": "statewise maximum over P00/P10/P01/P11",
+    "PF3": "statewise maximum over A0/A1",
+    "local_ceiling": "statewise maximum over compatible_local_arms"
+  },
+  "high_variance_mass_sets": [0.5, 0.8],
+  "cluster_counts": [2, 3],
+  "cluster_sample_cap": 20000,
+  "routing_thresholds": {
+    "local_control_saturation": {
+      "high": "median local ceiling <= 0.03 and zero states > 0.1",
+      "medium": "median local ceiling <= 0.1",
+      "low": "median local ceiling > 0.1"
+    },
+    "representation_mismatch": {
+      "high": "proposal coordinates omit a frozen event-defining variable, or dynamically distinct labels overlap in proposal-controlled coordinates in >=12 states",
+      "medium": "topology labels are not explicit proposal conditioning variables but remain deterministically recoverable in proposal coordinates",
+      "low": "event predicate and topology separation are fully defined in the proposal-controlled static coordinates"
+    },
+    "static_mixture_multimodality": {
+      "high": "at least 12 states have >=3 variance-mass topology modes with only 2 components and median K=3 versus K=2 weighted-SSE reduction >=0.20",
+      "medium": "either the topology/component count mismatch or the SSE condition holds",
+      "low": "neither condition holds"
+    },
+    "path_stage_dependence": {
+      "high": "stored stage variables separate high variance mass materially earlier than terminal variables in >=12 states",
+      "medium": "path variables exist but evidence is inconsistent",
+      "low": "the frozen benchmark event is a static latent-state predicate and no path process is part of its definition",
+      "not_identifiable": "event is path-defined but required path metadata are absent"
+    },
+    "benchmark_regime_dependence": {
+      "high": "abs Spearman(log event probability, log ceiling VRF) >=0.70 and at least one observed less-extreme state reaches VRF >0.1",
+      "medium": "abs Spearman correlation >=0.50 without an observed efficient-regime transition",
+      "low": "abs Spearman correlation <0.50"
+    },
+    "localized_coverage_only": {
+      "high": "severe coverage flags occur in >=12 states",
+      "medium": "flags occur in 4-11 states",
+      "low": "flags occur in <=3 states"
+    }
+  },
+  "route_priority": ["R3", "R2", "R1", "R4", "R6", "R5"],
+  "route_rule": "select a unique high-evidence mechanism; use R5 when multiple high mechanisms cannot be separated or no mechanism is high",
+  "unknown_marker": "NOT IDENTIFIABLE",
+  "forbidden": [
+    "new simulator calls",
+    "new proposal experiment",
+    "rank-4/rank-8/full-matrix covariance",
+    "mean-step sweep",
+    "mixture-logit-step sweep",
+    "global birth experiment",
+    "M3-Q reopening",
+    "state replacement or exclusion",
+    "VRF redefinition",
+    "budget change"
+  ]
+}
