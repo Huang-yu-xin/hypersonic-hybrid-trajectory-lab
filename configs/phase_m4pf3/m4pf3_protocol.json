@@ -1,0 +1,112 @@
+{
+  "schema_version": "raretopo-m4pf3-protocol-v0",
+  "stage": "M4-PF3-A",
+  "parent_tag": "RareTopo-M4-PF3-0-v0",
+  "parent_commit": "ca8d3f579ab406818682615c3efccaf5abd527cf",
+  "routing": {
+    "locked_route": "A",
+    "source": "results/phase_m4pf3_0/summary/m4pf3_0_diagnostic_summary.json",
+    "source_sha256": "4bd2d32359144ebcf22b4a8147ca27dfa6f832510d9134a2c019926365dcf988",
+    "allocation_material": true,
+    "coverage_material": false,
+    "birth_authorized": false
+  },
+  "anchor": {
+    "definition": "per-state PF2 P11 simultaneous mean plus rank-1 covariance proposal",
+    "source": "results/phase_m4pf2/m4pf2_confirmation_raw.json",
+    "source_sha256": "ba4bf0d5a2fcf8796bb02834ac8a6047ce316eff61cb4b6aec29f8495b15f9f7",
+    "proposal_identity_reconstructed_from": "PF2 S0 identity plus frozen P11 mean displacement and covariance",
+    "fresh_gradient_construction_required": true,
+    "S0_gradient_reuse_forbidden": true
+  },
+  "gradient_construction": {
+    "samples_per_seed": 100000,
+    "seed_count": 4,
+    "pooled_samples_per_state": 400000,
+    "pilot_source_mix_alpha": 0.5,
+    "responsibility_formula": "r_k=alpha_k q_k/q",
+    "r_bar_formula": "sum_i normalized_variance_mass_i*r_ki",
+    "descent_direction": "r_bar-alpha",
+    "all_component_responsibilities": true,
+    "persist_sample_level_arrays": true,
+    "audit_only_cost": true
+  },
+  "allocation_update": {
+    "parameterization": "beta=log(alpha), alpha=softmax(beta)",
+    "eta_alpha": 0.20,
+    "normalization": "d_beta/||d_beta||_2",
+    "numerical_zero_threshold": 1e-12,
+    "numerical_zero_action": "identity update; not learned HOLD",
+    "per_state_tuning": false,
+    "centres_and_covariances_unchanged": true
+  },
+  "arms": {
+    "A0": {"definition": "PF2 P11 anchor", "allocation_update": false},
+    "A1": {"definition": "PF2 P11 plus one normalized logit allocation step", "allocation_update": true}
+  },
+  "discovery": {
+    "purpose": "implementation and numerical safety only",
+    "state_ids": ["c006_s2_00110", "c006_s2_00500"],
+    "gradient_samples_per_seed": 10000,
+    "gradient_seed_count": 2,
+    "evaluation_samples_per_replicate": 10000,
+    "evaluation_replicates": 2,
+    "may_change_protocol": false
+  },
+  "confirmation": {
+    "state_count": 24,
+    "class_split": {"WIDEN": 12, "SHRINK": 12},
+    "evaluation_n_per_arm_replicate": 100000,
+    "evaluation_replicates": 8,
+    "evaluation_batches": 10,
+    "new_A1_probability_characterization_n": 500000,
+    "A0_probability": "frozen PF2 P11 500k characterization",
+    "common_random_numbers": "same new component-choice and standard-normal blocks across A0/A1 within state and replicate",
+    "deployable_selected_arm_budget": 100000,
+    "deployable_pilot_budget": 0,
+    "deployable_decision_budget": 0
+  },
+  "baseline_reproduction": {
+    "A0_proposal_identity_exact": true,
+    "median_vrf_relative_tolerance_vs_pf2_P11": 0.10,
+    "failure_verdict": "PF3-E"
+  },
+  "freeoracle": {
+    "candidate_set": ["A0", "A1"],
+    "statewise_rule": "minimum median replicate estimator variance; exact ties use A0 then A1",
+    "primary_endpoint": "median statewise selected-arm VRF_budget",
+    "deployable_cost": "selected 100k final arm only",
+    "allocation_essential_for_breakthrough": "A1 selected in at least one state and median FreeOracle VRF strictly exceeds median A0 VRF"
+  },
+  "verdicts": {
+    "PF3-A": "allocation essential and median FreeOracle VRF > 1",
+    "PF3-C": "0.1 < median FreeOracle VRF <= 1",
+    "PF3-D": "median FreeOracle VRF <= 0.1",
+    "PF3-E": "parent, anchor, protocol, baseline, numerical, CRN or accounting invalid"
+  },
+  "safety": {
+    "finite_weights_required": true,
+    "simplex_required": true,
+    "positive_weights_required": true,
+    "tail_schema_required": true,
+    "support_loss_indicator": "event count zero or event-weight ESS < 20",
+    "invalid_arm_action": "record fallback to A0 and trigger PF3-E"
+  },
+  "cost_accounting": {
+    "fresh_gradient": "audit-only",
+    "new_probability_characterization": "audit-only",
+    "all_arm_search_and_unselected_evaluations": "audit-only",
+    "selected_arm": "100k deployable counterfactual"
+  },
+  "forbidden": [
+    "birth arm",
+    "covariance-rank change",
+    "mean-step change",
+    "eta_alpha tuning",
+    "state exclusion",
+    "posthoc arm or gate changes",
+    "controller or pilot tuning",
+    "M3-Q"
+  ]
+}
+
