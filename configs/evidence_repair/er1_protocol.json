@@ -1,0 +1,39 @@
+{
+  "schema_version": "raretopo-er1-protocol-v0",
+  "repair_stage": "ER-1",
+  "parent_blocked_commit": "ce4b07522a27ec7c307cbf04b9f3a27fc3526371",
+  "historical_pf3_tag": "RareTopo-M4-PF3-v0",
+  "historical_pf3_commit": "dbe730d4a0cf12de253e2f46384d9abc99d9a60e",
+  "event_semantics_schema_version": 2,
+  "event_definition_id": "m1d-benchmark-family-label-v1:S0-complement",
+  "event_predicate_source": "src/hyptraj/m1d/benchmark_family.py:BenchmarkConfig.label",
+  "nominal_topology_label": "S0",
+  "forensics_extra_simulator_calls": 0,
+  "historical_tags_mutable": false,
+  "m5ar_authorized": false,
+  "m3q_authorized": false,
+  "repair_order": [
+    "M3-v0",
+    "M3-D",
+    "M3-G-v1",
+    "M3-BV/BV2",
+    "M3-CA",
+    "M4-PF0/PF1",
+    "M4-PF2",
+    "M4-PF3"
+  ],
+  "replay_policy": {
+    "raw_reanalysis_first": true,
+    "new_simulation_only_when_raw_insufficient": true,
+    "reuse_original_states": true,
+    "reuse_original_seeds": true,
+    "reuse_original_sample_counts": true,
+    "retuning_forbidden": true,
+    "child_requires_corrected_parent_gate": true
+  },
+  "probability_scale_guard": {
+    "standard_error_multiplier": 8.0,
+    "relative_reference_allowance": 0.25,
+    "purpose": "catastrophic semantic mismatch guard, not a hypothesis test"
+  }
+}
