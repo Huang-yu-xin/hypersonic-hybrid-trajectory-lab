@@ -1,0 +1,10 @@
+Continuous,Evidence,Evidence path,Three-action,Two-direction+abstain
+SUPPORTED,W availability,D2 confirmation: W=12,SUPPORTED,SUPPORTED
+SUPPORTED,S availability,D2 confirmation: S=10,SUPPORTED,SUPPORTED
+NOT APPLICABLE,H availability,D2 confirmed H=3; D3 H=2/14,WEAK,NOT APPLICABLE
+WEAK,ambiguity handling,D3: ambiguity=10/14; abstention has direct protocol interpretation,UNSUPPORTED,SUPPORTED
+WEAK,independent confirmation,W/S confirmed; only 3 D2 HOLD reproduce,WEAK,SUPPORTED
+WEAK,boundary stability,D3 targeted boundary: 2 HOLD vs 10 ambiguity,UNSUPPORTED,SUPPORTED
+WEAK,natural benchmark construction,Balanced 8/8/8 failed twice; W/S available without HOLD quota,UNSUPPORTED,SUPPORTED
+SUPPORTED,requires threshold change,RFB/RFC review does not alter the frozen classifier,UNSUPPORTED,SUPPORTED
+SUPPORTED,corrected lineage compatible,All routes use corrected frozen evidence only,SUPPORTED,SUPPORTED

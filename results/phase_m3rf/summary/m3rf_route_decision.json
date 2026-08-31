@@ -1,0 +1,61 @@
+{
+  "schema_version": "raretopo-m3rf-route-decision-v0",
+  "stage": "M3-RF",
+  "status": "COMPLETE",
+  "zero_simulator": {
+    "extra_simulator_calls": 0,
+    "controller_online_trials": 0
+  },
+  "corrected_evidence": {
+    "unique_state_count": 91,
+    "duplicate_state_count": 46,
+    "duplicate_identity_count": 38,
+    "raw_observation_count": 137,
+    "confirmed_W": 12,
+    "confirmed_H": 3,
+    "confirmed_S": 10,
+    "d3_boundary_H": 2,
+    "d3_boundary_ambiguous": 10
+  },
+  "hold_prevalence": {
+    "d2_discovery_raw": "5/72 (6.94%)",
+    "d2_confirmation_selection_conditioned": "3/27 (11.11%)",
+    "d3_boundary_provisional": "2/14 (14.29%)"
+  },
+  "d3_enrichment_test": {
+    "observed_provisional_hold": "2/14 (14.29%)",
+    "preregistered_target": "10/14 (71.43%)",
+    "absolute_gap_percentage_points": 57.14,
+    "verdict": "FAIL_HOLD_INSUFFICIENT"
+  },
+  "ambiguity": {
+    "d3_count": 10,
+    "d3_prevalence": "10/14 (71.43%)",
+    "causes": {
+      "no_unique_preregistered_class": 5,
+      "unsupported_required_contrast": 5
+    }
+  },
+  "three_action_identifiability": {
+    "all_actions_exist": "PASS",
+    "hold_independently_reproducible": "MIXED",
+    "hold_not_dominated_by_ambiguity": "FAIL",
+    "diverse_hold_without_posthoc_search": "FAIL",
+    "no_classifier_weakening_required": "PASS",
+    "overall": "NOT DEFENSIBLE"
+  },
+  "route_comparison": {
+    "RFA": "UNSUPPORTED",
+    "RFB": "SUPPORTED",
+    "RFC": "WEAK",
+    "RFD": "WEAK",
+    "RFE": "NOT SELECTED"
+  },
+  "primary_route": "M3-RF-B",
+  "primary_route_name": "REFORMULATE TO DIRECTIONAL WIDEN/SHRINK + ABSTAIN",
+  "rationale": "Confirmed WIDEN=12 and SHRINK=10 provide directional support; HOLD is sparse and D3 boundary targeting yields mostly ambiguity. ABSTAIN is an uncertainty-aware protocol outcome, not a trained third scientific class.",
+  "rarity_shift": "BLOCKED",
+  "m3_q": "BLOCKED",
+  "no_third_hold_search": true,
+  "next_authorized_scientific_action": "Preregister M3-DS Corrected Directional-Sign Benchmark with WIDEN/SHRINK availability requirements and an abstention policy."
+}

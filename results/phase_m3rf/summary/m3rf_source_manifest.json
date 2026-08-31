@@ -1,0 +1,132 @@
+{
+  "schema_version": "raretopo-m3rf-source-manifest-v0",
+  "stage": "M3-RF",
+  "read_only_sources": true,
+  "extra_simulator_calls": 0,
+  "controller_online_trials": 0,
+  "rarity_shift": "BLOCKED",
+  "m3_q": "BLOCKED",
+  "parent_lineage": {
+    "ER1": "2f0ed46e7992f02bb64836ddb681f3fd9a6415b5",
+    "M3-v2": "94ec7e0baa22888c2ec4bf36fbcdd8a3fd4caab8",
+    "M3-D-v1": "eb0f4940344c8d1ea0a85eb7a278cfb2dfba8863",
+    "D2_final_commit": "f031512b502e4fb91117acc9e86622949fd9db40",
+    "D3-0_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+    "D3-1_commit": "e3ed6dc65f8bda18e385e79f9fa1fd65891c40d4",
+    "D3-2_commit": "a568418beceb49641fcc743cc4a0245efd5b0eb8"
+  },
+  "items": [
+    {
+      "path": "results/evidence_repair/summary/er1_final_lineage.json",
+      "sha256": "af0049fb68172b8a1cb04f061f4a7445f8515d28ec20a222b4c1ec3eda95e4b1",
+      "commit": "d7575c51fc0c14e88753ffb0208ef5885df76164",
+      "role": "ER-1 corrected lineage",
+      "read_only": true
+    },
+    {
+      "path": "results/evidence_repair/reanalysis/M3-D/m3d_corrected_reference_gate.json",
+      "sha256": "ceba19a325915006939b62eb1354bd8648760b0ae3bfc8fc58a1d5b17cbd3d19",
+      "commit": "f30e8bf52d69fb6327df7fa1487347f193543f22",
+      "role": "M3-D-v1 corrected reference gate",
+      "read_only": true
+    },
+    {
+      "path": "results/evidence_repair/reanalysis/M3-D/m3d_corrected_reference_freeze.json",
+      "sha256": "12a6e043cffb689aa98617334fef56b00bb418cd02f8bc83f4bf5f9fc4ced074",
+      "commit": "8204819bb3c5230f5940f410056cf43b8e44b89b",
+      "role": "M3-D corrected 24-state reference",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_candidate_pool.json",
+      "sha256": "7f8d1b5919de40d59d77cfbf94bd84b4fc3d37f73f0998864cae035509481cb7",
+      "commit": "a0a1b1672a82b6920765f85b026ac720571a32f6",
+      "role": "D2 frozen 72-state candidate pool",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_discovery_summary.json",
+      "sha256": "f4f419966c573796e221ea1a754cf22f0a7e075a4274e764df5960629b24f21b",
+      "commit": "2090229457b6e943f9dd44471aadf39ed7937174",
+      "role": "D2 discovery",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_confirmation_summary.json",
+      "sha256": "d26add58a002f984627acc7c595fccf661d9f5fb0af322e41a14f7298050e8ce",
+      "commit": "072061a8ee6a1b0a346ec24c85296d85fd168e41",
+      "role": "D2 independent confirmation",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_class_transition.json",
+      "sha256": "56b9e13c035513891ddce5926146e39dac78c3cd67ba4f987ba8dc7c1068bb3c",
+      "commit": "a71fa1e9c645e1e716031269caa93751d2b36df4",
+      "role": "D2 class transitions",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_final_verdict.json",
+      "sha256": "ee69fda886757f339fa13217b8ba7cb072d0c059f5eff755e3e24d3e1e7788a9",
+      "commit": "a31d511c8bef7e4ddcf88d56bfb9b1b0d18e775e",
+      "role": "D2 final verdict",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_d3_0_summary.json",
+      "sha256": "7ff9bc2e081702d2b3bfe0b5e52e31882c4019f20a2533b2c3cdf09cdea8c4a5",
+      "commit": "e3ed6dc65f8bda18e385e79f9fa1fd65891c40d4",
+      "role": "D3-0 boundary diagnosis",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/d3_0_s2_boundary_brackets.csv",
+      "sha256": "29bf512eb577ef49967d257d694338049934c1c47351c730391fde0a625c7b8f",
+      "commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "role": "D3-0 boundary brackets",
+      "read_only": true
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_D3_1_Pregistration.md",
+      "sha256": "0bb42e605260827bf0fc9f83b32e215c551ee4a770d97a2ec97687a35d4133cf",
+      "commit": "e3ed6dc65f8bda18e385e79f9fa1fd65891c40d4",
+      "role": "D3-1 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_discovery_summary.json",
+      "sha256": "a5046acaa884f3eeea3fc2d24010ac91ff0d2dacc25ecbd8a03b1914ac20f2b2",
+      "commit": "a568418beceb49641fcc743cc4a0245efd5b0eb8",
+      "role": "D3-2 raw discovery and summary",
+      "read_only": true
+    },
+    {
+      "path": "results/phase_m3d3/summary/m3d3_discovery_candidate_audit.csv",
+      "sha256": "9712fbbe9f7645073eb8b2b950b79c83e9bf5c9e52fe2bf0442cc18db037cca3",
+      "commit": "a568418beceb49641fcc743cc4a0245efd5b0eb8",
+      "role": "D3-2 candidate audit",
+      "read_only": true
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_D3_2_Discovery_Verdict.md",
+      "sha256": "63fa0ba081ebe147a5aec75f4ceb7cd2ca9c86e796d8b0b383db7a4491fe97b4",
+      "commit": "a568418beceb49641fcc743cc4a0245efd5b0eb8",
+      "role": "D3-2 final discovery verdict",
+      "read_only": true
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_Classifier_Contract.md",
+      "sha256": "6a8916720f36870e670df6c737777cf1411f4f89c536a28b958d02cf714a7ca2",
+      "commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "role": "frozen classifier source",
+      "read_only": true
+    },
+    {
+      "path": "docs/evidence_repair/ER1_Event_Semantics_Contract.md",
+      "sha256": "6f97ba135dfd74bfb72a6ca007fb0a7a3ccd18f4fdd4d88e24ce8bd9bbe9c985",
+      "commit": "f30e8bf52d69fb6327df7fa1487347f193543f22",
+      "role": "full-event semantics contract",
+      "read_only": true
+    }
+  ]
+}
