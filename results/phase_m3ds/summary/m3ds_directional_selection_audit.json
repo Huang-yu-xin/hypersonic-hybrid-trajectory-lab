@@ -1,0 +1,89 @@
+{
+  "schema_version": "raretopo-m3ds-directional-selection-audit-v0",
+  "created_utc": "2026-08-31T16:55:16+00:00",
+  "git_commit": "5e153208e7133c9dbd561dd01e4166bd8c9a547b",
+  "source_confirmation_sha256": "d26add58a002f984627acc7c595fccf661d9f5fb0af322e41a14f7298050e8ce",
+  "selection_rule": [
+    "step 1: maximize distinct config coverage",
+    "step 2: within config, prefer greater s2 spacing from already selected states",
+    "step 3: prefer stronger independent-confirmation support margin",
+    "step 4: prefer larger absolute directional effect only after diversity/support",
+    "step 5: lexical state_id tie-break"
+  ],
+  "forbidden_in_selection": [
+    "future controller score",
+    "future regret",
+    "future VRF"
+  ],
+  "classes": {
+    "WIDEN": {
+      "available": 12,
+      "selected_count": 8,
+      "distinct_configs": 5,
+      "distinct_strata": [
+        "G-H",
+        "G-W"
+      ],
+      "diversity_gate": {
+        "min_distinct_configs": 4,
+        "distinct_configs_pass": true,
+        "min_strata": 2,
+        "strata_pass": true
+      },
+      "selected_state_ids": [
+        "c020_s2_00125",
+        "c010_s2_00250",
+        "c004_s2_00200",
+        "c000_s2_00160",
+        "c001_s2_00200",
+        "c020_s2_00160",
+        "c010_s2_00125",
+        "c010_s2_00160"
+      ],
+      "reserve_state_ids": [
+        "c001_s2_00250",
+        "c010_s2_00200",
+        "c020_s2_00200",
+        "c020_s2_00250"
+      ]
+    },
+    "SHRINK": {
+      "available": 10,
+      "selected_count": 8,
+      "distinct_configs": 5,
+      "distinct_strata": [
+        "G-H",
+        "G-S"
+      ],
+      "diversity_gate": {
+        "min_distinct_configs": 4,
+        "distinct_configs_pass": true,
+        "min_strata": 2,
+        "strata_pass": true
+      },
+      "selected_state_ids": [
+        "c020_s2_00800",
+        "c000_s2_00400",
+        "c001_s2_00640",
+        "c004_s2_00800",
+        "c010_s2_00800",
+        "c000_s2_00500",
+        "c000_s2_00800",
+        "c000_s2_00640"
+      ],
+      "reserve_state_ids": [
+        "c001_s2_00800",
+        "c020_s2_00640"
+      ]
+    }
+  },
+  "invalid_directional": 0,
+  "reserve_policy": "Directional Reserve / Stress Set; future robustness only; forbidden for controller tuning",
+  "gates": {
+    "selected_widen_8": true,
+    "selected_shrink_8": true,
+    "invalid_zero": true,
+    "diversity_pass": true
+  },
+  "M3DS_DIR_1": "PASS"
+}
