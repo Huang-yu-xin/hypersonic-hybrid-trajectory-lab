@@ -1,14 +1,60 @@
 {
   "repair_stage": "ER-1",
-  "status": "FORENSICS_COMPLETE_REPLAY_PENDING",
-  "root_cause": "S0-S4 topology labels were compared with the non-domain literal NOMINAL",
+  "status": "COMPLETE_STOPPED_AT_CORRECTED_M3_D_REFERENCE_GATE",
+  "root_cause": "S0-S4 topology labels were compared with the non-domain literal NOMINAL, so every sample entered the event estimator",
   "last_known_clean_stage": "M3-2 pre-benchmark / RareTopo-M2-v0 frozen empirical parent",
   "first_contaminated_stage": "M3-v0 empirical scalar benchmark",
   "event_semantics_schema_version": 2,
   "historical_tags_mutated": false,
-  "stages": [],
-  "current_valid_frontier": "RareTopo-M2-v0 plus structurally valid M3 theory/estimator algebra",
+  "stages": [
+    {
+      "stage": "M3-v0",
+      "status": "CORRECTED_REPLAY_COMPLETE",
+      "headline": "The corrected gradient remains widening-dominant and has zero accuracy advantage over Always-Widen; the Strong VRF gate is invalid because its p_ref has different event semantics.",
+      "gate": "M3-3 FAIL; Strong INVALID_REFERENCE_SEMANTICS",
+      "child": "M3-D sign-diverse benchmark",
+      "child_authorized": true,
+      "corrected_tag": "RareTopo-M3-v2",
+      "corrected_commit": "f30e8bf52d69fb6327df7fa1487347f193543f22",
+      "repair_simulator_calls": 20480000
+    },
+    {
+      "stage": "M3-D reference gate",
+      "status": "CORRECTED_REPLAY_COMPLETE_STOP",
+      "headline": "The original 24-state set is no longer a valid 8/8/8 sign-diverse benchmark under corrected event semantics.",
+      "legacy_composition": {"WIDEN": 8, "SHRINK": 8, "HOLD": 8, "REFERENCE_AMBIGUOUS": 0},
+      "corrected_composition": {"WIDEN": 6, "SHRINK": 7, "HOLD": 3, "REFERENCE_AMBIGUOUS": 8},
+      "gate": "FAIL",
+      "child": "M3-D online Layer A",
+      "child_authorized": false,
+      "corrected_tag": "RareTopo-M3-D-v1",
+      "corrected_commit": "8204819bb3c5230f5940f410056cf43b8e44b89b",
+      "repair_simulator_calls": 36000000
+    },
+    {"stage": "M3-D online", "status": "NOT_RUN_PARENT_GATE_FAILED", "child_authorized": false},
+    {"stage": "M3-G-v1", "status": "NOT_RUN_PARENT_GATE_FAILED", "child_authorized": false},
+    {"stage": "M3-BV/BV2", "status": "NOT_RUN_PARENT_GATE_FAILED", "child_authorized": false},
+    {"stage": "M3-CA", "status": "NOT_RUN_PARENT_GATE_FAILED", "child_authorized": false},
+    {"stage": "M4-PF0/PF1", "status": "NOT_RUN_PARENT_GATE_FAILED", "child_authorized": false},
+    {"stage": "M4-PF2", "status": "DIAGNOSTIC_RAW_REANALYSIS_ONLY_NOT_AUTHORIZED", "child_authorized": false},
+    {"stage": "M4-PF3", "status": "DIAGNOSTIC_RAW_REANALYSIS_ONLY_NOT_AUTHORIZED", "child_authorized": false}
+  ],
+  "raw_reanalysis": {
+    "extra_simulator_calls": 0,
+    "PF2_median_corrected_to_legacy_variance_mass_ratio": 0.02039219386331617,
+    "PF3_median_corrected_to_legacy_variance_mass_ratio": 0.019780638971306677,
+    "corrected_non_event_mass_max": 0.0,
+    "scientific_use": "diagnostic impact evidence only; final evaluations were not repairable from persisted raw arrays"
+  },
+  "current_valid_frontier": "RareTopo-M3-v2 plus the negative corrected M3-D reference-gate result RareTopo-M3-D-v1",
+  "next_authorized_stage": "A new preregistered corrected sign-diverse benchmark decision; no historical descendant is authorized",
   "m5ar_authorized": false,
   "m3q_authorized": false,
-  "repair_simulator_calls": 0
+  "repair_simulator_calls": 56480000,
+  "full_regression": {
+    "command": "python -m pytest -q",
+    "result": "1363 passed, 3 warnings",
+    "elapsed_seconds": 381.03,
+    "exit_code": 0
+  }
 }

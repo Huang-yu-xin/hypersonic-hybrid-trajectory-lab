@@ -6,151 +6,127 @@
     "affected_metrics": [],
     "corrected_tag": null,
     "corrected_commit": null,
-    "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "child_authorized": true,
+    "notes": "Last clean frozen empirical parent; historical tag preserved."
   },
   {
     "historical_tag": "RareTopo-M3-v0",
     "historical_commit": "32b285625494d9b3da08be3c559db3855df77667",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
-    "corrected_tag": null,
-    "corrected_commit": null,
-    "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "semantic_status": "SUPERSEDED",
+    "affected_metrics": ["event-dependent empirical metrics and gates"],
+    "corrected_tag": "RareTopo-M3-v2",
+    "corrected_commit": "f30e8bf52d69fb6327df7fa1487347f193543f22",
+    "child_authorized": true,
+    "notes": "Corrected replay still authorizes only M3-D; the optional Strong VRF gate is invalid because full-event P_hat was paired with missing-mode-only p_ref."
   },
   {
     "historical_tag": "RareTopo-M3-D-v0",
     "historical_commit": "7bd58c5992615b8579b1814a3a3fcbea3cda9659",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
-    "corrected_tag": null,
-    "corrected_commit": null,
+    "semantic_status": "SUPERSEDED",
+    "affected_metrics": ["reference labels", "P_hat", "M2", "online premise and all empirical gates"],
+    "corrected_tag": "RareTopo-M3-D-v1",
+    "corrected_commit": "8204819bb3c5230f5940f410056cf43b8e44b89b",
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Corrected composition 6/7/3 plus 8 ambiguous fails the exact 8/8/8 gate; online stage not run."
   },
   {
     "historical_tag": "RareTopo-M3-G-v1",
     "historical_commit": "4505a36265ac3020d4b31290c697f7fb37fe2e07",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["event-dependent gradient, action and value evidence"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Not replayed because corrected M3-D reference gate failed."
   },
   {
     "historical_tag": "RareTopo-M3-BV-v0",
     "historical_commit": "1eea1836ae48831dc102f878dddbbb9268aefdcd",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["contaminated M3-D value evidence"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Not replayed because corrected M3-D reference gate failed."
   },
   {
     "historical_tag": "RareTopo-M3-BV2-v0",
     "historical_commit": "912ed9771c34c50cc05825c7a5f3590553b5dfb0",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["matched controller value evidence"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Not replayed because corrected M3-D reference gate failed."
   },
   {
     "historical_tag": "RareTopo-M3-CA-v0",
     "historical_commit": "6b1ce6e1e99acc176df6b787e9cd5566fccc29bf",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["scientific verdict inherited from contaminated BV2"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Cost arithmetic remains reproducible but cannot authorize PF work."
   },
   {
     "historical_tag": "RareTopo-M4-PF0-v0",
     "historical_commit": "a18a6a5a5f501ba236c2541e83b659d8d6cca021",
-    "semantic_status": "PARTIALLY_VALID",
-    "affected_metrics": [
-      "scientific application to contaminated gradients"
-    ],
+    "semantic_status": "PARTIALLY_VALID_BUT_BLOCKED",
+    "affected_metrics": ["scientific application to contaminated gradients"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Theory and SPD algebra survive; empirical proposal-family lineage is not authorized."
   },
   {
     "historical_tag": "RareTopo-M4-PF1-v0",
     "historical_commit": "e6885bb59a8437cd5834a3a60ccf07c9c89624fe",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["event-dependent empirical metrics and gates"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Not replayed because corrected upstream parent failed."
   },
   {
     "historical_tag": "RareTopo-M4-PF2-0-v0",
     "historical_commit": "ff57f0d39cc79f697f1cd41596381f9e1e21c21a",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["contaminated parent-gradient diagnostics"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "No corrected scientific route reached PF2-0."
   },
   {
     "historical_tag": "RareTopo-M4-PF2-v0",
     "historical_commit": "82e6f36438fa1db6cf0b10055c16b573c07dd6b9",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["event mask", "variance mass", "final evaluations and gate"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Gradient archives were reanalysed diagnostically with zero calls; missing final samples prevent repair."
   },
   {
     "historical_tag": "RareTopo-M4-PF3-0-v0",
     "historical_commit": "ca8d3f579ab406818682615c3efccaf5abd527cf",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["variance-mass routing diagnostics"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Historical route is not authorized by a corrected PF2 parent."
   },
   {
     "historical_tag": "RareTopo-M4-PF3-v0",
     "historical_commit": "dbe730d4a0cf12de253e2f46384d9abc99d9a60e",
-    "semantic_status": "SUPERSEDED_PENDING_REVALIDATION",
-    "affected_metrics": [
-      "event-dependent empirical metrics and gates"
-    ],
+    "semantic_status": "SUPERSEDED_AND_BLOCKED",
+    "affected_metrics": ["event mask", "variance mass", "allocation/coverage diagnostics", "final evaluations and gate"],
     "corrected_tag": null,
     "corrected_commit": null,
     "child_authorized": false,
-    "notes": "historical tag preserved; corrected lineage not yet frozen"
+    "notes": "Gradient archives were reanalysed diagnostically; no corrected PF3-equivalent parent exists for M5-AR."
   }
 ]

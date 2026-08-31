@@ -103,3 +103,26 @@ def test_er1_output_schema():
         "er1_final_lineage.json",
     }
     assert required <= {path.name for path in SUMMARY.iterdir()}
+
+
+def test_er1_final_lineage_stops_at_corrected_m3d_gate():
+    lineage = _json("er1_final_lineage.json")
+    assert lineage["status"] == "COMPLETE_STOPPED_AT_CORRECTED_M3_D_REFERENCE_GATE"
+    assert lineage["repair_simulator_calls"] == 56_480_000
+    assert lineage["m5ar_authorized"] is False
+    assert lineage["m3q_authorized"] is False
+    assert lineage["stages"][1]["gate"] == "FAIL"
+    assert lineage["stages"][1]["child_authorized"] is False
+    assert lineage["full_regression"]["result"] == "1363 passed, 3 warnings"
+
+
+def test_er1_corrected_tags_and_historical_tags_are_distinct():
+    assert subprocess.check_output(
+        ["git", "rev-list", "-n", "1", "RareTopo-M3-v2"], cwd=REPO,
+        text=True).strip() == "f30e8bf52d69fb6327df7fa1487347f193543f22"
+    assert subprocess.check_output(
+        ["git", "rev-list", "-n", "1", "RareTopo-M3-D-v1"], cwd=REPO,
+        text=True).strip() == "8204819bb3c5230f5940f410056cf43b8e44b89b"
+    assert subprocess.check_output(
+        ["git", "rev-list", "-n", "1", "RareTopo-M3-v0"], cwd=REPO,
+        text=True).strip() != "f30e8bf52d69fb6327df7fa1487347f193543f22"

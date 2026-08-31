@@ -255,7 +255,13 @@ def run_forensics(repo: Path) -> dict[str, Any]:
     _write_json(out / "er1_dependency_graph.json", graph)
     _write_csv(out / "er1_metric_impact.csv", _metric_impact_rows())
     _write_json(out / "er1_raw_repairability.json", repairability)
-    _write_json(out / "er1_supersession_ledger.json", initial_ledger)
-    _write_json(out / "er1_final_lineage.json", final_lineage)
+    final_path = out / "er1_final_lineage.json"
+    existing_final = (json.loads(final_path.read_text(encoding="utf-8"))
+                      if final_path.exists() else None)
+    if existing_final and str(existing_final.get("status", "")).startswith("COMPLETE"):
+        final_lineage = existing_final
+    else:
+        _write_json(out / "er1_supersession_ledger.json", initial_ledger)
+        _write_json(final_path, final_lineage)
     return {"manifest": manifest, "boundary": boundary, "graph": graph,
             "repairability": repairability, "lineage": final_lineage}
