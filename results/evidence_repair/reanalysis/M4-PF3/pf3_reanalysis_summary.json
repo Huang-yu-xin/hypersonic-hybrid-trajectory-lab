@@ -1,0 +1,17 @@
+{
+  "stage": "M4-PF3",
+  "status": "DIAGNOSTIC_REANALYSIS_ONLY_PARENT_NOT_AUTHORIZED",
+  "legacy_source_path": "results/phase_m4pf3/m4pf3_confirmation_raw.json",
+  "legacy_source_sha256": "4ef61e753520f4bcedcb0ec6f19b8113e0af3e96a29c06fd9451a2219add83fe",
+  "repair_commit": "a19972943e129cb79a03db7304cc1054490c0c5e",
+  "corrected_schema_version": 2,
+  "state_count": 24,
+  "median_corrected_to_legacy_mass_ratio": 0.019780638971306677,
+  "median_legacy_mass_on_true_event_fraction": 0.019780638971306677,
+  "median_corrected_A_alloc": 0.0729237622277918,
+  "median_corrected_U99": 0.0035876931311632576,
+  "corrected_non_event_mass_max": 0.0,
+  "final_evaluation_repairable_from_raw": false,
+  "child_authorized": false,
+  "extra_simulator_calls": 0
+}
