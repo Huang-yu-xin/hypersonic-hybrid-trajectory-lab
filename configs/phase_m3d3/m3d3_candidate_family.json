@@ -1,0 +1,154 @@
+{
+  "schema_version": "raretopo-m3d3-boundary-candidate-family-v0",
+  "source_d3_0_route": "D3-0A",
+  "primary_axis": "s2_selected_component_covariance_scale",
+  "candidate_generation": {
+    "bracket_count": 5,
+    "raw_generated_candidates": 15,
+    "deduplicated_candidates": 14,
+    "distinct_configs": 5,
+    "interpolation_space": "log_s2",
+    "fractions": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "dedup_relative_tolerance": 1e-12
+  },
+  "candidates": [
+    {
+      "config_id": "m1d_b20260827_c000",
+      "s2": 2.378414230005442,
+      "fraction_log_space": 0.25,
+      "source_s2_left": 2.0,
+      "source_s2_right": 4.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c000_d3_s2_2p37841423001"
+    },
+    {
+      "config_id": "m1d_b20260827_c000",
+      "s2": 2.82842712474619,
+      "fraction_log_space": 0.5,
+      "source_s2_left": 2.0,
+      "source_s2_right": 4.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c000_d3_s2_2p82842712475"
+    },
+    {
+      "config_id": "m1d_b20260827_c000",
+      "s2": 3.363585661014858,
+      "fraction_log_space": 0.75,
+      "source_s2_left": 2.0,
+      "source_s2_right": 4.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c000_d3_s2_3p36358566101"
+    },
+    {
+      "config_id": "m1d_b20260827_c001",
+      "s2": 3.1622776601683795,
+      "fraction_log_space": 0.25,
+      "source_s2_left": 2.5,
+      "source_s2_right": 6.4,
+      "source_boundary_type": "W_H_S_PATH",
+      "candidate_id": "m1d_b20260827_c001_d3_s2_3p16227766017"
+    },
+    {
+      "config_id": "m1d_b20260827_c001",
+      "s2": 5.059644256269407,
+      "fraction_log_space": 0.75,
+      "source_s2_left": 2.5,
+      "source_s2_right": 6.4,
+      "source_boundary_type": "W_H_S_PATH",
+      "candidate_id": "m1d_b20260827_c001_d3_s2_5p05964425627"
+    },
+    {
+      "config_id": "m1d_b20260827_c004",
+      "s2": 4.023786974985393,
+      "fraction_log_space": 0.25,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c004_d3_s2_4p02378697499"
+    },
+    {
+      "config_id": "m1d_b20260827_c004",
+      "s2": 5.059644256269406,
+      "fraction_log_space": 0.5,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c004_d3_s2_5p05964425627"
+    },
+    {
+      "config_id": "m1d_b20260827_c004",
+      "s2": 6.362165830136404,
+      "fraction_log_space": 0.75,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c004_d3_s2_6p36216583014"
+    },
+    {
+      "config_id": "m1d_b20260827_c010",
+      "s2": 4.023786974985393,
+      "fraction_log_space": 0.25,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_H_S_PATH",
+      "candidate_id": "m1d_b20260827_c010_d3_s2_4p02378697499"
+    },
+    {
+      "config_id": "m1d_b20260827_c010",
+      "s2": 5.059644256269406,
+      "fraction_log_space": 0.5,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_H_S_PATH",
+      "candidate_id": "m1d_b20260827_c010_d3_s2_5p05964425627"
+    },
+    {
+      "config_id": "m1d_b20260827_c010",
+      "s2": 6.362165830136404,
+      "fraction_log_space": 0.75,
+      "source_s2_left": 3.2,
+      "source_s2_right": 8.0,
+      "source_boundary_type": "W_H_S_PATH",
+      "candidate_id": "m1d_b20260827_c010_d3_s2_6p36216583014"
+    },
+    {
+      "config_id": "m1d_b20260827_c020",
+      "s2": 3.8054627680087076,
+      "fraction_log_space": 0.25,
+      "source_s2_left": 3.2,
+      "source_s2_right": 6.4,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c020_d3_s2_3p80546276801"
+    },
+    {
+      "config_id": "m1d_b20260827_c020",
+      "s2": 4.525483399593904,
+      "fraction_log_space": 0.5,
+      "source_s2_left": 3.2,
+      "source_s2_right": 6.4,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c020_d3_s2_4p52548339959"
+    },
+    {
+      "config_id": "m1d_b20260827_c020",
+      "s2": 5.3817370576237735,
+      "fraction_log_space": 0.75,
+      "source_s2_left": 3.2,
+      "source_s2_right": 6.4,
+      "source_boundary_type": "W_AMBIGUOUS_S_PATH",
+      "candidate_id": "m1d_b20260827_c020_d3_s2_5p38173705762"
+    }
+  ],
+  "d2_confirmed_states_included_in_final_eligible_universe": true,
+  "d2_confirmed_counts": {
+    "WIDEN": 12,
+    "HOLD": 3,
+    "SHRINK": 10
+  },
+  "new_confirmed_hold_minimum_for_final_count": 5,
+  "extra_simulator_calls": 0
+}

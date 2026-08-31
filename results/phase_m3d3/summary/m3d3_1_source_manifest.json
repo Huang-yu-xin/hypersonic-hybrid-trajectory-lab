@@ -1,0 +1,76 @@
+{
+  "schema_version": "raretopo-m3d3-1-source-manifest-v0",
+  "read_only_sources": true,
+  "items": [
+    {
+      "path": "results/phase_m3d2/summary/m3d2_candidate_pool.json",
+      "sha256": "7f8d1b5919de40d59d77cfbf94bd84b4fc3d37f73f0998864cae035509481cb7",
+      "source_commit": "a0a1b1672a82b6920765f85b026ac720571a32f6",
+      "read_only": true,
+      "role": "D2 72-state pool"
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_discovery_summary.json",
+      "sha256": "f4f419966c573796e221ea1a754cf22f0a7e075a4274e764df5960629b24f21b",
+      "source_commit": "2090229457b6e943f9dd44471aadf39ed7937174",
+      "read_only": true,
+      "role": "D2 discovery"
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_confirmation_summary.json",
+      "sha256": "d26add58a002f984627acc7c595fccf661d9f5fb0af322e41a14f7298050e8ce",
+      "source_commit": "072061a8ee6a1b0a346ec24c85296d85fd168e41",
+      "read_only": true,
+      "role": "D2 confirmation"
+    },
+    {
+      "path": "results/phase_m3d2/summary/m3d2_class_transition.json",
+      "sha256": "56b9e13c035513891ddce5926146e39dac78c3cd67ba4f987ba8dc7c1068bb3c",
+      "source_commit": "a71fa1e9c645e1e716031269caa93751d2b36df4",
+      "read_only": true,
+      "role": "D2 class transition"
+    },
+    {
+      "path": "results/phase_m3d3/summary/d3_0_d2_state_table.csv",
+      "sha256": "e0735d18f52b685958c37b75ed5eb8e1ec1f371b0b3de82bb892a50e7fd8273d",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "D3-0 state table"
+    },
+    {
+      "path": "results/phase_m3d3/summary/d3_0_s2_boundary_brackets.csv",
+      "sha256": "29bf512eb577ef49967d257d694338049934c1c47351c730391fde0a625c7b8f",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "D3-0 brackets"
+    },
+    {
+      "path": "results/phase_m3d3/summary/d3_0_confirmed_hold_signature.csv",
+      "sha256": "9f4b529f6d49ea38d5ac4b7f99e8d047575e2a590b2661c8cec49675e2fc901f",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "D3-0 HOLD signatures"
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_Lost_HOLD_Audit.md",
+      "sha256": "d30409badfefbce99991053374289f81255a6af0a14c761940a4947dd3167256",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "D3-0 lost HOLD audit"
+    },
+    {
+      "path": "results/phase_m3d3/summary/d3_0_candidate_axis_inventory.csv",
+      "sha256": "ea531e8ed1456603c5b9ad5b8eff5a8c0db8d7f50a3839dcb820d0c0cc9adaec",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "D3-0 axis inventory"
+    },
+    {
+      "path": "docs/phase_m3d3/M3_D3_Classifier_Contract.md",
+      "sha256": "6a8916720f36870e670df6c737777cf1411f4f89c536a28b958d02cf714a7ca2",
+      "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+      "read_only": true,
+      "role": "frozen D2 classifier reuse"
+    }
+  ]
+}

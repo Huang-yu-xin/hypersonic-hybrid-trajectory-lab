@@ -1,0 +1,10 @@
+{
+  "schema_version": "raretopo-m3d3-d3-0-summary-v0",
+  "source_commit": "7b38becb3891d5a17ae327a02a020fd5c91acbd2",
+  "extra_simulator_calls": 0,
+  "state_rows": 72,
+  "confirmed_hold": 3,
+  "detected_brackets": 5,
+  "primary_axis": "s2_selected_component_covariance_scale",
+  "route": "D3-0A"
+}

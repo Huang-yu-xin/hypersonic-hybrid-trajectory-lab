@@ -1,0 +1,55 @@
+{
+  "schema_version": "raretopo-m3d3-protocol-v0",
+  "stage": "M3-D3-1 boundary-focused s2 preregistration",
+  "parent": {
+    "ER1": "RareTopo-ER1-v0",
+    "M3D2_tip": "f031512",
+    "D3_0_route": "D3-0A"
+  },
+  "event_semantics_schema_version": 2,
+  "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+  "event_predicate": "topology != S0",
+  "classifier_reuse": {
+    "widen_reduction_threshold": -0.01,
+    "hold_band": 0.03,
+    "paired_support_se_multiplier": 2.0,
+    "direction_margin": 0.05,
+    "min_arm_ess": 20.0
+  },
+  "reference": {
+    "n_per_config": 1000000,
+    "n_batches": 20,
+    "shared_across_state_arms": true,
+    "namespace": "D3-REFERENCE",
+    "seed_formula": "SeedSequence([3303000, candidate_index])"
+  },
+  "discovery": {
+    "n_per_arm": 100000,
+    "n_batches": 20,
+    "namespace": "D3-DISCOVERY",
+    "seed_formula": "SeedSequence([3303001, candidate_index])",
+    "gate": "M3D3-DISC-1",
+    "new_provisional_hold_minimum": 10,
+    "d2_confirmed_widen": 12,
+    "d2_confirmed_shrink": 10
+  },
+  "confirmation": {
+    "n_per_arm": 500000,
+    "n_batches": 20,
+    "namespace": "D3-CONFIRMATION",
+    "seed_formula": "SeedSequence([3303002, candidate_index])",
+    "replacement_allowed": false,
+    "shortlist": {
+      "HOLD": 12,
+      "WIDEN": 0,
+      "SHRINK": 0
+    }
+  },
+  "firewall": {
+    "extra_simulator_calls_so_far": 0,
+    "controller_online_trials": 0,
+    "rarity_shift": "BLOCKED",
+    "posthoc_candidates_allowed": false
+  },
+  "stop_before_discovery": true
+}

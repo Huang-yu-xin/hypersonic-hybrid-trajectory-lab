@@ -1,0 +1,8 @@
+{
+  "schema_version": "raretopo-m3d3-diversity-gate-v0",
+  "confirmed_hold_minimum": 8,
+  "distinct_hold_config_ids_minimum": 4,
+  "max_selected_hold_per_config": 3,
+  "original_strata_gate": "NOT_APPLIED: D3 interpolation points have no stable original-stratum assignment",
+  "applies_at": "final exact 8/8/8 selection"
+}

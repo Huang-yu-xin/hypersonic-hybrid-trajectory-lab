@@ -1,0 +1,38 @@
+{
+  "schema_version": "raretopo-m3d3-seeds-v0",
+  "reference": {
+    "n_per_config": 1000000,
+    "n_batches": 20,
+    "shared_across_state_arms": true,
+    "namespace": "D3-REFERENCE",
+    "seed_formula": "SeedSequence([3303000, candidate_index])"
+  },
+  "discovery": {
+    "n_per_arm": 100000,
+    "n_batches": 20,
+    "namespace": "D3-DISCOVERY",
+    "seed_formula": "SeedSequence([3303001, candidate_index])",
+    "gate": "M3D3-DISC-1",
+    "new_provisional_hold_minimum": 10,
+    "d2_confirmed_widen": 12,
+    "d2_confirmed_shrink": 10
+  },
+  "confirmation": {
+    "n_per_arm": 500000,
+    "n_batches": 20,
+    "namespace": "D3-CONFIRMATION",
+    "seed_formula": "SeedSequence([3303002, candidate_index])",
+    "replacement_allowed": false,
+    "shortlist": {
+      "HOLD": 12,
+      "WIDEN": 0,
+      "SHRINK": 0
+    }
+  },
+  "disjoint_from": [
+    "D2-PREF",
+    "D2-DISCOVERY",
+    "D2-CONFIRMATION",
+    "all controller seeds"
+  ]
+}
