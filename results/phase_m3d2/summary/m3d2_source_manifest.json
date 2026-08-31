@@ -1,0 +1,97 @@
+{
+  "schema_version": "raretopo-m3d2-source-manifest-v0",
+  "created_utc": "2026-08-31T13:38:25+00:00",
+  "entries": [
+    {
+      "path": "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+      "sha256": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "RareTopo-M2-v0 parent state family",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3/m3_scalar_gradient_v0.json",
+      "sha256": "6983b3ac236be5964bce82fcc1f225fdb1121408654257ad12f24899f007c7b7",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "corrected candidate-generation prior",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d/m3d_reference_characterization.json",
+      "sha256": "2ba5d4ad654a1666c493e8b3cdaef92c8bcb550f2b5620e8e8281cf0b5e3293a",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "finite-step classifier source",
+      "read_only": true
+    },
+    {
+      "path": "results/evidence_repair/reanalysis/M3-D/m3d_corrected_reference_gate.json",
+      "sha256": "ceba19a325915006939b62eb1354bd8648760b0ae3bfc8fc58a1d5b17cbd3d19",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "corrected historical negative gate",
+      "read_only": true
+    },
+    {
+      "path": "docs/evidence_repair/ER1_Event_Semantics_Contract.md",
+      "sha256": "6f97ba135dfd74bfb72a6ca007fb0a7a3ccd18f4fdd4d88e24ce8bd9bbe9c985",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "schema-2 semantic contract",
+      "read_only": true
+    },
+    {
+      "path": "docs/evidence_repair/ER1_Supersession_Ledger.md",
+      "sha256": "ff5b8ed499c3c8e08794747dea6f42992713dcc6aaea0ba098ba93d2e9c7477e",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "lineage status",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_balancing_rule.json",
+      "sha256": "16ed9ef6fc6b7dac1b08ea85f09a8af0033e0635ebc3b4baeb22dccf957d9289",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_candidate_states.json",
+      "sha256": "ebe34fb8723e9355f8521ec7b8d7fcfc996f0d620b6029d4662e844721cd8ba4",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_classifier_contract.json",
+      "sha256": "663da48aa6f8126f679f7002b5e6fbdb96a5c7ad161e8dca59b279c92d107459",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_confirmation_seeds.json",
+      "sha256": "8eaad8a82d5c7e063603282353c142bcf540a430f0a4ae6eab12063b9a0d8225",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_discovery_seeds.json",
+      "sha256": "b21c120f57d82716ad68030b40e65a6c9321661787a88c69f3dfa991cfa7e441",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_probability_contract.json",
+      "sha256": "b9e497f98310cd949138d4148e796cc6a4a5e387fdbb8c9beb8128e16c5b077b",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    },
+    {
+      "path": "configs/phase_m3d2/m3d2_protocol.json",
+      "sha256": "e16a53e5b08986811e68d1e4e554a58308e2e00a32350ba26dd9526af94ecb18",
+      "source_tag_or_commit": "fc688392ad63c96398144cb2a5f515bce14c0fee",
+      "role": "M3-D2 preregistration",
+      "read_only": true
+    }
+  ]
+}
