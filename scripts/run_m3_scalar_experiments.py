@@ -105,6 +105,16 @@ def _batch_meta(stage_name: str) -> dict:
         "call_accounting_rule": {
             "scientific_audit_calls_per_trial": PN + 3 * EVAL_N,
             "deployable_method_calls_per_trial": PN + EVAL_N},
+        "event_semantics": {
+            "schema_version": 2,
+            "topology_event": "label != TopologyLabel.NOMINAL",
+            "estimator_indicator": "I[topology_event]",
+        },
+        "evidence_repair": {
+            "repair_id": "ER-1",
+            "run_kind": "isolated_corrected_replay",
+            "historical_results_immutable": True,
+        },
     }
 
 
@@ -699,9 +709,15 @@ STAGES = {
 
 
 def main() -> int:
+    global RESULTS
     ap = argparse.ArgumentParser(description="M3 scalar benchmark driver")
     ap.add_argument("--stage", choices=sorted(STAGES), required=True)
+    ap.add_argument(
+        "--results-root", type=Path, default=RESULTS,
+        help="isolated output root (defaults to the historical phase_m3 path)",
+    )
     args = ap.parse_args()
+    RESULTS = args.results_root.resolve()
     STAGES[args.stage]()
     return 0
 
