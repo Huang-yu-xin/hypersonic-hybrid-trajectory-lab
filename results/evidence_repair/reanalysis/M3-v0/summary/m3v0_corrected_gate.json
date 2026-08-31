@@ -1,0 +1,100 @@
+{
+  "schema_version": "raretopo-er1-m3v0-gate-v1",
+  "event_semantics_schema_version": 2,
+  "event_definition_id": "topology-label-non-nominal-v1",
+  "corrected_source": "results/evidence_repair/reanalysis/M3-v0/scalar_layer_a/scalar_layer_a_v1.json",
+  "corrected_source_sha256": "7e7b56f6a12b8f461f0f05283b4f26b318f8688ca0fd9cd122a87983b95da0e3",
+  "legacy_gate_source": "results/phase_m3/summary/gate_audit.json",
+  "legacy_gate_source_sha256": "eca705e4ab7bf787c6a3ed45a1843b0bf955ab8fbe808baf7ed4169e9cea361b",
+  "protocol_source_sha256": "6983b3ac236be5964bce82fcc1f225fdb1121408654257ad12f24899f007c7b7",
+  "repair_simulator_calls": 20480000,
+  "original_frozen_sample_count_per_trial": {
+    "pilot": 20000,
+    "final_per_arm": 100000,
+    "arms": 3
+  },
+  "repair_sample_count_per_trial": {
+    "pilot": 20000,
+    "final_per_arm": 100000,
+    "arms": 3
+  },
+  "seed_reuse_status": "EXACT",
+  "draw_order_status": "EXACT",
+  "decision_counts": {
+    "WIDEN": 37,
+    "HOLD_LOW_ESS": 25,
+    "HOLD_UNCERTAIN": 2
+  },
+  "aggregates": {
+    "n_trials": 64,
+    "decision_counts": {
+      "WIDEN": 37,
+      "HOLD_LOW_ESS": 25,
+      "HOLD_UNCERTAIN": 2
+    },
+    "n_active": 37,
+    "active_fraction": 0.578125,
+    "acc_dir": 0.8648648648648649,
+    "rate_M2_pred_lt_base": 0.972972972972973,
+    "median_ratio_pred_base": 0.8564014991181417,
+    "median_ratio_pred_opposite": 0.734232084928298,
+    "acc_always_widen_on_active": 0.8648648648648649,
+    "acc_always_shrink_on_active": 0.02702702702702703,
+    "leakage_median_max_offtarget_by_config": {
+      "m1d_b20260827_c000": 0.9999480809862373,
+      "m1d_b20260827_c001": 0.9999644246667745,
+      "m1d_b20260827_c004": 1.004305524082062,
+      "m1d_b20260827_c006": 0.9999231561040864,
+      "m1d_b20260827_c007": 0.9999830733766857,
+      "m1d_b20260827_c010": 0.9999792362542406,
+      "m1d_b20260827_c017": 0.9999607281915048,
+      "m1d_b20260827_c020": 0.9999730332883974
+    },
+    "configs_within_leak_ratio_2": 8,
+    "vrf_budget_grad_median": 0.29963690063396287,
+    "ess_grad_median_over_all": 26.858464803029648,
+    "strong_median": 0.29963690063396287,
+    "always_widen_vrf_median_CONTEXT_ONLY": 0.3256915357089897
+  },
+  "gates": {
+    "M3_2_direction_identifiability": {
+      "observed": 0.578125,
+      "threshold": 0.5,
+      "verdict": "PASS"
+    },
+    "M3_3_direction_accuracy": {
+      "accuracy": 0.8648648648648649,
+      "accuracy_floor": 0.75,
+      "advantage_pp": 0.0,
+      "advantage_floor_pp": 25,
+      "verdict": "FAIL"
+    },
+    "M3_4_predicted_step_m2_gain": {
+      "success_rate": 0.972972972972973,
+      "success_floor": 0.75,
+      "median_pred_base": 0.8564014991181417,
+      "ratio_cap": 0.9,
+      "verdict": "PASS"
+    },
+    "M3_5_counterfactual_ordering": {
+      "median_pred_opposite": 0.734232084928298,
+      "ratio_cap": 0.85,
+      "verdict": "PASS"
+    },
+    "M3_6_no_catastrophic_leakage_redistribution": {
+      "configs_within_ratio_2": 8,
+      "configs_required": 7,
+      "verdict": "PASS"
+    },
+    "STRONG_budget_adjusted_vrf": {
+      "median": 0.29963690063396287,
+      "required_gt": 1.0,
+      "verdict": "NOT PASSED"
+    }
+  },
+  "core_gates_all_pass": false,
+  "headline": "Corrected estimator retains a widening-dominant local descent signal but has zero advantage over Always-Widen.",
+  "child_stage": "M3-D",
+  "child_authorized": true,
+  "child_authorization_basis": "The preregistered M3-D benchmark extension addresses this exact widening-dominant negative result."
+}
