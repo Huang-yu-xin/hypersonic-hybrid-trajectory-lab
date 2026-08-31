@@ -1,0 +1,84 @@
+{
+  "schema_version": "raretopo-m4pf3-0-protocol-v0",
+  "stage": "M4-PF3-0",
+  "parent_tag": "RareTopo-M4-PF2-v0",
+  "parent_commit": "82e6f36438fa1db6cf0b10055c16b573c07dd6b9",
+  "opening_regression": "1289 passed, 3 warnings in 311.89s",
+  "extra_simulator_calls": 0,
+  "diagnostic_anchor": "PF2 persisted per-state S0-selected scalar anchor",
+  "intervention_anchor": "PF2 P11",
+  "p11_requires_fresh_construction": true,
+  "states": {
+    "source": "configs/phase_m4pf2/m4pf2_states.json",
+    "count": 24,
+    "class_split": {"WIDEN": 12, "SHRINK": 12, "HOLD": 0}
+  },
+  "allocation": {
+    "direction": "r_bar-alpha",
+    "mismatch": "0.5*sum(abs(r_bar-alpha))",
+    "starvation_epsilon": 1e-15,
+    "material_median": 0.10,
+    "material_state_threshold": 0.15,
+    "material_state_count": 8
+  },
+  "coverage": {
+    "distance": "minimum component Mahalanobis squared distance",
+    "tau99": "chi2.ppf(0.99, state_dimension)",
+    "tau999": "chi2.ppf(0.999, state_dimension)",
+    "material_median_u99": 0.10,
+    "material_state_u99": 0.20,
+    "material_state_count": 8,
+    "severe_any_u999": 0.25,
+    "severe_any_top1_uncovered": 0.25,
+    "top_tail_fractions": [0.01, 0.001]
+  },
+  "candidate_library": {
+    "G1": "variance-mass weighted uncovered-sample barycentre",
+    "G2": "observed uncovered sample nearest the weighted barycentre in squared Euclidean distance",
+    "stratum_candidates": "up to two weighted barycentres for the two largest uncovered strata",
+    "stratum_min_share_of_uncovered_mass": 0.20,
+    "stratum_min_positive_mass_samples": 100,
+    "covariance": "unchanged covariance of existing component nearest to candidate centre by Mahalanobis distance",
+    "adaptive_cluster_count": false,
+    "descriptive_covariance_fit": false
+  },
+  "birth": {
+    "score": "E_nuV[g/q]-1",
+    "point_gate": "score>0",
+    "uncertainty": "four archived construction streams",
+    "acceptance_gate": "pooled score>0 and one-sided 95% Student-t lower confidence bound>0",
+    "selection": "largest admitted pooled score; deterministic candidate-id tie break"
+  },
+  "routing": {
+    "A": "allocation material and coverage not material",
+    "B": "coverage material and allocation not material",
+    "C": "allocation material and coverage material",
+    "D": "neither material",
+    "sensitivity_multipliers": [0.5, 1.0, 1.5],
+    "posthoc_change_forbidden": true
+  },
+  "source_lock": {
+    "manifest": "results/phase_m4pf3_0/summary/m4pf3_0_source_manifest.json",
+    "required_roles": [
+      "24 PF2 gradient archives",
+      "PF2 raw confirmation",
+      "PF2 family summary",
+      "PF2 state and tail tables",
+      "PF2 protocol, state and seed locks",
+      "PF1 family summary",
+      "M3-CA cost definitions",
+      "M3-BV2 frozen state definitions"
+    ],
+    "hash_before_and_after": true
+  },
+  "forbidden": [
+    "new simulator calls in PF3-0",
+    "S0 gradient reuse at P11",
+    "covariance rank escalation",
+    "mean-step sweep",
+    "GA1 HOLD pilot or scalar-controller tuning",
+    "descriptive covariance fitting",
+    "posthoc thresholds routes candidates or states",
+    "M3-Q"
+  ]
+}

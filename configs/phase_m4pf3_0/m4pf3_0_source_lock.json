@@ -1,0 +1,13 @@
+{
+  "schema_version": "raretopo-m4pf3-0-source-lock-v0",
+  "manifest_path": "results/phase_m4pf3_0/summary/m4pf3_0_source_manifest.json",
+  "manifest_sha256_before_analysis": "3c4e1376e177682965c5decca26a57e35257ffa0b59ab74d214d8af761f5e743",
+  "source_count": 36,
+  "pf2_archive_count": 24,
+  "pf2_tag": "RareTopo-M4-PF2-v0",
+  "pf2_commit": "82e6f36438fa1db6cf0b10055c16b573c07dd6b9",
+  "m3bv2_tag": "RareTopo-M3-BV2-v0",
+  "m3bv2_commit": "912ed9771c34c50cc05825c7a5f3590553b5dfb0",
+  "simulator_calls_before_analysis": 0,
+  "changes_after_commit_forbidden": true
+}
