@@ -56,7 +56,7 @@ def crn_batched_eval(arms: dict, bench_cfg, state_rng_key, n_ref: int,
             w = np.exp(logp - logq) * ind
             w_by_arm[name] = (w, lab)
         for name, (w, lab) in w_by_arm.items():
-            modes = sorted(set(lab.tolist()) - {TopologyLabel.NOMINAL.value})
+            modes = sorted(set(lab.tolist()) - {TopologyLabel.S0.value})
             out[name]["m2_batches"].append(float(np.mean(w ** 2)))
             out[name]["p_batches"].append(float(np.mean(w)))
             for mid in modes:
