@@ -1,0 +1,16 @@
+{
+  "alpha_p": 0.5,
+  "batches": 20,
+  "equal_budget_all_trials": true,
+  "estimator": "hyptraj.m3d.adaptation.gradient_decision (via committed run_m3pi1v machinery, verbatim)",
+  "finite_action_base_probe_samples": 0,
+  "finite_action_selected_probe_samples": 0,
+  "namespace": "M3-S1C-GRAD",
+  "no_topup": true,
+  "parent_protocol_sha256": "0ac12148451d166960e54359e70bbfd8bbce51d1c90505bb210b1bbe5e828192",
+  "replicates": 8,
+  "samples_per_trial": 20000,
+  "sign_mapping": "g_hat < 0 => WIDEN; g_hat > 0 => SHRINK",
+  "total_gradient_budget": 3840000,
+  "v1_samples": 0
+}

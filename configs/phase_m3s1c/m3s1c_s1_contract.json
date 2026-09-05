@@ -1,0 +1,12 @@
+{
+  "decision_rule": "if S1 >= threshold: DEPLOY gradient-selected action; else ABSTAIN",
+  "formula": "abs(g_hat) / ((ci_high-ci_low)/(2*1.959963984540054))",
+  "parent_artifact": "configs/phase_m3pi1vnr/m3pi1vnr_s1_contract.json",
+  "parent_sha256": "7ef685077f4a8f8c3dfdeed3964e3b520397a15613baf87275eaa762de146667",
+  "parent_source_sha256": "c7332b9e91ce8c286f94201a334d73aa0afcd7127cb5b5d85fda79ffeebba38f",
+  "same_gradient_data": true,
+  "sign_mapping": "g_hat < 0 => WIDEN; g_hat > 0 => SHRINK",
+  "threshold": 5.4417199447782,
+  "threshold_source": "PI1VNR development selection (frozen); NO threshold search permitted in M3-S1C",
+  "z95": 1.959963984540054
+}

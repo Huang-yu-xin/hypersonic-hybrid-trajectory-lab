@@ -1,0 +1,24 @@
+{
+  "analyses": [
+    "S1 deploy/abstain distribution vs s2 and curvature_c",
+    "descriptive stats by correct-safe / unsafe / missed-deploy outcome",
+    "S1 score vs preregistered descriptors (descriptive)"
+  ],
+  "constraints": [
+    "no confirmation-data-driven feature selection",
+    "no threshold tuning",
+    "no panel selection influence",
+    "secondary p-values never modify the S1C-A/B verdict"
+  ],
+  "descriptors": {
+    "a": "NOT_AVAILABLE",
+    "a_over_s_proposal": "NOT_AVAILABLE",
+    "beta": "NOT_AVAILABLE (no unambiguous mapping in this benchmark)",
+    "curvature_c": "AVAILABLE (frozen BenchmarkConfig curvature_c)",
+    "kappa": "NOT_AVAILABLE",
+    "lambda": "NOT_AVAILABLE",
+    "s2": "AVAILABLE (frozen state metadata)"
+  },
+  "purpose": "descriptive only: do S1 failures/abstentions enrich near theory-predicted grazing/multimodal difficult geometry?",
+  "status": "SECONDARY_NON_VERDICT"
+}

@@ -1,0 +1,9 @@
+{
+  "coverage_min": 0.75,
+  "deployable_trials": 128,
+  "direction_metric": "Sign-No-Abstain wrong-direction rate (inherited G2/UC3 semantics; computed on all 128 W/S trials)",
+  "nd_trials": 64,
+  "parent_gates_sha256": "090204a088b03622052a30bc7018aae309b9e3a7daf9f580458dc4f56cf29b27",
+  "unsafe_max": 0.2,
+  "wrong_direction_max": 0.05
+}

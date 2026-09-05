@@ -1,0 +1,33 @@
+{
+  "durable_order": [
+    "construct bounded paths",
+    "validate full path lengths",
+    "verify destination preconditions",
+    "durable STARTED ledger",
+    "gradient calculation",
+    "NO finite-action probe in S1C",
+    "build canonical non-circular payload",
+    "schema validate",
+    "compute hashes",
+    "temp write",
+    "flush + fsync",
+    "atomic rename",
+    "fsync parent directory",
+    "verify final durable record/hash",
+    "ledger COMPLETE"
+  ],
+  "failure_rule": "sampling started without durable COMPLETE => CONSUMED_INVALID => M3-S1C-X => STOP, NO REPLAY",
+  "module": "src/hyptraj/m3wa1r/persistence.py",
+  "module_sha256": "be343bdb322bb53d0d8b4ff01f7b50ae439c016efb4d05eaeb45d034cf8fc2cc",
+  "no_replay": true,
+  "no_same_stage_rerun": true,
+  "path_limits": {
+    "FULL_PATH_LIMIT": 220,
+    "RUN_UUID_MAX": 32,
+    "STATE_SLUG_MAX": 64,
+    "TEMP_BASENAME_MAX": 76
+  },
+  "pre_simulator_failure_rule": "engineering fix + incident record + re-hash + full preflight + re-authorization",
+  "trial_ledger": "results/phase_m3s1c/trials/trial_ledger.jsonl",
+  "trial_schema": "m3s1c_trial_v1"
+}

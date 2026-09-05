@@ -1,0 +1,278 @@
+{
+  "parent": "D:/Users/huangyx/Desktop/hypersonic-hybrid-trajectory-lab/results/phase_m3s1c/preflight/m3s1c_panel.csv",
+  "parent_manifest": "m3pi1vnr_remaining_protected_reserve.csv",
+  "parent_manifest_sha256": "8e51d6ff0962ef968b42c13c4e768ef2a23aebfd5c77e7a1fe7f32142320aa9e",
+  "rank_seed": "M3-S1C-PANEL-V1|",
+  "selection_rule": {
+    "level1": "stratify by frozen truth: 8 WIDEN / 8 SHRINK / 8 ND(HOLD+AMBIGUOUS)",
+    "level2": "maximize unique config_id count; then second state per config",
+    "level3": "hash rank sha256('M3-S1C-PANEL-V1|'+config_id+'|'+state_id), ascending byte order; frozen before any simulator call"
+  },
+  "sha256": "1b1e390f3c87e3e8556f37a92b6e4e4988a6b738d62eb7c6ab9eb7e39d3921a5",
+  "states": [
+    {
+      "config_id": "cf1n_new_003",
+      "s2": "2.0",
+      "selection_rank": "2d81a75ac70bc5f7c01ef0544ff1088bbba21e16b6dadd27f994d8d39870a9f4",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_003_cf1n_g03_s2_2",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": "1.4142135623730951",
+      "selection_rank": "3df953ca3fbf8a56ec275bcff93338ab8bb04b7bbe2d09fbafd683441f55e957",
+      "source_reference_artifact": "results/phase_m3wa1r/reference/cf1n_new_003_wa1_w_s2_1p4142135624.json",
+      "source_reference_hash": "eae68143c72fa59e042030cf652379febbd2410ddeff25425a379368edf890a7",
+      "source_stage": "M3-WA1R",
+      "state_id": "cf1n_new_003_wa1_w_s2_1p4142135624",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": "2.23606797749979",
+      "selection_rank": "5d1874a4fc26ec9436a8ead77d9932bc09c13cf3a971ecb682339a6db7b7e68d",
+      "source_reference_artifact": "results/phase_m3wa1r/reference/cf1n_new_003_wa1_w_s2_2p2360679775.json",
+      "source_reference_hash": "e9ea50c1f8c1f3855f38c5d4aff07facafb660bef93806c2dd2db9584a0ec204",
+      "source_stage": "M3-WA1R",
+      "state_id": "cf1n_new_003_wa1_w_s2_2p2360679775",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": "1.6",
+      "selection_rank": "7a5ff373d920f21ab8892c0b811dae6995ebfe59f320491c35096e9053c48aee",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_005_cf1n_g02_s2_1p6",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": "1.7888543819998317",
+      "selection_rank": "e4b570a9c47565f94b493d439b786a130798d459feb0b07ca63dbbe00f2156d9",
+      "source_reference_artifact": "results/phase_m3wa1r/reference/cf1n_new_005_wa1_w_s2_1p788854382.json",
+      "source_reference_hash": "856b744a212c1180e73bc773a8b113e5b622e7f2ea775bb578cd4ff1be938e10",
+      "source_stage": "M3-WA1R",
+      "state_id": "cf1n_new_005_wa1_w_s2_1p788854382",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "s2": "1.25",
+      "selection_rank": "e633e17967ca444af05261d03fb7e100f4dcab1ec7cfe94f3b04a11c7b835496",
+      "source_reference_artifact": "results/phase_m3wcf1/reference/wcf1_new_003_wcf1_s2_1p25.json",
+      "source_reference_hash": "63a4d0abfcf65b2fd6e8e1e113968b3fd2e59f7a6e494ddf6462c5649875f1c3",
+      "source_stage": "M3-WCF1",
+      "state_id": "wcf1_new_003_wcf1_s2_1p25",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "s2": "1.25",
+      "selection_rank": "2136b13c4589f5a0b74c88274e48a0b3d4d8f06f98adfe42a32c6e04a0230fcc",
+      "source_reference_artifact": "results/phase_m3wcf1/reference/wcf1_new_004_wcf1_s2_1p25.json",
+      "source_reference_hash": "8d211532a0f243b6907a2f3b3983acb59f8583db721f19c10e376d8475402a8f",
+      "source_stage": "M3-WCF1",
+      "state_id": "wcf1_new_004_wcf1_s2_1p25",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "s2": "1.25",
+      "selection_rank": "3f39374f80bb137591beb43b553355012a3ec281c6ece48adb8b397c2f5e37d8",
+      "source_reference_artifact": "results/phase_m3wcf1/reference/wcf1_new_005_wcf1_s2_1p25.json",
+      "source_reference_hash": "4ee7e32b02071c2d8dcad8bfbe802456722c97c894d4f141cd4a7fdb55565fac",
+      "source_stage": "M3-WCF1",
+      "state_id": "wcf1_new_005_wcf1_s2_1p25",
+      "stratum": "W",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "c000",
+      "s2": "4.680987705798022",
+      "selection_rank": "7e878dd5aeb18fad592c762dd77c218955d9290b38692efcaa87599536bcc19d",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c000_sf2_map4_s2_4p6809877058",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c007",
+      "s2": "7.736659528546397",
+      "selection_rank": "71af3b1b262802ff772f6d3b25ae6197292eb78397f0a63b28ee8e464198d073",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c007_sf2_map5_s2_7p7366595285",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c020",
+      "s2": "5.506269284594252",
+      "selection_rank": "4f7641acb4d02b56373b4d6034e44ab3db6608324a420ae65da969027a4d1d94",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c020_sf2_map4_s2_5p5062692846",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c020",
+      "s2": "5.645691642663627",
+      "selection_rank": "0c39c6956084f7dfa449486a806b9ebf71854ea3113d4dc243346dc8415e380a",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c020_sf2_map5_s2_5p6456916427",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": "8.0",
+      "selection_rank": "331982f7b4a058520e2297a16437ace71316575b15091bc9b0ccf5cb7a449328",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_001_cf1n_g09_s2_8",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": "6.4",
+      "selection_rank": "1766b6d8aeda71663861d58ec587f98f77558abe24859061c935dd5ea49c537d",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_002_cf1n_g08_s2_6p4",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": "8.0",
+      "selection_rank": "65aea637e31514fcb305f0c1c8c96632d81047888b24858679848026b0153f9c",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_005_cf1n_g09_s2_8",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "s2": "6.4",
+      "selection_rank": "5208253c26bda6cfae91849b0910756e5803e2a53265b320dc5070e43f305c3f",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_007_cf1n_g08_s2_6p4",
+      "stratum": "S",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c001",
+      "s2": "4.650228035349613",
+      "selection_rank": "0c97c4abcba5ca5e7ff4d9303d77a56d93e47bc33d722a2e9816d5e8ada3355d",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c001_sf2_map4_s2_4p6502280353",
+      "stratum": "ND",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "c004",
+      "s2": "5.656854249492381",
+      "selection_rank": "6b8ee673e30dfc284c065e29bc30d80ad0299fdf235d07f6c197e122060d3e47",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c004_sf2_map3_s2_5p6568542495",
+      "stratum": "ND",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "c006",
+      "s2": "5.906588749558875",
+      "selection_rank": "2bc899152a3a721b594d9d91f94142d3f479973187d291c09c4a8c970c5ad68e",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c006_sf2_map4_s2_5p9065887496",
+      "stratum": "ND",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "c010",
+      "s2": "6.167348338442011",
+      "selection_rank": "7682daa6c97a76766e083089d851297fc2c4bd2077579c9e5c9666847f94eedd",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c010_sf2_map5_s2_6p1673483384",
+      "stratum": "ND",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "c017",
+      "s2": "6.167348338442011",
+      "selection_rank": "4105eaade95f233927adf93915fc5ed2302961640c50671230056ec06c0d9992",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-SF2",
+      "state_id": "c017_sf2_map5_s2_6p1673483384",
+      "stratum": "ND",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": "4.0",
+      "selection_rank": "4d40507ac67f72dbb723d05ee09affd1a897e1b19887fffc1017be1886e42313",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_000_cf1n_g06_s2_4",
+      "stratum": "ND",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": "3.2",
+      "selection_rank": "3a9e5d8dc09434adb991b2bdba25cf149c583d97cb597c992d626e30c2db2d93",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_005_cf1n_g05_s2_3p2",
+      "stratum": "ND",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "s2": "2.0",
+      "selection_rank": "5841aedff63d24a41d4dbfb1b91f54068e6fa13ff1f3ce1bf06fbbad71cd7f4f",
+      "source_reference_artifact": "results/phase_m3cf2/summary/m3cf2_candidate_truth_inventory.csv",
+      "source_reference_hash": "236d8cd3e5343c0e0c326e3e5e3bc72b892e237beadcc0b3538d3fbcdb35613b",
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_007_cf1n_g03_s2_2",
+      "stratum": "ND",
+      "truth": "AMBIGUOUS"
+    }
+  ]
+}
