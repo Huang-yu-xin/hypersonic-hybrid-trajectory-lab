@@ -73,7 +73,10 @@ def safe_fs_id(logical: str) -> str:
     out = "".join(_esc_char(c) for c in logical)
     stem = out.split(".", 1)[0].upper()
     if stem in WINDOWS_RESERVED or out[0] == "." or out[-1] in ". ":
-        out = _esc_char(out[0]) + out[1:]
+        # force-escape the first character (even a safe one) so the encoded
+        # name can no longer collide with a reserved device name or an
+        # unsafe leading/trailing character
+        out = f"_x{ord(out[0]):02x}" + out[1:]
     if len(out) > MAX_SAFE_LEN:
         raise PathSafetyError(f"encoded id exceeds {MAX_SAFE_LEN} characters")
     return out
@@ -162,9 +165,10 @@ def assert_not_frozen(final_path: str | os.PathLike,
     if prereg_record:
         rel = p.as_posix()
         for entry in prereg_record.get("files", []):
-            if entry.get("path") == rel:
+            ep = str(entry.get("path", ""))
+            if ep and (ep == rel or rel.endswith("/" + ep)):
                 raise FrozenArtifactError(
-                    f"refusing to overwrite hash-locked prereg artifact: {rel}")
+                    f"refusing to overwrite hash-locked prereg artifact: {ep}")
 
 
 def ensure_not_started(ledger_path: str | os.PathLike, logical_id: str) -> None:
@@ -229,8 +233,11 @@ def run_trial_transactional(
     if fault and fault not in FAULT_TAGS:
         raise ValueError(f"unknown fault tag {fault!r}")
 
-    # -- step 1: validate filesystem-safe trial id/path ----------------------
+    # -- step 1: validate filesystem-safe trial id/path, and enforce the
+    # no-replay rule: an identity with any prior ledger entry (COMPLETE or
+    # CONSUMED_INVALID) may never be started again in the same stage --------
     encoded = validate_safe_path(logical_id, final_path)
+    ensure_not_started(ledger_path, logical_id)
     if fault == "BEFORE_START_LEDGER":
         raise InjectedFault(FAULT_DESCRIPTIONS["BEFORE_START_LEDGER"])
     if final_path.exists():

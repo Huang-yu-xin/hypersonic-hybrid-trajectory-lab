@@ -452,12 +452,13 @@ def persistence() -> None:
         stale.unlink()   # remove artifacts of any previous injection run
     results = []
     for tag in FAULT_TAGS:
+        lid = f"inj_{tag.lower()}::rep0"
+        final = SYN / f"inj_{safe_fs_id(lid)}.json"
         try:
             rec = run_trial_transactional(
-                "synth_state::rep0",
-                SYN / f"inj_{safe_fs_id('synth_state::rep0')}_{tag}.json",
-                lambda t=tag: {"ran_with_fault": t,
-                               **_mock_payload("synth_state::rep0", 1)},
+                lid, final,
+                lambda t=tag, l=lid: {"ran_with_fault": t,
+                                      **_mock_payload(l, 1)},
                 ledger_path=ledger, validator=_validate_mock, fault=tag,
                 base_entry={"seed": 1}, run_uuid=f"uuid-{tag}")
             status, exc_type = rec["status"], None
@@ -466,7 +467,6 @@ def persistence() -> None:
             # a failure BEFORE the STARTED entry means the trial never began:
             # no ledger entry, nothing consumed, no CONSUMED_INVALID
             status, exc_type = "NOT_STARTED", type(exc).__name__
-            final = SYN / f"inj_{safe_fs_id('synth_state::rep0')}_{tag}.json"
             final_exists = final.exists()
             temp_leftover = bool(list(final.parent.glob(".*.tmp.*")))
         results.append({"fault": tag, "status": status,
@@ -1046,7 +1046,7 @@ frozen-artifact rewrite guard = {gate_components['frozen_artifact_overwrite_guar
 synthetic E2E = {gate_components['synthetic_e2e']}
 
 M3PI1VR0-PERSIST-1:
-{gate_components['verdict']}
+{'PASS' if gate_pass else 'FAIL'}
 
 RESERVE:
 original protected states = {ras['original_protected_states']}
@@ -1141,8 +1141,8 @@ FULL REGRESSION:
         "- Scientific use of everything quarantined: **diagnostic only**.\n",
         encoding="utf-8")
     (DOC / "M3_PI1VR0_Persistence_Repair.md").write_text(
-        "# M3-PI1VR0 Persistence Repair\n\nStatus: "
-        f"**{gate_components['verdict']}** (M3PI1VR0-PERSIST-1).\n\n"
+        "# M3-PI1VR0 Persistence Repair\n\nStatus: **"
+        f"{'PASS' if gate_pass else 'FAIL'}** (M3PI1VR0-PERSIST-1).\n\n"
         "- Frozen 12-step order enforced structurally; the simulator is never "
         "invoked before the durable STARTED entry (verified synthetically on "
         f"all {len(sim_obs_count(e2e))} mock trials).\n"
