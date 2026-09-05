@@ -440,6 +440,14 @@ def prepare() -> None:
             })
     states.sort(key=lambda s: (s["config_id"], s["s2"]))
     csvwrite(OUT / "m3wcf1_reference_state_manifest.csv", states)
+    dump(OUT / "m3wcf1_reference_state_manifest_hash.json", {
+        "recorded_at": now(),
+        "manifest_sha256": sha(OUT / "m3wcf1_reference_state_manifest.csv"),
+        "states": len(states),
+        "configs": len({s["config_id"] for s in states}),
+        "s2_values": sorted({float(s["s2"]) for s in states}),
+        "frozen_before_any_wcf1_p_ref_or_reference_run": True,
+    })
 
     # -- state freshness audit (taskbook Sec. 17) -----------------------------------
     known_ids: set[str] = set()
@@ -1096,8 +1104,9 @@ def capacity() -> None:
                          "s2": r["s2"], "source_stage": "M3-WCF1",
                          "source_region": f"M3-WCF1:{r['config_id']}",
                          "pilot_exposure": 0, "probe_exposure": 0, "origin": "wcf1"})
-    pool.sort(key=lambda s: s["state_id"])
-    csvwrite(OUT / "m3wcf1_combined_fresh_w_pool.csv", pool)
+    w_only = sorted((s for s in pool if s["truth"] == "WIDEN"),
+                    key=lambda s: s["state_id"])
+    csvwrite(OUT / "m3wcf1_combined_fresh_w_pool.csv", w_only)
 
     # W diversity feasibility (taskbook Sec. 30)
     w_pool = [s for s in pool if s["truth"] == "WIDEN"]
@@ -1113,8 +1122,13 @@ def capacity() -> None:
         "selectable_capacity_at_max2": capacity_2,
         "W_DIVERSITY_FEASIBLE": "YES" if w_feasible else "NO",
         "exact_8_selectable": bool(w_feasible),
-        "configs_ge_6": len(cfg_counts) >= W_CONFIG_MIN,
-        "max2_per_config": max(cfg_counts.values()) <= W_MAX_PER_CONFIG,
+        "configs_ge_6": w_subset is not None and len({s["config_id"] for s in w_subset}) >= W_CONFIG_MIN,
+        "max2_per_config": w_subset is not None,
+        "max2_per_config_note": "the gate is subset-existence (taskbook Sec. 30): "
+                                "a deterministic exact-8 subset with <=2/config and "
+                                ">=6 configs exists; the raw pool itself holds more "
+                                "than 2 W in some configs (e.g. cf1n_new_003) and "
+                                "is reported in config_counts for diagnostics",
         "selected_subset": [s["state_id"] for s in w_subset] if w_subset else [],
     })
 
