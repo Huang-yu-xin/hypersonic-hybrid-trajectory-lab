@@ -1,0 +1,150 @@
+{
+  "parent": "D:/Users/huangyx/Desktop/hypersonic-hybrid-trajectory-lab/results/phase_m3pi1vnr/summary/m3pi1vnr_fresh_development_panel.csv",
+  "sha256": "1914bf6d2c173107b955c00b2c49e9775c3e0c4e14ab0354b3f10d7e2fdcbd66",
+  "states": [
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 1.4142135623730951,
+      "state_id": "cf1n_new_001_wa1_w_s2_1p4142135624",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": 1.4142135623730951,
+      "state_id": "cf1n_new_002_wa1_w_s2_1p4142135624",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": 1.25,
+      "state_id": "cf1n_new_003_cf1n_g01_s2_1p25",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": 1.25,
+      "state_id": "cf1n_new_005_cf1n_g01_s2_1p25",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "s2": 1.6,
+      "state_id": "cf1n_new_007_cf1n_g02_s2_1p6",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "s2": 1.25,
+      "state_id": "wcf1_new_000_wcf1_s2_1p25",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_001",
+      "s2": 1.25,
+      "state_id": "wcf1_new_001_wcf1_s2_1p25",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "wcf1_new_002",
+      "s2": 1.25,
+      "state_id": "wcf1_new_002_wcf1_s2_1p25",
+      "truth": "WIDEN"
+    },
+    {
+      "config_id": "c000",
+      "s2": 4.208089754083439,
+      "state_id": "c000_sf2_map1_s2_4p2080897541",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c007",
+      "s2": 7.440364856559382,
+      "state_id": "c007_sf2_map4_s2_7p4403648566",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c020",
+      "s2": 5.237668794048409,
+      "state_id": "c020_sf2_map2_s2_5p237668794",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 8.0,
+      "state_id": "cf1n_new_000_cf1n_g09_s2_8",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 3.2,
+      "state_id": "cf1n_new_001_cf1n_g05_s2_3p2",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": 3.2,
+      "state_id": "cf1n_new_002_cf1n_g05_s2_3p2",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": 8.0,
+      "state_id": "cf1n_new_003_cf1n_g09_s2_8",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": 6.4,
+      "state_id": "cf1n_new_005_cf1n_g08_s2_6p4",
+      "truth": "SHRINK"
+    },
+    {
+      "config_id": "c001",
+      "s2": 4.472135954999579,
+      "state_id": "c001_sf2_map3_s2_4p472135955",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "c004",
+      "s2": 5.188615632514087,
+      "state_id": "c004_sf2_map1_s2_5p1886156325",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "c006",
+      "s2": 5.188615632514087,
+      "state_id": "c006_sf2_map1_s2_5p1886156325",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "c007",
+      "s2": 6.617843245018656,
+      "state_id": "c007_sf2_map1_s2_6p617843245",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "c010",
+      "s2": 5.417678690155951,
+      "state_id": "c010_sf2_map2_s2_5p4176786902",
+      "truth": "HOLD"
+    },
+    {
+      "config_id": "c017",
+      "s2": 5.188615632514087,
+      "state_id": "c017_sf2_map1_s2_5p1886156325",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 3.2,
+      "state_id": "cf1n_new_000_cf1n_g05_s2_3p2",
+      "truth": "AMBIGUOUS"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": 2.0,
+      "state_id": "cf1n_new_002_cf1n_g03_s2_2",
+      "truth": "AMBIGUOUS"
+    }
+  ]
+}

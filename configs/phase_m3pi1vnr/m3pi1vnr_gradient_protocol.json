@@ -1,0 +1,9 @@
+{
+  "alpha_p": 0.5,
+  "batches": 20,
+  "estimator": "hyptraj.m3d.adaptation.gradient_decision",
+  "namespace": "M3-PI1VNR-GRAD",
+  "replicates": 8,
+  "samples_per_trial": 20000,
+  "sign_mapping": "g_hat < 0 => WIDEN; g_hat > 0 => SHRINK"
+}

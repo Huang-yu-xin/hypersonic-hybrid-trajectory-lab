@@ -1,0 +1,25 @@
+{
+  "failure_policy": "sampling started + durable COMPLETE failure => CONSUMED_INVALID => PI1VNR-X => STOP; no replay",
+  "inherited_from": "repaired PI1VR0/WA1R persistence + PI1VNR path hardening",
+  "module": "src/hyptraj/m3wa1r/persistence.py",
+  "module_sha256": "be343bdb322bb53d0d8b4ff01f7b50ae439c016efb4d05eaeb45d034cf8fc2cc",
+  "order": [
+    "1. construct bounded paths",
+    "2. validate full path lengths",
+    "3. verify destination preconditions",
+    "4. durable STARTED ledger",
+    "5. gradient calculation",
+    "6. finite-action probe if applicable",
+    "7. build canonical non-circular payload",
+    "8. schema validate",
+    "9. compute hashes",
+    "10. temp write",
+    "11. flush + fsync",
+    "12. atomic rename",
+    "13. fsync parent directory",
+    "14. verify final durable record/hash",
+    "15. ledger COMPLETE"
+  ],
+  "recorded_at": "2026-09-05T17:14:49+0800",
+  "trial_ledger": "D:/Users/huangyx/Desktop/hypersonic-hybrid-trajectory-lab/results/phase_m3pi1vnr/trials/trial_ledger.jsonl"
+}

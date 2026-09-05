@@ -1,0 +1,14 @@
+{
+  "candidate_rule": "deploy-all-valid sentinel; midpoints; abstain-all sentinel",
+  "no_invalid_threshold_reuse": true,
+  "tie_break": [
+    "maximize coverage",
+    "lower unsafe",
+    "lower wrong",
+    "more conservative (higher) threshold",
+    "canonical"
+  ],
+  "unique_information": {
+    "gain_threshold_pp": 0.05
+  }
+}

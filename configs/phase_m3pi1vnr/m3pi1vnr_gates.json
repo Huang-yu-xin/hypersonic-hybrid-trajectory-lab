@@ -1,0 +1,6 @@
+{
+  "coverage_min": 0.75,
+  "unique_gain_pp": 0.05,
+  "unsafe_max": 0.2,
+  "wrong_direction_max": 0.05
+}

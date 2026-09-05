@@ -1935,24 +1935,24 @@ def report() -> None:
     fw = load(OUT / "m3pi1vnr_reserve_firewall_postrun.json")
     inh = load(OUT / "m3pi1vnr_protocol_inheritance_audit.json")
 
-    (DOC / "M3_PI1VN_Task.md").write_text(
+    (DOC / "M3_PI1VNR_Task.md").write_text(
         "# M3-PI1VN Task\n\nTask book: "
         "`M3_PI1VN_Independent_Fresh_Panel_Finite_Action_Information_Validation_Task.md`.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Parent_WCF1_Audit.md").write_text(
+    (DOC / "M3_PI1VNR_Parent_WCF1_Audit.md").write_text(
         "# M3-PI1VN Parent WCF1 Audit\n\nStatus: **PASS**.\n\n"
         "- WCF1 = WCF1-A; P_ref 6/6; references 12/12; 0 consumed-invalid.\n"
         "- PI1V valid verdict = PI1V-X; Attempt-2 = DIAGNOSTIC_ONLY.\n"
         "- WA1 = WA1-X; WA1R = WA1R-B; retired states/seeds remain retired.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Fresh_Panel_Audit.md").write_text(
+    (DOC / "M3_PI1VNR_Fresh_Panel_Audit.md").write_text(
         "# M3-PI1VN Fresh Panel Audit\n\nStatus: **PASS**.\n\n"
         f"- Panel hash recomputed and matching WCF1: `{check_panel_hash()[:16]}...`.\n"
         "- 24 states, 8W/8S/8ND; pilot/probe/threshold-replay exposure all 0 "
         "before PI1VN (m3pi1vnr_panel_freshness_audit.csv).\n"
         "- No panel regeneration, replacement, or rebalancing.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Frozen_Protocol_Inheritance.md").write_text(
+    (DOC / "M3_PI1VNR_Frozen_Protocol_Inheritance.md").write_text(
         "# M3-PI1VN Frozen Protocol Inheritance\n\nStatus: **COMPLETE**.\n\n"
         f"- PI1V committed implementation hash: `{inh['pi1v_implementation_sha256'][:16]}...`.\n"
         f"- Gradient estimator: {inh['gradient_estimator']}.\n"
@@ -1964,14 +1964,14 @@ def report() -> None:
         "- Metrics/thresholds/gates/5pp criterion imported verbatim from the "
         "committed PI1V machinery; no invalid-PI1V threshold reused.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Reserve_Firewall_Audit.md").write_text(
+    (DOC / "M3_PI1VNR_Reserve_Firewall_Audit.md").write_text(
         "# M3-PI1VN Reserve Firewall Audit\n\nStatus: **PASS**.\n\n"
         f"- Protected reserve states: {fw['protected_reserve_states']}; panel "
         "overlap: 0; UC2R protected confirmation untouched.\n"
         "- No gradient pilot, S1 feature, V1 probe, or threshold replay touched "
         "any reserve state.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Pilot_Execution_Audit.md").write_text(
+    (DOC / "M3_PI1VNR_Pilot_Execution_Audit.md").write_text(
         "# M3-PI1VN Pilot Execution Audit\n\nStatus: **COMPLETE**.\n\n"
         f"- Trials {manifest['trials_complete']}/{manifest['trials_expected']}, "
         f"consumed-invalid {manifest['consumed_invalid']}.\n"
@@ -1983,7 +1983,7 @@ def report() -> None:
         "(STARTED before simulator; payload hash + file hash verified).\n"
         f"- Persistence: canonical hashes {audit['canonical_hashes']}.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_V1_Analysis.md").write_text(
+    (DOC / "M3_PI1VNR_V1_Analysis.md").write_text(
         "# M3-PI1VN V1 Analysis\n\n"
         f"- Direction sanity: {sanity['gate']} (wrong rate "
         f"{sanity['wrong_direction_rate']:.4f}).\n"
@@ -1994,7 +1994,7 @@ def report() -> None:
         f"{prim.get('V1', {}).get('unsafe_rate')}.\n"
         f"- Best safety-compliant coverage: {gain.get('V1_BEST_SAFE_COVERAGE')}.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_S1_Comparator.md").write_text(
+    (DOC / "M3_PI1VNR_S1_Comparator.md").write_text(
         "# M3-PI1VN S1 Comparator\n\n"
         f"- S1_FULL_PASS: {gain.get('S1_FULL_PASS')}; selected threshold "
         f"{prim.get('S1', {}).get('selected_threshold')}; wrong "
@@ -2006,7 +2006,7 @@ def report() -> None:
         f"{gain.get('unique_information_criterion')}.\n"
         "- S1 uses the same gradient data and no probe information.\n",
         encoding="utf-8")
-    (DOC / "M3_PI1VN_Robustness_Diagnostics.md").write_text(
+    (DOC / "M3_PI1VNR_Robustness_Diagnostics.md").write_text(
         "# M3-PI1VN Robustness Diagnostics\n\n"
         "Diagnostic only; no tuning derived. State-level audit, truth-stratified "
         "metrics, family-stratified metrics (legacy / CF1N replacement / WCF1 "
@@ -2030,7 +2030,7 @@ def report() -> None:
                    "the fresh panel.",
         "PI1VNR-X": "Invalid.",
     }[final["verdict"]]
-    (DOC / "M3_PI1VN_Final_Report.md").write_text(
+    (DOC / "M3_PI1VNR_Final_Report.md").write_text(
         "# M3-PI1VN Final Report\n\n"
         f"**Verdict: {final['verdict']}**\n\n{claim}\n\n"
         f"- Fresh panel: 24 states, hash verified, unchanged; 192/192 trials.\n"
@@ -2171,7 +2171,7 @@ def close() -> None:
         "re-preregistered without reusing the consumed trial or seed\n\n"
         "FULL REGRESSION:\n" + _regression_summary() + "\n")
     (OUT / "m3pi1vnr_final_report.txt").write_text(txt + "\n", encoding="utf-8")
-    (DOC / "M3_PI1VN_Final_Report.md").write_text(
+    (DOC / "M3_PI1VNR_Final_Report.md").write_text(
         "# M3-PI1VN Final Report\n\n"
         "**Verdict: PI1VNR-X**\n\n"
         f"Trial 137 of 192 (`{consumed_id}`) completed its scientific sampling "
@@ -2187,7 +2187,7 @@ def close() -> None:
         "under a fresh namespace without reusing the consumed trial or seed.\n"
         "- VALUE/RARITY/M3-Q: BLOCKED; confirmation trials 0.\n\n"
         "FULL REGRESSION:\n" + _regression_summary() + "\n", encoding="utf-8")
-    (DOC / "M3_PI1VN_Pilot_Execution_Audit.md").write_text(
+    (DOC / "M3_PI1VNR_Pilot_Execution_Audit.md").write_text(
         "# M3-PI1VN Pilot Execution Audit\n\nStatus: **INVALID (PI1VNR-X)**.\n\n"
         f"- Trials durable COMPLETE: {len(complete)}/192; consumed-invalid: "
         f"{len(consumed)} (trial 137); never started: "

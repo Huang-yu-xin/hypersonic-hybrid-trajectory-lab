@@ -1,0 +1,9 @@
+{
+  "base_samples": 10000,
+  "batches": 20,
+  "namespace": "M3-PI1VNR-PROBE",
+  "opposite_action_probe": "FORBIDDEN",
+  "paired_crn": true,
+  "selected_action_samples": 10000,
+  "total_probe_samples": 20000
+}

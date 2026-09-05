@@ -1,0 +1,5 @@
+{
+  "formula": "abs(g_hat) / ((ci_high-ci_low)/(2*1.959963984540054))",
+  "same_gradient_data": true,
+  "source_sha256": "c7332b9e91ce8c286f94201a334d73aa0afcd7127cb5b5d85fda79ffeebba38f"
+}
