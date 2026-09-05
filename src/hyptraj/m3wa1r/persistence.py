@@ -173,7 +173,10 @@ def run_trial_transactional(
                                 "expected_output_path": final_path.as_posix(),
                                 "status": "STARTED", "start_timestamp": now(),
                                 **extra})
-    temp_path = final_path.parent / f".{encoded}.json.tmp.{run_uuid}"
+    # keep the temp filename well under the Windows MAX_PATH limit even for
+    # long logical ids: truncate the encoded id and append a short digest
+    short_id = encoded if len(encoded) <= 64 else         encoded[:48] + "_" + hashlib.sha256(encoded.encode()).hexdigest()[:12]
+    temp_path = final_path.parent / f".{short_id}.json.tmp.{run_uuid}"
     try:
         fail("AFTER_START_BEFORE_SIM")
         # -- 3. simulator -> canonical scientific payload (no hash field) -----

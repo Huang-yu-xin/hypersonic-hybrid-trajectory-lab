@@ -45,6 +45,7 @@ import run_m3pi1v as R1  # noqa: E402  (namespace audit reuse)
 from hyptraj.m1d.experiments import BenchmarkConfig, config_from_record, load_freeze  # noqa: E402
 from hyptraj.m3cf1r0.persistence import ledger_append, ledger_entries  # noqa: E402
 from hyptraj.m3d.benchmark_states import assemble_state, state_arms  # noqa: E402
+from hyptraj.m3pi1vr0.persistence import safe_fs_id  # noqa: E402
 from hyptraj.m3wa1r.persistence import (  # noqa: E402
     HASH_FIELD,
     ReplayError,
@@ -977,7 +978,7 @@ def pilot() -> None:
             def compute(r=r, rep=rep, st=st):
                 ledger_append(GRAD_LEDGER, {"state_id": rid, "phase": "GRADIENT",
                                             "status": "STARTED", "timestamp": now()})
-                g = gradient_trial(st, seeds["planned_gradient_seeds"][f"{r['state_id']}|{rep}"])
+                g = gradient_trial(st, seeds["planned_gradient_seeds"][f"{r['state_id']}|rep{rep}"])
                 ledger_append(GRAD_LEDGER, {"state_id": rid, "phase": "GRADIENT",
                                             "status": "EXECUTED", "valid": g["valid"],
                                             "timestamp": now()})
@@ -985,13 +986,13 @@ def pilot() -> None:
                     ledger_append(PROBE_LEDGER, {"state_id": rid, "phase": "PROBE",
                                                  "status": "STARTED", "timestamp": now()})
                     pr = paired_probe(st, g["sign"],
-                                      seeds["planned_probe_seeds"][f"{r['state_id']}|{rep}"])
+                                      seeds["planned_probe_seeds"][f"{r['state_id']}|rep{rep}"])
                     ledger_append(PROBE_LEDGER, {"state_id": rid, "phase": "PROBE",
                                                  "status": "EXECUTED",
                                                  "valid": pr["valid"],
                                                  "timestamp": now()})
                 else:
-                    pr = {"seed": seeds["planned_probe_seeds"][f"{r['state_id']}|{rep}"],
+                    pr = {"seed": seeds["planned_probe_seeds"][f"{r['state_id']}|rep{rep}"],
                           "namespace": PROBE_NS, "executed": False,
                           "samples_base": 0, "samples_action": 0,
                           "opposite_action_probe_samples": 0,
@@ -1040,8 +1041,8 @@ def pilot() -> None:
                 base_entry={"panel_state_id": r["state_id"], "rep_id": rep,
                             "truth": r["truth"], "config_id": r["config_id"],
                             "seed_namespace": GRAD_NS,
-                            "seed": seeds["planned_gradient_seeds"][f"{r['state_id']}|{rep}"]},
-                run_uuid=f"pi1vn-{safe_sid}-{rep}")
+                            "seed": seeds["planned_gradient_seeds"][f"{r['state_id']}|rep{rep}"]},
+                run_uuid=uuid.uuid4().hex)
             if result["status"] != "COMPLETE":
                 raise RuntimeError(
                     f"PI1VN-X: trial not durably COMPLETE for {rid}: {result}")
@@ -1814,10 +1815,163 @@ def report() -> None:
     print(f"PI1VN report: verdict {final['verdict']}")
 
 
+# --------------------------------------------------------------------------
+# stage: close (frozen-contract invalidation; zero simulator)
+# --------------------------------------------------------------------------
+
+def close() -> None:
+    """Freeze the PI1VN-X verdict after the trial-137 persistence failure.
+
+    Taskbook Sec. 25: scientific calculation began but durable COMPLETE
+    failed => CONSUMED_INVALID => PI1VN-X => STOP; no replay.  Writes the
+    audit, forensics, and verdict only; never reruns the consumed trial.
+    """
+    entries = ledger_entries(TRIAL_LEDGER)
+    counts: dict[str, Counter] = {}
+    for e in entries:
+        counts.setdefault(e.get("state_id"), Counter())[e.get("status")] += 1
+    complete = {rid for rid, c in counts.items() if c.get("COMPLETE")}
+    consumed = [rid for rid, c in counts.items() if c.get("CONSUMED_INVALID")]
+    rows = panel_rows()
+    expected = {f"{r['state_id']}__rep{rep}" for r in rows for rep in range(R)}
+    (TRIALS / "DIAGNOSTIC_ONLY_CONSUMED_INVALID.txt").write_text(
+        "PI1VN-X STOP -- a trial in this ledger began scientific calculation but "
+        "no durable COMPLETE record exists (taskbook Sec. 25: CONSUMED_INVALID, "
+        "PI1VN-X, STOP; no replay). Diagnostic/provenance only.\n", encoding="utf-8")
+    consumed_id = consumed[0]
+    consumed_entry = next(e for e in entries if e.get("status") == "CONSUMED_INVALID")
+    forensics = {
+        "recorded_at": now(),
+        "incident": "PI1VN trial-137 persistence failure -> frozen-contract "
+                    "invalidation",
+        "what_happened": [
+            f"Trial {consumed_id} (137th of 192) consumed its full scientific "
+            "sampling (~40,000 online samples) but the durable record never "
+            "reached COMPLETE: the temp filename embedded the encoded logical "
+            "id twice (once as the temp stem, once inside the caller-supplied "
+            "run_uuid), pushing the path to ~265 characters -- past the Windows "
+            "MAX_PATH limit (260) for the longest panel state names (the WA1R "
+            "candidates with seven underscore escapes).",
+            "The transactional runner appended a durable CONSUMED_INVALID entry "
+            "and the stage aborted; trials 138-192 were never started.",
+        ],
+        "frozen_rule_applied": "scientific calculation began + durable COMPLETE "
+                               "failed => CONSUMED_INVALID => PI1VN-X => STOP; "
+                               "no replay",
+        "ledger_state": {"STARTED": sum(c.get("STARTED", 0) for c in counts.values()),
+                         "COMPLETE": len(complete),
+                         "CONSUMED_INVALID": len(consumed)},
+        "samples_note": "136 complete trials hold ~5.44M durable online samples; "
+                        "they are DIAGNOSTIC ONLY and support no threshold, "
+                        "verdict, or route decision",
+        "defect_and_fix": [
+            "defect: the PI1VN pilot passed run_uuid=f'pi1vn-<safe_sid>-<rep>' "
+            "-- duplicating the ~55-char encoded state id inside the temp "
+            "filename; the m3wa1r module default (uuid4 hex, 32 chars) was safe",
+            "fix 1: the pilot now passes a fresh uuid4 hex run_uuid",
+            "fix 2 (module hardening): m3wa1r persistence truncates long "
+            "encoded ids in temp names to a bounded form with a short digest, "
+            "so no caller can approach MAX_PATH",
+        ],
+        "no_replay_bookkeeping": {
+            "consumed_trial_identity": consumed_id,
+            "consumed_seed": consumed_entry.get("seed"),
+            "seed_namespace": "M3-PI1VN-GRAD",
+            "rule": "same stage cannot rerun same state/rep; same exact seed "
+                    "cannot be reused; a successor stage requires a fresh "
+                    "preregistration and fresh namespace",
+        },
+        "unfinished_trials_count": len(expected) - len(complete) - len(consumed),
+    }
+    dump(OUT / "m3pi1vn_incident_forensics.json", forensics)
+    audit = {"recorded_at": now(), "ledger_entries": len(entries),
+             "trials_complete": len(complete),
+             "consumed_invalid": len(consumed),
+             "hashes": "FAIL",
+             "problems": [f"{consumed_id}: STARTED without durable COMPLETE"],
+             "canonical_hashes": "FAIL",
+             "durable_records_diagnostic_only": True}
+    dump(OUT / "m3pi1vn_persistence_audit.json", audit)
+    dump(OUT / "m3pi1vn_final_verdict.json", {
+        "status": "INVALID",
+        "verdict": "PI1VN-X",
+        "recorded_at": now(),
+        "rule": "taskbook Sec. 25: scientific calculation began + durable "
+                "COMPLETE failed => CONSUMED_INVALID => PI1VN-X => STOP; no replay",
+        "trials": {"expected": 192, "complete": len(complete),
+                   "consumed_invalid": len(consumed),
+                   "never_started": len(expected) - len(complete) - len(consumed)},
+        "incident_forensics": forensics,
+        "preregistration": {"frozen_before_outcomes": True,
+                            "prereg_hashes_verified": True,
+                            "note": "the frozen design (panel, protocols, seeds, "
+                                    "contracts) remains valid; a successor stage "
+                                    "may re-preregister under a fresh namespace "
+                                    "without reusing the consumed trial or seed"},
+        "invalid_retired_data": {"PI1V Attempt-2 used": False,
+                                 "retired states used": False,
+                                 "retired seeds used": False},
+        **boundary_block(),
+        "next": "stop; separately preregistered recovery (fresh namespace, "
+                "repaired temp-path handling) required",
+    })
+    txt = (
+        "M3-PI1VN STATUS:\nINVALID\n\n"
+        "PARENT:\nWCF1 = WCF1-A\n\n"
+        "FRESH PANEL:\nstates = 24\nhash verified = YES\npanel changed = NO\n\n"
+        f"TRIALS:\nexpected = 192\ncomplete = {len(complete)}\n"
+        f"consumed-invalid = {len(consumed)}\n\n"
+        "SAMPLES:\ngradient = (136 durable trials)\nprobe = (136 durable trials)\n"
+        "total = diagnostic only\n<=2x = N/A (stage invalid)\n\n"
+        "DIRECTION:\nN/A (stage invalid before analysis)\n\n"
+        "V1:\nN/A\n\nS1:\nN/A\n\nCOMPARISON:\nN/A\n\nROBUSTNESS:\nN/A\n\n"
+        "PERSISTENCE:\nhashes = FAIL\nledger = FAIL\nmanifest = NA\n\n"
+        "INVALID / RETIRED DATA:\nPI1V Attempt-2 used = NO\n"
+        "retired states used = NO\nretired seeds used = NO\n\n"
+        "PROTECTED RESERVE:\npilot exposure = 0\n\n"
+        "CONFIRMATION:\ntrials = 0\nauthorized = NO\n\n"
+        "VALUE:\nBLOCKED\nRARITY:\nBLOCKED\nM3-Q:\nBLOCKED\n\n"
+        "FINAL VERDICT:\nPI1VN-X\n\nSECONDARY ROUTE SIGNAL:\nN/A\n\n"
+        "NEXT:\nstop; separately preregistered recovery (fresh namespace, "
+        "repaired temp-path handling) required; the frozen design may be "
+        "re-preregistered without reusing the consumed trial or seed\n\n"
+        "FULL REGRESSION:\n" + _regression_summary() + "\n")
+    (OUT / "m3pi1vn_final_report.txt").write_text(txt + "\n", encoding="utf-8")
+    (DOC / "M3_PI1VN_Final_Report.md").write_text(
+        "# M3-PI1VN Final Report\n\n"
+        "**Verdict: PI1VN-X**\n\n"
+        f"Trial 137 of 192 (`{consumed_id}`) completed its scientific sampling "
+        "but never reached a durable COMPLETE record: the caller-supplied "
+        "run_uuid duplicated the encoded state id inside the temp filename, "
+        "exceeding the Windows MAX_PATH limit for the longest panel state "
+        "names. The frozen contract fired exactly as written: "
+        "**CONSUMED_INVALID -> PI1VN-X -> STOP, no replay**.\n\n"
+        "- 136 earlier trials are durably complete and remain DIAGNOSTIC ONLY; "
+        "they support no threshold, verdict, or route decision.\n"
+        "- Defect fixed (uuid4 run_uuid + module-level bounded temp names).\n"
+        "- The frozen design survives; a successor stage may re-preregister "
+        "under a fresh namespace without reusing the consumed trial or seed.\n"
+        "- VALUE/RARITY/M3-Q: BLOCKED; confirmation trials 0.\n\n"
+        "FULL REGRESSION:\n" + _regression_summary() + "\n", encoding="utf-8")
+    (DOC / "M3_PI1VN_Pilot_Execution_Audit.md").write_text(
+        "# M3-PI1VN Pilot Execution Audit\n\nStatus: **INVALID (PI1VN-X)**.\n\n"
+        f"- Trials durable COMPLETE: {len(complete)}/192; consumed-invalid: "
+        f"{len(consumed)} (trial 137); never started: "
+        f"{len(expected) - len(complete) - len(consumed)}.\n"
+        "- Root cause: caller-supplied run_uuid doubled the encoded state id in "
+        "the temp filename (~265 chars > Windows MAX_PATH 260) for the longest "
+        "panel state names.\n"
+        "- Frozen rule applied: CONSUMED_INVALID -> PI1VN-X -> STOP; no replay.\n"
+        "- Defects fixed for the successor stage (uuid4 run_uuid; module-level "
+        "bounded temp names).\n", encoding="utf-8")
+    print(txt)
+    print("PI1VN close: verdict PI1VN-X (frozen-contract invalidation; no replay)")
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("stage", choices=("prepare", "pilot", "analyze", "figures",
-                                     "report"))
+                                     "report", "close"))
     a = p.parse_args()
     {"prepare": prepare, "pilot": pilot, "analyze": analyze,
-     "figures": figures, "report": report}[a.stage]()
+     "figures": figures, "report": report, "close": close}[a.stage]()
