@@ -15,7 +15,10 @@ Inheritance (recovered verbatim before the pilot, never retuned):
     V1                   (-0.01 - r_hat) / SE(r_hat), r_hat = M2(a)/M2(base)-1
     S1                   |g_hat| / bootstrap-SE, SE=(ci_hi-ci_lo)/(2*z95)  (UC3)
     metrics/gates        UC3 wrong/coverage/unsafe semantics; 5% / 75% / 20%
-    persistence          hardened CF1R0 transactional write (STARTED -> COMPLETE)
+    persistence          hardened CF1R0 transactional contract in exact order
+                         (durable STARTED BEFORE sampling -> temp+fsync -> schema
+                         validation -> sha256 -> atomic rename -> parent-dir fsync
+                         -> final hash verify -> COMPLETE)
 
 Stages: prepare | pilot | analyze | figures | report
 """
@@ -26,8 +29,10 @@ import csv
 import hashlib
 import json
 import math
+import os
 import subprocess
 import time
+import uuid
 from collections import Counter
 from pathlib import Path
 
@@ -35,7 +40,8 @@ import numpy as np
 
 from hyptraj.m1d.experiments import BenchmarkConfig, config_from_record, load_freeze
 from hyptraj.m3cf1r0.persistence import (
-    atomic_write_state,
+    StatePersistenceError,
+    fsync_directory,
     ledger_append,
     ledger_entries,
 )
@@ -494,8 +500,14 @@ def prior_namespaces() -> set[str]:
 
 
 def prior_recorded_seeds() -> set[int]:
+    """Seed values recorded by PRIOR stages.  PI1V's own artifacts are excluded:
+    after the pilot runs, PI1V seeds legitimately appear under results/, and the
+    audit must not mistake the stage's own frozen seeds for prior collisions."""
     vals: set[int] = set()
+    self_prefix = ROOT / "results/phase_m3pi1v"
     for p in (ROOT / "results").rglob("*.csv"):
+        if self_prefix in p.parents:
+            continue
         try:
             with p.open(newline="", encoding="utf-8") as h:
                 rdr = csv.DictReader(h)
@@ -508,6 +520,8 @@ def prior_recorded_seeds() -> set[int]:
         except Exception:
             continue
     for p in (ROOT / "results").rglob("*.json"):
+        if self_prefix in p.parents:
+            continue
         try:
             data = load(p)
         except Exception:
@@ -554,6 +568,19 @@ PREREG_FILES = []
 
 
 def prepare() -> None:
+    # Stage discipline: once the pre-pilot artifacts are frozen (all prereg
+    # hashes verify), prepare must not rewrite them -- any rewrite would break
+    # the hash freeze and invalidate the stage.
+    prereg_path = OUT / "m3pi1v_prereg_hashes.json"
+    if prereg_path.exists():
+        try:
+            verify_prereg()
+        except RuntimeError:
+            pass
+        else:
+            print("PI1V prepare: preregistration already frozen and verified; "
+                  "refusing to rewrite (stage discipline)")
+            return
     check_panel_hash()
     rows = panel_rows()
     comp = Counter(r["truth_group"] for r in rows)
@@ -964,7 +991,7 @@ def prepare() -> None:
 
     write_stop_report(rows, accounting, seed_manifest, inherited, pilot_contract)
     print("PI1V prepare: COMPLETE -- preregistration frozen; STOP before pilot "
-          "(see docs/phase_m3pi1v/M3_PI1V_Preregistration.md)")
+          "(see docs/phase_m3pi1v/M3_PI1V_Pregistration.md)")
 
 
 def write_stop_report(rows, accounting, seed_manifest, inherited, pilot_contract) -> None:
@@ -1068,7 +1095,7 @@ reserve pilot = 0
 NEXT:
 HUMAN APPROVAL TO RUN PI1V DEVELOPMENT
 """
-    (DOC / "M3_PI1V_Preregistration.md").write_text(
+    (DOC / "M3_PI1V_Pregistration.md").write_text(
         "# M3-PI1V Preregistration\n\nFrozen before any simulator call.\n\n```\n"
         + txt + "\n```\n", encoding="utf-8")
     (OUT / "m3pi1v_prereg_status.txt").write_text(txt, encoding="utf-8")
@@ -1109,6 +1136,7 @@ def pilot() -> None:
     verify_prereg()
     check_panel_hash()
     rows = panel_rows()
+    TRIALS.mkdir(parents=True, exist_ok=True)
     if (TRIALS / "trial_manifest.json").exists():
         raise RuntimeError("PI1V-X: pilot already sealed (trial_manifest exists)")
     if GRAD_LEDGER.exists() or PROBE_LEDGER.exists() or TRIAL_LEDGER.exists():
@@ -1120,24 +1148,72 @@ def pilot() -> None:
     probe_protocol_hash = sha(CFG / "m3pi1v_probe_protocol.json")
     done = _completed_trials()
     for r in rows:
-        st = state_for(r)
+        st = state_for(r)   # deterministic frozen mixture assembly; not a sample draw
         for rep in range(R):
-            rid = f"{r['state_id']}::rep{rep}"
+            rid = f"{r['state_id']}__rep{rep}"   # Windows-safe ledger/temp identity
             if rid in done:
                 continue
-            rec = _run_one_trial(
-                r, rep, st, planned, source_hashes, protocol_hash, probe_protocol_hash)
-            atomic_write_state(
-                rid, rec, TRIALS / r["state_id"] / f"rep{rep}.json", TRIAL_LEDGER,
-                validator=_validate_trial_record, config_id=r["config_id"],
-                s2=float(r["s2"]), protocol_hash=protocol_hash,
-                seed_namespace=GRAD_NS, seed=rec["gradient"]["seed"],
-                ledger_extra={"panel_state_id": r["state_id"], "rep_id": rep,
-                               "truth": r["truth"], "probe_protocol_hash": probe_protocol_hash})
+            base_entry = {"panel_state_id": r["state_id"], "rep_id": rep,
+                          "truth": r["truth"], "config_id": r["config_id"],
+                          "protocol_hash": protocol_hash,
+                          "probe_protocol_hash": probe_protocol_hash,
+                          "seed_namespace": GRAD_NS}
+
+            def compute(row=r, rep=rep, st=st, planned=planned,
+                        source_hashes=source_hashes, protocol_hash=protocol_hash,
+                        probe_protocol_hash=probe_protocol_hash):
+                return _run_one_trial(row, rep, st, planned, source_hashes,
+                                      protocol_hash, probe_protocol_hash)
+
+            _trial_transaction(rid, TRIALS / r["state_id"] / f"rep{rep}.json",
+                               compute, base_entry)
+            rec = load(TRIALS / r["state_id"] / f"rep{rep}.json")
             print(f"trial {rid}: grad_valid={rec['gradient']['valid']} "
                   f"probe_valid={rec['probe'].get('valid')} "
                   f"V1={rec['V1']} S1={rec['S1']}", flush=True)
     _seal_pilot(rows)
+
+
+def _trial_transaction(rid: str, final_path: Path, compute, base_entry: dict) -> None:
+    """Frozen CF1R0 persistence sequence, in contract order.
+
+    durable STARTED (BEFORE any simulator call) -> compute -> temp serialization
+    -> flush+fsync -> schema validation -> sha256 -> atomic rename -> parent-dir
+    fsync -> final hash verification -> COMPLETE.  Any failure appends
+    CONSUMED_INVALID and aborts the stage (PI1V-X; no rerun in the stage).
+    """
+    run_uuid = uuid.uuid4().hex
+    ledger_append(TRIAL_LEDGER, {**base_entry, "state_id": rid,
+                                 "expected_output_path": str(final_path),
+                                 "status": "STARTED", "start_timestamp": now()})
+    try:
+        rec = compute()
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = final_path.parent / f".{rid}.json.tmp.{run_uuid}"
+        raw = json.dumps(rec, sort_keys=True, indent=2).encode("utf-8")
+        with open(temp_path, "wb") as h:
+            h.write(raw)
+            h.flush()
+            os.fsync(h.fileno())
+        _validate_trial_record(json.loads(temp_path.read_text(encoding="utf-8")))
+        digest = hashlib.sha256(temp_path.read_bytes()).hexdigest()
+        os.replace(temp_path, final_path)
+        dir_sync = fsync_directory(final_path.parent)
+        if not dir_sync["pass"]:
+            raise StatePersistenceError(
+                f"parent directory fsync unavailable: {dir_sync}")
+        if hashlib.sha256(final_path.read_bytes()).hexdigest() != digest:
+            raise StatePersistenceError("final hash mismatch after replace")
+        ledger_append(TRIAL_LEDGER, {**base_entry, "state_id": rid,
+                                     "status": "COMPLETE", "output_hash": digest,
+                                     "final_sha256": digest,
+                                     "finish_timestamp": now()})
+    except Exception as exc:
+        ledger_append(TRIAL_LEDGER, {"state_id": rid,
+                                     "status": "CONSUMED_INVALID",
+                                     "reason": f"{type(exc).__name__}: {exc}",
+                                     "finish_timestamp": now()})
+        raise
 
 
 def _completed_trials() -> set[str]:
@@ -1224,7 +1300,7 @@ def _run_one_trial(row, rep, st, planned, source_hashes, protocol_hash,
 
 def _seal_pilot(rows) -> None:
     done = _completed_trials()
-    expected = {f"{r['state_id']}::rep{rep}" for r in rows for rep in range(R)}
+    expected = {f"{r['state_id']}__rep{rep}" for r in rows for rep in range(R)}
     if done != expected:
         raise RuntimeError(f"PI1V-X: pilot incomplete ({len(done)}/{len(expected)})")
     recs = _load_trial_records(rows)
@@ -1254,7 +1330,7 @@ def _seal_pilot(rows) -> None:
         },
         "opposite_action_probe_samples": sum(
             x["probe"].get("opposite_action_probe_samples", 0) for x in recs),
-        "trial_record_hashes": {f"{x['state_id']}::rep{x['rep_id']}":
+        "trial_record_hashes": {f"{x['state_id']}__rep{x['rep_id']}":
                                 x["record_sha256"] for x in recs},
     }
     dump(TRIALS / "trial_manifest.json", manifest)
@@ -1376,7 +1452,7 @@ def analyze() -> None:
         "V1": v1_sel_metrics["truth_strata"], "S1": s1_sel_metrics["truth_strata"],
         "note": "8/8/8 panel by design; deployment fractions are not population rates",
     })
-    _verdict(trials, sanity, v1_full, s1_full, unique)
+    _verdict(trials, sanity)
 
 
 def _family_metrics(trials, family, sel):
@@ -1518,7 +1594,7 @@ def _persistence_audit(recs, rows) -> dict:
         c = counts.setdefault(e.get("state_id"), Counter())
         c[e.get("status")] += 1
     problems = []
-    expected = {f"{r['state_id']}::rep{rep}" for r in rows for rep in range(R)}
+    expected = {f"{r['state_id']}__rep{rep}" for r in rows for rep in range(R)}
     for rid in expected:
         c = counts.get(rid, Counter())
         if c["STARTED"] != 1 or c["COMPLETE"] != 1:
@@ -1549,6 +1625,20 @@ def _persistence_audit(recs, rows) -> dict:
     return audit
 
 
+def verdict_priority(persistence_ok: bool, direction_pass: bool, v1_full_pass: bool,
+                     unique_information: bool) -> str:
+    """Frozen verdict priority: INVALID -> D -> C -> B -> A (task book Sec. 26)."""
+    if not persistence_ok:
+        return "PI1V-X"
+    if not direction_pass:
+        return "PI1V-D"
+    if not v1_full_pass:
+        return "PI1V-C"
+    if not unique_information:
+        return "PI1V-B"
+    return "PI1V-A"
+
+
 def _finalize(sanity, verdict=None) -> str:
     rows = panel_rows()
     recs = _load_trial_records(rows)
@@ -1559,16 +1649,11 @@ def _finalize(sanity, verdict=None) -> str:
     prim = load(OUT / "m3pi1v_primary_metrics.json") \
         if (OUT / "m3pi1v_primary_metrics.json").exists() else {}
     if verdict is None:
-        if audit["canonical_hashes"] != "PASS":
-            verdict = "PI1V-X"
-        elif sanity["gate"] != "PASS":
-            verdict = "PI1V-D"
-        elif not gain_doc.get("V1_FULL_PASS"):
-            verdict = "PI1V-C"
-        elif gain_doc.get("unique_information_criterion") != "YES":
-            verdict = "PI1V-B"
-        else:
-            verdict = "PI1V-A"
+        verdict = verdict_priority(
+            persistence_ok=audit["canonical_hashes"] == "PASS",
+            direction_pass=sanity["gate"] == "PASS",
+            v1_full_pass=bool(gain_doc.get("V1_FULL_PASS")),
+            unique_information=gain_doc.get("unique_information_criterion") == "YES")
     fw = load(OUT / "m3pi1v_reserve_firewall_audit.json")
     final = {
         "status": "COMPLETE",
@@ -1857,7 +1942,7 @@ def report() -> None:
     (DOC / "M3_PI1V_Task.md").write_text(
         "# M3-PI1V Task\n\nTask book: "
         "`M3_PI1V_Prospective_Finite_Action_Information_Validation_Task.md` "
-        "(frozen preregistration; see M3_PI1V_Preregistration.md for the frozen "
+        "(frozen preregistration; see M3_PI1V_Pregistration.md for the frozen "
         "STOP report and hashes).\n\n"
         "PI1V exposes the immutable CF2 development panel to a low-budget paired "
         "finite-action validity signal V1 under the fixed <=2x online-information "
@@ -1896,7 +1981,7 @@ def report() -> None:
         "# M3-PI1V Human Approval\n\n"
         "- Date: 2026-09-05.\n"
         "- The mandatory pre-pilot STOP report (task book Sec. 48) was produced and "
-        "frozen in `M3_PI1V_Preregistration.md` / "
+        "frozen in `M3_PI1V_Pregistration.md` / "
         "`m3pi1v_prereg_status.txt` with all prereg hashes.\n"
         "- The user's session directive \"check the project state, then execute the "
         "task book\" constitutes the human approval to run the PI1V development "
