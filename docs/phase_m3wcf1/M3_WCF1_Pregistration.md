@@ -45,7 +45,7 @@ common-grid values = YES
 REFERENCE STATES:
 count = 12
 fresh identities = 12/12
-manifest hash = ba61eff1eb77c3767c7d0d472aab28aa52a1b14f6a8ce6e7a57180feef0e072b
+manifest hash = dc011f2fc48c6866f5810134b4bf7837a8a25e243cd2eed2baf57a1d6bfd122b
 
 P_REF:
 new streams = 6
