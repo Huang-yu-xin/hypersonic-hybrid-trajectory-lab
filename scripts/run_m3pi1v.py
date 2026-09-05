@@ -2010,7 +2010,26 @@ def report() -> None:
         "schema validation -> sha256 -> atomic rename -> parent-dir fsync -> final "
         "hash verify -> COMPLETE).\n"
         f"- Persistence audit: canonical hashes {pers['canonical_hashes']}, "
-        f"consumed-invalid {pers['consumed_invalid']}.\n",
+        f"consumed-invalid {pers['consumed_invalid']}.\n\n"
+        "## Infrastructure incidents (full transparency)\n\n"
+        "Two pre-evidence infrastructure incidents occurred and are documented in "
+        "`results/phase_m3pi1v/summary/m3pi1v_persistence_incident_audit.json`:\n\n"
+        "1. **Attempt-1 persistence abort.** The first execution consumed "
+        "3,840,000 gradient + 3,840,000 probe samples but could commit no record: "
+        "the trial identity contained `::`, which is illegal in Windows temp-file "
+        "names, and the STARTED ledger entry was written after sampling instead "
+        "of before. All 192 attempt-1 trials were quarantined under "
+        "`results/phase_m3pi1v/quarantine_attempt1` (192 STARTED + 192 "
+        "CONSUMED_INVALID, 0 COMPLETE) and never used by any analysis.\n"
+        "2. **Post-pilot prereg-audit rewrite + forensic restore.** A defensive "
+        "prepare re-run rewrote seven pre-pilot audit files (recorded_at only) "
+        "before failing its own seed self-collision check; the original "
+        "timestamps were forensically recovered so every frozen prereg hash "
+        "verifies again.\n\n"
+        "The authoritative pilot (attempt 2) replays the same frozen seed plan "
+        "deterministically -- the reset introduced zero researcher degrees of "
+        "freedom, no protected state was touched, and no durable evidence from "
+        "attempt 1 exists.\n",
         encoding="utf-8")
     (DOC / "M3_PI1V_Reserve_Firewall_Audit.md").write_text(
         "# M3-PI1V Reserve Firewall Audit\n\nStatus: **PASS**.\n\n"
@@ -2115,6 +2134,10 @@ def report() -> None:
         f"- Unique information: {gain['unique_information_criterion']} "
         f"(gain {gain['coverage_gain']:+.3f}).\n"
         f"- Persistence: canonical hashes {pers['canonical_hashes']}.\n"
+        "- Infrastructure incidents: two pre-evidence persistence incidents were "
+        "quarantined, forensically repaired, and fully documented "
+        "(m3pi1v_persistence_incident_audit.json); the authoritative pilot replays "
+        "the frozen seed plan deterministically with zero epistemic impact.\n"
         "- VALUE / RARITY / M3-Q: BLOCKED.\n\n"
         f"NEXT: {nxt}\n", encoding="utf-8")
     print(f"PI1V report: docs written; verdict {final['verdict']}")
