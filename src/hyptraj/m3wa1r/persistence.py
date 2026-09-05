@@ -38,6 +38,7 @@ from hyptraj.m3pi1vr0.persistence import (
     PathSafetyError,
     ReplayError,
     StatePersistenceError,
+    safe_fs_id,
     validate_safe_path,
 )
 
@@ -134,6 +135,63 @@ class FrozenArtifactError(RuntimeError):
     pass
 
 
+
+
+# --------------------------------------------------------------------------
+# M3-PI1VNR path hardening (taskbook Sec. 16-21): bounded slugs, bounded temp
+# basenames, full-path length limits enforced BEFORE any scientific execution.
+# --------------------------------------------------------------------------
+
+STATE_SLUG_MAX = 64
+TEMP_BASENAME_MAX = 76   # sized so repo root + longest panel slug + temp stays <= 220
+FULL_PATH_LIMIT = 220
+RUN_UUID_MAX = 32
+
+
+def bounded_slug(logical_id: str) -> str:
+    """Bounded state slug (<= STATE_SLUG_MAX): readable prefix + fixed digest.
+
+    Reversibility is NOT required for the slug -- the full original state ID
+    stays inside the JSON payload.
+    """
+    enc = safe_fs_id(logical_id)
+    if len(enc) <= STATE_SLUG_MAX:
+        return enc
+    digest = hashlib.sha256(logical_id.encode("utf-8")).hexdigest()[:12]
+    keep = STATE_SLUG_MAX - len(digest) - 1
+    return enc[:keep] + "-" + digest
+
+
+def safen_run_uuid(run_uuid: str | None) -> str:
+    """Module-level run_uuid bound: any caller-supplied overlong value is
+    hashed into a bounded token; missing values get uuid4 hex."""
+    if run_uuid is None:
+        return uuid.uuid4().hex
+    r = str(run_uuid)
+    if len(r) > RUN_UUID_MAX:
+        return hashlib.sha256(r.encode("utf-8")).hexdigest()[:RUN_UUID_MAX]
+    return r
+
+
+def validate_full_paths(final_path: Path, temp_path: Path,
+                        limit: int = FULL_PATH_LIMIT) -> None:
+    """Conservative full-path length gate, checked BEFORE the simulator."""
+    for kind, pth in (("final", final_path), ("temp", temp_path)):
+        n = len(os.fspath(pth))
+        if n > limit:
+            raise PathSafetyError(
+                f"{kind} path length {n} > {limit}: {pth}")
+
+
+def bounded_temp_basename(slug: str, run_uuid: str) -> str:
+    """Temp basename <= TEMP_BASENAME_MAX."""
+    stem = slug[:TEMP_BASENAME_MAX - len(".json.tmp.") - RUN_UUID_MAX - 1]
+    name = f".{stem}.json.tmp.{run_uuid}"
+    if len(name) > TEMP_BASENAME_MAX:   # defensive
+        name = name[:TEMP_BASENAME_MAX]
+    return name
+
+
 def run_trial_transactional(
     logical_id: str,
     final_path: str | os.PathLike,
@@ -150,7 +208,10 @@ def run_trial_transactional(
     final_path = Path(final_path)
     ledger_path = Path(ledger_path)
     now = clock or (lambda: time.strftime("%Y-%m-%dT%H:%M:%S%z"))
-    run_uuid = run_uuid or uuid.uuid4().hex
+    # -- 1. construct bounded paths (taskbook Sec. 22 step 1) -----------------
+    run_uuid = safen_run_uuid(run_uuid)          # module-level uuid bound
+    encoded = safe_fs_id(logical_id)
+    slug = bounded_slug(logical_id)              # <= STATE_SLUG_MAX
     extra = dict(base_entry or {})
 
     def fail(tag: str) -> None:
@@ -160,23 +221,24 @@ def run_trial_transactional(
     if fault and fault not in FAULT_TAGS:
         raise ValueError(f"unknown fault tag {fault!r}")
 
-    # -- 1. safe path validation + guards -------------------------------------
-    encoded = validate_safe_path(logical_id, final_path)
+    # -- 2. validate full path lengths (BEFORE any scientific execution) ------
+    temp_name = bounded_temp_basename(slug, run_uuid)
+    temp_path = final_path.parent / temp_name
+    validate_full_paths(final_path, temp_path)
+    # -- 3. verify destination preconditions ----------------------------------
+    validate_safe_path(logical_id, final_path)
     ensure_not_started(ledger_path, logical_id)
     if fault == "BEFORE_START_LEDGER":
         raise InjectedFault(FAULT_DESCRIPTIONS["BEFORE_START_LEDGER"])
     if final_path.exists():
         raise ReplayError(f"final record already exists for {logical_id!r}")
 
-    # -- 2. durable STARTED ledger (before any simulator call) ----------------
+    # -- 4. durable STARTED ledger (before any simulator call) ----------------
     ledger_append(ledger_path, {"state_id": logical_id, "safe_fs_id": encoded,
+                                "state_slug": slug,
                                 "expected_output_path": final_path.as_posix(),
                                 "status": "STARTED", "start_timestamp": now(),
                                 **extra})
-    # keep the temp filename well under the Windows MAX_PATH limit even for
-    # long logical ids: truncate the encoded id and append a short digest
-    short_id = encoded if len(encoded) <= 64 else         encoded[:48] + "_" + hashlib.sha256(encoded.encode()).hexdigest()[:12]
-    temp_path = final_path.parent / f".{short_id}.json.tmp.{run_uuid}"
     try:
         fail("AFTER_START_BEFORE_SIM")
         # -- 3. simulator -> canonical scientific payload (no hash field) -----
