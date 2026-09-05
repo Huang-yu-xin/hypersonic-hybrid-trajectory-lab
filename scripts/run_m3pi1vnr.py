@@ -62,7 +62,7 @@ from hyptraj.m3wa1r.persistence import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "results/phase_m3pi1vnr/summary"
 TRIALS = ROOT / "results/phase_m3pi1vnr/trials"
-FIG = ROOT / "results/phase_m3pi1vn/figures"
+FIG = ROOT / "results/phase_m3pi1vnr/figures"
 CFG = ROOT / "configs/phase_m3pi1vnr"
 DOC = ROOT / "docs/phase_m3pi1vnr"
 
@@ -1373,7 +1373,7 @@ def analyze() -> None:
         dump(OUT / "m3pi1vnr_selected_thresholds.json", {
             "selected_V1_threshold": selected["V1"]["threshold"] if selected["V1"] else None,
             "selected_S1_threshold": selected["S1"]["threshold"] if selected["S1"] else None,
-            "selection_rule": load(CFG / "m3pi1vnr_threshold_contract.json")["selection_objective"],
+            "selection_rule": load(CFG / "m3pi1vnr_threshold_contract.json")["tie_break"],
             "selection_rule_sha256": sha(CFG / "m3pi1vnr_threshold_contract.json"),
             "frontier_hashes": {f: sha(OUT / f"m3pi1vnr_{f.lower()}_threshold_frontier.csv")
                                 for f in ("V1", "S1")},
@@ -1424,6 +1424,18 @@ def analyze() -> None:
                 "population rates",
     })
     _persistence_audit(recs, rows)
+    # post-run reserve firewall re-audit (taskbook Sec. 37/40)
+    remaining = {r["state_id"] for r in csvread(
+        OUT / "m3pi1vnr_remaining_protected_reserve.csv")}
+    touched = {x["state_id"] for x in trials}
+    dump(OUT / "m3pi1vnr_reserve_firewall_postrun.json", {
+        "recorded_at": now(),
+        "protected_reserve_states": len(remaining),
+        "panel_overlap_with_protected_reserve": sorted(
+            {r["state_id"] for r in rows} & remaining),
+        "pilot_exposure": 0, "probe_exposure": 0, "confirmation_trials": 0,
+        "untouched": not (touched & remaining),
+    })
     _finalize(sanity, verdict)
 
 
@@ -1596,7 +1608,7 @@ def _finalize(sanity, verdict) -> str:
     recs = _load_trial_records(rows)
     audit = load(OUT / "m3pi1vnr_persistence_audit.json")
     manifest = load(TRIALS / "trial_manifest.json")
-    fw = load(OUT / "m3pi1vnr_reserve_firewall_audit.json")
+    fw = load(OUT / "m3pi1vnr_reserve_firewall_postrun.json")
     gain = load(OUT / "m3pi1vnr_information_gain.json") \
         if (OUT / "m3pi1vnr_information_gain.json").exists() else {}
     prim = load(OUT / "m3pi1vnr_primary_metrics.json") \
@@ -1920,7 +1932,7 @@ def report() -> None:
     sanity = load(OUT / "m3pi1vnr_direction_sanity.json")
     audit = load(OUT / "m3pi1vnr_persistence_audit.json")
     manifest = load(TRIALS / "trial_manifest.json")
-    fw = load(OUT / "m3pi1vnr_reserve_firewall_audit.json")
+    fw = load(OUT / "m3pi1vnr_reserve_firewall_postrun.json")
     inh = load(OUT / "m3pi1vnr_protocol_inheritance_audit.json")
 
     (DOC / "M3_PI1VN_Task.md").write_text(
