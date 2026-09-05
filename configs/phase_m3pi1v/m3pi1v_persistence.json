@@ -1,0 +1,23 @@
+{
+  "consumed_invalid_policy": "any trial with STARTED but no COMPLETE is CONSUMED_INVALID => PI1V-X STOP; no rerun in stage",
+  "gradient_ledger": "results/phase_m3pi1v/trials/gradient_ledger.jsonl",
+  "inherited_from": "M3-CF1R0 hardened transactional persistence",
+  "module": "hyptraj.m3cf1r0.persistence.atomic_write_state",
+  "module_sha256": "98b22c8c6e84778368aaf9996a22cf9f4da275508615c141a71404aa22b18d9a",
+  "probe_ledger": "results/phase_m3pi1v/trials/probe_ledger.jsonl",
+  "record_sha256_definition": "sha256 of canonical JSON (sort_keys) of the trial record with record_sha256 removed",
+  "recorded_at": "2026-09-05T11:44:51+0800",
+  "sequence": [
+    "durable STARTED ledger entry",
+    "temp serialization",
+    "flush",
+    "fsync",
+    "schema validation",
+    "sha256",
+    "atomic rename (os.replace)",
+    "parent-directory fsync",
+    "final hash verification",
+    "COMPLETE ledger entry"
+  ],
+  "trial_ledger": "results/phase_m3pi1v/trials/trial_ledger.jsonl"
+}

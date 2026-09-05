@@ -1,0 +1,198 @@
+{
+  "parent": "results/phase_m3cf2/summary/m3cf2_development_panel.csv",
+  "sha256": "843ee98e5be20d71964684d29e7671f5168bd2c36a6d2b02a745be88aff85d5c",
+  "states": [
+    {
+      "config_id": "c000",
+      "s2": 4.517727154595472,
+      "source_stage": "M3-SF2",
+      "state_id": "c000_sf2_map3_s2_4p5177271546",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "c020",
+      "s2": 5.370290011121054,
+      "source_stage": "M3-SF2",
+      "state_id": "c020_sf2_map3_s2_5p3702900111",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 6.4,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_000_cf1n_g08_s2_6p4",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 5.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_001_cf1n_g07_s2_5",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": 5.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_002_cf1n_g07_s2_5",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": 6.4,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_003_cf1n_g08_s2_6p4",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": 5.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_005_cf1n_g07_s2_5",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "s2": 5.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_007_cf1n_g07_s2_5",
+      "truth": "SHRINK",
+      "truth_group": "S"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 1.6,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_000_cf1n_g02_s2_1p6",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 2.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_000_cf1n_g03_s2_2",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 1.25,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_001_cf1n_g01_s2_1p25",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 1.6,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_001_cf1n_g02_s2_1p6",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "s2": 1.25,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_002_cf1n_g01_s2_1p25",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "s2": 2.5,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_003_cf1n_g04_s2_2p5",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "s2": 2.0,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_005_cf1n_g03_s2_2",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "s2": 1.25,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_007_cf1n_g01_s2_1p25",
+      "truth": "WIDEN",
+      "truth_group": "W"
+    },
+    {
+      "config_id": "c001",
+      "s2": 4.13615202813666,
+      "source_stage": "M3-SF2",
+      "state_id": "c001_sf2_map1_s2_4p1361520281",
+      "truth": "HOLD",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "c004",
+      "s2": 6.167348338442011,
+      "source_stage": "M3-SF2",
+      "state_id": "c004_sf2_map5_s2_6p1673483384",
+      "truth": "HOLD",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "c006",
+      "s2": 5.656854249492381,
+      "source_stage": "M3-SF2",
+      "state_id": "c006_sf2_map3_s2_5p6568542495",
+      "truth": "HOLD",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "c007",
+      "s2": 7.155417527999326,
+      "source_stage": "M3-SF2",
+      "state_id": "c007_sf2_map3_s2_7p155417528",
+      "truth": "AMBIGUOUS",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "c010",
+      "s2": 5.188615632514087,
+      "source_stage": "M3-SF2",
+      "state_id": "c010_sf2_map1_s2_5p1886156325",
+      "truth": "HOLD",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "c017",
+      "s2": 5.906588749558875,
+      "source_stage": "M3-SF2",
+      "state_id": "c017_sf2_map4_s2_5p9065887496",
+      "truth": "AMBIGUOUS",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "s2": 1.25,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_000_cf1n_g01_s2_1p25",
+      "truth": "AMBIGUOUS",
+      "truth_group": "ND"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "s2": 2.5,
+      "source_stage": "M3-CF1N",
+      "state_id": "cf1n_new_001_cf1n_g04_s2_2p5",
+      "truth": "AMBIGUOUS",
+      "truth_group": "ND"
+    }
+  ]
+}

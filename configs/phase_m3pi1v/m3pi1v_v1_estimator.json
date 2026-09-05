@@ -1,0 +1,16 @@
+{
+  "formula": "V1 = (-0.01 - r_hat) / SE(r_hat)",
+  "improvement_margin": -0.01,
+  "invalid_rule": "invalid gradient OR invalid probe OR non-finite V1 => ABSTAIN",
+  "probe": {
+    "base_samples": 10000,
+    "batches": 20,
+    "opposite_action_probe_samples": 0,
+    "paired_crn": true,
+    "selected_action_samples": 10000
+  },
+  "r_hat": "M2(selected)/M2(BASE) - 1",
+  "recorded_at": "2026-09-05T11:44:43+0800",
+  "se_estimator": "std(batch r, ddof=1)/sqrt(20) over paired CRN batches",
+  "v1_never_changes_direction": true
+}

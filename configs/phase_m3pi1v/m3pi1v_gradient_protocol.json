@@ -1,0 +1,10 @@
+{
+  "alpha_p": 0.5,
+  "batches": 20,
+  "estimator": "hyptraj.m3d.adaptation.gradient_decision",
+  "invalid_rule": "estimator problems OR non-finite g_hat/CI/ESS OR ESS_grad < 20 => invalid; policy action ABSTAIN; no opposite direction inferred",
+  "namespace": "M3-PI1V-GRAD",
+  "replicates": 8,
+  "samples_per_trial": 20000,
+  "sign_mapping": "g_hat < 0 => WIDEN; g_hat >= 0 => SHRINK"
+}

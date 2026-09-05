@@ -1,0 +1,8 @@
+{
+  "coverage_min": 0.75,
+  "recorded_at": "2026-09-05T11:44:51+0800",
+  "unchanged_from": "G2/UC3/PI1 frozen gates",
+  "unique_gain_pp": 0.05,
+  "unsafe_max": 0.2,
+  "wrong_direction_max": 0.05
+}

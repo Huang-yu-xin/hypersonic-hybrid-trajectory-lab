@@ -1,0 +1,13 @@
+{
+  "base_samples": 10000,
+  "batches": 20,
+  "cost_ratio": 2.0,
+  "extra_samples_per_trial": 20000,
+  "invalid_gradient": "ABSTAIN_NO_PROBE",
+  "namespace": "M3-PI1V-PROBE",
+  "no_adaptive_probe": true,
+  "opposite_action_probe": "FORBIDDEN",
+  "paired_crn": true,
+  "selected_arm_samples": 10000,
+  "single_budget_level": true
+}

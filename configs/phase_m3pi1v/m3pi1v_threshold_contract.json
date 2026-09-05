@@ -1,0 +1,23 @@
+{
+  "best_safe_coverage": "max coverage among wrong<=5% & unsafe<=20% thresholds",
+  "candidate_rule": "deploy-all-valid sentinel (min-1); all midpoints between sorted unique finite score values; abstain-all sentinel (max+1)",
+  "frozen_before_pilot": true,
+  "full_gate": {
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_direction_max": 0.05
+  },
+  "no_manual_threshold_picking": true,
+  "recorded_at": "2026-09-05T11:44:43+0800",
+  "selection_objective": [
+    "enumerate all candidate thresholds",
+    "compute inherited metrics",
+    "retain wrong<=5% and unsafe<=20%",
+    "maximize deployable coverage",
+    "tie-break: lower unsafe, lower wrong, more conservative (higher) threshold, canonical threshold value"
+  ],
+  "unique_information_criterion": {
+    "gain_threshold_pp": 0.05,
+    "requirement": "V1_FULL_PASS = YES AND (S1_FULL_PASS = NO OR V1_BSC - S1_BSC >= 0.05)"
+  }
+}

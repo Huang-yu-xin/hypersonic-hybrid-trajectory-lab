@@ -1,0 +1,15 @@
+{
+  "ci_method": "Wilson 95%",
+  "denominators_redefined": false,
+  "deployable_coverage": "non-ABSTAIN fraction over W/S trials",
+  "gates": {
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_direction_max": 0.05
+  },
+  "nd_unsafe": "non-ABSTAIN fraction over HOLD/AMBIGUOUS trials",
+  "recorded_at": "2026-09-05T11:44:43+0800",
+  "semantics_sha256": "e562b73a33519f09bfe9f2687a7b39b6c1b17f42738efc8b5da8fc759d2d9f2a",
+  "source": "scripts/run_m3uc3.py (committed UC3 implementation)",
+  "wrong_direction": "deployed non-ABSTAIN action != corrected truth over W/S trials"
+}
