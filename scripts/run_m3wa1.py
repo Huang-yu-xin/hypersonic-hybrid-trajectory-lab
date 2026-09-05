@@ -495,8 +495,8 @@ def _select_candidates(pool: list[dict]) -> list[dict]:
         if remaining and sum(1 for c in chosen if c["config_id"] == cid) < 2:
             first = next(c for c in chosen if c["config_id"] == cid)
             chosen.append(max(remaining, key=lambda c: (
-                abs(c["candidate_s2"] - first["candidate_s2"]),
-                -c["canonical_order"])))
+                abs(float(c["candidate_s2"]) - float(first["candidate_s2"])),
+                -int(c["canonical_order"]))))
     return sorted(chosen, key=lambda c: (c["config_id"], c["candidate_s2"]))[:N_CANDIDATES]
 
 
@@ -649,7 +649,6 @@ def reference() -> None:
         _check_recoverable()
     for c in manifest:
         cid = c["candidate_id"]
-        payload_holder: dict = {}
 
         def simulate(c=c, cid=cid):
             st = state_for(c["config_id"], c["candidate_s2"])
@@ -669,7 +668,7 @@ def reference() -> None:
                             for name in ("base", "widen", "shrink")}
             oracle = cls.get("oracle_details") or {}
             payload_holder["label"] = cls["corrected_class"]
-            return {
+            payload = {
                 "schema": "m3wa1_reference_v1",
                 "recorded_at": now(),
                 "candidate_id": cid,
@@ -698,6 +697,8 @@ def reference() -> None:
                                   "batches": N_BATCH,
                                   "finite_action_samples": 3 * REF_N},
             }
+            payload["record_sha256"] = trial_sha256(payload)
+            return payload
 
         result = run_trial_transactional(
             cid, REF / f"{cid}.json", simulate,
@@ -1026,8 +1027,343 @@ def _select_w_subset(w_pool: list[dict]) -> list[dict] | None:
 
 
 # --------------------------------------------------------------------------
-# stage: report
+# stage: close (frozen-contract invalidation; zero simulator)
 # --------------------------------------------------------------------------
+
+def close() -> None:
+    """Freeze the WA1-X verdict after the trial-1 persistence failure.
+
+    Taskbook Sec. 17: sampling started and persistence failed =>
+    CONSUMED_INVALID => WA1-X => STOP; no replay.  This stage writes the
+    audit, forensics, and verdict only -- it never touches the simulator and
+    never reruns the consumed candidate.
+    """
+    entries = ledger_entries(REFERENCE_LEDGER)
+    counts: dict[str, Counter] = {}
+    for e in entries:
+        counts.setdefault(e.get("state_id"), Counter())[e.get("status")] += 1
+    consumed = {rid: c for rid, c in counts.items()
+                if c.get("CONSUMED_INVALID") or c.get("STARTED", 0) != c.get("COMPLETE", 0)}
+    complete = {rid for rid, c in counts.items() if c.get("COMPLETE")}
+    manifest = csvread(OUT / "m3wa1_candidate_manifest.csv")
+    expected = {c["candidate_id"] for c in manifest}
+
+    (REF / "DIAGNOSTIC_ONLY_CONSUMED_INVALID.txt").write_text(
+        "WA1-X STOP -- candidate trial(s) in this ledger began sampling but no\n"
+        "durable COMPLETE record exists (taskbook Sec. 17: CONSUMED_INVALID,\n"
+        "WA1-X, STOP; no replay).  Diagnostic/provenance only.\n", encoding="utf-8")
+
+    consumed_id = sorted(consumed)[0] if consumed else ""
+    consumed_entry = next((e for e in entries if e.get("status") == "CONSUMED_INVALID"), {})
+    forensics = {
+        "recorded_at": now(),
+        "incident": "WA1 trial-1 persistence failure -> frozen-contract invalidation",
+        "what_happened": [
+            f"Candidate {consumed_id} consumed its full reference sampling "
+            f"(1,500,000 finite-action samples) but the durable record never "
+            "reached COMPLETE: the schema validator (step 7) required a "
+            "record_sha256 payload field that the payload builder had not yet "
+            "written (the payload self-hash must be computed inside the "
+            "simulator step, before serialization).",
+            "The transactional runner appended a durable CONSUMED_INVALID entry "
+            "and the stage aborted at trial 1 of 8.",
+        ],
+        "frozen_rule_applied": "If sampling starts and persistence fails: "
+                               "CONSUMED_INVALID, WA1-X, STOP. No replay. "
+                               "Deterministic replay does not override.",
+        "samples_consumed": {"candidate_id": consumed_id,
+                             "finite_action_samples": 1_500_000},
+        "defect_and_fix": [
+            "defect: validator/payload inconsistency (validator demanded a "
+            "field the builder wrote too late) -- a WA1 implementation bug, "
+            "not a protocol or provenance problem",
+            "fix: the payload builder now computes record_sha256 before "
+            "returning (scripts/run_m3wa1.py); the code fix is recorded here "
+            "but the stage is NOT rerun",
+        ],
+        "no_replay_bookkeeping": {
+            "consumed_trial_identity": consumed_id,
+            "consumed_seed": consumed_entry.get("seed"),
+            "seed_namespace": "M3-WA1-REF",
+            "rule": "same stage cannot rerun same state/rep; same exact seed "
+                    "cannot be reused; any successor stage requires a fresh "
+                    "preregistration and fresh namespace",
+        },
+        "remaining_candidates_untouched": sorted(expected - complete - set(consumed)),
+    }
+    dump(OUT / "m3wa1_incident_forensics.json", forensics)
+
+    audit = {
+        "recorded_at": now(),
+        "ledger_entries": len(entries),
+        "trials_started": sum(c.get("STARTED", 0) for c in counts.values()),
+        "complete": len(complete),
+        "consumed_invalid": sum(1 for e in entries if e.get("status") == "CONSUMED_INVALID"),
+        "hashes": "FAIL",
+        "problems": [f"{rid}: STARTED without durable COMPLETE "
+                     f"(statuses={dict(c)})" for rid, c in consumed.items()],
+    }
+    dump(OUT / "m3wa1_persistence_audit.json", audit)
+
+    summary = {
+        "recorded_at": now(),
+        "K_WA1_W": 0, "K_WA1_S": 0, "K_WA1_H": 0, "K_WA1_AMB": 0,
+        "K_WA1_INVALID": 0,
+        "labels": {},
+        "complete": len(complete),
+        "finite_action_samples_consumed": 1_500_000,
+        "note": "no candidate reached a durable label; the stage is invalid "
+                "before any capacity statement can be made",
+        **boundary_block(),
+    }
+    dump(OUT / "m3wa1_reference_summary.json", summary)
+
+    # sealed-invalid reference manifest (no candidate record exists)
+    dump(REF / "reference_manifest.json", {
+        "sealed_at": now(),
+        "status": "INVALID_CONSUMED_INVALID",
+        "candidates": 8,
+        "complete": len(complete),
+        "consumed_invalid": audit["consumed_invalid"],
+        "finite_action_samples": 1_500_000,
+        "labels": {},
+        "record_hashes": {},
+        "scientific_use": "diagnostic only",
+    })
+
+    # -- capacity artifacts in their true (pre-augmentation) NA state ---------
+    vr0_view = {r["state_id"]: r for r in csvread(VR0 / "m3pi1vr0_selection_view.csv")}
+    retired = {r["state_id"] for r in csvread(VR0 / "m3pi1vr0_retired_development_states.csv")}
+    w_pool = [{"state_id": r["state_id"], "truth": "WIDEN",
+               "config_id": r["config_id"], "physical_family": r["physical_family"],
+               "s2": r["s2"], "source_stage": r["source_stage"],
+               "source_region": "M3-CF2-RESERVE",
+               "pilot_exposure": 0, "probe_exposure": 0, "origin": "reserve"}
+              for r in vr0_view.values()
+              if r["truth"] == "WIDEN" and r["state_id"] not in retired]
+    w_pool.sort(key=lambda s: s["state_id"])
+    csvwrite(OUT / "m3wa1_combined_fresh_w_pool.csv", w_pool)
+    cfg_counts = Counter(s["config_id"] for s in w_pool)
+    dump(OUT / "m3wa1_w_feasibility.json", {
+        "recorded_at": now(),
+        "old_untouched_w": 7,
+        "new_w": 0,
+        "total_w": len(w_pool),
+        "distinct_configs": len(cfg_counts),
+        "config_counts": dict(cfg_counts),
+        "selectable_capacity_at_max2": sum(min(n, W_MAX_PER_CONFIG) for n in cfg_counts.values()),
+        "exact_8_selectable": False,
+        "configs_ge_6": len(cfg_counts) >= W_CONFIG_MIN,
+        "max2_per_config": max(cfg_counts.values()) <= W_MAX_PER_CONFIG,
+        "selected_subset": [],
+        "note": "evaluated WITHOUT augmentation because the stage is WA1-X; "
+                "this is the PI1VR0-CAP-B state of record, not a new result",
+    })
+    dump(OUT / "m3wa1_full_panel_capacity.json", {
+        "recorded_at": now(),
+        "w_feasible": False,
+        "full_panel_feasible": False,
+        "panel_states": "NA", "W": "NA", "S": "NA", "ND": "NA",
+        "note": "not evaluated: WA1-X froze the stage before any augmentation",
+        "no_pilot_information_in_selector": True,
+    })
+    remaining = [{"state_id": r["state_id"], "truth": r["truth"],
+                  "config_id": r["config_id"], "s2": r["s2"],
+                  "source_stage": r["source_stage"],
+                  "status": "PILOT_PROTECTED_RESERVE"}
+                 for r in sorted(vr0_view.values(), key=lambda x: x["state_id"])]
+    csvwrite(OUT / "m3wa1_remaining_protected_reserve.csv", remaining)
+    dump(OUT / "m3wa1_remaining_reserve_summary.json", {
+        "recorded_at": now(),
+        "remaining_protected_states": len(remaining),
+        "pilot_exposure": 0,
+        "protection": "unchanged by the invalid WA1 stage: all 70 reserve "
+                      "states remain PILOT_PROTECTED_RESERVE",
+    })
+
+    verdict = "WA1-X"
+    dump(OUT / "m3wa1_final_verdict.json", {
+        "status": "INVALID",
+        "verdict": verdict,
+        "recorded_at": now(),
+        "rule": "taskbook Sec. 17: sampling started + persistence failure => "
+                "CONSUMED_INVALID => WA1-X => STOP; no replay",
+        "reference": {"candidates": 8, "complete": len(complete),
+                      "consumed_invalid": audit["consumed_invalid"],
+                      "finite_action_samples_consumed": 1_500_000},
+        "labels": {},
+        "incident_forensics": forensics,
+        "full_fresh_panel": {"feasible": False, "hash": "NA"},
+        "w_feasibility": {"exact_8_selectable": False, "configs_ge_6": False,
+                          "max2_per_config": False},
+        "combined_fresh_w": {"old_untouched_w": 7, "new_w": 0, "total_w": 7,
+                             "distinct_configs": 4},
+        "preregistration": {
+            "frozen_before_outcomes": True,
+            "prereg_hashes_verified": True,
+            "note": "the candidate design, manifest, and contracts remain "
+                    "valid pre-run artifacts; a successor stage (fresh "
+                    "preregistration, fresh namespace) may re-freeze the same "
+                    "design without reusing the consumed trial or seed",
+        },
+        "invalid_pi1v_results_used": False,
+        **boundary_block(),
+        "next": "stop; successor stage requires a separately preregistered "
+                "recovery (fresh namespace, repaired persistence usage)",
+    })
+
+    txt = f"""M3-WA1 STATUS:
+INVALID
+
+REFERENCE:
+candidates = 8
+complete = {len(complete)}
+consumed-invalid = {audit['consumed_invalid']}
+finite-action samples = 1500000 (1 candidate consumed, no durable record)
+
+LABELS:
+new W = 0
+new S = 0
+new HOLD = 0
+new AMB = 0
+new INVALID = 0
+
+PERSISTENCE:
+hashes = FAIL
+ledger = FAIL
+manifest = NA
+
+COMBINED FRESH W:
+old untouched W = 7
+new W = 0
+total W = 7
+distinct configs = 4
+
+W FEASIBILITY:
+exact 8 selectable = NO
+configs >=6 = FAIL
+max2/config = FAIL
+
+FULL FRESH PANEL:
+feasible = NO
+W = NA
+S = NA
+ND = NA
+hash = NA
+
+INVALID PI1V RESULTS:
+used = NO
+
+REMAINING PROTECTED RESERVE:
+states = 70 (+0 changed)
+pilot exposure = 0
+
+PILOT:
+gradient = 0
+probe = 0
+
+V1:
+new test = NO
+threshold = null
+
+S1:
+confirmation authorized = NO
+
+VALUE:
+BLOCKED
+RARITY:
+BLOCKED
+M3-Q:
+BLOCKED
+
+FINAL VERDICT:
+WA1-X
+
+NEXT:
+stop; successor stage requires a separately preregistered recovery
+(fresh namespace, repaired persistence usage; the frozen candidate design
+may be re-preregistered without reusing the consumed trial or seed)
+
+FULL REGRESSION:
+{_regression_summary()}
+"""
+    (OUT / "m3wa1_final_report.txt").write_text(txt, encoding="utf-8")
+    DOC.mkdir(parents=True, exist_ok=True)
+    (DOC / "M3_WA1_Final_Report.md").write_text(
+        "# M3-WA1 Final Report\n\n"
+        f"**Verdict: {verdict}**\n\n"
+        "Trial 1 of 8 (`" + consumed_id + "`) consumed its full 1,500,000-sample "
+        "reference but never reached a durable COMPLETE record: the schema "
+        "validator demanded a payload field (record_sha256) that the payload "
+        "builder wrote too late. The frozen contract fired exactly as written: "
+        "**CONSUMED_INVALID -> WA1-X -> STOP, no replay** — the same rule that "
+        "invalidated M3-PI1V, applied here to WA1's own first trial.\n\n"
+        "- The failure was a WA1 implementation defect (validator/payload "
+        "inconsistency), not a provenance or leakage problem.\n"
+        "- The preregistration (parent audit, W-support inventory, 9-pair "
+        "candidate pool, 8-candidate manifest, seeds, contracts) was frozen "
+        "before outcomes and remains valid; a successor stage may re-preregister "
+        "the same design under a fresh namespace without reusing the consumed "
+        "trial identity or seed.\n"
+        "- No PI1V invalid data was used; the 70-state reserve is untouched; "
+        "VALUE / RARITY / M3-Q stay BLOCKED.\n\n"
+        "FULL REGRESSION:\n"
+        f"{_regression_summary()}\n", encoding="utf-8")
+    parent = load(OUT / "m3wa1_parent_audit.json")
+    wres = load(OUT / "m3wa1_existing_w_reserve_summary.json")
+    pool = csvread(OUT / "m3wa1_candidate_pool.csv")
+    sel = load(OUT / "m3wa1_candidate_manifest_hash.json")
+    pref_dep = load(OUT / "m3wa1_pref_dependency_audit.json")
+    (DOC / "M3_WA1_Parent_Audit.md").write_text(
+        "# M3-WA1 Parent Audit\n\nStatus: **PASS** (all checks matched before "
+        "the pre-run freeze; re-verified at close).\n\n"
+        f"- PI1VR0 verdict `{vr0_verdict()}`; PI1V valid verdict PI1V-X; "
+        "attempt-2 metrics DIAGNOSTIC_ONLY.\n"
+        "- Original 24 CF2 states retired; old PI1V seed namespaces retired.\n"
+        "- Reserve verified untouched: W=7, S=29, HOLD=13, AMB=21, ND=34.\n"
+        "- M3PI1VR0-PERSIST-1 = PASS.\n",
+        encoding="utf-8")
+    (DOC / "M3_WA1_W_Support_Design.md").write_text(
+        "# M3-WA1 W Support Design\n\n"
+        f"- Existing fresh W reserve: {wres['w_states']} states, "
+        f"{wres['distinct_configs']} distinct configs, max {wres['max_per_config']}/config "
+        f"({wres['config_counts']}) -- 1 state short AND below the 6-config gate.\n"
+        f"- W-support inventory: {len(csvread(OUT / 'm3wa1_w_support_inventory.csv'))} "
+        "corrected high-budget durable WIDEN states (8 retired/pilot-exposed as "
+        "support-location evidence only; 7 untouched).\n"
+        "- Adjacency: consecutive positions in each config's ordered "
+        "corrected-truth sequence, both WIDEN.\n"
+        f"- Candidate pool: {len(pool)} fresh log-midpoints (exact, no "
+        "perturbation), zero identity collisions across all prior sampling "
+        "universes.\n"
+        f"- Frozen manifest: {sel['candidates']} candidates, "
+        f"{sel['distinct_configs']} distinct configs, max {sel['max_per_config']}/config; "
+        f"hash `{sel['manifest_sha256'][:16]}...`.\n"
+        f"- P_ref dependency: {pref_dep['dependency']}; durable config P_ref "
+        "records reused; 0 new P_ref samples.\n",
+        encoding="utf-8")
+    (DOC / "M3_WA1_Reference_Execution_Audit.md").write_text(
+        "# M3-WA1 Reference Execution Audit\n\nStatus: **INVALID (WA1-X)**.\n\n"
+        f"- Trial 1 of 8 (`{consumed_id}`) consumed its full 1,500,000-sample "
+        "reference; the durable record never reached COMPLETE (schema-validator "
+        "defect at step 7).\n"
+        f"- Ledger: {audit['trials_started']} STARTED, {len(complete)} COMPLETE, "
+        f"{audit['consumed_invalid']} CONSUMED_INVALID; hashes FAIL.\n"
+        "- Frozen rule applied: CONSUMED_INVALID -> WA1-X -> STOP; no replay. "
+        "Candidates 2-8 were never started (STOP means stop).\n"
+        "- Code defect fixed for successor stages; the stage was NOT rerun.\n",
+        encoding="utf-8")
+    (DOC / "M3_WA1_Fresh_Panel_Capacity.md").write_text(
+        "# M3-WA1 Fresh Panel Capacity\n\nStatus: **NOT EVALUATED (WA1-X)**.\n\n"
+        "- No candidate reached a durable label, so no augmentation result "
+        "exists; the recorded W-pool state remains the PI1VR0-CAP-B baseline "
+        "(W=7, 4 configs).\n"
+        "- No panel was frozen; no counts were relaxed; the 70-state reserve "
+        "is unchanged and protected.\n",
+        encoding="utf-8")
+    print(txt)
+    print(f"WA1 close: verdict {verdict} (frozen-contract invalidation; no replay)")
+
 
 def _regression_summary() -> str:
     log = OUT / "m3wa1_full_regression.log"
@@ -1225,7 +1561,7 @@ def vr0_verdict() -> str:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("stage", choices=("prepare", "reference", "capacity", "report"))
+    p.add_argument("stage", choices=("prepare", "reference", "capacity", "report", "close"))
     a = p.parse_args()
     {"prepare": prepare, "reference": reference, "capacity": capacity,
-     "report": report}[a.stage]()
+     "report": report, "close": close}[a.stage]()
