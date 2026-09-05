@@ -1773,8 +1773,7 @@ def figures() -> None:
             patch.set_facecolor(col)
             patch.set_alpha(0.45)
         ax.set_ylabel(f"{key} score")
-        ax.set_title(f"{fig_id}: {key} score distribution by corrected truth "
-                     "(reference-stratified development panel)")
+        ax.set_title(f"{fig_id}: {key} score by corrected truth (reference-stratified)")
         ax.grid(alpha=0.3, axis="y")
         fig.tight_layout()
         fig.savefig(FIG / fname, dpi=200)
@@ -1794,10 +1793,12 @@ def figures() -> None:
         ax.axhline(GATES["unsafe_max"], ls="--", c="tab:red", alpha=0.6)
         ax.axvline(GATES["coverage_min"], ls=":", c="k", alpha=0.6, label="coverage gate")
         sel = prim.get(family, {}).get("selected_threshold")
+        ax.set_xlim(-0.02, 1.05)
         if sel is not None:
             match = [x for x in fr if float(x["threshold"]) == float(sel)]
             if match:
-                ax.axvline(match[0]["deployable_coverage"], c="tab:green", lw=2, alpha=0.7,
+                ax.axvline(float(match[0]["deployable_coverage"]), c="tab:green",
+                           lw=2, alpha=0.7,
                            label=f"selected threshold {float(sel):.4g}")
         ax.set_xlabel("deployable coverage")
         ax.set_ylabel("risk rate")
@@ -1840,17 +1841,25 @@ def figures() -> None:
             return float("nan")
     deploy = np.array([_f(x, "deployment_rate") for x in v1_audit])
     unsafe = np.array([_f(x, "unsafe_rate") for x in v1_audit])
-    mat = np.vstack([deploy, unsafe])
-    fig, ax = plt.subplots(figsize=(max(9.0, 0.28 * len(states)), 2.9))
-    im = ax.imshow(mat, aspect="auto", cmap="RdYlGn", vmin=0, vmax=1)
-    ax.set_yticks([0, 1], ["deployment rate", "unsafe rate"])
     truth = [x["truth"] for x in v1_audit]
-    ax.set_xticks(range(len(states)),
-                  [f"{s}\n[{t}]" for s, t in zip(states, truth)], rotation=90,
-                  fontsize=6)
-    for i in range(2):
-        for j in range(len(states)):
-            ax.text(j, i, f"{mat[i, j]:.2f}", ha="center", va="center", fontsize=5.5)
+    labels = [f"{s}\n[{t_}]" for s, t_ in zip(states, truth)]
+    cmap = plt.get_cmap("RdYlGn").copy()
+    cmap.set_bad("white")
+    fig, (ax, ax2) = plt.subplots(2, 1, figsize=(max(9.0, 0.28 * len(states)), 4.4),
+                                  sharex=True)
+    im = ax.imshow(deploy[None, :], aspect="auto", cmap=cmap, vmin=0, vmax=1)
+    ax.set_yticks([0], ["deployment rate"])
+    for j, v in enumerate(deploy):
+        ax.text(j, 0, "" if math.isnan(v) else f"{v:.2f}", ha="center",
+                va="center", fontsize=5.5)
+    im2 = ax2.imshow(np.ma.masked_invalid(unsafe)[None, :], aspect="auto",
+                     cmap=plt.get_cmap("RdYlGn_r").copy(), vmin=0, vmax=1)
+    plt.get_cmap("RdYlGn_r").set_bad("white")
+    ax2.set_yticks([0], ["unsafe rate (ND)"])
+    for j, v in enumerate(unsafe):
+        ax2.text(j, 0, "" if math.isnan(v) else f"{v:.2f}", ha="center",
+                 va="center", fontsize=5.5)
+    ax2.set_xticks(range(len(states)), labels, rotation=90, fontsize=6)
     ax.set_title("PI1V-6: per-state deployment / ND-unsafe at selected V1 threshold")
     fig.tight_layout()
     fig.savefig(FIG / "PI1V-6_per_state_deployment_unsafe_heatmap.png", dpi=200)
@@ -1926,6 +1935,15 @@ def figures() -> None:
 # --------------------------------------------------------------------------
 # stage: report
 # --------------------------------------------------------------------------
+
+def _regression_summary() -> str:
+    log = ROOT / "results/phase_m3pi1v/summary/m3pi1v_full_regression.log"
+    if not log.exists():
+        return "pending"
+    tail = [ln for ln in log.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    passed = [ln for ln in tail if " passed" in ln]
+    return passed[-1] if passed else "; ".join(tail[-2:])
+
 
 def report() -> None:
     DOC.mkdir(parents=True, exist_ok=True)
@@ -2139,7 +2157,9 @@ def report() -> None:
         "(m3pi1v_persistence_incident_audit.json); the authoritative pilot replays "
         "the frozen seed plan deterministically with zero epistemic impact.\n"
         "- VALUE / RARITY / M3-Q: BLOCKED.\n\n"
-        f"NEXT: {nxt}\n", encoding="utf-8")
+        f"NEXT: {nxt}\n\n"
+        "FULL REGRESSION:\n"
+        + _regression_summary() + "\n", encoding="utf-8")
     print(f"PI1V report: docs written; verdict {final['verdict']}")
 
 
