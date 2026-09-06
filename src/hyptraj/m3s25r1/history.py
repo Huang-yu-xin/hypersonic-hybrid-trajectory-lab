@@ -29,6 +29,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 
+# The stage's OWN outputs are not historical characterization: a candidate
+# is by definition fresh vs every PRIOR stage, and R1's own summary /
+# preflight artifacts merely record the R1 candidates themselves.  Without
+# this exclusion the firewall would self-collide (fixed a priori,
+# M3-S25-R1.2).
+SELF_RESULTS_PREFIX = "results/phase_m3s25r1/"
+
 S2S_UNIVERSE = ROOT / "configs/phase_m3s2s/m3s2s_candidate_universe.json"
 S2S_INVENTORY = ROOT / ("results/phase_m3s2s/summary/"
                         "m3s2s_truth_exposed_inventory.json")
@@ -71,6 +78,9 @@ def historical_characterized_s2(configs: list[str]) -> tuple[dict[str, set[float
             hist.setdefault(cid, set()).add(float(value))
 
     for p in sorted((ROOT / "results").rglob("*.csv")):
+        rel = p.relative_to(ROOT).as_posix().replace("\\", "/")
+        if rel.startswith(SELF_RESULTS_PREFIX):
+            continue
         name = p.name.lower()
         if any(t in name for t in NON_CHARACTERIZED_TOKENS):
             continue

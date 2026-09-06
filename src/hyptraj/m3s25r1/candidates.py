@@ -19,10 +19,13 @@ Frozen mechanism:
     SHRINK/HOLD counts and the numeric ordering of candidate values.
 
 Regression invariants are mechanically audited by `invariant_audit`
-under the M3-S25-R1.1 support-coverage invariants (A stratum occupancy
-8/8; B min(u) <= 0.25; C max(u) >= 0.85; D anti-collapse span >= 0.65),
-which supersede the M3-S25-R1.0 per-config span >= 0.70 invariant; the
-realized per-config verdicts are reported for adjudication.
+under the M3-S25-R1.2 STRUCTURAL support invariants (A stratum occupancy
+8/8; B min(u) <= u0_max + tol; C max(u) >= u7_min - tol; D span >=
+(u7_min - u0_max) - tol), whose bounds are DERIVED from the frozen
+generator constants via `structural_bounds` (tol = 1e-12) -- deterministic
+generator guarantees with no hash-draw dependence.  They supersede the
+M3-S25-R1.1 fixed decimal thresholds and the M3-S25-R1.0 span >= 0.70
+invariant; the realized per-config verdicts are reported for audit.
 """
 from __future__ import annotations
 
@@ -39,6 +42,42 @@ L_ANCHORS = 65
 S2_HI = 8.0
 PANEL_RANK_SEED = "M3-S25-R1-PANEL-V1|"
 STATE_SUFFIX = "s25r1"
+
+# M3-S25-R1.2 structural-invariant tolerance (frozen; amendment taskbook)
+AMENDMENT_TOL = 1e-12
+
+INVARIANT_VERSION = "m3s25r1.2"
+
+
+def structural_bounds() -> dict:
+    """M3-S25-R1.2 structural support bounds, DERIVED from the frozen
+    generator constants (amendment taskbook: the implementation must
+    compute these values from the constants, never treat the decimals as
+    independently tunable thresholds; the function takes no data input so
+    realized candidate values cannot tune it):
+
+        w       = (U_HI - U_LO) / N_STRATA
+        u0_max  = U_LO + L_ANCHORS/(L_ANCHORS+1) * w
+        u7_min  = U_LO + (N_STRATA-1)*w + 1/(L_ANCHORS+1) * w
+        span_bd = u7_min - u0_max
+
+    Structural guarantees of the frozen generator: every stratum-0 anchor
+    has u <= u0_max, every stratum-7 anchor has u >= u7_min, hence every
+    config's span >= span_bd -- deterministically, independent of the
+    hash draw."""
+    w = (U_HI - U_LO) / N_STRATA
+    u0_max = U_LO + L_ANCHORS / (L_ANCHORS + 1) * w
+    u7_min = U_LO + (N_STRATA - 1) * w + 1 / (L_ANCHORS + 1) * w
+    return {"w": w, "u0_max": u0_max, "u7_min": u7_min,
+            "span_bound": u7_min - u0_max, "tol": AMENDMENT_TOL,
+            "derived_from": {"U_LO": U_LO, "U_HI": U_HI,
+                             "N_STRATA": N_STRATA,
+                             "L_ANCHORS": L_ANCHORS},
+            "formulas": {
+                "w": "(U_HI-U_LO)/N_STRATA",
+                "u0_max": "U_LO + L_ANCHORS/(L_ANCHORS+1) * w",
+                "u7_min": "U_LO + (N_STRATA-1)*w + 1/(L_ANCHORS+1) * w",
+                "span_bound": "u7_min - u0_max"}}
 
 
 def stratum_bounds(i: int) -> tuple[float, float]:
@@ -165,17 +204,21 @@ def build_states(windows: dict[str, dict], historical: dict[str, set[float]],
 
 
 def invariant_audit(states: list[dict]) -> dict:
-    """Mechanical regression audit under the M3-S25-R1.1 support-coverage
-    invariants (amendment taskbook Sec. 4; supersedes the M3-S25-R1.0
-    per-config span >= 0.70 invariant, which was unsatisfiable in general
-    under the frozen hash-first selection):
+    """Mechanical regression audit under the M3-S25-R1.2 structural
+    support invariants (amendment taskbook; supersedes the M3-S25-R1.1
+    fixed decimal thresholds, which retained random-hash dependence):
 
       A  stratum occupancy: each config occupies all 8 strata exactly once
-      B  minimum support reach: min(u) <= 0.25 per config
-      C  maximum support reach: max(u) >= 0.85 per config
-      D  anti-collapse span: max(u) - min(u) >= 0.65 per config
+      B  minimum support reach: min(u) <= u0_max + tol
+      C  maximum support reach: max(u) >= u7_min - tol
+      D  anti-collapse span: span >= (u7_min - u0_max) - tol
 
-    The realized per-config verdicts are reported for adjudication."""
+    where u0_max / u7_min are DERIVED from the frozen generator constants
+    (structural_bounds) and tol is the frozen 1e-12 tolerance.  These are
+    deterministic generator guarantees, independent of the hash draw.
+    The realized per-config verdicts are reported for audit."""
+    b = structural_bounds()
+    tol = b["tol"]
     per_config: dict[str, list[dict]] = {}
     for s in states:
         per_config.setdefault(s["config_id"], []).append(s)
@@ -192,21 +235,21 @@ def invariant_audit(states: list[dict]) -> dict:
         row = {"config_id": cid,
                "min_u": min_u, "max_u": max_u, "span": span,
                "A_stratum_occupancy": occupancy,
-               "B_min_reach_le_0.25": min_u <= 0.25,
-               "C_max_reach_ge_0.85": max_u >= 0.85,
-               "D_span_ge_0.65": span >= 0.65,
+               "B_min_reach_structural": min_u <= b["u0_max"] + tol,
+               "C_max_reach_structural": max_u >= b["u7_min"] - tol,
+               "D_span_structural": span >= b["span_bound"] - tol,
                "strata_occupied": strata,
                "states": len(ss)}
         row["invariants_pass"] = (row["A_stratum_occupancy"]
-                                  and row["B_min_reach_le_0.25"]
-                                  and row["C_max_reach_ge_0.85"]
-                                  and row["D_span_ge_0.65"])
+                                  and row["B_min_reach_structural"]
+                                  and row["C_max_reach_structural"]
+                                  and row["D_span_structural"])
         rows.append(row)
         if not row["invariants_pass"]:
             failed = [k for k in ("A_stratum_occupancy",
-                                  "B_min_reach_le_0.25",
-                                  "C_max_reach_ge_0.85",
-                                  "D_span_ge_0.65") if not row[k]]
+                                  "B_min_reach_structural",
+                                  "C_max_reach_structural",
+                                  "D_span_structural") if not row[k]]
             invariant_failures.append({**row, "failed": failed})
     checks = {
         "configs": len(configs) == 30,
@@ -217,24 +260,31 @@ def invariant_audit(states: list[dict]) -> dict:
         "max_u_le_1.0": all(r["max_u"] <= U_HI for r in rows),
         "invariant_A_stratum_occupancy": all(
             r["A_stratum_occupancy"] for r in rows),
-        "invariant_B_min_reach_le_0.25": all(
-            r["B_min_reach_le_0.25"] for r in rows),
-        "invariant_C_max_reach_ge_0.85": all(
-            r["C_max_reach_ge_0.85"] for r in rows),
-        "invariant_D_span_ge_0.65": all(r["D_span_ge_0.65"] for r in rows),
+        "invariant_B_min_reach_structural": all(
+            r["B_min_reach_structural"] for r in rows),
+        "invariant_C_max_reach_structural": all(
+            r["C_max_reach_structural"] for r in rows),
+        "invariant_D_span_structural": all(
+            r["D_span_structural"] for r in rows),
         "legality_violations": sum(
             1 for s in states
             if not (s["legality_s2_lo"] < s["s2"] <= s["legality_s2_hi"])),
     }
     return {"per_config": rows, "invariant_failures": invariant_failures,
             "checks": checks,
-            "invariant_definition": "M3-S25-R1.1: A stratum occupancy 8/8; "
-                                    "B min(u) <= 0.25; C max(u) >= 0.85; "
-                                    "D span >= 0.65",
-            "superseded_invariant": "M3-S25-R1.0 per-config span >= 0.70 "
-                                    "(FAIL: c000 0.6971, cf1n_new_002 "
-                                    "0.6649; unsatisfiable in general under "
-                                    "the frozen hash-first selection)",
+            "structural_bounds": b,
+            "invariant_definition": "M3-S25-R1.2: A stratum occupancy 8/8; "
+                                    "B min(u) <= u0_max + tol; "
+                                    "C max(u) >= u7_min - tol; "
+                                    "D span >= (u7_min-u0_max) - tol "
+                                    "(bounds derived from the frozen "
+                                    "generator constants; tol = 1e-12)",
+            "superseded_invariant": "M3-S25-R1.1 fixed thresholds "
+                                    "(B min(u) <= 0.25; C max(u) >= 0.85; "
+                                    "D span >= 0.65) -- FAIL for "
+                                    "m3s2s_cfg_005 (min u 0.251420 > 0.25); "
+                                    "M3-S25-R1.0 span >= 0.70 -- FAIL for "
+                                    "c000/cf1n_new_002",
             "strata_boundaries": [stratum_bounds(i) for i in range(N_STRATA + 1)]}
 
 

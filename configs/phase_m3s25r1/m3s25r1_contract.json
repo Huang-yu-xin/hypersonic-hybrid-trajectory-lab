@@ -1,28 +1,30 @@
 {
   "amendment": {
-    "document": "docs/phase_m3s25r1/M3_S25_R1_1_Amendment_Taskbook.md",
-    "document_sha256": "44012df4307e704304d22281f5a899c72aff3bd13a19cb788746bb15b7aba586",
+    "document": "docs/phase_m3s25r1/M3_S25_R1_2_Amendment_Taskbook.md",
+    "document_sha256": "dcb2e1b7ee432da835b5d968c5e9f336836b49a1608e1e180d7356cfdf810790",
     "new_invariants": [
       "A: stratum occupancy 8/8",
-      "B: min(u) <= 0.25",
-      "C: max(u) >= 0.85",
-      "D: span >= 0.65"
+      "B: min(u) <= u0_max + tol",
+      "C: max(u) >= u7_min - tol",
+      "D: span >= (u7_min - u0_max) - tol"
     ],
-    "old_invariant": "per-config max(u) - min(u) >= 0.70",
-    "parent_contract_sha256": "89be24d077e5ef7cbec8ae0c6b770ed7ae11b66756bae2f16914d93d7663df25",
-    "reason": "the frozen hash-first selection realizes spans below 0.70 for c000/cf1n_new_002 (rank-1 zero-collision hash draws); under uniform hash draws the per-config violation probability is about 16.5 percent, so the 0.70 invariant could not generally be satisfied by the frozen mechanism; zero samples consumed",
-    "stage": "M3-S25-R1.1",
+    "old_invariant": "M3-S25-R1.1 fixed thresholds: B min(u) <= 0.25; C max(u) >= 0.85; D span >= 0.65",
+    "parent_contract_sha256": "1e34017adfab4975e26d9177c61b94f98b908b8a9b1acadba71367c32e2a7da5",
+    "reason": "R1.1 correctly identified that support invariants must test structural coverage rather than luck in the hash-first anchor position; B <= 0.25 remained stricter than the generator guarantee and D >= 0.65 remained slightly stricter than the deterministic extreme-stratum interior-anchor guarantee; R1.2 removes the remaining random-hash dependence",
+    "stage": "M3-S25-R1.2",
+    "structural_bounds_derivation": "w = (U_HI-U_LO)/N_STRATA; u0_max = U_LO + L_ANCHORS/(L_ANCHORS+1)*w; u7_min = U_LO + (N_STRATA-1)*w + 1/(L_ANCHORS+1)*w; computed from the frozen generator constants (not independently tunable decimals); tol = 1e-12",
     "unchanged": [
       "candidate universe + its SHA",
       "candidate generation mechanism",
-      "hash-first selection",
-      "freshness firewall",
-      "legality rules",
+      "hash ranking",
+      "freshness rules",
+      "legality",
       "seeds",
       "truth semantics",
       "budget",
-      "runtime fail-closed ordering",
-      "panel rules"
+      "runtime ordering",
+      "panel rules",
+      "all authorization gates"
     ]
   },
   "arm_gates": {
@@ -113,7 +115,7 @@
     "restart_scan": "all ledgers scanned before the simulator; STARTED-only / CONSUMED_INVALID / orphan artifact / hash mismatch => STOP"
   },
   "preregistration_round0": {
-    "preflight_verdict": "FAIL",
+    "preflight_verdict": "PASS",
     "samples": 0,
     "simulator_calls": 0
   },
@@ -203,18 +205,49 @@
   },
   "support_invariants": {
     "A_stratum_occupancy": "each config occupies all 8 strata exactly once (0 empty strata)",
-    "B_min_support_reach": "per config: min(u) <= 0.25",
-    "C_max_support_reach": "per config: max(u) >= 0.85",
-    "D_anti_collapse_span": "per config: max(u) - min(u) >= 0.65",
-    "rationale": "evaluate structured support coverage instead of requiring a random hash draw to hit a fixed extreme span",
+    "B_min_support_reach": "per config: min(u) <= u0_max + tol (structural, derived from generator constants)",
+    "C_max_support_reach": "per config: max(u) >= u7_min - tol (structural, derived from generator constants)",
+    "D_anti_collapse_span": "per config: max(u) - min(u) >= (u7_min - u0_max) - tol (structural, derived from generator constants)",
+    "rationale": "test structural coverage rather than luck in the hash-first anchor position; the bounds are deterministic generator guarantees, removing the remaining random-hash dependence of fixed decimal thresholds",
     "status": "ACTIVE",
-    "superseded": {
-      "invariant": "per-config max(u) - min(u) >= 0.70",
-      "record": "docs/phase_m3s25r1/M3_S25_R1_Support_Invariant_Conflict.md",
-      "verdict": "FAIL (c000 span 0.6971, cf1n_new_002 span 0.6649; rank-1 zero-collision hash draws)",
-      "version": "m3s25r1.0"
+    "structural_bounds": {
+      "derived_from": {
+        "L_ANCHORS": 65,
+        "N_STRATA": 8,
+        "U_HI": 1.0,
+        "U_LO": 0.15
+      },
+      "formulas": {
+        "span_bound": "u7_min - u0_max",
+        "u0_max": "U_LO + L_ANCHORS/(L_ANCHORS+1) * w",
+        "u7_min": "U_LO + (N_STRATA-1)*w + 1/(L_ANCHORS+1) * w",
+        "w": "(U_HI-U_LO)/N_STRATA"
+      },
+      "span_bound": 0.640719696969697,
+      "tol": 1e-12,
+      "u0_max": 0.2546401515151515,
+      "u7_min": 0.8953598484848485,
+      "w": 0.10625
     },
-    "version": "m3s25r1.1"
+    "superseded_chain": [
+      {
+        "invariant": "per-config max(u) - min(u) >= 0.70",
+        "record": "docs/phase_m3s25r1/M3_S25_R1_Support_Invariant_Conflict.md",
+        "verdict": "FAIL (c000 span 0.6971, cf1n_new_002 span 0.6649; rank-1 zero-collision hash draws)",
+        "version": "m3s25r1.0"
+      },
+      {
+        "blocked_evidence": {
+          "file": "results/phase_m3s25r1/preflight/m3s25r1_1_preflight_R1_1_historical.json",
+          "sha256": "5cdf399fd9ab7b8a76840ef10e1a6b12744bfbc656e816f55e473160fc2e54aa"
+        },
+        "invariant": "A 8/8 strata; B min(u) <= 0.25; C max(u) >= 0.85; D span >= 0.65",
+        "record": "docs/phase_m3s25r1/M3_S25_R1_1_Amendment_Record.md",
+        "verdict": "FAIL (m3s2s_cfg_005 min u 0.251420 > 0.25; stratum-0 rank-1 zero-collision hash draw)",
+        "version": "m3s25r1.1"
+      }
+    ],
+    "version": "m3s25r1.2"
   },
   "truth_semantics": {
     "changed_vs_parent": "state support ONLY",

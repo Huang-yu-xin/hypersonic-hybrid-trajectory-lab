@@ -168,9 +168,12 @@ def test_route_union_duplicate_protection():
 
 def test_route_truth_execute_refuses_on_frozen_preflight_fail(
         tmp_path, monkeypatch):
-    """THE Round-0 fail-closed property: with the REAL frozen preflight
-    verdict (FAIL, span conflict) truth_execute refuses before ANY
-    simulator call or write, even if the human gate said YES."""
+    """Fail-closed property against a FAIL preflight verdict: with the
+    frozen report verdict flipped to FAIL (tmp report -- the R1.1 BLOCKED
+    evidence state), truth_execute refuses before ANY simulator call or
+    write, even if the human gate said YES.  (Under R1.2 the real frozen
+    verdict is PASS; the FAIL-refusal mechanism is verified on a tmp
+    report.)"""
     calls = {"arms": 0, "classify": 0}
     _mock_sims(monkeypatch, calls)
     approval = tmp_path / "approval.md"
@@ -178,13 +181,18 @@ def test_route_truth_execute_refuses_on_frozen_preflight_fail(
                         "M3_S25_R1_ARM_A_AUTHORIZED: NO\n"
                         "M3_S25_R1_ARM_B_AUTHORIZED: NO\n", encoding="utf-8")
     monkeypatch.setattr(R, "APPROVAL_DOC", approval)
+    bad = tmp_path / "preflight_fail.json"
+    bad.write_text(json.dumps({"PREFLIGHT_VERDICT": "FAIL",
+                               "overall": "M3-S25-R1.1 PREFLIGHT BLOCKED"}),
+                   encoding="utf-8")
+    monkeypatch.setattr(R, "PREFLIGHT_REPORT", bad)
     disc, conf = tmp_path / "discovery", tmp_path / "confirmation"
     monkeypatch.setattr(R, "TRUTH_DISC", disc)
     monkeypatch.setattr(R, "TRUTH_CONF", conf)
     monkeypatch.setattr(R, "TRUTH_LEDGERS", {
         "discovery": disc / "discovery_ledger.jsonl",
         "confirmation": conf / "confirmation_ledger.jsonl"})
-    with pytest.raises(RuntimeError, match="preflight"):
+    with pytest.raises(RuntimeError, match="PREFLIGHT BLOCKED"):
         R.truth_execute()
     assert calls == {"arms": 0, "classify": 0}
     assert not (tmp_path / "discovery").exists()

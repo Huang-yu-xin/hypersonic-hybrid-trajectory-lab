@@ -9,6 +9,7 @@ docs/phase_m3s25r1/M3_S25_R1_Support_Invariant_Conflict.md).
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -77,37 +78,37 @@ def test_u_bounds_and_strata_occupancy():
         assert sorted(strata) == [f"S{i}" for i in range(8)]
 
 
-def test_support_invariants_r1_1_realized_state():
-    """M3-S25-R1.1 realized state: the ORIGINAL R1.0 conflict (span >=
-    0.70 FAIL for c000/cf1n_new_002) is RESOLVED by invariant D
-    (>= 0.65), A and C pass for all 30 configs, and the residual
-    amendment invariant B (min(u) <= 0.25) fails for exactly
-    m3s2s_cfg_005 (min u 0.251420, rank-1 zero-collision hash draw).
-    The preflight verdict stays FAIL => M3-S25-R1.1 PREFLIGHT BLOCKED
-    (amendment Sec. 12); samples = 0; no self-modification of rules."""
+def test_support_invariants_r1_2_realized_state():
+    """M3-S25-R1.2 realized state: all four STRUCTURAL invariants (bounds
+    derived from the frozen generator constants) PASS for the exact frozen
+    240-state universe; preflight verdict PASS => EXECUTION-READY pending
+    the human gate.  The R1.0 (span >= 0.70) and R1.1 (0.25/0.85/0.65)
+    conflicts are both resolved by the structural bounds; the R1.1
+    BLOCKED preflight remains preserved as historical evidence."""
     pf = R.load(R.PREFLIGHT_REPORT)
     assert pf["checks"]["invariant_A_stratum_occupancy_8of8"] is True
-    assert pf["checks"]["invariant_C_max_reach_ge_0.85"] is True
-    assert pf["checks"]["invariant_D_span_ge_0.65"] is True
-    assert pf["checks"]["invariant_B_min_reach_le_0.25"] is False
-    assert pf["PREFLIGHT_VERDICT"] == "FAIL"
-    assert "PREFLIGHT BLOCKED" in pf["overall"]
-    conflicts = pf["support_invariants"]["conflicts"]
-    assert [c["config_id"] for c in conflicts] == ["m3s2s_cfg_005"]
-    assert conflicts[0]["failed_invariants"] == ["B_min_reach_le_0.25"]
-    assert conflicts[0]["min_u"] == pytest.approx(0.251420, abs=1e-5)
+    assert pf["checks"]["invariant_B_min_reach_structural"] is True
+    assert pf["checks"]["invariant_C_max_reach_structural"] is True
+    assert pf["checks"]["invariant_D_span_structural"] is True
+    assert pf["PREFLIGHT_VERDICT"] == "PASS"
+    assert pf["overall"] == "EXECUTION-READY"
+    assert pf["support_invariants"]["conflicts"] == []
+    assert pf["support_invariants"]["version"] == "m3s25r1.2"
+    # the R1.0 / R1.1 conflicts are inside the structural bounds
     per_cfg = {r["config_id"]: r for r in pf["per_config_support"]}
-    # the R1.0 span conflicts now pass under D
     assert per_cfg["c000"]["span"] == pytest.approx(0.6971, abs=1e-3)
     assert per_cfg["cf1n_new_002"]["span"] == pytest.approx(0.6649, abs=1e-3)
-    assert per_cfg["c000"]["D_span_ge_0.65"] is True
-    assert per_cfg["cf1n_new_002"]["D_span_ge_0.65"] is True
-    # the violating anchor is a rank-1 fresh hash draw
-    u = _universe()
-    s0 = next(s for s in u["states"] if s["config_id"] == "m3s2s_cfg_005"
-              and s["stratum_id"] == "S0")
-    assert s0["anchor_rank_position"] == 1 and s0["n_collided"] == 0
-    assert s0["u"] == pytest.approx(0.251420, abs=1e-5)
+    assert per_cfg["m3s2s_cfg_005"]["min_u"] == pytest.approx(0.251420,
+                                                              abs=1e-5)
+    for r in per_cfg.values():
+        assert r["B_min_reach_structural"] and r["D_span_structural"]
+    # R1.1 blocked evidence preserved verbatim
+    ev = pf["support_invariants"]["r1_1_blocked_evidence"]
+    assert ev["verdict"].startswith("FAIL")
+    assert R.sha(R.ROOT / ev["file"]) == ev["sha256"]
+    hist = R.load(R.ROOT / ev["file"])
+    assert hist["PREFLIGHT_VERDICT"] == "FAIL"
+    assert hist["failed_checks"] == ["invariant_B_min_reach_le_0.25"]
 
 
 def test_support_invariant_checker_mechanism_synthetic():
@@ -119,47 +120,121 @@ def test_support_invariant_checker_mechanism_synthetic():
                  "legality_s2_hi": 8.0}
                 for i, u in enumerate(us)]
 
+    b = CAND.structural_bounds()
     spanning = mk([0.16, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])
     collapsed = mk([0.151, 0.152, 0.153, 0.154, 0.155, 0.156, 0.157,
-                    0.158])          # A ok; C + D fail
-    top_stratum0 = mk([0.2520, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])
+                    0.158])          # A ok; C + D fail structurally
+    beyond_u0_max = mk([b["u0_max"] + 1e-9, 0.30, 0.45, 0.60, 0.75, 0.90,
+                        0.98, 0.99])   # B violation only (unreachable by
+    # the generator, used purely as a checker mechanism case)
     good = CAND.invariant_audit(spanning)
     bad = CAND.invariant_audit(collapsed)
-    bbad = CAND.invariant_audit(top_stratum0)
+    bbad = CAND.invariant_audit(beyond_u0_max)
     assert good["checks"]["invariant_A_stratum_occupancy"] is True
-    assert good["checks"]["invariant_B_min_reach_le_0.25"] is True
-    assert good["checks"]["invariant_C_max_reach_ge_0.85"] is True
-    assert good["checks"]["invariant_D_span_ge_0.65"] is True
-    assert bad["checks"]["invariant_C_max_reach_ge_0.85"] is False
-    assert bad["checks"]["invariant_D_span_ge_0.65"] is False
+    assert good["checks"]["invariant_B_min_reach_structural"] is True
+    assert good["checks"]["invariant_C_max_reach_structural"] is True
+    assert good["checks"]["invariant_D_span_structural"] is True
+    assert bad["checks"]["invariant_C_max_reach_structural"] is False
+    assert bad["checks"]["invariant_D_span_structural"] is False
     assert bad["checks"]["invariant_A_stratum_occupancy"] is True
-    assert bbad["checks"]["invariant_B_min_reach_le_0.25"] is False
-    assert bbad["checks"]["invariant_D_span_ge_0.65"] is True
-    # the 0.70 threshold is gone from the checker (amendment Sec. 11)
-    assert all("span_ge_0.70" not in k for k in good["checks"])
-    assert "superseded_invariant" in good
-    assert "0.70" in good["superseded_invariant"]
+    assert bbad["checks"]["invariant_B_min_reach_structural"] is False
+    assert bbad["checks"]["invariant_D_span_structural"] is True
+    # the superseded thresholds are gone from the checker (Sec. 11)
+    assert all("le_0.25" not in k and "ge_0.85" not in k
+               and "ge_0.65" not in k and "span_ge_0.70" not in k
+               for k in good["checks"])
+    assert "structural_bounds" in good
+    assert good["structural_bounds"] == b
+
+
+def test_structural_bounds_derived_from_generator_constants():
+    """R1.2 core requirement: the structural bounds are COMPUTED from the
+    frozen generator constants (U_LO/U_HI/N_STRATA/L_ANCHORS), equal to
+    the taskbook-frozen decimal values, and independent of any data."""
+    # independent recomputation from the constants
+    w = (CAND.U_HI - CAND.U_LO) / CAND.N_STRATA
+    u0_max = CAND.U_LO + CAND.L_ANCHORS / (CAND.L_ANCHORS + 1) * w
+    u7_min = (CAND.U_LO + (CAND.N_STRATA - 1) * w
+              + 1 / (CAND.L_ANCHORS + 1) * w)
+    b = CAND.structural_bounds()
+    assert b["w"] == w == 0.10625
+    assert b["u0_max"] == u0_max
+    assert b["u7_min"] == u7_min
+    assert b["span_bound"] == u7_min - u0_max
+    # taskbook-frozen decimal values (bit-level equality of the formula)
+    assert u0_max == 0.2546401515151515
+    assert u7_min == 0.8953598484848485
+    assert u7_min - u0_max == 0.640719696969697
+    assert b["tol"] == 1e-12
+    # the bounds take NO data input: signature is empty, so realized
+    # candidate values cannot tune the thresholds
+    import inspect
+    assert list(inspect.signature(CAND.structural_bounds).parameters) == []
+    # the audit thresholds come from structural_bounds (wiring proof)
+    states = [{"state_id": f"c_s{i}", "config_id": "c", "u": u,
+               "stratum_id": f"S{i}", "s2": 1.0, "legality_s2_lo": 0.5,
+               "legality_s2_hi": 8.0}
+              for i, u in enumerate(
+                  [0.16, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])]
+    a1 = CAND.invariant_audit(states)
+    assert a1["structural_bounds"] == b
+    shifted = dict(b)
+    shifted["u0_max"] = b["u0_max"] + 0.01
+    orig = CAND.structural_bounds
+    CAND.structural_bounds = lambda: shifted
+    try:
+        a2 = CAND.invariant_audit(states)
+        assert a2["structural_bounds"]["u0_max"] == shifted["u0_max"]
+        # verdict flips exactly per the shifted bound (min u 0.16 is now
+        # above the shifted-1e-12 threshold only if shifted exceeds it)
+        assert a2["checks"]["invariant_B_min_reach_structural"] == \
+            (0.16 <= shifted["u0_max"] + shifted["tol"])
+    finally:
+        CAND.structural_bounds = orig
+
+
+def test_thresholds_not_tuned_from_realized_values():
+    """The bounds are identical for the frozen universe and a mutated
+    copy: changing realized candidate values cannot move a threshold."""
+    states = R.verify_universe_sha_only()
+    mutated = [dict(s, u=0.5 if s["u"] == 0.2514202 else s["u"])
+               for s in states]
+    a_frozen = CAND.invariant_audit(states)
+    a_mut = CAND.invariant_audit(mutated)
+    assert a_frozen["structural_bounds"] == a_mut["structural_bounds"]
+    # the frozen universe itself never appears in the bounds derivation
+    b = CAND.structural_bounds()
+    for key in ("derived_from",):
+        assert b[key] == {"U_LO": 0.15, "U_HI": 1.00, "N_STRATA": 8,
+                          "L_ANCHORS": 65}
 
 
 def test_amendment_invariant_replacement_recorded():
-    """Sec. 11: old span=0.70 removed / new span=0.65 active -- recorded
-    in the contract with parent hash, amendment hash, old/new invariants
-    and reason."""
+    """R1.2 recorded in the contract: parent hash, amendment hash,
+    old invariant, new structural invariants, reason, and the full
+    superseded chain (R1.0 + R1.1) with preserved BLOCKED evidence."""
     c = R.load(R.CFG / "m3s25r1_contract.json")
     inv = c["support_invariants"]
-    assert inv["version"] == "m3s25r1.1" and inv["status"] == "ACTIVE"
-    assert "0.65" in inv["D_anti_collapse_span"]
-    assert inv["superseded"]["invariant"] == \
-        "per-config max(u) - min(u) >= 0.70"
-    assert "0.70" not in inv["D_anti_collapse_span"]
+    assert inv["version"] == "m3s25r1.2" and inv["status"] == "ACTIVE"
+    assert "u0_max" in inv["B_min_support_reach"]
+    assert "u7_min" in inv["C_max_support_reach"]
+    assert "u7_min - u0_max" in inv["D_anti_collapse_span"]
+    assert inv["structural_bounds"] == CAND.structural_bounds()
+    chain = inv["superseded_chain"]
+    assert chain[0]["version"] == "m3s25r1.0"
+    assert chain[0]["invariant"] == "per-config max(u) - min(u) >= 0.70"
+    assert chain[1]["version"] == "m3s25r1.1"
+    assert chain[1]["blocked_evidence"]["sha256"] == R.sha(
+        R.ROOT / chain[1]["blocked_evidence"]["file"])
     am = c["amendment"]
-    assert am["stage"] == "M3-S25-R1.1"
-    assert am["parent_contract_sha256"].startswith("89be24d0")
+    assert am["stage"] == "M3-S25-R1.2"
+    assert am["parent_contract_sha256"].startswith("1e34017a")
     assert am["document_sha256"] == R.sha(
-        R.DOC / "M3_S25_R1_1_Amendment_Taskbook.md")
-    assert am["old_invariant"].startswith("per-config max(u) - min(u)")
+        R.DOC / "M3_S25_R1_2_Amendment_Taskbook.md")
+    assert am["old_invariant"].startswith("M3-S25-R1.1 fixed thresholds")
     assert len(am["new_invariants"]) == 4
-    assert "unchanged" in am and len(am["unchanged"]) == 10
+    assert "generator constants" in am["structural_bounds_derivation"]
+    assert len(am["unchanged"]) == 11
 
 
 def test_candidate_universe_sha_unchanged_by_amendment():
@@ -352,10 +427,30 @@ def test_prereg_round_zero_simulator_calls(protect_preflight_report,
     R.preflight()
     pf = R.load(R.PREFLIGHT_REPORT)
     assert pf["simulator_calls"] == 0 and pf["samples"] == 0
-    assert pf["PREFLIGHT_VERDICT"] == "FAIL"     # recorded span conflict
+    assert pf["PREFLIGHT_VERDICT"] == "PASS"    # structural invariants (R1.2)
+    assert pf["overall"] == "EXECUTION-READY"
+    # a PASS preflight cannot enable truth on its own: the human gate
+    # stays NO and truth_execute refuses at the authorization step
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
+
+
+def test_frozen_preflight_gate_refuses_fail_verdict(tmp_path, monkeypatch):
+    """The fail-closed preflight gate itself: a frozen report with a FAIL
+    verdict blocks truth_execute's step 3 (mechanism test on a tmp
+    report; the R1.1 BLOCKED evidence was exactly this state)."""
+    bad = tmp_path / "preflight.json"
+    bad.write_text(json.dumps({"PREFLIGHT_VERDICT": "FAIL",
+                               "overall": "M3-S25-R1.1 PREFLIGHT BLOCKED"}),
+                   encoding="utf-8")
+    monkeypatch.setattr(R, "PREFLIGHT_REPORT", bad)
+    with pytest.raises(RuntimeError, match="PREFLIGHT BLOCKED"):
+        R.verify_frozen_preflight_pass()
+    good = tmp_path / "preflight_pass.json"
+    good.write_text(json.dumps({"PREFLIGHT_VERDICT": "PASS"}), encoding="utf-8")
+    monkeypatch.setattr(R, "PREFLIGHT_REPORT", good)
+    assert R.verify_frozen_preflight_pass() == {"PREFLIGHT_VERDICT": "PASS"}
 
 
 # --------------------------------------------------------------------------
@@ -564,8 +659,21 @@ def test_gate_parser_mechanism(tmp_path, monkeypatch):
 
 
 def test_import_cannot_flip_gates():
-    import importlib
-    importlib.reload(sys.modules["run_m3s25r1"])
+    """A fresh module import (clean subprocess, no fixture state) reads
+    the frozen approval file and cannot flip any gate."""
+    scripts_dir = str(ROOT / "scripts")
+    code = (
+        "import sys\n"
+        f"sys.path.insert(0, r'{ROOT}')\n"
+        f"sys.path.insert(0, r'{scripts_dir}')\n"
+        "import run_m3s25r1 as R\n"
+        "print(all(not R.gate(g) for g in (\n"
+        "    'M3_S25_R1_TRUTH_AUTHORIZED', 'M3_S25_R1_ARM_A_AUTHORIZED',\n"
+        "    'M3_S25_R1_ARM_B_AUTHORIZED')))\n")
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True,
+                         text=True)
+    assert out.returncode == 0, out.stderr
+    assert out.stdout.strip() == "True"
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
