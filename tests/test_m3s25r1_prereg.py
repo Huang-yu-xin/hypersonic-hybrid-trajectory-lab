@@ -77,42 +77,119 @@ def test_u_bounds_and_strata_occupancy():
         assert sorted(strata) == [f"S{i}" for i in range(8)]
 
 
-def test_support_span_invariant_realized_conflict():
-    """Sec. 9 span invariant: the frozen Sec. 7 hash-first selection
-    realizes spans below 0.70 for exactly the documented 2/30 configs
-    (c000, cf1n_new_002).  This is the recorded Round-0 conflict; the
-    universe is frozen as the mechanism produced it, the preflight
-    verdict is FAIL, and execution stays blocked (fail-closed).  Any
-    rule change requires a new taskbook (Sec. 27)."""
+def test_support_invariants_r1_1_realized_state():
+    """M3-S25-R1.1 realized state: the ORIGINAL R1.0 conflict (span >=
+    0.70 FAIL for c000/cf1n_new_002) is RESOLVED by invariant D
+    (>= 0.65), A and C pass for all 30 configs, and the residual
+    amendment invariant B (min(u) <= 0.25) fails for exactly
+    m3s2s_cfg_005 (min u 0.251420, rank-1 zero-collision hash draw).
+    The preflight verdict stays FAIL => M3-S25-R1.1 PREFLIGHT BLOCKED
+    (amendment Sec. 12); samples = 0; no self-modification of rules."""
     pf = R.load(R.PREFLIGHT_REPORT)
-    assert pf["checks"]["support_span_ge_0.70"] is False
+    assert pf["checks"]["invariant_A_stratum_occupancy_8of8"] is True
+    assert pf["checks"]["invariant_C_max_reach_ge_0.85"] is True
+    assert pf["checks"]["invariant_D_span_ge_0.65"] is True
+    assert pf["checks"]["invariant_B_min_reach_le_0.25"] is False
     assert pf["PREFLIGHT_VERDICT"] == "FAIL"
-    fails = pf["span_invariant"]["failing_configs"]
-    assert [r["config_id"] for r in fails] == ["c000", "cf1n_new_002"]
-    assert fails[0]["span"] == pytest.approx(0.6971, abs=1e-3)
-    assert fails[1]["span"] == pytest.approx(0.6649, abs=1e-3)
+    assert "PREFLIGHT BLOCKED" in pf["overall"]
+    conflicts = pf["support_invariants"]["conflicts"]
+    assert [c["config_id"] for c in conflicts] == ["m3s2s_cfg_005"]
+    assert conflicts[0]["failed_invariants"] == ["B_min_reach_le_0.25"]
+    assert conflicts[0]["min_u"] == pytest.approx(0.251420, abs=1e-5)
     per_cfg = {r["config_id"]: r for r in pf["per_config_support"]}
-    assert sum(1 for r in per_cfg.values() if r["span"] >= 0.70) == 28
-    assert min(r["min_u"] for r in per_cfg.values()) >= 0.15
+    # the R1.0 span conflicts now pass under D
+    assert per_cfg["c000"]["span"] == pytest.approx(0.6971, abs=1e-3)
+    assert per_cfg["cf1n_new_002"]["span"] == pytest.approx(0.6649, abs=1e-3)
+    assert per_cfg["c000"]["D_span_ge_0.65"] is True
+    assert per_cfg["cf1n_new_002"]["D_span_ge_0.65"] is True
+    # the violating anchor is a rank-1 fresh hash draw
+    u = _universe()
+    s0 = next(s for s in u["states"] if s["config_id"] == "m3s2s_cfg_005"
+              and s["stratum_id"] == "S0")
+    assert s0["anchor_rank_position"] == 1 and s0["n_collided"] == 0
+    assert s0["u"] == pytest.approx(0.251420, abs=1e-5)
 
 
-def test_span_checker_mechanism_synthetic():
-    """The invariant checker itself: detects a collapsed synthetic
-    universe and passes a spanning one (Sec. 31 mechanism test)."""
-    spanning = [{"state_id": f"c_s{i}", "config_id": "c", "u": u,
+def test_support_invariant_checker_mechanism_synthetic():
+    """The M3-S25-R1.1 invariant checker: A/B/C/D semantics on synthetic
+    universes (Sec. 11 mechanism test)."""
+    def mk(us):
+        return [{"state_id": f"c_s{i}", "config_id": "c", "u": u,
                  "stratum_id": f"S{i}", "s2": 1.0, "legality_s2_lo": 0.5,
                  "legality_s2_hi": 8.0}
-                for i, u in enumerate(
-                    [0.16, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])]
-    collapsed = [{"state_id": f"c_s{i}", "config_id": "c",
-                  "u": 0.15 + 0.001 * i, "stratum_id": f"S{i}", "s2": 1.0,
-                  "legality_s2_lo": 0.5, "legality_s2_hi": 8.0}
-                 for i in range(8)]
-    good = CAND.invariant_audit(spanning, {"c": {}})
-    bad = CAND.invariant_audit(collapsed, {"c": {}})
-    assert good["checks"]["support_span_ge_0.70"] is True
-    assert bad["checks"]["support_span_ge_0.70"] is False
-    assert bad["span_failures"][0]["config_id"] == "c"
+                for i, u in enumerate(us)]
+
+    spanning = mk([0.16, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])
+    collapsed = mk([0.151, 0.152, 0.153, 0.154, 0.155, 0.156, 0.157,
+                    0.158])          # A ok; C + D fail
+    top_stratum0 = mk([0.2520, 0.30, 0.45, 0.60, 0.75, 0.90, 0.98, 0.99])
+    good = CAND.invariant_audit(spanning)
+    bad = CAND.invariant_audit(collapsed)
+    bbad = CAND.invariant_audit(top_stratum0)
+    assert good["checks"]["invariant_A_stratum_occupancy"] is True
+    assert good["checks"]["invariant_B_min_reach_le_0.25"] is True
+    assert good["checks"]["invariant_C_max_reach_ge_0.85"] is True
+    assert good["checks"]["invariant_D_span_ge_0.65"] is True
+    assert bad["checks"]["invariant_C_max_reach_ge_0.85"] is False
+    assert bad["checks"]["invariant_D_span_ge_0.65"] is False
+    assert bad["checks"]["invariant_A_stratum_occupancy"] is True
+    assert bbad["checks"]["invariant_B_min_reach_le_0.25"] is False
+    assert bbad["checks"]["invariant_D_span_ge_0.65"] is True
+    # the 0.70 threshold is gone from the checker (amendment Sec. 11)
+    assert all("span_ge_0.70" not in k for k in good["checks"])
+    assert "superseded_invariant" in good
+    assert "0.70" in good["superseded_invariant"]
+
+
+def test_amendment_invariant_replacement_recorded():
+    """Sec. 11: old span=0.70 removed / new span=0.65 active -- recorded
+    in the contract with parent hash, amendment hash, old/new invariants
+    and reason."""
+    c = R.load(R.CFG / "m3s25r1_contract.json")
+    inv = c["support_invariants"]
+    assert inv["version"] == "m3s25r1.1" and inv["status"] == "ACTIVE"
+    assert "0.65" in inv["D_anti_collapse_span"]
+    assert inv["superseded"]["invariant"] == \
+        "per-config max(u) - min(u) >= 0.70"
+    assert "0.70" not in inv["D_anti_collapse_span"]
+    am = c["amendment"]
+    assert am["stage"] == "M3-S25-R1.1"
+    assert am["parent_contract_sha256"].startswith("89be24d0")
+    assert am["document_sha256"] == R.sha(
+        R.DOC / "M3_S25_R1_1_Amendment_Taskbook.md")
+    assert am["old_invariant"].startswith("per-config max(u) - min(u)")
+    assert len(am["new_invariants"]) == 4
+    assert "unchanged" in am and len(am["unchanged"]) == 10
+
+
+def test_candidate_universe_sha_unchanged_by_amendment():
+    """Sec. 11 candidate immutability: the universe SHA is the R1.0
+    freeze; the amendment regeneration guard is active."""
+    assert R.EXPECTED_UNIVERSE_SHA == \
+        ("9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4"
+         "223058d6e600d02")
+    assert R.sha_bytes(R.UNIVERSE.read_bytes()) == R.EXPECTED_UNIVERSE_SHA
+    with pytest.raises(RuntimeError, match="regeneration is forbidden"):
+        R.candidates_stage()
+
+
+def test_no_science_drift():
+    """Sec. 11: truth semantics hash, seed namespace and budget are
+    unchanged by the amendment."""
+    c = R.load(R.CFG / "m3s25r1_contract.json")
+    assert c["truth_semantics"]["parent_truth_contract_sha256"] == \
+        R.sha(R.PARENT_TRUTH_CONTRACT)
+    assert c["seed_namespaces"] == {
+        "discovery": "M3-S25-R1-DISCOVERY",
+        "confirmation": "M3-S25-R1-CONFIRMATION",
+        "s2s_namespace_reuse": False}
+    b = R.load(R.CFG / "m3s25r1_budget_contract.json")
+    assert b["TRUTH_BUDGET_PLANNED"] == b["TRUTH_BUDGET_MAX"] == 432_000_000
+    assert b["p_ref_sampling_budget"] == 0 and b["topup"] == 0
+    m = R.load(R.CFG / "m3s25r1_truth_seed_manifest.json")
+    assert m["namespaces"] == {"discovery": "M3-S25-R1-DISCOVERY",
+                               "confirmation": "M3-S25-R1-CONFIRMATION"}
+    assert m["total_units"] == 480
 
 
 def test_universe_sha_pinned():

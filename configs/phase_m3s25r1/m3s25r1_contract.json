@@ -1,4 +1,30 @@
 {
+  "amendment": {
+    "document": "docs/phase_m3s25r1/M3_S25_R1_1_Amendment_Taskbook.md",
+    "document_sha256": "44012df4307e704304d22281f5a899c72aff3bd13a19cb788746bb15b7aba586",
+    "new_invariants": [
+      "A: stratum occupancy 8/8",
+      "B: min(u) <= 0.25",
+      "C: max(u) >= 0.85",
+      "D: span >= 0.65"
+    ],
+    "old_invariant": "per-config max(u) - min(u) >= 0.70",
+    "parent_contract_sha256": "89be24d077e5ef7cbec8ae0c6b770ed7ae11b66756bae2f16914d93d7663df25",
+    "reason": "the frozen hash-first selection realizes spans below 0.70 for c000/cf1n_new_002 (rank-1 zero-collision hash draws); under uniform hash draws the per-config violation probability is about 16.5 percent, so the 0.70 invariant could not generally be satisfied by the frozen mechanism; zero samples consumed",
+    "stage": "M3-S25-R1.1",
+    "unchanged": [
+      "candidate universe + its SHA",
+      "candidate generation mechanism",
+      "hash-first selection",
+      "freshness firewall",
+      "legality rules",
+      "seeds",
+      "truth semantics",
+      "budget",
+      "runtime fail-closed ordering",
+      "panel rules"
+    ]
+  },
   "arm_gates": {
     "M3_S25_R1_ARM_A_AUTHORIZED": "NO",
     "M3_S25_R1_ARM_B_AUTHORIZED": "NO",
@@ -174,6 +200,21 @@
       0.15,
       1.0
     ]
+  },
+  "support_invariants": {
+    "A_stratum_occupancy": "each config occupies all 8 strata exactly once (0 empty strata)",
+    "B_min_support_reach": "per config: min(u) <= 0.25",
+    "C_max_support_reach": "per config: max(u) >= 0.85",
+    "D_anti_collapse_span": "per config: max(u) - min(u) >= 0.65",
+    "rationale": "evaluate structured support coverage instead of requiring a random hash draw to hit a fixed extreme span",
+    "status": "ACTIVE",
+    "superseded": {
+      "invariant": "per-config max(u) - min(u) >= 0.70",
+      "record": "docs/phase_m3s25r1/M3_S25_R1_Support_Invariant_Conflict.md",
+      "verdict": "FAIL (c000 span 0.6971, cf1n_new_002 span 0.6649; rank-1 zero-collision hash draws)",
+      "version": "m3s25r1.0"
+    },
+    "version": "m3s25r1.1"
   },
   "truth_semantics": {
     "changed_vs_parent": "state support ONLY",

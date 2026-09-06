@@ -18,9 +18,11 @@ Frozen mechanism:
   - selection is independent of truth labels, discovery results,
     SHRINK/HOLD counts and the numeric ordering of candidate values.
 
-Regression invariants (taskbook Sec. 9) are mechanically audited by
-`invariant_audit`; the support-span invariant (per-config
-max u - min u >= 0.70) is reported with its realized verdict.
+Regression invariants are mechanically audited by `invariant_audit`
+under the M3-S25-R1.1 support-coverage invariants (A stratum occupancy
+8/8; B min(u) <= 0.25; C max(u) >= 0.85; D anti-collapse span >= 0.65),
+which supersede the M3-S25-R1.0 per-config span >= 0.70 invariant; the
+realized per-config verdicts are reported for adjudication.
 """
 from __future__ import annotations
 
@@ -162,48 +164,77 @@ def build_states(windows: dict[str, dict], historical: dict[str, set[float]],
     return states
 
 
-def invariant_audit(states: list[dict], windows: dict[str, dict]) -> dict:
-    """Mechanical regression audit (taskbook Sec. 9).  Returns per-check
-    verdicts plus the realized per-config support-span report."""
+def invariant_audit(states: list[dict]) -> dict:
+    """Mechanical regression audit under the M3-S25-R1.1 support-coverage
+    invariants (amendment taskbook Sec. 4; supersedes the M3-S25-R1.0
+    per-config span >= 0.70 invariant, which was unsatisfiable in general
+    under the frozen hash-first selection):
+
+      A  stratum occupancy: each config occupies all 8 strata exactly once
+      B  minimum support reach: min(u) <= 0.25 per config
+      C  maximum support reach: max(u) >= 0.85 per config
+      D  anti-collapse span: max(u) - min(u) >= 0.65 per config
+
+    The realized per-config verdicts are reported for adjudication."""
     per_config: dict[str, list[dict]] = {}
     for s in states:
         per_config.setdefault(s["config_id"], []).append(s)
     configs = sorted(per_config)
-    rows, span_failures = [], []
+    rows, invariant_failures = [], []
     for cid in configs:
         ss = per_config[cid]
         us = [s["u"] for s in ss]
         strata = sorted(s["stratum_id"] for s in ss)
-        span = max(us) - min(us)
+        min_u, max_u = min(us), max(us)
+        span = max_u - min_u
+        occupancy = (strata == [stratum_id(i) for i in range(N_STRATA)]
+                     and len(strata) == len(set(strata)) == N_STRATA)
         row = {"config_id": cid,
-               "min_u": min(us), "max_u": max(us), "span": span,
-               "min_u_ge_0.15": min(us) >= U_LO,
-               "max_u_le_1.0": max(us) <= U_HI,
-               "span_ge_0.70": span >= 0.70,
+               "min_u": min_u, "max_u": max_u, "span": span,
+               "A_stratum_occupancy": occupancy,
+               "B_min_reach_le_0.25": min_u <= 0.25,
+               "C_max_reach_ge_0.85": max_u >= 0.85,
+               "D_span_ge_0.65": span >= 0.65,
                "strata_occupied": strata,
-               "each_stratum_exactly_once": (
-                   strata == [stratum_id(i) for i in range(N_STRATA)]
-                   and len(strata) == len(set(strata)) == N_STRATA),
                "states": len(ss)}
+        row["invariants_pass"] = (row["A_stratum_occupancy"]
+                                  and row["B_min_reach_le_0.25"]
+                                  and row["C_max_reach_ge_0.85"]
+                                  and row["D_span_ge_0.65"])
         rows.append(row)
-        if not row["span_ge_0.70"]:
-            span_failures.append(row)
-    strata_ok = all(r["each_stratum_exactly_once"] for r in rows)
+        if not row["invariants_pass"]:
+            failed = [k for k in ("A_stratum_occupancy",
+                                  "B_min_reach_le_0.25",
+                                  "C_max_reach_ge_0.85",
+                                  "D_span_ge_0.65") if not row[k]]
+            invariant_failures.append({**row, "failed": failed})
     checks = {
         "configs": len(configs) == 30,
         "candidates": len(states) == 240,
         "duplicate_state_id": len({s["state_id"] for s in states}) == 240,
         "states_per_config_8": all(len(v) == N_STRATA for v in per_config.values()),
-        "min_u_ge_0.15": all(r["min_u_ge_0.15"] for r in rows),
-        "max_u_le_1.0": all(r["max_u_le_1.0"] for r in rows),
-        "each_stratum_exactly_once": strata_ok,
+        "min_u_ge_0.15": all(r["min_u"] >= U_LO for r in rows),
+        "max_u_le_1.0": all(r["max_u"] <= U_HI for r in rows),
+        "invariant_A_stratum_occupancy": all(
+            r["A_stratum_occupancy"] for r in rows),
+        "invariant_B_min_reach_le_0.25": all(
+            r["B_min_reach_le_0.25"] for r in rows),
+        "invariant_C_max_reach_ge_0.85": all(
+            r["C_max_reach_ge_0.85"] for r in rows),
+        "invariant_D_span_ge_0.65": all(r["D_span_ge_0.65"] for r in rows),
         "legality_violations": sum(
             1 for s in states
             if not (s["legality_s2_lo"] < s["s2"] <= s["legality_s2_hi"])),
-        "support_span_ge_0.70": not span_failures,
     }
-    return {"per_config": rows, "span_failures": span_failures,
+    return {"per_config": rows, "invariant_failures": invariant_failures,
             "checks": checks,
+            "invariant_definition": "M3-S25-R1.1: A stratum occupancy 8/8; "
+                                    "B min(u) <= 0.25; C max(u) >= 0.85; "
+                                    "D span >= 0.65",
+            "superseded_invariant": "M3-S25-R1.0 per-config span >= 0.70 "
+                                    "(FAIL: c000 0.6971, cf1n_new_002 "
+                                    "0.6649; unsatisfiable in general under "
+                                    "the frozen hash-first selection)",
             "strata_boundaries": [stratum_bounds(i) for i in range(N_STRATA + 1)]}
 
 

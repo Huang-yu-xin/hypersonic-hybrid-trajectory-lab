@@ -79,8 +79,8 @@ SPAN_MIN = 0.70
 # pins the artifact as -text so working tree == git blob)
 EXPECTED_UNIVERSE_SHA = ("9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4"
                          "223058d6e600d02")
-EXPECTED_CONTRACT_SHA = ("89be24d077e5ef7cbec8ae0c6b770ed7ae11b66756bae2f16"
-                         "914d93d7663df25")
+EXPECTED_CONTRACT_SHA = ("1e34017adfab4975e26d9177c61b94f98b908b8a9b1acadb"
+                         "a71367c32e2a7da5")
 FULL_PATH_LIMIT = 220
 
 TRUTH_DISC = ROOT / "results/phase_m3s25r1/discovery"
@@ -347,6 +347,15 @@ def prepare() -> dict:
 # --------------------------------------------------------------------------
 
 def candidates_stage() -> dict:
+    # M3-S25-R1.1 Sec. 2/6: the candidate universe is FROZEN and its SHA is
+    # immutable -- regeneration (re-hash / re-draw / substitution) is
+    # forbidden once it exists.
+    if UNIVERSE.exists():
+        raise RuntimeError(
+            "M3-S25-R1-X: candidate universe already frozen at "
+            f"{UNIVERSE} (sha {sha_bytes(UNIVERSE.read_bytes())[:16]}...); "
+            "regeneration is forbidden by the M3-S25-R1.1 amendment "
+            "(Sec. 2/6: no re-hash, no re-draw, no substitution)")
     pins = verify_parent_universe_pin()
     windows = _windows()
     # cross-check inherited windows against the parent universe's recorded
@@ -366,7 +375,7 @@ def candidates_stage() -> dict:
     configs = sorted(windows)
     hist, hist_meta = HIST.historical_characterized_s2(configs)
     states = CAND.build_states(windows, hist, meta)
-    audit = CAND.invariant_audit(states, windows)
+    audit = CAND.invariant_audit(states)
     fresh = CAND.freshness_reaudit(states, hist)
     universe = {
         "schema_version": "m3s25r1_candidate_universe_v1",
@@ -411,7 +420,7 @@ def candidates_stage() -> dict:
             "n_sources": len(hist_meta["sources"])},
         "freshness_audit": fresh,
         "support_invariant_audit": {
-            "span_failures": audit["span_failures"],
+            "invariant_failures": audit["invariant_failures"],
             "checks": audit["checks"]},
         "states": states,
     }
@@ -434,10 +443,10 @@ def candidates_stage() -> dict:
              ["state_id", "config_id", "stratum_id", "u", "s2", "anchor_m",
               "anchor_rank_position", "n_collided", "n_fresh",
               "anchor_hash", "fresh"])
-    n_bad = len(audit["span_failures"])
+    n_bad = len(audit["invariant_failures"])
     print(f"M3-S25-R1 candidates: {len(states)} states / {len(configs)} "
           f"configs / 8 strata each (universe sha256 {universe_sha[:16]}...); "
-          f"support-span invariant: {n_bad}/30 configs below 0.70")
+          f"support invariants A-D: {30 - n_bad}/30 configs pass")
     return {"states": states, "windows": windows, "hist": hist,
             "hist_meta": hist_meta, "audit": audit, "fresh": fresh,
             "universe_sha256": universe_sha, "pins": pins}
@@ -760,7 +769,7 @@ def preflight() -> dict:
     # ---- candidate universe mechanical audit ----
     states = verify_universe_sha_only()
     windows = _windows()
-    audit = CAND.invariant_audit(states, windows)
+    audit = CAND.invariant_audit(states)
     hist, hist_meta = HIST.historical_characterized_s2(
         sorted({s["config_id"] for s in states}))
     fresh = CAND.freshness_reaudit(states, hist)
@@ -832,8 +841,8 @@ def preflight() -> dict:
             max_path = max(max_path, len(str(final)), len(str(temp)))
     disk = shutil.disk_usage(ROOT)
     paths_ok = max_path <= FULL_PATH_LIMIT
-    # ---- assemble verdict ----
-    span_failures = audit["span_failures"]
+    # ---- assemble verdict (M3-S25-R1.1 support-coverage invariants) ----
+    inv_failures = audit["invariant_failures"]
     checks = {
         "configs_30": audit["checks"]["configs"],
         "strata_per_config_8": audit["checks"]["states_per_config_8"],
@@ -846,8 +855,14 @@ def preflight() -> dict:
                                     not (cand_ids & reserve_ids),
         "min_u_ge_0.15": audit["checks"]["min_u_ge_0.15"],
         "max_u_le_1.0": audit["checks"]["max_u_le_1.0"],
-        "each_stratum_exactly_once": audit["checks"]["each_stratum_exactly_once"],
-        "support_span_ge_0.70": audit["checks"]["support_span_ge_0.70"],
+        "invariant_A_stratum_occupancy_8of8":
+            audit["checks"]["invariant_A_stratum_occupancy"],
+        "invariant_B_min_reach_le_0.25":
+            audit["checks"]["invariant_B_min_reach_le_0.25"],
+        "invariant_C_max_reach_ge_0.85":
+            audit["checks"]["invariant_C_max_reach_ge_0.85"],
+        "invariant_D_span_ge_0.65":
+            audit["checks"]["invariant_D_span_ge_0.65"],
         "p_ref_registry_30_verified": all(p_ref_ok) and len(registry["configs"]) == 30,
         "truth_seed_manifest_480_unique": seeds_ok,
         "budget_432M_planned_eq_max": budget_ok,
@@ -859,36 +874,38 @@ def preflight() -> dict:
         "disk_ok": disk.free > 1_000_000_000,
     }
     failed = sorted(k for k, v in checks.items() if not v)
-    span_conflict = None
-    if span_failures:
-        span_conflict = {
-            "invariant": "per-config max(u) - min(u) >= 0.70 (taskbook Sec. 9)",
-            "status": "FAIL",
-            "failing_configs": [
-                {"config_id": r["config_id"], "span": r["span"],
-                 "min_u": r["min_u"], "max_u": r["max_u"]}
-                for r in span_failures],
-            "note": "the frozen Sec. 7 hash-first selection yields spans "
-                    "below the frozen Sec. 9 threshold for these configs; "
-                    "selections are rank-1 (lowest-hash) fresh anchors with "
-                    "zero collisions -- pure hash-draw outcome, not a "
-                    "freshness or legality artifact; no candidate "
-                    "substitution, no rule relaxation, no support-interval "
-                    "change (taskbook Sec. 27); human adjudication required "
-                    "(new taskbook for any rule change)",
-        }
+    support_conflicts = []
+    for r in inv_failures:
+        support_conflicts.append({
+            "config_id": r["config_id"],
+            "failed_invariants": r["failed"],
+            "min_u": r["min_u"], "max_u": r["max_u"], "span": r["span"],
+            "note": "rank-1 (lowest-hash) fresh anchor with zero "
+                    "collisions -- pure hash-draw outcome, not a freshness "
+                    "or legality artifact; no candidate substitution, no "
+                    "rule relaxation (amendment Sec. 6/12: FAIL => "
+                    "M3-S25-R1.1 PREFLIGHT BLOCKED; rule changes require a "
+                    "new taskbook)",
+        })
     ok_all = not failed
     verdict = "PASS" if ok_all else "FAIL"
     overall = ("EXECUTION-READY" if ok_all else
-               "NOT EXECUTION-READY: support-span invariant FAIL "
-               f"({len(span_failures)}/30 configs below 0.70); "
-               "human adjudication required (taskbook Sec. 27); "
-               "all gates remain NO; samples = 0")
+               "M3-S25-R1.1 PREFLIGHT BLOCKED: support-coverage invariant "
+               "FAIL (" + "; ".join(
+                   f"{c['config_id']}: {','.join(c['failed_invariants'])}"
+                   for c in support_conflicts) + "); samples = 0; all gates "
+               "remain NO; human adjudication required (amendment Sec. 12: "
+               "no self-modification of rules)")
     report = {
         "recorded_at": now(), "simulator_calls": 0, "samples": 0,
         "checks": checks, "failed_checks": failed,
-        "span_invariant": span_conflict or {"status": "PASS",
-                                            "failing_configs": []},
+        "support_invariants": {
+            "definition": audit["invariant_definition"],
+            "superseded": audit["superseded_invariant"],
+            "amendment_document":
+                "docs/phase_m3s25r1/M3_S25_R1_1_Amendment_Taskbook.md",
+            "conflicts": support_conflicts or [],
+            "status": "PASS" if not support_conflicts else "FAIL"},
         "per_config_support": audit["per_config"],
         "freshness_reaudit": fresh,
         "historical_sweep": {k: v for k, v in hist_meta.items()
@@ -905,7 +922,8 @@ def preflight() -> dict:
     dump(PREFLIGHT_REPORT, report)
     print(f"M3-S25-R1 preflight: {verdict} "
           f"({len(checks) - len(failed)}/{len(checks)} checks PASS; "
-          f"span failures: {[r['config_id'] for r in span_failures]})")
+          f"invariant conflicts: "
+          f"{[(c['config_id'], c['failed_invariants']) for c in support_conflicts]})")
     return report
 
 
@@ -962,6 +980,49 @@ def contracts() -> dict:
                                        "candidate numeric ordering"],
             "no_cross_stratum_borrowing": True,
             "parent_realized_u_max": 0.123077},
+        "support_invariants": {
+            "version": "m3s25r1.1",
+            "status": "ACTIVE",
+            "A_stratum_occupancy": "each config occupies all 8 strata "
+                                   "exactly once (0 empty strata)",
+            "B_min_support_reach": "per config: min(u) <= 0.25",
+            "C_max_support_reach": "per config: max(u) >= 0.85",
+            "D_anti_collapse_span": "per config: max(u) - min(u) >= 0.65",
+            "rationale": "evaluate structured support coverage instead of "
+                         "requiring a random hash draw to hit a fixed "
+                         "extreme span",
+            "superseded": {
+                "version": "m3s25r1.0",
+                "invariant": "per-config max(u) - min(u) >= 0.70",
+                "verdict": "FAIL (c000 span 0.6971, cf1n_new_002 span "
+                           "0.6649; rank-1 zero-collision hash draws)",
+                "record": "docs/phase_m3s25r1/"
+                          "M3_S25_R1_Support_Invariant_Conflict.md"}},
+        "amendment": {
+            "stage": "M3-S25-R1.1",
+            "document": "docs/phase_m3s25r1/"
+                        "M3_S25_R1_1_Amendment_Taskbook.md",
+            "document_sha256": sha(DOC /
+                                   "M3_S25_R1_1_Amendment_Taskbook.md"),
+            "parent_contract_sha256": "89be24d077e5ef7cbec8ae0c6b770ed7ae11"
+                                      "b66756bae2f16914d93d7663df25",
+            "old_invariant": "per-config max(u) - min(u) >= 0.70",
+            "new_invariants": ["A: stratum occupancy 8/8",
+                               "B: min(u) <= 0.25",
+                               "C: max(u) >= 0.85",
+                               "D: span >= 0.65"],
+            "reason": "the frozen hash-first selection realizes spans below "
+                      "0.70 for c000/cf1n_new_002 (rank-1 zero-collision "
+                      "hash draws); under uniform hash draws the per-config "
+                      "violation probability is about 16.5 percent, so the "
+                      "0.70 invariant could not generally be satisfied by "
+                      "the frozen mechanism; zero samples consumed",
+            "unchanged": ["candidate universe + its SHA",
+                          "candidate generation mechanism",
+                          "hash-first selection", "freshness firewall",
+                          "legality rules", "seeds", "truth semantics",
+                          "budget", "runtime fail-closed ordering",
+                          "panel rules"]},
         "freshness_firewall": {
             "rule": "fresh against EVERY historically characterized s2 of "
                     "the same config",
@@ -1074,17 +1135,20 @@ def docs() -> None:
     budget = load(CFG / "m3s25r1_budget_contract.json")
     registry = load(CFG / "m3s25r1_p_ref_registry.json")
     u = load(UNIVERSE)
-    span_fails = pf["span_invariant"]["failing_configs"]
+    inv = pf["support_invariants"]
+    conflicts = inv["conflicts"]
     min_u = min(s["u"] for s in u["states"])
     max_u = max(s["u"] for s in u["states"])
     write_text_lf(DOC / "M3_S25_R1_Preregistration.md", f"""# M3-S25-R1 Preregistration
 
 Round 0: **preregistration freeze only** -- scientific simulator calls 0,
-samples 0.  All numbers rendered from hash-locked artifacts.
+samples 0.  All numbers rendered from hash-locked artifacts.  Amended by
+**M3-S25-R1.1** (support-coverage invariants; candidate universe and its
+SHA unchanged).
 
 ```
 M3-S25-R1 PREREG STATUS:
-ROUND 0 COMPLETE
+ROUND 0 COMPLETE (amended by M3-S25-R1.1)
 
 PARENT (sealed):
 M3-S2S terminal = {pa['parent_terminal']}
@@ -1104,11 +1168,16 @@ strata = 8/config, anchors = L=65/stratum, hash-first fresh selection
 candidates = 240 (30 x 8), all fresh, 0 collisions
 parent realized u coverage <= 0.1231; R1 realized u range = [{min_u:.4f}, {max_u:.4f}]
 
-REGRESSION INVARIANTS (Sec. 9):
-candidates/configs/strata/dup/freshness/legality/labels/substitution = PASS
-min u >= 0.15 = PASS; max u <= 1.0 = PASS; each stratum exactly once = PASS
-per-config span >= 0.70 = FAIL ({len(span_fails)}/30):
-{chr(10).join('  - %s: span %.4f (min u %.4f, max u %.4f)' % (r['config_id'], r['span'], r['min_u'], r['max_u']) for r in span_fails) if span_fails else '  (none)'}
+SUPPORT-COVERAGE INVARIANTS (M3-S25-R1.1; supersedes span >= 0.70):
+A stratum occupancy 8/8          = {pf['checks']['invariant_A_stratum_occupancy_8of8']}
+B min(u) <= 0.25 per config      = {pf['checks']['invariant_B_min_reach_le_0.25']}
+C max(u) >= 0.85 per config      = {pf['checks']['invariant_C_max_reach_ge_0.85']}
+D span >= 0.65 per config        = {pf['checks']['invariant_D_span_ge_0.65']}
+conflicts ({len(conflicts)}/30):
+{chr(10).join('  - %s: failed %s (min u %.4f, max u %.4f, span %.4f)' % (c['config_id'], ','.join(c['failed_invariants']), c['min_u'], c['max_u'], c['span']) for c in conflicts) if conflicts else '  (none)'}
+superseded: span >= 0.70 was FAIL for c000 (0.6971) / cf1n_new_002 (0.6649)
+            -- RESOLVED by invariant D (both >= 0.65); record:
+            M3_S25_R1_Support_Invariant_Conflict.md
 
 => PREFLIGHT VERDICT = {pf['PREFLIGHT_VERDICT']}
    {pf['overall']}
@@ -1136,10 +1205,10 @@ ARM GATES: M3_S25_R1_ARM_A_AUTHORIZED = NO; M3_S25_R1_ARM_B_AUTHORIZED = NO
 VALUE / RARITY / M3-Q = BLOCKED
 
 NEXT:
-Round 0 STOP.  The support-span invariant conflict requires human
-adjudication (taskbook Sec. 27: any rule change needs a NEW taskbook).
-Only after a passing execution-readiness audit may
-M3_S25_R1_TRUTH_AUTHORIZED be set to YES by the human.
+Round 0 STOP.  Any remaining support-invariant conflict requires human
+adjudication (amendment Sec. 12: FAIL => M3-S25-R1.1 PREFLIGHT BLOCKED;
+no self-modification of rules).  Only after a passing execution-readiness
+audit may M3_S25_R1_TRUTH_AUTHORIZED be set to YES by the human.
 ```
 
 Universe sha256: `{univ_hash['candidate_universe_sha256']}`
@@ -1166,8 +1235,8 @@ R1 HEAD `{pa['head'][:7]}`.
 
     write_text_lf(DOC / "M3_S25_R1_Candidate_Support_Audit.md", f"""# M3-S25-R1 Candidate Support Audit
 
-Status: mechanics **PASS**, support-span invariant **{pf['span_invariant']['status']}**
-({now()}).
+Status: mechanics **PASS**, support-coverage invariants (M3-S25-R1.1)
+**{inv['status']}** ({now()}).
 
 - Mechanism: u in [0.15, 1.00] split into 8 frozen strata; per config x
   stratum exactly one fresh state chosen as the FIRST legal+fresh anchor
@@ -1178,10 +1247,18 @@ Status: mechanics **PASS**, support-span invariant **{pf['span_invariant']['stat
   freshness violations = 0; legality violations = 0; truth labels
   consulted = 0; candidate substitution = 0.
 - Realized u range over the universe: [{min_u:.4f}, {max_u:.4f}].
-- Per-config span report: see
+- M3-S25-R1.1 invariants: A stratum occupancy 8/8 =
+  {pf['checks']['invariant_A_stratum_occupancy_8of8']}; B min(u) <= 0.25 =
+  {pf['checks']['invariant_B_min_reach_le_0.25']}; C max(u) >= 0.85 =
+  {pf['checks']['invariant_C_max_reach_ge_0.85']}; D span >= 0.65 =
+  {pf['checks']['invariant_D_span_ge_0.65']}.  The superseded M3-S25-R1.0
+  invariant (span >= 0.70) was FAIL for c000 (0.6971) / cf1n_new_002
+  (0.6649); both now pass under D.
+- Per-config report:
   `results/phase_m3s25r1/preflight/m3s25r1_preflight.json`
-  (`per_config_support`) and
-  `M3_S25_R1_Support_Invariant_Conflict.md` for the realized conflict.
+  (`per_config_support`); conflict record:
+  `M3_S25_R1_Support_Invariant_Conflict.md` (R1.0) and
+  `M3_S25_R1_1_Amendment_Record.md` (R1.1).
 """)
 
     write_text_lf(DOC / "M3_S25_R1_Freshness_Audit.md", f"""# M3-S25-R1 Freshness Audit
@@ -1258,73 +1335,86 @@ exhausted M3-S2S budget of 436,000,000.
 """)
 
 
-def conflict_doc() -> None:
+def amendment_record_doc() -> None:
+    """M3-S25-R1.1 amendment application record (zero sampling).
+
+    The R1.0 conflict record (M3_S25_R1_Support_Invariant_Conflict.md) is
+    a sealed historical document and is NOT rewritten; this record
+    documents the amendment application and its realized outcome."""
     pf = load(PREFLIGHT_REPORT)
-    fails = pf["span_invariant"]["failing_configs"]
+    inv = pf["support_invariants"]
+    conflicts = inv["conflicts"]
     rows = "\n".join(
-        "| %s | %.4f | %.4f | %.4f |" % (r["config_id"], r["min_u"],
-                                         r["max_u"], r["span"])
-        for r in fails)
-    write_text_lf(DOC / "M3_S25_R1_Support_Invariant_Conflict.md", f"""# M3-S25-R1 Support-Invariant Conflict (Round 0, zero samples)
+        "| %s | %s | %.6f | %.6f | %.6f |" % (
+            c["config_id"], ", ".join(c["failed_invariants"]),
+            c["min_u"], c["max_u"], c["span"])
+        for c in conflicts) or "| (none) | | | | |"
+    per = pf["per_config_support"]
+    amendment_sha = sha(DOC / "M3_S25_R1_1_Amendment_Taskbook.md")         if Path(DOC / "M3_S25_R1_1_Amendment_Taskbook.md").exists() else "n/a"
+    write_text_lf(DOC / "M3_S25_R1_1_Amendment_Record.md", f"""# M3-S25-R1.1 Amendment Record (zero sampling)
 
-## What happened
+Amendment document:
+`docs/phase_m3s25r1/M3_S25_R1_1_Amendment_Taskbook.md` (sha256
+`{amendment_sha}`).
+Applied per amendment Sec. 13: amendment document -> contract invariant
+update only -> hash manifest -> zero-sampling preflight -> regression
+tests -> candidate-SHA verification -> commit -> push -> STOP.
 
-The frozen selection mechanism (taskbook Sec. 7) and the frozen
-regression invariant (taskbook Sec. 9: per-config `max u - min u >=
-0.70`) conflict on the realized hash draws for {len(fails)}/30 configs:
+## What changed (and what did not)
 
-| config | min u | max u | span |
-|---|---|---|---|
+- REPLACED: the M3-S25-R1.0 support-span regression invariant
+  (per-config `span >= 0.70`) with the M3-S25-R1.1 support-coverage
+  invariants A/B/C/D (recorded in `m3s25r1_contract.json` together with
+  the parent contract hash, the amendment hash, the old invariant, the
+  new invariants and the reason).
+- UNCHANGED (amendment Sec. 2/6): the candidate universe file and its
+  SHA256 (`9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4223058d6e600d02`),
+  the generation mechanism, hash-first selection, freshness firewall,
+  legality rules, seeds, truth semantics, budget (432,000,000),
+  runtime fail-closed ordering, panel rules.  No re-hash, no re-draw,
+  no candidate substitution.
+
+## Zero-sampling validation outcome (amendment Sec. 8/12)
+
+- Candidate immutability: 240 states / 30 configs / 8 strata per config,
+  universe SHA unchanged -- PASS.
+- Freshness: 0 collisions, 0 substitutions -- PASS.
+- Support invariants:
+  - A (stratum occupancy 8/8): PASS for all 30 configs.
+  - C (max(u) >= 0.85): PASS for all 30 configs (worst max u =
+    {min(r['max_u'] for r in per):.6f}).
+  - D (span >= 0.65): PASS for all 30 configs (worst span =
+    {min(r['span'] for r in per):.6f}) -- the ORIGINAL R1.0 conflict
+    (c000 span 0.6971, cf1n_new_002 span 0.6649) is RESOLVED by D.
+  - B (min(u) <= 0.25): **FAIL for {len(conflicts)}/30 configs**:
+
+| config | failed | min u | max u | span |
+|---|---|---|---|---|
 {rows}
 
-Both failing selections are **rank-1 (lowest-hash) fresh anchors with
-zero collisions** -- the outcome of the hash draw itself, not a
-freshness or legality artifact.  All other Sec. 9 invariants pass
-(240 states / 30 configs / 8 strata each, each stratum occupied exactly
-once, min u >= 0.15, max u <= 1.0, 0 duplicates, 0 freshness violations,
-0 legality violations, 0 truth labels consulted, 0 substitutions).
+## Residual conflict (same structural class as the R1.0 conflict)
 
-## Why the conflict is structural, not incidental
+The B-violating selection is the stratum-0 rank-1 (lowest-hash) fresh
+anchor with ZERO collisions -- again a pure hash draw, not a freshness
+or legality artifact.  A stratum-0 anchor is uniform over
+u in (0.1516, 0.2546); `min(u) <= 0.25` fails iff the draw lands in the
+top 3 of 65 positions (m >= 62), a per-config probability of about
+4.6 percent, hence about 76 percent across 30 configs.  The mechanism's
+structural guarantee is `min(u) < e_1 = 0.25625`, so the frozen 0.25
+threshold again exceeds what the mechanism guarantees.  Measured fact
+for adjudication: any B threshold in [0.251421, 0.25625) passes the
+frozen universe; `0.25625` (= e_1) is the exact structural bound.
 
-Under the frozen mechanism the selected anchor within a stratum is the
-lowest-hash fresh anchor, which is uniform over the 65 interior anchor
-positions.  Writing the stratum-0 (resp. stratum-7) selection as
-`u_min = 0.15 + a`, `a in (0.0016, 0.1046)` (resp. `u_max = 1.0 - b`),
-the span is `0.85 - (a + b)`; `span < 0.70` iff `a + b > 0.15`, with
-per-config probability about 16.5 percent under independent uniform
-draws.  Across 30 configs the probability that at least one config
-violates the invariant is about 99.6 percent: **the invariant as frozen
-cannot generally be satisfied by the mechanism as frozen.**  The
-mechanism's anti-collapse guarantee is `span >= e_7 - e_1 = 0.6375`
-(one anchor per stratum, worst case), and typical realized spans are
-about 0.75.
+## Disposition (amendment Sec. 12; fail-closed)
 
-Empirical robustness: the realized conflicts are identical under three
-honest definitions of the historical characterized set (parent 4-source
-minimum; full characterized-artifact sweep; sweep without proposal
-artifacts), so the outcome is not an artifact of the firewall's input
-choice.
-
-## Disposition (fail-closed; no self-authorization)
-
-- The universe is frozen exactly as the frozen mechanism produced it
-  (`configs/phase_m3s25r1/m3s25r1_candidate_universe.json`, hash-pinned);
-  the preflight records the honest verdict:
-  `{pf['PREFLIGHT_VERDICT']}`.
-- No candidate substitution, no rule relaxation, no support-interval
-  change, no re-rolled hash (taskbook Sec. 27/35).  `truth_execute`
-  refuses to run while the frozen preflight verdict is not PASS
-  (mechanically enforced fail-closed ordering, taskbook Sec. 20 step 3).
-- Round 0 ends with samples = 0 and all gates NO.  Per taskbook Sec. 27
-  any change (invariant threshold or selection mechanism) requires a NEW
-  taskbook from the human; this report only documents the conflict and
-  the measured facts for that adjudication.
-- For scale: the parent stage's defect had realized span about 0.0083
-  (all candidates inside the bottom 12.3 percent of the window).  The
-  realized R1 universe spans at least {min(r['span'] for r in pf['per_config_support']):.4f}
-  per config -- the anti-collapse purpose of the invariant is met with
-  large margin everywhere; the frozen numeric threshold 0.70 is what
-  2/30 configs miss.
+- Preflight verdict: **{pf['PREFLIGHT_VERDICT']}** -- outcome
+  **M3-S25-R1.1 PREFLIGHT BLOCKED**, samples = 0, simulator calls = 0.
+- No self-modification of rules (amendment Sec. 12); `truth_execute`
+  refuses while the frozen preflight verdict is not PASS; all three R1
+  gates and the sealed parent gates remain NO.
+- The original R1.0 conflict is resolved (D); the residual B conflict is
+  documented above with its exact numbers for the next human
+  adjudication.
 """)
 
 
@@ -1618,7 +1708,7 @@ def all_stages() -> None:
     preflight()
     contracts()
     docs()
-    conflict_doc()
+    amendment_record_doc()
     hashlock()
     print("M3-S25-R1 Round 0 prereg freeze complete; all gates remain NO")
 
@@ -1646,7 +1736,7 @@ def main() -> None:
         contracts()
     elif args.stage == "docs":
         docs()
-        conflict_doc()
+        amendment_record_doc()
     elif args.stage == "hashlock":
         hashlock()
     elif args.stage == "truth_execute":

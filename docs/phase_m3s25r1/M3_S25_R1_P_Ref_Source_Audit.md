@@ -1,6 +1,6 @@
 # M3-S25-R1 P_ref Source Audit
 
-Status: **PASS** (2026-09-06T20:14:34+0800); P_ref sampling budget = **0**.
+Status: **PASS** (2026-09-06T20:52:01+0800); P_ref sampling budget = **0**.
 
 - Registry: `configs/phase_m3s25r1/m3s25r1_p_ref_registry.json`
   (exactly 30 entries:
