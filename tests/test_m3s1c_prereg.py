@@ -363,9 +363,11 @@ def test_prereg_hash_manifest_verifies():
     S.verify_prereg()  # raises on any mismatch
 
 
-def test_execution_not_authorized():
-    with pytest.raises(RuntimeError, match="human approval required"):
-        S._require_authorization()
+def test_execution_authorization_record_parses():
+    # The explicit human authorization (YES / Human / 2026-09-06, recorded
+    # after the independent live Git audit of 509a266 passed) is in force;
+    # the execution gate must parse and accept it.
+    S._require_authorization()  # must not raise
 
 
 # --------------------------------------------------------------------------
