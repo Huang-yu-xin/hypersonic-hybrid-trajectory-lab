@@ -317,3 +317,88 @@ def test_completed_pref_duplicate_complete_hard_fail(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "TRUTH_LEDGERS", {"pref": ledger})
     with pytest.raises(RuntimeError, match="duplicate/inconsistent"):
         R.load_completed_pref_verified(unit, out)
+
+
+# --------------------------------------------------------------------------
+# RUNTIME-INTEGRITY BLOCKER FIX: PREF any-ledger-state fails closed at
+# step 3, BEFORE authorization and before any downstream stream
+# --------------------------------------------------------------------------
+
+def _pref_blocker_harness(tmp_path, monkeypatch, ledger_status):
+    """Harness with TRUTH=YES approval (so a gate-first implementation would
+    pass the gate) + mocked simulators + one PREF unit in the given
+    non-fresh ledger state."""
+    calls = {"pref": 0, "arms": 0, "classify": 0}
+    classes = ["WIDEN", "SHRINK", "HOLD", "AMBIGUOUS"]
+
+    def mock_ref(bench, seed_key, n, nb):
+        calls["pref"] += 1
+        return {"sample_count": int(n), "n_batches": int(nb),
+                "p_ref_full": 0.1, "p_ref_full_SE": 0.001,
+                "p_ref_full_CI": [0.098, 0.102], "p_batches": [0.1] * nb,
+                "topology_counts": {"S1": 1}}
+
+    def mock_arms(arms, bench_cfg, seed_key, n, nb):
+        calls["arms"] += 1
+        return {name: {"P": 0.1, "P_CI": [0.09, 0.11], "ESS": 1000.0,
+                       "sample_count": int(n), "M2": 0.01,
+                       "m2_batches": [0.01] * nb}
+                for name in ("base", "widen", "shrink")}
+
+    def mock_classify(arms, p_ref, **kw):
+        calls["classify"] += 1
+        return {"corrected_class": classes[calls["classify"] % 4],
+                "minimum_arm_ESS": 100.0, "numerical_valid": True,
+                "probability_semantics_valid": True, "ess_valid": True}
+
+    monkeypatch.setattr(TE, "direct_full_event_reference", mock_ref)
+    monkeypatch.setattr(TE, "evaluate_reference_arms", mock_arms)
+    monkeypatch.setattr(TE, "classify_reference_state", mock_classify)
+
+    approval = tmp_path / "approval.md"
+    approval.write_text("TRUTH_SAMPLING_AUTHORIZED: YES\n"
+                        "ARM_A_AUTHORIZED: NO\nARM_B_AUTHORIZED: NO\n",
+                        encoding="utf-8")
+    monkeypatch.setattr(R, "APPROVAL_DOC", approval)
+    pref, disc, conf = (tmp_path / "pref", tmp_path / "discovery",
+                        tmp_path / "confirmation")
+    monkeypatch.setattr(R, "TRUTH_PREF", pref)
+    monkeypatch.setattr(R, "TRUTH_DISC", disc)
+    monkeypatch.setattr(R, "TRUTH_CONF", conf)
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", {
+        "pref": pref / "pref_ledger.jsonl",
+        "discovery": disc / "discovery_ledger.jsonl",
+        "confirmation": conf / "confirmation_ledger.jsonl"})
+    tsum, tcfg = tmp_path / "summary", tmp_path / "configs"
+    tcfg.mkdir(parents=True, exist_ok=True)
+    (tcfg / "m3s2s_truth_contract.json").write_bytes(
+        R.ROOT.joinpath("configs/phase_m3s2s/m3s2s_truth_contract.json")
+        .read_bytes())
+    monkeypatch.setattr(R, "SUM", tsum)
+    monkeypatch.setattr(R, "CFG", tcfg)
+    # seed the non-fresh PREF ledger state
+    pref.mkdir(parents=True, exist_ok=True)
+    with (pref / "pref_ledger.jsonl").open("w", encoding="utf-8") as h:
+        h.write(json.dumps({"state_id": "PREF|m3s2s_cfg_000",
+                            "status": ledger_status}) + "\n")
+    return calls
+
+
+def test_pref_started_only_fails_before_authorization_and_downstream(
+        tmp_path, monkeypatch):
+    calls = _pref_blocker_harness(tmp_path, monkeypatch, "STARTED")
+    with pytest.raises(RuntimeError, match="STARTED-only"):
+        R.truth_execute()
+    assert calls == {"pref": 0, "arms": 0, "classify": 0}  # simulator = 0
+    assert not (tmp_path / "discovery").exists()
+    assert not (tmp_path / "confirmation").exists()
+
+
+def test_pref_consumed_invalid_fails_before_authorization_and_downstream(
+        tmp_path, monkeypatch):
+    calls = _pref_blocker_harness(tmp_path, monkeypatch, "CONSUMED_INVALID")
+    with pytest.raises(RuntimeError, match="CONSUMED_INVALID"):
+        R.truth_execute()
+    assert calls == {"pref": 0, "arms": 0, "classify": 0}  # simulator = 0
+    assert not (tmp_path / "discovery").exists()
+    assert not (tmp_path / "confirmation").exists()

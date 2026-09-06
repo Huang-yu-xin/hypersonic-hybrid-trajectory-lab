@@ -1152,6 +1152,41 @@ def _ledger(path) -> list:
     return ledger_entries(path) if Path(path).exists() else []
 
 
+def verify_pref_unit_fresh_or_verified(unit: dict, out_path: Path) -> dict | None:
+    """Step-3 state machine (runtime-integrity blocker fix): ANY ledger
+    state (STARTED-only, CONSUMED_INVALID, duplicate/inconsistent
+    COMPLETE) or an orphan output file triggers the full consistency
+    verification and fails closed BEFORE authorization; only "no file AND
+    no ledger entry" is truly fresh.  Returns the hash-verified record for
+    durable-COMPLETE units, else None."""
+    entries = [e for e in _ledger(TRUTH_LEDGERS["pref"])
+               if e.get("state_id") == unit["unit_id"]]
+    if not entries and not out_path.exists():
+        return None                      # truly fresh
+    uid = unit["unit_id"]
+    invalid = [e for e in entries if e.get("status") == "CONSUMED_INVALID"]
+    started = [e for e in entries if e.get("status") == "STARTED"]
+    completes = [e for e in entries if e.get("status") == "COMPLETE"]
+    if invalid:
+        raise RuntimeError(
+            f"M3-S2S-X: PREF unit has CONSUMED_INVALID ledger state: {uid}; "
+            "STOP; NO REPLAY")
+    if started and not completes:
+        raise RuntimeError(
+            f"M3-S2S-X: PREF unit STARTED-only (interrupted, no durable "
+            f"COMPLETE): {uid}; STOP; NO REPLAY")
+    if completes and not started:
+        raise RuntimeError(
+            f"M3-S2S-X: PREF unit COMPLETE without STARTED (inconsistent "
+            f"ledger): {uid}; STOP; NO REPLAY")
+    if len(started) != 1 or len(completes) != 1:
+        raise RuntimeError(
+            f"M3-S2S-X: duplicate/inconsistent PREF ledger state: {uid} "
+            f"(STARTED={len(started)}, COMPLETE={len(completes)}); "
+            "STOP; NO REPLAY")
+    return load_completed_pref_verified(unit, out_path)
+
+
 def load_completed_pref_verified(unit: dict, out_path: Path) -> dict:
     """Restart-integrity gate for a durable-COMPLETE PREF unit (runtime-
     integrity amendment): retrieve the COMPLETE ledger entry and require
@@ -1210,8 +1245,9 @@ def truth_execute() -> dict:
     for cid in new_cfg_ids:
         out = TRUTH_PREF / f"{cid}.json"
         unit = {"unit_id": f"PREF|{cid}", "config_id": cid}
-        if out.exists() or _completed(TRUTH_LEDGERS["pref"], unit["unit_id"]):
-            pref_reuse[cid] = load_completed_pref_verified(unit, out)
+        rec = verify_pref_unit_fresh_or_verified(unit, out)
+        if rec is not None:
+            pref_reuse[cid] = rec
     # 4. verify authorization
     if not _gate("TRUTH_SAMPLING_AUTHORIZED"):
         raise RuntimeError("TRUTH_SAMPLING_AUTHORIZED is not YES")
