@@ -1188,13 +1188,36 @@ def truth_execute() -> dict:
     """GATED: requires TRUTH_SAMPLING_AUTHORIZED: YES.  Runs the three
     truth streams (P_ref 8 / discovery 240 / confirmation 240) under the
     hardened transactional contract with exact per-stream consumption."""
+    # ---- fail-closed ordering (execution-readiness audit item 3) --------
+    # 1. verify frozen inputs (tracked universe + vendored protocol hashes
+    #    + every auxiliary vendored P_ref artifact)
+    from hyptraj.m3s2s import vendored_runtime as VRc
+    states = VRc.verify_universe()
+    consts = VRc.load_vendored_protocol_constants()
+    for s in states:
+        if s["config_origin"] != "M3-S2S-NEW-CONFIG":
+            VRc.load_config_p_ref(s["config_id"])
+    # 2. verify registry (runtime pin + exact 8 config ids)
+    VRc.verify_new_config_registry()
+    # 3. verify completed PREF reuse state for ALL 8 units up-front
+    #    (hash-verified BEFORE any downstream state, artifact or ledger
+    #    write; a fresh unit -- no file, no ledger entry -- is allowed)
+    new_cfg_ids = sorted({s["config_id"] for s in states
+                          if s["config_origin"] == "M3-S2S-NEW-CONFIG"})
+    if len(new_cfg_ids) != 8:
+        raise RuntimeError("S2S-X: new-config set drift")
+    pref_reuse: dict = {}
+    for cid in new_cfg_ids:
+        out = TRUTH_PREF / f"{cid}.json"
+        unit = {"unit_id": f"PREF|{cid}", "config_id": cid}
+        if out.exists() or _completed(TRUTH_LEDGERS["pref"], unit["unit_id"]):
+            pref_reuse[cid] = load_completed_pref_verified(unit, out)
+    # 4. verify authorization
     if not _gate("TRUTH_SAMPLING_AUTHORIZED"):
         raise RuntimeError("TRUTH_SAMPLING_AUTHORIZED is not YES")
     if _gate("ARM_A_AUTHORIZED") or _gate("ARM_B_AUTHORIZED"):
         raise RuntimeError("S2S-X: Arm gates must remain NO during truth stage")
-    from hyptraj.m3s2s import vendored_runtime as VRc
-    states = VRc.verify_universe()
-    consts = VRc.load_vendored_protocol_constants()
+    # 5. construct truth units (pure; no side effects)
     plan = TE.truth_execution_plan(states, namespaces=consts["namespaces"])
     for d in (TRUTH_PREF, TRUTH_DISC, TRUTH_CONF):
         d.mkdir(parents=True, exist_ok=True)
@@ -1223,11 +1246,10 @@ def truth_execute() -> dict:
 
     for unit in plan["pref_units"]:
         out = TRUTH_PREF / f"{unit['config_id']}.json"
-        if out.exists() and _completed(TRUTH_LEDGERS["pref"],
-                                       unit["unit_id"]):
-            # restart path: hash-verified BEFORE the P_ref enters
-            # discovery/confirmation (runtime-integrity amendment)
-            p_refs[unit["config_id"]] = load_completed_pref_verified(unit, out)
+        if unit["config_id"] in pref_reuse:
+            # restart path: hash-verified up-front (step 3) BEFORE any
+            # downstream state, artifact or ledger write
+            p_refs[unit["config_id"]] = pref_reuse[unit["config_id"]]
             p_refs[unit["config_id"]]["record_hash"] = record_file_hash(out)
             continue
         run_unit(unit, TRUTH_LEDGERS["pref"], out,
