@@ -1,0 +1,138 @@
+{
+  "PREREG_HASH_LOCK": "PASS",
+  "files": [
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_budget_contract.json",
+      "sha256": "38a9f4379de1ac6ed6fa1d77f45932820ae3d73626b5cd4a031f1f4dbb03a708",
+      "size_bytes": 710
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_candidate_universe.json",
+      "sha256": "9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4223058d6e600d02",
+      "size_bytes": 260339
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_contract.json",
+      "sha256": "89be24d077e5ef7cbec8ae0c6b770ed7ae11b66756bae2f16914d93d7663df25",
+      "size_bytes": 8766
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_p_ref_registry.json",
+      "sha256": "4931be26b52377f91fb604e3f44b6a3e6d4ff0731bd117c3f07cc941f86d1cf5",
+      "size_bytes": 23269
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_parent_development_registry.json",
+      "sha256": "0ab0bc04b4221a32e17ffda5ebd52361ec7e466e570ed1ce5b365ad9c906f4f5",
+      "size_bytes": 158262
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_truth_seed_manifest.json",
+      "sha256": "ad34b5d5d2742b2cde0a26ffd01104853d62acc1711ba00e57ff6a92dacd3cbe",
+      "size_bytes": 134872
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_candidate_universe_hash.json",
+      "sha256": "cf99370a4e2b89b8e1aa74e75fc842f99802702aafd5716ef69fbe46fb87eb63",
+      "size_bytes": 243
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_freshness_sources.json",
+      "sha256": "f89a203b7d4cc56fa6363bd313e34ef0cfec2acba4d42b7c62fe1406e3e34d64",
+      "size_bytes": 7218
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_parent_audit.json",
+      "sha256": "2aaed1cfe3bbe69e32e3807f3eb3c69d190676101db86c83eba07ed85d2967bc",
+      "size_bytes": 902
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_preflight.json",
+      "sha256": "520078798ca02476dd5acf5a626f0ba5f2556b0fe3fe99c600c74bf7f91c5050",
+      "size_bytes": 16439
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_reserve_firewall.json",
+      "sha256": "a3b1923501b86fe595c15a05f53fc7d00c7809c975de855db11ccd6633722094",
+      "size_bytes": 258
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_truth_seed_audit.json",
+      "sha256": "ee093c3b983fa896dfb0616fe1e99fdb21bfff668581bc20c4b10df78627d378",
+      "size_bytes": 330
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Budget_Audit.md",
+      "sha256": "ee5a3f0c9371f0c031ce85b5fc293b6026ea7744d1466c6eb8c08c35991cf4f3",
+      "size_bytes": 571
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Candidate_Support_Audit.md",
+      "sha256": "a363acfebd1fb7ccc472dbe3323cf20f5bb067c663cd21c5cb284e18bca67242",
+      "size_bytes": 917
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Freshness_Audit.md",
+      "sha256": "9e36db43a775f9618c98b1ec7a09b0437c1603de997862634af47c88bc51fab8",
+      "size_bytes": 882
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_P_Ref_Source_Audit.md",
+      "sha256": "8289579af297a919d317cd48eec31440a6b0fcc0806082b34fc586670e11b12b",
+      "size_bytes": 876
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Parent_Closure_Audit.md",
+      "sha256": "f5db3f90c2a382761add616791c6c9505dc443835630d99f310d081bb400094c",
+      "size_bytes": 822
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Preregistration.md",
+      "sha256": "03f11cc03c47ea56f416cdfc67e236194b6dfc2f5600d755e019f0a708a0da4b",
+      "size_bytes": 2752
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Seed_Audit.md",
+      "sha256": "97a97bca050a7507fb2e37806e8788a9b641bba3e7aa5ee17e5644f06dc9bc53",
+      "size_bytes": 533
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Support_Invariant_Conflict.md",
+      "sha256": "e6d183c747b1ab9cb959caa7d749300591f40b2b7dd71918a975425bd1e6af4e",
+      "size_bytes": 3061
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Taskbook.md",
+      "sha256": "6beab50a6322efb3be5726705f08d2aedc615a26bce8d9380879a5587b78bff6",
+      "size_bytes": 22247
+    }
+  ],
+  "head": "77097cef59055552e8536d5c05695e1e0fdff490",
+  "preflight_verdict": "FAIL",
+  "preregistration_round0": {
+    "samples": 0,
+    "simulator_calls": 0
+  },
+  "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
+  "recorded_at": "2026-09-06T20:14:34+0800",
+  "scientific_code_hashes": {
+    "scripts/run_m3s25r1.py": "e9e4ad181ba89910a4009cf282509fc64d990a36b4f786025cd9f379fa0baa6f",
+    "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
+    "src/hyptraj/m1d/experiments.py": "a5208f22221cae8d55c3792d1f3569813d3455347200ba4c9621d6be2b4cfd1e",
+    "src/hyptraj/m3/gradient_estimator.py": "daccaf9ce550c16ea9233434bcbb652bd8dc126595e47eee8b6f9771d7993d24",
+    "src/hyptraj/m3cf1/workflow.py": "0cc5a53788534aa6c1996226fdb83341aa0bd6784acab7d6ae5343b063834d61",
+    "src/hyptraj/m3cf1r0/persistence.py": "98b22c8c6e84778368aaf9996a22cf9f4da275508615c141a71404aa22b18d9a",
+    "src/hyptraj/m3d/adaptation.py": "7a2251af2c39d54b67ed2a5f83483eda5e925827ec369f51920755c1d0dc6a1a",
+    "src/hyptraj/m3d/benchmark_states.py": "27356e61e0a90cde15a69f750622463be9accaea24cca26378d2ea62a0e24daf",
+    "src/hyptraj/m3d2/experiment.py": "c99c5e66eb72be488ccf90685633f1cd9c5bcff5432ba5ddeb565aaed106e670",
+    "src/hyptraj/m3s25r1/__init__.py": "20f8b44ad578ddb133826f2a65ede3914a4917c42f4411c45bbf4a710a8ffddf",
+    "src/hyptraj/m3s25r1/candidates.py": "91bdc852037c76d0326f0d260b14f70d3cc32162816e5f98382f931b93871f7b",
+    "src/hyptraj/m3s25r1/history.py": "3425ddfb3fe099013ac247d5933f3f8cc99d8ef444fde7b3c3524eb9310bafa3",
+    "src/hyptraj/m3s25r1/runtime.py": "bab0885a9411d8840cc005223a517ff43ce56b74e6b241df868a9ace00bdf12a",
+    "src/hyptraj/m3s2s/instrumentation.py": "acdb30ed09502dc17d27d4363cc0b472030677281cc5c4304bd943224e7507dd",
+    "src/hyptraj/m3s2s/truth_contract.py": "ba81e1efbde6965c78191a8f94670b0c6ce695698e63e7ce5b55c5724bf4ed48",
+    "src/hyptraj/m3s2s/truth_execution.py": "e99cd8bc7359112206800d1928389d955877c35150c72a82efe1fc632cf3ff21",
+    "src/hyptraj/m3s2s/vendored_runtime.py": "324c45dfd704832365d06b8e0605f6857c9ce15cf9a54ca5fcae70b9ca7888eb",
+    "src/hyptraj/m3wa1r/persistence.py": "be343bdb322bb53d0d8b4ff01f7b50ae439c016efb4d05eaeb45d034cf8fc2cc"
+  }
+}

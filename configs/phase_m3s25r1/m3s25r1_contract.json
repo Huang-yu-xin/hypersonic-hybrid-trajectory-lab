@@ -1,0 +1,217 @@
+{
+  "arm_gates": {
+    "M3_S25_R1_ARM_A_AUTHORIZED": "NO",
+    "M3_S25_R1_ARM_B_AUTHORIZED": "NO",
+    "value_rarity_m3q": "BLOCKED"
+  },
+  "budget": {
+    "budget_contract": "configs/phase_m3s25r1/m3s25r1_budget_contract.json",
+    "confirmation": 360000000,
+    "discovery": 72000000,
+    "max": 432000000,
+    "p_ref": 0,
+    "planned": 432000000,
+    "topup": 0
+  },
+  "config_universe": {
+    "hash_pin": true,
+    "n_configs": 30,
+    "no_deletion": true,
+    "no_label_based_reweighting": true,
+    "no_new_configs": true,
+    "no_substitution": true,
+    "parent_new_config_registry_sha256": "f33237ad710b104c1b73c7d4512fe431195e31cb0fa411409e7bc1f546e9fd0e",
+    "parent_universe_sha256": "1ff92a140e8ceb0878100ebdeea6bdcf5f6f5fd91ec0838bf9a84b3931412ca0",
+    "rule": "strict inheritance of the M3-S2S frozen 30-config universe (taskbook Sec. 4)"
+  },
+  "confirmation_scope": "ALL_240_R1_CANDIDATES",
+  "development": {
+    "new_inventory_rule": "all 240 R1 states enter m3s25r1_truth_exposed_inventory.json; development_eligible = YES; untouched_confirmation_eligible = NO",
+    "old_development_eligible": true,
+    "old_states_registry": "configs/phase_m3s25r1/m3s25r1_parent_development_registry.json",
+    "old_untouched_confirmation_eligible": false,
+    "union": "D_union = D_old (M3-S2S 240) u D_new (R1 240), max 480 states"
+  },
+  "early_stop": false,
+  "freshness_firewall": {
+    "minimum_families": [
+      "M3-CF*",
+      "M3-WCF*",
+      "M3-PI*",
+      "M3-S1*",
+      "M3-S2S",
+      "all retired/truth-exposed/development artifacts"
+    ],
+    "parent_240_truth_exposed_included": true,
+    "rule": "fresh against EVERY historically characterized s2 of the same config",
+    "tolerance": "|s2 - s2_h| <= 1e-6 * max(1, |s2_h|)"
+  },
+  "p_ref": {
+    "entries": 30,
+    "registry": "configs/phase_m3s25r1/m3s25r1_p_ref_registry.json",
+    "rule": "reuse only; hash-verified; any failure => M3-S25-R1-X / STOP / NO P_ref RESAMPLING",
+    "sampling_budget": 0
+  },
+  "panel": {
+    "duplicate_protection": true,
+    "input_pool": "D_union only",
+    "min_unique_configs": 24,
+    "no_class_merging": true,
+    "no_manual_state_picking": true,
+    "no_panel_shrinkage": true,
+    "no_provisional_truth": true,
+    "no_quota_relaxation": true,
+    "quota": {
+      "AMBIGUOUS": 30,
+      "HOLD": 30,
+      "SHRINK": 30,
+      "WIDEN": 30
+    },
+    "rank_seed": "M3-S25-R1-PANEL-V1|",
+    "round_rule": "round k takes at most the k-th ranked state per config within each truth stratum; stop exactly at quota (inherited S1C Amendment-A semantics)",
+    "states": 120
+  },
+  "parent": {
+    "closure_record": "docs/phase_m3s2s/M3_S2S_Closure_Record.md",
+    "frozen_head": "f0d73702dc284f9a2ce1f1a205bb5f56f1324d38",
+    "gates_closed": true,
+    "old_t1_gate_reuse": "FORBIDDEN",
+    "stage": "M3-S2S",
+    "terminal": "M3-S2S-PANEL-BLOCKED",
+    "truth_budget_consumed": 436000000
+  },
+  "persistence": {
+    "consumed_invalid_rule": "sampling without durable COMPLETE => CONSUMED_INVALID => M3-S25-R1-X => STOP => NO REPLAY",
+    "durable_unit_contract": "exactly one STARTED + exactly one COMPLETE + valid artifact hash",
+    "module": "hyptraj.m3wa1r.persistence.run_trial_transactional",
+    "restart_scan": "all ledgers scanned before the simulator; STARTED-only / CONSUMED_INVALID / orphan artifact / hash mismatch => STOP"
+  },
+  "preregistration_round0": {
+    "preflight_verdict": "FAIL",
+    "samples": 0,
+    "simulator_calls": 0
+  },
+  "reserve_firewall": {
+    "protected_states": 18,
+    "rule": "protected reserve / untouched confirmation / final validation states are forbidden to R1 (Sec. 30)"
+  },
+  "runtime_fail_closed_ordering": [
+    "1. verify parent terminal state",
+    "2. verify old S2S gate closed",
+    "3. verify R1 frozen inputs / candidate universe",
+    "4. verify P_ref registry and source hashes",
+    "5. verify all existing R1 ledger/restart states",
+    "6. verify R1 human truth authorization",
+    "7. construct pure execution plan",
+    "8. simulator calls"
+  ],
+  "schema_version": "m3s25r1_contract_v1",
+  "seed_namespaces": {
+    "confirmation": "M3-S25-R1-CONFIRMATION",
+    "discovery": "M3-S25-R1-DISCOVERY",
+    "s2s_namespace_reuse": false
+  },
+  "stage": "M3-S25-R1",
+  "stage_nature": "Replacement Development / Parameter-Support Completion",
+  "support": {
+    "anchor_formula": "u_{i,m} = e_i + (m+1)/(L+1) (e_{i+1}-e_i)",
+    "anchor_hash_template": "SHA256(\"M3-S25-R1-CANDIDATE-V1|<config_id>|<stratum_id>|<canonical_s2>\")",
+    "anchors_per_stratum": 65,
+    "canonical_s2_rule": "repr(float(s2)) (shortest round-trip decimal == JSON serialization form)",
+    "coordinate": "u = (log s2 - log s2_lo)/(log s2_hi - log s2_lo)",
+    "frozen_before_truth_sampling": true,
+    "legality_calculation": "inherited byte-identical (parent _config_windows machinery)",
+    "n_strata": 8,
+    "no_cross_stratum_borrowing": true,
+    "parent_realized_u_max": 0.123077,
+    "s2_hi": 8.0,
+    "selection_independence": [
+      "truth labels",
+      "discovery results",
+      "SHRINK/HOLD counts",
+      "candidate numeric ordering"
+    ],
+    "selection_rule": "hash-ascending; first legal AND fresh anchor",
+    "strata_boundaries": [
+      [
+        0.15,
+        0.25625
+      ],
+      [
+        0.25625,
+        0.3625
+      ],
+      [
+        0.3625,
+        0.46875
+      ],
+      [
+        0.46875,
+        0.575
+      ],
+      [
+        0.575,
+        0.68125
+      ],
+      [
+        0.68125,
+        0.7875
+      ],
+      [
+        0.7875,
+        0.89375
+      ],
+      [
+        0.89375,
+        1.0
+      ],
+      [
+        1.0,
+        1.10625
+      ]
+    ],
+    "u_interval": [
+      0.15,
+      1.0
+    ]
+  },
+  "truth_semantics": {
+    "changed_vs_parent": "state support ONLY",
+    "classifier_retune_forbidden": true,
+    "confirmation_budget_per_state": 1500000,
+    "discovery_budget_per_state": 300000,
+    "event_semantics": "corrected full-event v2",
+    "inherited": "byte-identical / hash-pinned to the parent protocol (taskbook Sec. 12)",
+    "parent_truth_contract_sha256": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+    "parent_vendored_snapshots": {
+      "M1_D_Benchmark_Freeze.json": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+      "m3cf0_raw_physical_candidate_lattice.csv": "87eba89a14e16bba979f22a17ed340a954ebe06a2874a88f2aa803ffc33d04ab",
+      "m3cf1n_configs.json": "21ffc2d86fd8b5adba2718c40c82480bb1f808e2430ab7aa4c9b0d07c47d3639",
+      "m3cf1n_confirmation_protocol.json": "4b51e3e798ba6ba89f3776d90b8ecd896048d29789633410b26fb09c558a01ff",
+      "m3cf1n_discovery_protocol.json": "637aae8962d0e4ed989ea3572977a2e0a847014e711ea7f03166d6925fdc467f",
+      "m3cf1n_pref_protocol.json": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "m3wcf1_physical_config_manifest.csv": "18ca0ae9c6617da7d0fbbb5ab8c59225c6c0dd2b0f9fd32ac7db4a68f51432cf",
+      "pref_records/cf1n_new_000.json": "ee0a6c3544cc93c9afb3426c0a43ec10b932b9fd75f8eef4ce0024d86b84de75",
+      "pref_records/cf1n_new_001.json": "12b5951924879162604a805c7c55e4877203be735d583e2864558a4ca142f721",
+      "pref_records/cf1n_new_002.json": "49e27b84a626077cd0aa2132acf72e6ad494272a4cf52f17d38cfdf057160d85",
+      "pref_records/cf1n_new_003.json": "d45481ede3fc4aab526a547119438dbd24c07129504f03e11c2de4a500e8cf23",
+      "pref_records/cf1n_new_004.json": "48459502286e2523a04d548a1f17fcea9765d1c2e25ef83ab7aca6276bddb5a7",
+      "pref_records/cf1n_new_005.json": "761f0dcdc80a48d7112393b0d03fb7c4053f6ff5631a662c33d66aff22250ea9",
+      "pref_records/cf1n_new_006.json": "ea95f613a4381a5ce6f3dc293a35ba5ed7d0fdcf9c0d90b639d3b5cb5283c0fd",
+      "pref_records/cf1n_new_007.json": "0c8cc4d8a8c8f66e1196abe6cb14de223579a38ebddc9dc1ec5193fff756f2a1",
+      "pref_records/m3d2_probability_reference.json": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "pref_records/wcf1_new_000.json": "3b049f3c7062fec28b7fac4d5e9246b3730459f3358c4fcdd9545c951fd9efd3",
+      "pref_records/wcf1_new_001.json": "5811a6a10c4f34087ed04bd73891581a4651d050fe1021d2fd8a45f9544d1913",
+      "pref_records/wcf1_new_002.json": "e32ea1c548df63849b6e04ea364654391a6d2b20e062469accf07d16e08dc8ea",
+      "pref_records/wcf1_new_003.json": "9829fa6cb7737c12cd198d7635f6e40cb611f5db4d964ddb58056635c74a748a",
+      "pref_records/wcf1_new_004.json": "e0af980417245e383ee52c13bd4be16546a068c47785ed560446d48d4bab384c",
+      "pref_records/wcf1_new_005.json": "54a9ab1db87797b2c9e01495e7aad6f11e700bbaa9c7d45ab54a136d8c6dec64"
+    }
+  },
+  "verdicts": {
+    "failure": "M3-S25-R1-X",
+    "panel_blocked": "M3-S25-R1-PANEL-BLOCKED",
+    "preflight_blocked": "M3-S25-R1-PREFLIGHT-BLOCKED",
+    "success": "M3-S25-R1-PANEL-FROZEN"
+  }
+}

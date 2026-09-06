@@ -1,0 +1,1661 @@
+"""M3-S25-R1 -- Support-Completion Replacement Development Stage (first run).
+
+FIRST ROUND = PREREGISTRATION FREEZE ONLY (taskbook Sec. 33):
+    scientific simulator calls = 0, scientific samples = 0.
+
+Stages: prepare | candidates | p_ref_registry | truth_seed_manifest |
+        budget | preflight | contracts | docs | hashlock |
+        truth_execute | truth_panel | all
+
+Three independent NEW authorization gates, all initially NO (taskbook
+Sec. 3/21/29); the sealed parent's M3-S2S T1 gate may NOT be reused:
+    M3_S25_R1_TRUTH_AUTHORIZED / M3_S25_R1_ARM_A_AUTHORIZED /
+    M3_S25_R1_ARM_B_AUTHORIZED.
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import re
+import shutil
+import subprocess
+import sys
+import time
+from collections import Counter
+from pathlib import Path
+
+sys.path.insert(0, str(ROOT := Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from hyptraj.m3s25r1 import candidates as CAND  # noqa: E402
+from hyptraj.m3s25r1 import history as HIST  # noqa: E402
+from hyptraj.m3s25r1 import runtime as RT  # noqa: E402
+from hyptraj.m3s2s import vendored_runtime as VR  # noqa: E402 (parent pins)
+from hyptraj.m3wa1r.persistence import (  # noqa: E402
+    bounded_slug, bounded_temp_basename, record_file_hash,
+    run_trial_transactional)
+from hyptraj.m3cf1r0.persistence import ledger_entries  # noqa: E402
+
+OUT = ROOT / "results/phase_m3s25r1/preflight"
+SUM = ROOT / "results/phase_m3s25r1/summary"
+TRIALS = ROOT / "results/phase_m3s25r1/trials"
+CFG = ROOT / "configs/phase_m3s25r1"
+DOC = ROOT / "docs/phase_m3s25r1"
+
+PARENT_HEAD = "f0d73702dc284f9a2ce1f1a205bb5f56f1324d38"
+PARENT_STAGE = "M3-S2S"
+PARENT_TERMINAL = "M3-S2S-PANEL-BLOCKED"
+PARENT_TRUTH_BUDGET = 436_000_000
+PARENT_UNIVERSE = ROOT / "configs/phase_m3s2s/m3s2s_candidate_universe.json"
+PARENT_REGISTRY = ROOT / "configs/phase_m3s2s/m3s2s_new_config_registry.json"
+PARENT_APPROVAL_DOC = ROOT / "docs/phase_m3s2s/M3_S2S_Human_Approval.md"
+PARENT_TRUTH_CONTRACT = ROOT / "configs/phase_m3s2s/m3s2s_truth_contract.json"
+PARENT_TRUTH_CONSUMPTION = ROOT / ("results/phase_m3s2s/summary/"
+                                   "m3s2s_truth_consumption.json")
+PARENT_INVENTORY = ROOT / ("results/phase_m3s2s/summary/"
+                           "m3s2s_truth_exposed_inventory.json")
+PARENT_PANEL_DECISION = ROOT / ("results/phase_m3s2s/summary/"
+                                "m3s2s_panel_decision.json")
+PARENT_PREF = ROOT / "results/phase_m3s2s/pref"
+PARENT_LEDGERS = {
+    "pref": ROOT / "results/phase_m3s2s/pref/pref_ledger.jsonl",
+    "discovery": ROOT / "results/phase_m3s2s/discovery/discovery_ledger.jsonl",
+    "confirmation": ROOT / ("results/phase_m3s2s/confirmation/"
+                            "confirmation_ledger.jsonl")}
+VENDORED = ROOT / "configs/phase_m3s2s/reference_truth_protocol"
+
+UNIVERSE = CFG / "m3s25r1_candidate_universe.json"
+PREFLIGHT_REPORT = OUT / "m3s25r1_preflight.json"
+APPROVAL_DOC = DOC / "M3_S25_R1_Human_Approval.md"
+
+N_CONFIGS = 30
+N_STRATA = 8
+N_STATES = 240
+N_UNITS = 480
+SPAN_MIN = 0.70
+# frozen after the one deterministic generation (LF bytes; .gitattributes
+# pins the artifact as -text so working tree == git blob)
+EXPECTED_UNIVERSE_SHA = ("9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4"
+                         "223058d6e600d02")
+EXPECTED_CONTRACT_SHA = ("89be24d077e5ef7cbec8ae0c6b770ed7ae11b66756bae2f16"
+                         "914d93d7663df25")
+FULL_PATH_LIMIT = 220
+
+TRUTH_DISC = ROOT / "results/phase_m3s25r1/discovery"
+TRUTH_CONF = ROOT / "results/phase_m3s25r1/confirmation"
+TRUTH_LEDGERS = {"discovery": TRUTH_DISC / "discovery_ledger.jsonl",
+                 "confirmation": TRUTH_CONF / "confirmation_ledger.jsonl"}
+
+
+# --------------------------------------------------------------------------
+# helpers
+# --------------------------------------------------------------------------
+
+def load(p) -> dict:
+    return json.loads(Path(p).read_text(encoding="utf-8"))
+
+
+def write_lf_bytes(p, data: bytes) -> None:
+    Path(p).parent.mkdir(parents=True, exist_ok=True)
+    Path(p).write_bytes(data)
+
+
+def dump_json(p, v) -> bytes:
+    """LF-normalized canonical JSON artifact; returns the exact bytes."""
+    data = (json.dumps(v, indent=2, sort_keys=True,
+                       ensure_ascii=True) + "\n").encode("utf-8")
+    write_lf_bytes(p, data)
+    return data
+
+
+def dump(p, v) -> None:
+    dump_json(p, v)
+
+
+def sha(p) -> str:
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def sha_bytes(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()
+
+
+def write_text_lf(p, text: str) -> None:
+    write_lf_bytes(p, text.encode("utf-8"))
+
+
+def csvread(p) -> list[dict]:
+    with open(p, newline="", encoding="utf-8") as h:
+        return list(csv.DictReader(h))
+
+
+def csvwrite(p, rows: list[dict], fieldnames: list[str]) -> None:
+    Path(p).parent.mkdir(parents=True, exist_ok=True)
+    import io
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=fieldnames, lineterminator="\n")
+    w.writeheader()
+    w.writerows(rows)
+    write_lf_bytes(p, buf.getvalue().encode("utf-8"))
+
+
+def now() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+
+def git_commit() -> str:
+    return subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                          capture_output=True, text=True, check=True).stdout.strip()
+
+
+def _gate_file(name: str, path: Path) -> bool:
+    txt = Path(path).read_text(encoding="utf-8")
+    m = re.search(rf"^{name}:\s*(\w+)\s*$", txt, re.M)
+    return bool(m and m.group(1).strip().upper() == "YES")
+
+
+def gate(name: str) -> bool:
+    return _gate_file(name, APPROVAL_DOC)
+
+
+def parent_gate(name: str) -> bool:
+    return _gate_file(name, PARENT_APPROVAL_DOC)
+
+
+def _windows() -> dict[str, dict]:
+    """Inherited legality windows -- computed by the PARENT's own frozen
+    code (byte-identical legality calculation; taskbook Sec. 5)."""
+    import run_m3s2s as S2S
+    return S2S._config_windows()
+
+
+def _config_meta(windows: dict[str, dict]) -> dict[str, dict]:
+    """Frozen per-config identity from the PARENT candidate universe."""
+    u = load(PARENT_UNIVERSE)
+    meta = {}
+    for s in u["states"]:
+        meta.setdefault(s["config_id"], {
+            "origin": s["config_origin"],
+            "config_source_path": s["config_source_path"],
+            "config_source_sha256": s["config_source_sha256"]})
+    missing = [c for c in windows if c not in meta]
+    if missing:
+        raise RuntimeError(f"M3-S25-R1-X: configs absent from parent "
+                           f"universe: {missing}")
+    return meta
+
+
+def verify_parent_universe_pin() -> dict:
+    got = sha_bytes(PARENT_UNIVERSE.read_bytes())
+    expected = VR.EXPECTED_UNIVERSE_SHA
+    if got != expected:
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent candidate-universe sha drift: {got} != {expected}")
+    reg_got = sha_bytes(PARENT_REGISTRY.read_bytes())
+    reg_expected = VR.EXPECTED_NEW_CONFIG_REGISTRY_SHA
+    if reg_got != reg_expected:
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent new-config registry sha drift: "
+            f"{reg_got} != {reg_expected}")
+    return {"parent_universe_sha256": got,
+            "parent_new_config_registry_sha256": reg_got}
+
+
+# --------------------------------------------------------------------------
+# stage: prepare (parent closure audit + parent development registry +
+# reserve firewall)
+# --------------------------------------------------------------------------
+
+def parent_audit() -> dict:
+    head = git_commit()
+    if subprocess.run(["git", "merge-base", "--is-ancestor", PARENT_HEAD, head],
+                      cwd=ROOT, capture_output=True).returncode != 0:
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent frozen HEAD {PARENT_HEAD[:7]} is not an "
+            "ancestor of the R1 HEAD")
+    decision = load(PARENT_PANEL_DECISION)
+    if decision.get("PANEL") != PARENT_TERMINAL:
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent terminal verdict drift: {decision.get('PANEL')}")
+    cons = load(PARENT_TRUTH_CONSUMPTION)
+    if cons["total"]["actual"] != PARENT_TRUTH_BUDGET or \
+            cons["total"]["planned"] != PARENT_TRUTH_BUDGET or \
+            cons["total"].get("topup", 1) != 0:
+        raise RuntimeError("M3-S25-R1-X: parent truth budget accounting drift")
+    closed = {}
+    for g in ("TRUTH_SAMPLING_AUTHORIZED", "ARM_A_AUTHORIZED",
+              "ARM_B_AUTHORIZED"):
+        closed[g] = (not parent_gate(g))
+    if not all(closed.values()):
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent M3-S2S gates are not closed: {closed}; "
+            "close the old T1 gate (closure-only) before R1")
+    units = {}
+    for stream, ledger in PARENT_LEDGERS.items():
+        entries = ledger_entries(ledger) if Path(ledger).exists() else []
+        comp = sum(1 for e in entries if e.get("status") == "COMPLETE")
+        inv = sum(1 for e in entries if e.get("status") == "CONSUMED_INVALID")
+        units[stream] = {"COMPLETE": comp, "CONSUMED_INVALID": inv}
+    total_complete = sum(v["COMPLETE"] for v in units.values())
+    total_invalid = sum(v["CONSUMED_INVALID"] for v in units.values())
+    if total_complete != 488 or total_invalid != 0:
+        raise RuntimeError(
+            f"M3-S25-R1-X: parent ledger state drift: {total_complete} "
+            f"COMPLETE / {total_invalid} CONSUMED_INVALID (expected 488 / 0)")
+    inv = load(PARENT_INVENTORY)
+    if len(inv.get("states", [])) != N_STATES:
+        raise RuntimeError("M3-S25-R1-X: parent inventory drift")
+    audit = {
+        "recorded_at": now(), "head": head,
+        "parent_stage": PARENT_STAGE,
+        "parent_terminal": PARENT_TERMINAL,
+        "parent_frozen_head": PARENT_HEAD,
+        "parent_head_is_ancestor": True,
+        "parent_truth_budget_consumed": PARENT_TRUTH_BUDGET,
+        "parent_truth_budget": f"{PARENT_TRUTH_BUDGET:,} / {PARENT_TRUTH_BUDGET:,}",
+        "parent_gates": {k: ("CLOSED" if v else "OPEN") for k, v in closed.items()},
+        "parent_ledgers": units,
+        "parent_truth_exposed_states": len(inv["states"]),
+        "closure_record": "docs/phase_m3s2s/M3_S2S_Closure_Record.md",
+        "PARENT_CLOSURE_AUDIT": "PASS"}
+    dump(OUT / "m3s25r1_parent_audit.json", audit)
+    return audit
+
+
+def parent_registry(windows: dict[str, dict]) -> dict:
+    """All 240 parent truth-exposed states enter the R1 parent development
+    registry (taskbook Sec. 2): state_id, config_id, s2, u, frozen truth,
+    truth source + source hashes, exposure status.  Nothing is deleted,
+    replaced or repackaged."""
+    u = load(PARENT_UNIVERSE)
+    inv = load(PARENT_INVENTORY)
+    truth_by_sid = {s["state_id"]: s["confirmed_truth"] for s in inv["states"]}
+    conf_ledger = [e for e in ledger_entries(PARENT_LEDGERS["confirmation"])
+                   if e.get("status") == "COMPLETE"]
+    conf_hash = {e["state_id"].split("|", 1)[1]: e.get("record_file_hash")
+                 for e in conf_ledger}
+    entries = []
+    for s in sorted(u["states"], key=lambda x: (x["config_id"], x["s2"])):
+        sid = s["state_id"]
+        if sid not in truth_by_sid:
+            raise RuntimeError(f"M3-S25-R1-X: parent state missing truth: {sid}")
+        entries.append({
+            "state_id": sid, "config_id": s["config_id"], "s2": s["s2"],
+            "u": CAND.u_of(s["s2"], windows[s["config_id"]]["s2_lo"]),
+            "confirmed_truth": truth_by_sid[sid],
+            "source_stage": PARENT_STAGE,
+            "truth_record_path":
+                f"results/phase_m3s2s/confirmation/{sid}.json",
+            "truth_record_file_hash": conf_hash.get(sid),
+            "parent_candidate_rank": s["rank"],
+            "development_eligible": True,
+            "untouched_confirmation_eligible": False,
+            "exposure_status": "TRUTH_EXPOSED_DEVELOPMENT"})
+    reg = {"schema_version": "m3s25r1_parent_development_registry_v1",
+           "parent_stage": PARENT_STAGE,
+           "parent_terminal": PARENT_TERMINAL,
+           "n_states": len(entries),
+           "rule": "development-only union member; retired from all future "
+                   "untouched confirmation use; preserved verbatim",
+           "states": entries}
+    dump(CFG / "m3s25r1_parent_development_registry.json", reg)
+    return reg
+
+
+def _window_lo(w: dict) -> float:
+    return w["s2_lo"]
+
+
+def reserve_firewall() -> list[dict]:
+    reserve = csvread(ROOT / "results/phase_m3pi1vnr/summary/"
+                             "m3pi1vnr_remaining_protected_reserve.csv")
+    s1c_panel = load(ROOT / "configs/phase_m3s1c/m3s1c_panel.json")
+    consumed = {s["state_id"] for s in s1c_panel["states"]}
+    reserve = [r for r in reserve if r["state_id"] not in consumed]
+    if len(reserve) != 18:
+        raise RuntimeError(
+            f"M3-S25-R1-X: expected 18 protected states, got {len(reserve)}")
+    manifest_sha = sha(ROOT / "results/phase_m3pi1vnr/summary/"
+                              "m3pi1vnr_remaining_protected_reserve.csv")
+    rows = [{"state_id": r["state_id"], "config_id": r["config_id"],
+             "protected": "true", "source_hash": manifest_sha} for r in reserve]
+    csvwrite(OUT / "m3s25r1_protected_reserve_18.csv", rows,
+             ["state_id", "config_id", "protected", "source_hash"])
+    dump(OUT / "m3s25r1_reserve_firewall.json", {
+        "recorded_at": now(), "remaining": 18, "used_by_r1": 0,
+        "permanent": True,
+        "rule": "protected reserve / untouched confirmation / final "
+                "validation states are FORBIDDEN to R1 (taskbook Sec. 30)",
+        "RESERVE_FIREWALL": "PASS"})
+    return reserve
+
+
+def prepare() -> dict:
+    audit = parent_audit()
+    windows = _windows()
+    reg = parent_registry(windows)
+    reserve_firewall()
+    print(f"M3-S25-R1 prepare: parent closure PASS ({PARENT_TERMINAL}); "
+          f"{reg['n_states']} parent states registered; 18 reserve protected")
+    return {"audit": audit, "parent_registry": reg, "windows": windows}
+
+
+# --------------------------------------------------------------------------
+# stage: candidates (support-completion universe; NO truth labels)
+# --------------------------------------------------------------------------
+
+def candidates_stage() -> dict:
+    pins = verify_parent_universe_pin()
+    windows = _windows()
+    # cross-check inherited windows against the parent universe's recorded
+    # legality margins (byte-identical legality calculation regression)
+    u = load(PARENT_UNIVERSE)
+    drift = []
+    for s in u["states"]:
+        w = windows[s["config_id"]]
+        expect = w["s2_min_legality"] * s["s2"] / 0.5
+        if abs(expect - s["legality_margin_min_eig"]) > 1e-9:
+            drift.append(s["state_id"])
+    if drift:
+        raise RuntimeError(
+            f"M3-S25-R1-X: legality-window drift vs parent universe: "
+            f"{drift[:5]}")
+    meta = _config_meta(windows)
+    configs = sorted(windows)
+    hist, hist_meta = HIST.historical_characterized_s2(configs)
+    states = CAND.build_states(windows, hist, meta)
+    audit = CAND.invariant_audit(states, windows)
+    fresh = CAND.freshness_reaudit(states, hist)
+    universe = {
+        "schema_version": "m3s25r1_candidate_universe_v1",
+        "n_states": len(states),
+        "n_configs": len(configs),
+        "n_strata": N_STRATA,
+        "anchors_per_stratum": CAND.L_ANCHORS,
+        "support_interval": [CAND.U_LO, CAND.U_HI],
+        "strata_boundaries": [list(CAND.stratum_bounds(i))
+                              for i in range(N_STRATA + 1)],
+        "rank_seed": CAND.PANEL_RANK_SEED,
+        "anchor_salt": CAND.ANCHOR_SALT,
+        "canonical_s2_rule": "repr(float(s2)): shortest round-trip decimal, "
+                             "identical to the JSON serialization of the "
+                             "value in this artifact",
+        "freshness_rule": "first legal+fresh anchor in SHA256 anchor-hash "
+                          "ascending order per config x stratum; collision "
+                          "|s2-s2_h| <= 1e-6*max(1,|s2_h|) against every "
+                          "historically characterized s2 of the same config "
+                          "(M3-CF*/M3-WCF*/M3-PI*/M3-S1*/M3-S2S and all "
+                          "retired/truth-exposed/development artifacts)",
+        "selection_independence": ["truth labels", "discovery results",
+                                   "SHRINK/HOLD counts",
+                                   "candidate numeric ordering"],
+        "parent_reference": {
+            "parent_stage": PARENT_STAGE,
+            "parent_terminal": PARENT_TERMINAL,
+            "parent_frozen_head": PARENT_HEAD,
+            "parent_candidate_universe_sha256":
+                pins["parent_universe_sha256"],
+            "parent_new_config_registry_sha256":
+                pins["parent_new_config_registry_sha256"]},
+        "historical_sweep": {
+            "rule": "content-classified characterized-artifact sweep "
+                    "(truth/reference/discovery/confirmation/panel/reserve/"
+                    "state-table/universe/inventory); proposal artifacts "
+                    "(pools/banks/selection views/plans) are not "
+                    "characterized; parent stage M3-S2S included via its "
+                    "tracked universe",
+            "per_config_counts": hist_meta["per_config_counts"],
+            "minimum_families": hist_meta["minimum_families"],
+            "n_sources": len(hist_meta["sources"])},
+        "freshness_audit": fresh,
+        "support_invariant_audit": {
+            "span_failures": audit["span_failures"],
+            "checks": audit["checks"]},
+        "states": states,
+    }
+    data = dump_json(UNIVERSE, universe)
+    universe_sha = sha_bytes(data)
+    dump(OUT / "m3s25r1_candidate_universe_hash.json", {
+        "recorded_at": now(), "candidate_universe_sha256": universe_sha,
+        "parent_universe_sha256": pins["parent_universe_sha256"]})
+    dump(OUT / "m3s25r1_freshness_sources.json", {
+        "recorded_at": now(), "n_sources": len(hist_meta["sources"]),
+        "sources": hist_meta["sources"]})
+    csvwrite(OUT / "m3s25r1_freshness_audit.csv",
+             [{"state_id": s["state_id"], "config_id": s["config_id"],
+               "stratum_id": s["stratum_id"], "u": s["u"], "s2": s["s2"],
+               "anchor_m": s["anchor_m"],
+               "anchor_rank_position": s["anchor_rank_position"],
+               "n_collided": s["n_collided"], "n_fresh": s["n_fresh"],
+               "anchor_hash": s["anchor_hash"], "fresh": "true"}
+              for s in states],
+             ["state_id", "config_id", "stratum_id", "u", "s2", "anchor_m",
+              "anchor_rank_position", "n_collided", "n_fresh",
+              "anchor_hash", "fresh"])
+    n_bad = len(audit["span_failures"])
+    print(f"M3-S25-R1 candidates: {len(states)} states / {len(configs)} "
+          f"configs / 8 strata each (universe sha256 {universe_sha[:16]}...); "
+          f"support-span invariant: {n_bad}/30 configs below 0.70")
+    return {"states": states, "windows": windows, "hist": hist,
+            "hist_meta": hist_meta, "audit": audit, "fresh": fresh,
+            "universe_sha256": universe_sha, "pins": pins}
+
+
+# --------------------------------------------------------------------------
+# stage: P_ref registry (Sec. 11: reuse only; budget = 0)
+# --------------------------------------------------------------------------
+
+def p_ref_registry_stage() -> dict:
+    u = load(UNIVERSE)
+    configs = sorted({s["config_id"] for s in u["states"]})
+    pref_protocol_sha = sha(VENDORED / "m3cf1n_pref_protocol.json")
+    parent_pref_ledger = ledger_entries(PARENT_LEDGERS["pref"])
+    entries = []
+    for cid in configs:
+        if cid.startswith("m3s2s_cfg_"):
+            src = PARENT_PREF / f"{cid}.json"
+            if not src.exists():
+                raise RuntimeError(
+                    f"M3-S25-R1-X: durable parent PREF record missing: {src}")
+            comp = [e for e in parent_pref_ledger
+                    if e.get("state_id") == f"PREF|{cid}"
+                    and e.get("status") == "COMPLETE"]
+            started = [e for e in parent_pref_ledger
+                       if e.get("state_id") == f"PREF|{cid}"
+                       and e.get("status") == "STARTED"]
+            invalid = [e for e in parent_pref_ledger
+                       if e.get("state_id") == f"PREF|{cid}"
+                       and e.get("status") == "CONSUMED_INVALID"]
+            if invalid or len(comp) != 1 or len(started) != 1:
+                raise RuntimeError(
+                    f"M3-S25-R1-X: parent PREF ledger not a single durable "
+                    f"COMPLETE for {cid}")
+            file_hash = sha(src)
+            if comp[0].get("record_file_hash") != file_hash:
+                raise RuntimeError(
+                    f"M3-S25-R1-X: parent PREF record hash mismatch: {cid}")
+            rec = load(src)
+            entry = {"config_id": cid, "source_stage": PARENT_STAGE,
+                     "source_file": src.relative_to(ROOT).as_posix(),
+                     "record_file_hash": file_hash,
+                     "protocol_hash": pref_protocol_sha,
+                     "record_protocol_hash": rec.get("protocol_hash"),
+                     "sample_count": int(rec["sample_count"]),
+                     "n_batches": int(rec["n_batches"]),
+                     "p_ref": float(rec["p_ref_full"]),
+                     "p_ref_full_SE": float(rec["p_ref_full_SE"]),
+                     "p_ref_full_CI": [float(x) for x in rec["p_ref_full_CI"]],
+                     "namespace": rec["namespace"],
+                     "record_type": rec["record_type"],
+                     "durable_complete_verified": True}
+        elif cid.startswith("cf1n_new_"):
+            src = VENDORED / "pref_records" / f"{cid}.json"
+            rec = load(src)
+            entry = {"config_id": cid, "source_stage": "M3-CF1N",
+                     "source_file": src.relative_to(ROOT).as_posix(),
+                     "record_file_hash": sha(src),
+                     "protocol_hash": pref_protocol_sha,
+                     "record_protocol_hash": rec.get("protocol_hash"),
+                     "sample_count": int(rec["sample_count"]),
+                     "n_batches": int(rec["n_batches"]),
+                     "p_ref": float(rec["p_ref_full"]),
+                     "p_ref_full_SE": float(rec["p_ref_full_SE"]),
+                     "p_ref_full_CI": [float(x) for x in rec["p_ref_full_CI"]],
+                     "namespace": rec["namespace"],
+                     "record_type": rec.get("record_type",
+                                            rec["namespace"]),
+                     "durable_complete_verified": True}
+        elif cid.startswith("wcf1_new_"):
+            src = VENDORED / "pref_records" / f"{cid}.json"
+            rec = load(src)
+            entry = {"config_id": cid, "source_stage": "M3-WCF1",
+                     "source_file": src.relative_to(ROOT).as_posix(),
+                     "record_file_hash": sha(src),
+                     "protocol_hash": pref_protocol_sha,
+                     "record_protocol_hash": rec.get("protocol_hash"),
+                     "sample_count": int(rec["sample_count"]),
+                     "n_batches": int(rec["n_batches"]),
+                     "p_ref": float(rec["p_ref_full"]),
+                     "p_ref_full_SE": float(rec["p_ref_full_SE"]),
+                     "p_ref_full_CI": [float(x) for x in rec["p_ref_full_CI"]],
+                     "namespace": rec["namespace"],
+                     "record_type": rec.get("record_type",
+                                            rec["namespace"]),
+                     "durable_complete_verified": True}
+        else:
+            src = VENDORED / "pref_records" / "m3d2_probability_reference.json"
+            refs = load(src)
+            recs = refs["records"] if isinstance(refs, dict) and "records" in refs \
+                else refs
+            matches = [r for r in recs
+                       if str(r.get("config_id", "")).endswith(cid)]
+            if len(matches) != 1:
+                raise RuntimeError(
+                    f"M3-S25-R1-X: legacy P_ref not uniquely resolvable "
+                    f"for {cid}")
+            rec = matches[0]
+            entry = {"config_id": cid, "source_stage": "M3-D2",
+                     "source_file": src.relative_to(ROOT).as_posix(),
+                     "record_file_hash": sha(src),
+                     "protocol_hash": pref_protocol_sha,
+                     "record_protocol_hash": rec.get("protocol_hash"),
+                     "sample_count": int(rec["sample_count"]),
+                     "n_batches": int(rec["n_batches"]),
+                     "p_ref": float(rec["p_ref_full"]),
+                     "p_ref_full_SE": float(rec["p_ref_full_SE"]),
+                     "p_ref_full_CI": [float(x) for x in rec["p_ref_full_CI"]],
+                     "namespace": None,
+                     "record_type": rec.get("event_definition_id"),
+                     "durable_complete_verified": True}
+        entries.append(entry)
+    if len(entries) != N_CONFIGS or len({e["config_id"] for e in entries}) != N_CONFIGS:
+        raise RuntimeError("M3-S25-R1-X: P_ref registry must have exactly 30 "
+                           "unique entries")
+    registry = {"schema_version": "m3s25r1_p_ref_registry_v1",
+                "p_ref_sampling_budget": 0,
+                "rule": "P_ref reuse only: source exists -> source hash "
+                        "verified -> protocol compatible -> exactly one "
+                        "durable source; any failure => M3-S25-R1-X / STOP "
+                        "/ NO P_ref RESAMPLING",
+                "governing_pref_protocol": {
+                    "path": "configs/phase_m3s2s/reference_truth_protocol/"
+                            "m3cf1n_pref_protocol.json",
+                    "sha256": pref_protocol_sha},
+                "configs": entries}
+    dump(CFG / "m3s25r1_p_ref_registry.json", registry)
+    by_stage = Counter(e["source_stage"] for e in entries)
+    print(f"M3-S25-R1 P_ref registry: {len(entries)} entries "
+          f"({dict(by_stage)}); sampling budget = 0")
+    return registry
+
+
+# --------------------------------------------------------------------------
+# stage: truth seed manifest (Sec. 13)
+# --------------------------------------------------------------------------
+
+def _prior_recorded_seeds() -> set[int]:
+    vals: set[int] = set()
+    self_prefix = ROOT / "results/phase_m3s25r1"
+    for p in (ROOT / "results").rglob("*.csv"):
+        if self_prefix in p.parents:
+            continue
+        try:
+            with p.open(newline="", encoding="utf-8") as h:
+                rdr = csv.DictReader(h)
+                if rdr.fieldnames and any(f.strip() == "seed"
+                                          for f in rdr.fieldnames):
+                    for row in rdr:
+                        try:
+                            vals.add(int(row["seed"]))
+                        except (TypeError, ValueError):
+                            continue
+        except Exception:
+            continue
+    return vals
+
+
+def truth_seed_manifest_stage() -> dict:
+    states = verify_universe_sha_only()
+    plan = RT.truth_execution_plan(states)
+    units = plan["discovery_units"] + plan["confirmation_units"]
+    manifest = {
+        "recorded_at": now(),
+        "namespaces": plan["namespaces"],
+        "s2s_namespace_reuse": False,
+        "units": [{"unit_id": u2["unit_id"], "stream":
+                   "discovery" if u2["unit_id"].startswith("DISC|") else
+                   "confirmation", "state_id": u2["state_id"],
+                   "namespace": u2["namespace"],
+                   "seed_key": u2["seed_key"], "samples": u2["samples"]}
+                  for u2 in units],
+        "counts": {"discovery": len(plan["discovery_units"]),
+                   "confirmation": len(plan["confirmation_units"]),
+                   "pref": 0},
+        "total_units": len(units),
+        "frozen_before_first_simulator_call": True,
+    }
+    dump(CFG / "m3s25r1_truth_seed_manifest.json", manifest)
+    # ---- collision audit ----
+    seed_keys = [tuple(u2["seed_key"]) for u2 in units]
+    if len(set(seed_keys)) != len(seed_keys) == N_UNITS:
+        raise RuntimeError("M3-S25-R1-X: duplicate truth seed key")
+    disc_keys = {k for u2 in plan["discovery_units"]
+                 for k in [tuple(u2["seed_key"])]}
+    conf_keys = {tuple(u2["seed_key"]) for u2 in plan["confirmation_units"]}
+    if disc_keys & conf_keys:
+        raise RuntimeError("M3-S25-R1-X: cross-stream seed collision")
+    prior = _prior_recorded_seeds()
+    parent_manifest = load(ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
+    prior |= {u2["seed_key"][0] for u2 in parent_manifest.get("units", [])}
+    for name in ("m3cf1n_pref_seeds.json", "m3cf1n_discovery_seeds.json",
+                 "m3cf1n_confirmation_seeds.json"):
+        d = load(ROOT / "configs/phase_m3cf1n" / name)
+        for v in d.values():
+            if isinstance(v, list):
+                for item in v:
+                    if isinstance(item, dict) and "seed_key" in item:
+                        prior.add(int(item["seed_key"][0]))
+                    elif isinstance(item, list) and item:
+                        prior.add(int(item[0]))
+    collisions = sorted({k0 for k0, _ in seed_keys if k0 in prior})
+    if collisions:
+        raise RuntimeError(
+            f"M3-S25-R1-X: historical truth seed collision: {collisions[:5]}")
+    audit = {"recorded_at": now(), "units": len(units),
+             "unique_seed_keys": len(set(seed_keys)),
+             "duplicate_logical_unit": 0,
+             "cross_stream_collision": 0,
+             "historical_namespace_collision": len(collisions),
+             "namespaces": plan["namespaces"],
+             "TRUTH_SEED_AUDIT": "PASS"}
+    dump(OUT / "m3s25r1_truth_seed_audit.json", audit)
+    print(f"M3-S25-R1 truth seeds: {len(units)} units, 0 collisions, "
+          "new namespaces (no S2S reuse)")
+    return audit
+
+
+# --------------------------------------------------------------------------
+# stage: budget contract (Sec. 15-17)
+# --------------------------------------------------------------------------
+
+def budget_stage() -> dict:
+    budget = {
+        "schema_version": "m3s25r1_budget_contract_v1",
+        "TRUTH_BUDGET_FROZEN": True,
+        "p_ref_sampling_budget": 0,
+        "discovery": {"units": N_STATES, "arms": 3,
+                      "samples_per_arm": RT.DISCOVERY_SAMPLES_PER_ARM,
+                      "samples_per_unit": RT.DISCOVERY_BUDGET_PER_STATE,
+                      "total": N_STATES * RT.DISCOVERY_BUDGET_PER_STATE},
+        "confirmation": {"units": N_STATES, "arms": 3,
+                         "samples_per_arm": RT.CONFIRMATION_SAMPLES_PER_ARM,
+                         "samples_per_unit": RT.CONFIRMATION_BUDGET_PER_STATE,
+                         "total": N_STATES * RT.CONFIRMATION_BUDGET_PER_STATE},
+        "TRUTH_BUDGET_PLANNED": RT.TRUTH_BUDGET_PLANNED,
+        "TRUTH_BUDGET_MAX": RT.TRUTH_BUDGET_MAX,
+        "planned_equals_max": RT.TRUTH_BUDGET_PLANNED == RT.TRUTH_BUDGET_MAX,
+        "truth_units_total": N_UNITS,
+        "topup": 0, "early_stop": False, "candidate_substitution": False,
+        "parent_budget_relation": "independent NEW budget; does NOT extend "
+                                  "the exhausted M3-S2S 436,000,000 budget",
+    }
+    if budget["TRUTH_BUDGET_PLANNED"] != 432_000_000:
+        raise RuntimeError("M3-S25-R1-X: budget contract drift")
+    dump(CFG / "m3s25r1_budget_contract.json", budget)
+    print(f"M3-S25-R1 budget: planned == max == "
+          f"{budget['TRUTH_BUDGET_PLANNED']:,}; P_ref = 0")
+    return budget
+
+
+# --------------------------------------------------------------------------
+# stage: preflight (Sec. 9/31; zero sampling)
+# --------------------------------------------------------------------------
+
+def verify_universe_sha_only() -> list[dict]:
+    recorded = load(OUT / "m3s25r1_candidate_universe_hash.json")[
+        "candidate_universe_sha256"]
+    got = sha_bytes(UNIVERSE.read_bytes())
+    if got != recorded:
+        raise RuntimeError(
+            f"M3-S25-R1-X: candidate-universe sha drift: {got} != {recorded}")
+    if EXPECTED_UNIVERSE_SHA != "PENDING-SET-AFTER-GENERATION" \
+            and got != EXPECTED_UNIVERSE_SHA:
+        raise RuntimeError(
+            f"M3-S25-R1-X: candidate-universe sha pin drift: {got} != "
+            f"{EXPECTED_UNIVERSE_SHA}")
+    u = load(UNIVERSE)
+    if u["n_states"] != N_STATES or len(u["states"]) != N_STATES:
+        raise RuntimeError("M3-S25-R1-X: candidate universe shape drift")
+    return u["states"]
+
+
+def verify_frozen_preflight_pass() -> dict:
+    pf = load(PREFLIGHT_REPORT)
+    if pf.get("PREFLIGHT_VERDICT") != "PASS":
+        raise RuntimeError(
+            "M3-S25-R1-X: frozen preflight verdict is "
+            f"{pf.get('PREFLIGHT_VERDICT')!r} ({pf.get('overall')}); "
+            "execution is not authorized; STOP")
+    return pf
+
+
+def _restart_scan_all(states: list[dict]) -> dict:
+    """Taskbook Sec. 19: scan ALL existing R1 ledgers BEFORE the simulator.
+    FRESH => allowed; durable COMPLETE (hash-verified) => safe skip; ANY
+    other state => M3-S25-R1-X / STOP / NO REPLAY."""
+    summary = {"discovery": {"fresh": 0, "complete_verified": 0},
+               "confirmation": {"fresh": 0, "complete_verified": 0}}
+    for stream, states_units in (("discovery", states), ("confirmation", states)):
+        ledger = TRUTH_LEDGERS[stream]
+        entries = ledger_entries(ledger) if Path(ledger).exists() else []
+        for s in states_units:
+            unit_id = ("DISC|" if stream == "discovery" else "CONF|") + \
+                s["state_id"]
+            out = (TRUTH_DISC if stream == "discovery" else TRUTH_CONF) / \
+                f"{s['state_id']}.json"
+            rec = RT.verify_unit_fresh_or_verified(
+                unit_id, out, entries, record_file_hash)
+            if rec is None:
+                summary[stream]["fresh"] += 1
+            else:
+                summary[stream]["complete_verified"] += 1
+    return summary
+
+
+def preflight() -> dict:
+    # ---- gates frozen NO (R1 + parent) ----
+    gates = {g: gate(g) for g in ("M3_S25_R1_TRUTH_AUTHORIZED",
+                                  "M3_S25_R1_ARM_A_AUTHORIZED",
+                                  "M3_S25_R1_ARM_B_AUTHORIZED")}
+    parent_closed = {g: (not parent_gate(g)) for g in
+                     ("TRUTH_SAMPLING_AUTHORIZED", "ARM_A_AUTHORIZED",
+                      "ARM_B_AUTHORIZED")}
+    if any(gates.values()):
+        raise RuntimeError("M3-S25-R1-X: R1 gates must stay NO during "
+                           "preregistration")
+    if not all(parent_closed.values()):
+        raise RuntimeError("M3-S25-R1-X: parent gates must stay closed")
+    # ---- candidate universe mechanical audit ----
+    states = verify_universe_sha_only()
+    windows = _windows()
+    audit = CAND.invariant_audit(states, windows)
+    hist, hist_meta = HIST.historical_characterized_s2(
+        sorted({s["config_id"] for s in states}))
+    fresh = CAND.freshness_reaudit(states, hist)
+    parent_reg = load(CFG / "m3s25r1_parent_development_registry.json")
+    parent_ids = {s["state_id"] for s in parent_reg["states"]}
+    cand_ids = {s["state_id"] for s in states}
+    reserve_ids = {r["state_id"] for r in csvread(
+        OUT / "m3s25r1_protected_reserve_18.csv")}
+    # structural isolation: the generation path never reads any
+    # label-bearing artifact (the only label-bearing summaries are
+    # m3s2s_frozen_truth.json / m3s2s_panel_decision.json; the sweep
+    # touches s2/config_id columns of characterized artifacts only, and
+    # the frozen universe carries no truth fields)
+    sweep_paths = [s["path"] for s in
+                   load(OUT / "m3s25r1_freshness_sources.json")["sources"]]
+    labels_isolated = (
+        not any("frozen_truth" in p or "panel_decision" in p
+                for p in sweep_paths)
+        and not any(k in json.dumps(states[0]) for k in
+                    ("confirmed_truth", "confirmed label", "corrected_class")))
+    # ---- P_ref registry re-verification ----
+    registry = load(CFG / "m3s25r1_p_ref_registry.json")
+    p_ref_ok, p_ref_notes = [], []
+    pref_protocol_sha = sha(VENDORED / "m3cf1n_pref_protocol.json")
+    for entry in registry["configs"]:
+        p = ROOT / entry["source_file"]
+        ok = (p.exists()
+              and sha(p) == entry["record_file_hash"]
+              and entry["protocol_hash"] == pref_protocol_sha)
+        p_ref_ok.append(ok)
+        if not ok:
+            p_ref_notes.append(entry["config_id"])
+    # ---- seed manifest audit ----
+    manifest = load(CFG / "m3s25r1_truth_seed_manifest.json")
+    seed_keys = [tuple(x["seed_key"]) for x in manifest["units"]]
+    seeds_ok = (len(manifest["units"]) == N_UNITS
+                and len(set(seed_keys)) == N_UNITS
+                and manifest["counts"] == {"discovery": N_STATES,
+                                           "confirmation": N_STATES,
+                                           "pref": 0})
+    # ---- budget audit ----
+    budget = load(CFG / "m3s25r1_budget_contract.json")
+    budget_ok = (budget["TRUTH_BUDGET_PLANNED"]
+                 == budget["TRUTH_BUDGET_MAX"] == 432_000_000
+                 and budget["discovery"]["total"] == 72_000_000
+                 and budget["confirmation"]["total"] == 360_000_000
+                 and budget["p_ref_sampling_budget"] == 0
+                 and budget["topup"] == 0 and budget["early_stop"] is False)
+    # ---- dry assembly (no simulator) ----
+    from hyptraj.m3d.benchmark_states import assemble_state
+    assembled = 0
+    for s in states:
+        bench = VR.resolve_bench_config(s["config_id"])
+        st = assemble_state(bench, float(s["s2"]), short_config=s["config_id"])
+        if isinstance(st, dict):
+            raise RuntimeError(f"M3-S25-R1-X: dry assembly failed: {s['state_id']}")
+        assembled += 1
+    # ---- destination empty ----
+    dest_empty = all(not Path(p).exists() or not Path(p).read_text(
+        encoding="utf-8").strip() for p in TRUTH_LEDGERS.values())
+    # ---- path/disk ----
+    max_path = 0
+    run_uuid = "M3-S25-R1-PREFLIGHT"
+    for s in states[:64]:
+        slug = bounded_slug(s["state_id"])
+        for stream_dir in (TRUTH_DISC, TRUTH_CONF):
+            final = stream_dir / f"{s['state_id']}.json"
+            temp = final.parent / bounded_temp_basename(slug, run_uuid)
+            max_path = max(max_path, len(str(final)), len(str(temp)))
+    disk = shutil.disk_usage(ROOT)
+    paths_ok = max_path <= FULL_PATH_LIMIT
+    # ---- assemble verdict ----
+    span_failures = audit["span_failures"]
+    checks = {
+        "configs_30": audit["checks"]["configs"],
+        "strata_per_config_8": audit["checks"]["states_per_config_8"],
+        "candidates_240": audit["checks"]["candidates"],
+        "duplicate_state_id_0": audit["checks"]["duplicate_state_id"],
+        "freshness_violations_0": fresh["FRESH"],
+        "legality_violations_0": audit["checks"]["legality_violations"] == 0,
+        "truth_labels_consulted_0": labels_isolated,
+        "candidate_substitution_0": not (cand_ids & parent_ids) and
+                                    not (cand_ids & reserve_ids),
+        "min_u_ge_0.15": audit["checks"]["min_u_ge_0.15"],
+        "max_u_le_1.0": audit["checks"]["max_u_le_1.0"],
+        "each_stratum_exactly_once": audit["checks"]["each_stratum_exactly_once"],
+        "support_span_ge_0.70": audit["checks"]["support_span_ge_0.70"],
+        "p_ref_registry_30_verified": all(p_ref_ok) and len(registry["configs"]) == 30,
+        "truth_seed_manifest_480_unique": seeds_ok,
+        "budget_432M_planned_eq_max": budget_ok,
+        "dry_assembly_240": assembled == N_STATES,
+        "destinations_empty": dest_empty,
+        "r1_gates_frozen_no": not any(gates.values()),
+        "parent_gates_closed": all(parent_closed.values()),
+        "path_length_ok": paths_ok,
+        "disk_ok": disk.free > 1_000_000_000,
+    }
+    failed = sorted(k for k, v in checks.items() if not v)
+    span_conflict = None
+    if span_failures:
+        span_conflict = {
+            "invariant": "per-config max(u) - min(u) >= 0.70 (taskbook Sec. 9)",
+            "status": "FAIL",
+            "failing_configs": [
+                {"config_id": r["config_id"], "span": r["span"],
+                 "min_u": r["min_u"], "max_u": r["max_u"]}
+                for r in span_failures],
+            "note": "the frozen Sec. 7 hash-first selection yields spans "
+                    "below the frozen Sec. 9 threshold for these configs; "
+                    "selections are rank-1 (lowest-hash) fresh anchors with "
+                    "zero collisions -- pure hash-draw outcome, not a "
+                    "freshness or legality artifact; no candidate "
+                    "substitution, no rule relaxation, no support-interval "
+                    "change (taskbook Sec. 27); human adjudication required "
+                    "(new taskbook for any rule change)",
+        }
+    ok_all = not failed
+    verdict = "PASS" if ok_all else "FAIL"
+    overall = ("EXECUTION-READY" if ok_all else
+               "NOT EXECUTION-READY: support-span invariant FAIL "
+               f"({len(span_failures)}/30 configs below 0.70); "
+               "human adjudication required (taskbook Sec. 27); "
+               "all gates remain NO; samples = 0")
+    report = {
+        "recorded_at": now(), "simulator_calls": 0, "samples": 0,
+        "checks": checks, "failed_checks": failed,
+        "span_invariant": span_conflict or {"status": "PASS",
+                                            "failing_configs": []},
+        "per_config_support": audit["per_config"],
+        "freshness_reaudit": fresh,
+        "historical_sweep": {k: v for k, v in hist_meta.items()
+                             if k != "sources"},
+        "p_ref_registry_entries": len(registry["configs"]),
+        "seed_manifest_units": len(manifest["units"]),
+        "budget_planned": budget["TRUTH_BUDGET_PLANNED"],
+        "dry_assembly": assembled,
+        "max_path_len": max_path, "path_limit": FULL_PATH_LIMIT,
+        "disk_free_bytes": disk.free,
+        "PREFLIGHT_VERDICT": verdict,
+        "overall": overall,
+    }
+    dump(PREFLIGHT_REPORT, report)
+    print(f"M3-S25-R1 preflight: {verdict} "
+          f"({len(checks) - len(failed)}/{len(checks)} checks PASS; "
+          f"span failures: {[r['config_id'] for r in span_failures]})")
+    return report
+
+
+# --------------------------------------------------------------------------
+# stage: contracts (Sec. 32)
+# --------------------------------------------------------------------------
+
+def contracts() -> dict:
+    pins = verify_parent_universe_pin()
+    tc = load(PARENT_TRUTH_CONTRACT)
+    pf = load(PREFLIGHT_REPORT)
+    contract = {
+        "schema_version": "m3s25r1_contract_v1",
+        "stage": "M3-S25-R1",
+        "stage_nature": "Replacement Development / Parameter-Support "
+                        "Completion",
+        "parent": {
+            "stage": PARENT_STAGE, "terminal": PARENT_TERMINAL,
+            "frozen_head": PARENT_HEAD,
+            "gates_closed": True,
+            "truth_budget_consumed": PARENT_TRUTH_BUDGET,
+            "closure_record": "docs/phase_m3s2s/M3_S2S_Closure_Record.md",
+            "old_t1_gate_reuse": "FORBIDDEN"},
+        "config_universe": {
+            "rule": "strict inheritance of the M3-S2S frozen 30-config "
+                    "universe (taskbook Sec. 4)",
+            "n_configs": N_CONFIGS,
+            "parent_universe_sha256": pins["parent_universe_sha256"],
+            "parent_new_config_registry_sha256":
+                pins["parent_new_config_registry_sha256"],
+            "no_new_configs": True, "no_substitution": True,
+            "no_deletion": True, "no_label_based_reweighting": True,
+            "hash_pin": True},
+        "support": {
+            "coordinate": "u = (log s2 - log s2_lo)/(log s2_hi - log s2_lo)",
+            "s2_hi": CAND.S2_HI,
+            "legality_calculation": "inherited byte-identical (parent "
+                                    "_config_windows machinery)",
+            "u_interval": [CAND.U_LO, CAND.U_HI],
+            "frozen_before_truth_sampling": True,
+            "n_strata": N_STRATA,
+            "strata_boundaries": [list(CAND.stratum_bounds(i))
+                                  for i in range(N_STRATA + 1)],
+            "anchors_per_stratum": CAND.L_ANCHORS,
+            "anchor_formula": "u_{i,m} = e_i + (m+1)/(L+1) (e_{i+1}-e_i)",
+            "anchor_hash_template": 'SHA256("M3-S25-R1-CANDIDATE-V1|'
+                                    '<config_id>|<stratum_id>|'
+                                    '<canonical_s2>")',
+            "canonical_s2_rule": "repr(float(s2)) (shortest round-trip "
+                                 "decimal == JSON serialization form)",
+            "selection_rule": "hash-ascending; first legal AND fresh anchor",
+            "selection_independence": ["truth labels", "discovery results",
+                                       "SHRINK/HOLD counts",
+                                       "candidate numeric ordering"],
+            "no_cross_stratum_borrowing": True,
+            "parent_realized_u_max": 0.123077},
+        "freshness_firewall": {
+            "rule": "fresh against EVERY historically characterized s2 of "
+                    "the same config",
+            "tolerance": "|s2 - s2_h| <= 1e-6 * max(1, |s2_h|)",
+            "minimum_families": ["M3-CF*", "M3-WCF*", "M3-PI*", "M3-S1*",
+                                 "M3-S2S",
+                                 "all retired/truth-exposed/development "
+                                 "artifacts"],
+            "parent_240_truth_exposed_included": True},
+        "truth_semantics": {
+            "inherited": "byte-identical / hash-pinned to the parent "
+                         "protocol (taskbook Sec. 12)",
+            "event_semantics": "corrected full-event v2",
+            "parent_truth_contract_sha256": sha(PARENT_TRUTH_CONTRACT),
+            "parent_vendored_snapshots": tc["vendored_snapshots"],
+            "changed_vs_parent": "state support ONLY",
+            "classifier_retune_forbidden": True,
+            "discovery_budget_per_state": RT.DISCOVERY_BUDGET_PER_STATE,
+            "confirmation_budget_per_state": RT.CONFIRMATION_BUDGET_PER_STATE},
+        "confirmation_scope": "ALL_240_R1_CANDIDATES",
+        "early_stop": False,
+        "seed_namespaces": {
+            "discovery": RT.DISCOVERY_NAMESPACE,
+            "confirmation": RT.CONFIRMATION_NAMESPACE,
+            "s2s_namespace_reuse": False},
+        "budget": {
+            "planned": 432_000_000, "max": 432_000_000,
+            "discovery": 72_000_000, "confirmation": 360_000_000,
+            "p_ref": 0, "topup": 0,
+            "budget_contract": "configs/phase_m3s25r1/"
+                               "m3s25r1_budget_contract.json"},
+        "p_ref": {
+            "registry": "configs/phase_m3s25r1/m3s25r1_p_ref_registry.json",
+            "entries": 30, "sampling_budget": 0,
+            "rule": "reuse only; hash-verified; any failure => "
+                    "M3-S25-R1-X / STOP / NO P_ref RESAMPLING"},
+        "persistence": {
+            "module": "hyptraj.m3wa1r.persistence.run_trial_transactional",
+            "durable_unit_contract": "exactly one STARTED + exactly one "
+                                     "COMPLETE + valid artifact hash",
+            "consumed_invalid_rule": "sampling without durable COMPLETE => "
+                                     "CONSUMED_INVALID => M3-S25-R1-X => "
+                                     "STOP => NO REPLAY",
+            "restart_scan": "all ledgers scanned before the simulator; "
+                            "STARTED-only / CONSUMED_INVALID / orphan "
+                            "artifact / hash mismatch => STOP"},
+        "development": {
+            "union": "D_union = D_old (M3-S2S 240) u D_new (R1 240), "
+                     "max 480 states",
+            "old_states_registry": "configs/phase_m3s25r1/"
+                                   "m3s25r1_parent_development_registry.json",
+            "old_development_eligible": True,
+            "old_untouched_confirmation_eligible": False,
+            "new_inventory_rule": "all 240 R1 states enter "
+                                  "m3s25r1_truth_exposed_inventory.json; "
+                                  "development_eligible = YES; "
+                                  "untouched_confirmation_eligible = NO"},
+        "panel": {
+            "states": 120, "quota": RT.PANEL_QUOTA,
+            "min_unique_configs": RT.MIN_CONFIGS,
+            "input_pool": "D_union only",
+            "rank_seed": RT.PANEL_RANK_SEED,
+            "round_rule": "round k takes at most the k-th ranked state per "
+                          "config within each truth stratum; stop exactly "
+                          "at quota (inherited S1C Amendment-A semantics)",
+            "duplicate_protection": True,
+            "no_quota_relaxation": True, "no_panel_shrinkage": True,
+            "no_class_merging": True, "no_provisional_truth": True,
+            "no_manual_state_picking": True},
+        "verdicts": {
+            "success": "M3-S25-R1-PANEL-FROZEN",
+            "panel_blocked": "M3-S25-R1-PANEL-BLOCKED",
+            "preflight_blocked": "M3-S25-R1-PREFLIGHT-BLOCKED",
+            "failure": "M3-S25-R1-X"},
+        "reserve_firewall": {
+            "protected_states": 18,
+            "rule": "protected reserve / untouched confirmation / final "
+                    "validation states are forbidden to R1 (Sec. 30)"},
+        "arm_gates": {"M3_S25_R1_ARM_A_AUTHORIZED": "NO",
+                      "M3_S25_R1_ARM_B_AUTHORIZED": "NO",
+                      "value_rarity_m3q": "BLOCKED"},
+        "preregistration_round0": {
+            "simulator_calls": 0, "samples": 0,
+            "preflight_verdict": pf["PREFLIGHT_VERDICT"]},
+        "runtime_fail_closed_ordering": [
+            "1. verify parent terminal state",
+            "2. verify old S2S gate closed",
+            "3. verify R1 frozen inputs / candidate universe",
+            "4. verify P_ref registry and source hashes",
+            "5. verify all existing R1 ledger/restart states",
+            "6. verify R1 human truth authorization",
+            "7. construct pure execution plan",
+            "8. simulator calls"],
+    }
+    data = dump_json(CFG / "m3s25r1_contract.json", contract)
+    print("M3-S25-R1 contract frozen "
+          f"(sha256 {sha_bytes(data)[:16]}...)")
+    return contract
+
+
+# --------------------------------------------------------------------------
+# stage: docs
+# --------------------------------------------------------------------------
+
+def docs() -> None:
+    pa = load(OUT / "m3s25r1_parent_audit.json")
+    pf = load(PREFLIGHT_REPORT)
+    univ_hash = load(OUT / "m3s25r1_candidate_universe_hash.json")
+    seeds = load(OUT / "m3s25r1_truth_seed_audit.json")
+    budget = load(CFG / "m3s25r1_budget_contract.json")
+    registry = load(CFG / "m3s25r1_p_ref_registry.json")
+    u = load(UNIVERSE)
+    span_fails = pf["span_invariant"]["failing_configs"]
+    min_u = min(s["u"] for s in u["states"])
+    max_u = max(s["u"] for s in u["states"])
+    write_text_lf(DOC / "M3_S25_R1_Preregistration.md", f"""# M3-S25-R1 Preregistration
+
+Round 0: **preregistration freeze only** -- scientific simulator calls 0,
+samples 0.  All numbers rendered from hash-locked artifacts.
+
+```
+M3-S25-R1 PREREG STATUS:
+ROUND 0 COMPLETE
+
+PARENT (sealed):
+M3-S2S terminal = {pa['parent_terminal']}
+old T1 gate closed = YES ({', '.join(f"{k} CLOSED" for k in pa['parent_gates'])})
+parent truth budget consumed = {pa['parent_truth_budget']}
+parent HEAD = {pa['parent_frozen_head'][:7]} (ancestor verified)
+parent ledgers = 488 COMPLETE / 0 CONSUMED_INVALID
+parent truth-exposed states preserved = {pa['parent_truth_exposed_states']}
+
+CONFIG UNIVERSE:
+strict inheritance = 30 configs (parent universe sha {univ_hash['parent_universe_sha256'][:16]}...)
+no new / substituted / deleted / reweighted configs = YES (hash pin)
+
+SUPPORT COMPLETION:
+u interval = [0.15, 1.00] frozen before any truth sampling
+strata = 8/config, anchors = L=65/stratum, hash-first fresh selection
+candidates = 240 (30 x 8), all fresh, 0 collisions
+parent realized u coverage <= 0.1231; R1 realized u range = [{min_u:.4f}, {max_u:.4f}]
+
+REGRESSION INVARIANTS (Sec. 9):
+candidates/configs/strata/dup/freshness/legality/labels/substitution = PASS
+min u >= 0.15 = PASS; max u <= 1.0 = PASS; each stratum exactly once = PASS
+per-config span >= 0.70 = FAIL ({len(span_fails)}/30):
+{chr(10).join('  - %s: span %.4f (min u %.4f, max u %.4f)' % (r['config_id'], r['span'], r['min_u'], r['max_u']) for r in span_fails) if span_fails else '  (none)'}
+
+=> PREFLIGHT VERDICT = {pf['PREFLIGHT_VERDICT']}
+   {pf['overall']}
+
+TRUTH (NOT authorized):
+confirmation_scope = ALL_240_R1_CANDIDATES; early_stop = false
+discovery 240 x 3x100k = 72,000,000
+confirmation 240 x 3x500k = 360,000,000
+P_ref = 0 (30-entry reuse registry, hash-verified, no resampling)
+TRUTH_BUDGET_PLANNED = TRUTH_BUDGET_MAX = {budget['TRUTH_BUDGET_PLANNED']:,}
+
+SEEDS:
+{seeds['units']} units, new namespaces M3-S25-R1-DISCOVERY / M3-S25-R1-CONFIRMATION
+unique seed keys = {seeds['unique_seed_keys']}, historical collision = {seeds['historical_namespace_collision']}, cross-stream = {seeds['cross_stream_collision']}
+
+PANEL (post-truth only):
+union pool = D_old (240) u D_new (240) <= 480; 120 states; 30/30/30/30
+>= 24 distinct configs; rank seed M3-S25-R1-PANEL-V1|; duplicate protection
+PANEL-BLOCKED if quotas or diversity cannot be met; NO relaxation
+
+DEVELOPMENT UNION:
+D_union = M3-S2S 240 truth-exposed states + R1 240 (registry preserved verbatim)
+
+ARM GATES: M3_S25_R1_ARM_A_AUTHORIZED = NO; M3_S25_R1_ARM_B_AUTHORIZED = NO
+VALUE / RARITY / M3-Q = BLOCKED
+
+NEXT:
+Round 0 STOP.  The support-span invariant conflict requires human
+adjudication (taskbook Sec. 27: any rule change needs a NEW taskbook).
+Only after a passing execution-readiness audit may
+M3_S25_R1_TRUTH_AUTHORIZED be set to YES by the human.
+```
+
+Universe sha256: `{univ_hash['candidate_universe_sha256']}`
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_Parent_Closure_Audit.md", f"""# M3-S25-R1 Parent Closure Audit
+
+Status: **{pa['PARENT_CLOSURE_AUDIT']}** ({pa['recorded_at']});
+R1 HEAD `{pa['head'][:7]}`.
+
+- Parent stage M3-S2S sealed at terminal **{pa['parent_terminal']}**
+  (frozen HEAD `{pa['parent_frozen_head'][:7]}`, verified ancestor).
+- Old T1 gate closed closure-only: TRUTH_SAMPLING_AUTHORIZED exercised
+  and exhausted; {', '.join(f'{k} = CLOSED' for k in pa['parent_gates'])}.
+- Parent truth budget consumed exactly
+  {pa['parent_truth_budget']} / {pa['parent_truth_budget']} (topup 0);
+  ledgers 488/488 durable COMPLETE, 0 CONSUMED_INVALID.
+- All 240 parent truth-exposed states preserved verbatim in
+  `configs/phase_m3s25r1/m3s25r1_parent_development_registry.json`
+  (state_id / config_id / s2 / u / frozen truth / truth record path /
+  record_file_hash / exposure status).
+- VALUE / RARITY / M3-Q = BLOCKED.
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_Candidate_Support_Audit.md", f"""# M3-S25-R1 Candidate Support Audit
+
+Status: mechanics **PASS**, support-span invariant **{pf['span_invariant']['status']}**
+({now()}).
+
+- Mechanism: u in [0.15, 1.00] split into 8 frozen strata; per config x
+  stratum exactly one fresh state chosen as the FIRST legal+fresh anchor
+  in SHA256 anchor-hash ascending order over L=65 deterministic interior
+  anchors (taskbook Sec. 6/7).  Selection is independent of truth labels,
+  discovery results, SHRINK/HOLD counts and candidate numeric ordering.
+- 240 candidates / 30 configs / 8 strata each; duplicate state_id = 0;
+  freshness violations = 0; legality violations = 0; truth labels
+  consulted = 0; candidate substitution = 0.
+- Realized u range over the universe: [{min_u:.4f}, {max_u:.4f}].
+- Per-config span report: see
+  `results/phase_m3s25r1/preflight/m3s25r1_preflight.json`
+  (`per_config_support`) and
+  `M3_S25_R1_Support_Invariant_Conflict.md` for the realized conflict.
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_Freshness_Audit.md", f"""# M3-S25-R1 Freshness Audit
+
+Status: **{'PASS' if pf['freshness_reaudit']['FRESH'] else 'FAIL'}** ({now()}).
+
+- Historical set: content-classified sweep over all characterized
+  artifacts (truth/reference/discovery/confirmation/panel/reserve/
+  state-table/universe/inventory), the M3-S1C panel, and the sealed
+  parent stage M3-S2S (all 240 truth-exposed states).  Candidate
+  PROPOSAL artifacts (pools/banks/selection views/plans) are not
+  characterized and are excluded; the parent's own plan enters through
+  its tracked universe because all 240 of its states are truth-exposed.
+- Collision rule: |s2 - s2_h| <= 1e-6 * max(1, |s2_h|).
+- Independent re-audit of the frozen universe: 0 collisions with any
+  historical value; 0 internal collisions.
+- Per-state selection audit trail:
+  `results/phase_m3s25r1/preflight/m3s25r1_freshness_audit.csv`
+  (selected anchor m, hash-rank position, collided/fresh counts).
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_P_Ref_Source_Audit.md", f"""# M3-S25-R1 P_ref Source Audit
+
+Status: **PASS** ({now()}); P_ref sampling budget = **0**.
+
+- Registry: `configs/phase_m3s25r1/m3s25r1_p_ref_registry.json`
+  (exactly {len(registry['configs'])} entries:
+  {dict(Counter(e['source_stage'] for e in registry['configs']))}).
+- The 8 M3-S2S new configs use the durable COMPLETE parent PREF records
+  (`results/phase_m3s2s/pref/`): parent pref ledger shows exactly one
+  STARTED + one COMPLETE per unit and COMPLETE.record_file_hash equals
+  the file hash.
+- All other configs use the byte-verified vendored snapshots under
+  `configs/phase_m3s2s/reference_truth_protocol/pref_records/`
+  (CF1N / WCF1 / legacy M3-D2).
+- Every entry: source exists -> source hash verified -> protocol
+  compatible (governing pref protocol snapshot
+  `{registry['governing_pref_protocol']['sha256'][:16]}...`) -> exactly
+  one durable source.  Any failure => M3-S25-R1-X / STOP / NO P_ref
+  RESAMPLING.
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_Seed_Audit.md", f"""# M3-S25-R1 Seed Audit
+
+Status: **{seeds['TRUTH_SEED_AUDIT']}** ({seeds['recorded_at']}).
+
+- New independent namespaces `{RT.DISCOVERY_NAMESPACE}` /
+  `{RT.CONFIRMATION_NAMESPACE}`; the M3-S2S seed namespace is NOT reused
+  (taskbook Sec. 13).
+- {seeds['units']} truth units (240 discovery + 240 confirmation), all
+  seeds derived by the frozen deterministic function; {seeds['unique_seed_keys']}
+  unique seed keys; duplicate logical unit = 0; cross-stream collision =
+  0; historical namespace collision = {seeds['historical_namespace_collision']}
+  (all recorded historical seed pools + M3-S2S truth manifest + CF1N
+  manifests audited).
+""")
+
+    write_text_lf(DOC / "M3_S25_R1_Budget_Audit.md", f"""# M3-S25-R1 Budget Audit
+
+Exact integer budgets (taskbook Sec. 15-17; no placeholders):
+
+| stream | budget |
+|---|---|
+| Truth discovery (240 x 3 x 100k) | {budget['discovery']['total']:,} |
+| Truth confirmation (240 x 3 x 500k) | {budget['confirmation']['total']:,} |
+| Truth P_ref (reuse registry; sampling forbidden) | 0 |
+| **TRUTH_BUDGET_PLANNED** | **{budget['TRUTH_BUDGET_PLANNED']:,}** |
+| **TRUTH_BUDGET_MAX** | **{budget['TRUTH_BUDGET_MAX']:,}** |
+| truth units | {budget['truth_units_total']} |
+
+planned == max; topup = 0; early_stop = false; candidate substitution =
+false.  This is an independent NEW budget and does NOT extend the
+exhausted M3-S2S budget of 436,000,000.
+""")
+
+
+def conflict_doc() -> None:
+    pf = load(PREFLIGHT_REPORT)
+    fails = pf["span_invariant"]["failing_configs"]
+    rows = "\n".join(
+        "| %s | %.4f | %.4f | %.4f |" % (r["config_id"], r["min_u"],
+                                         r["max_u"], r["span"])
+        for r in fails)
+    write_text_lf(DOC / "M3_S25_R1_Support_Invariant_Conflict.md", f"""# M3-S25-R1 Support-Invariant Conflict (Round 0, zero samples)
+
+## What happened
+
+The frozen selection mechanism (taskbook Sec. 7) and the frozen
+regression invariant (taskbook Sec. 9: per-config `max u - min u >=
+0.70`) conflict on the realized hash draws for {len(fails)}/30 configs:
+
+| config | min u | max u | span |
+|---|---|---|---|
+{rows}
+
+Both failing selections are **rank-1 (lowest-hash) fresh anchors with
+zero collisions** -- the outcome of the hash draw itself, not a
+freshness or legality artifact.  All other Sec. 9 invariants pass
+(240 states / 30 configs / 8 strata each, each stratum occupied exactly
+once, min u >= 0.15, max u <= 1.0, 0 duplicates, 0 freshness violations,
+0 legality violations, 0 truth labels consulted, 0 substitutions).
+
+## Why the conflict is structural, not incidental
+
+Under the frozen mechanism the selected anchor within a stratum is the
+lowest-hash fresh anchor, which is uniform over the 65 interior anchor
+positions.  Writing the stratum-0 (resp. stratum-7) selection as
+`u_min = 0.15 + a`, `a in (0.0016, 0.1046)` (resp. `u_max = 1.0 - b`),
+the span is `0.85 - (a + b)`; `span < 0.70` iff `a + b > 0.15`, with
+per-config probability about 16.5 percent under independent uniform
+draws.  Across 30 configs the probability that at least one config
+violates the invariant is about 99.6 percent: **the invariant as frozen
+cannot generally be satisfied by the mechanism as frozen.**  The
+mechanism's anti-collapse guarantee is `span >= e_7 - e_1 = 0.6375`
+(one anchor per stratum, worst case), and typical realized spans are
+about 0.75.
+
+Empirical robustness: the realized conflicts are identical under three
+honest definitions of the historical characterized set (parent 4-source
+minimum; full characterized-artifact sweep; sweep without proposal
+artifacts), so the outcome is not an artifact of the firewall's input
+choice.
+
+## Disposition (fail-closed; no self-authorization)
+
+- The universe is frozen exactly as the frozen mechanism produced it
+  (`configs/phase_m3s25r1/m3s25r1_candidate_universe.json`, hash-pinned);
+  the preflight records the honest verdict:
+  `{pf['PREFLIGHT_VERDICT']}`.
+- No candidate substitution, no rule relaxation, no support-interval
+  change, no re-rolled hash (taskbook Sec. 27/35).  `truth_execute`
+  refuses to run while the frozen preflight verdict is not PASS
+  (mechanically enforced fail-closed ordering, taskbook Sec. 20 step 3).
+- Round 0 ends with samples = 0 and all gates NO.  Per taskbook Sec. 27
+  any change (invariant threshold or selection mechanism) requires a NEW
+  taskbook from the human; this report only documents the conflict and
+  the measured facts for that adjudication.
+- For scale: the parent stage's defect had realized span about 0.0083
+  (all candidates inside the bottom 12.3 percent of the window).  The
+  realized R1 universe spans at least {min(r['span'] for r in pf['per_config_support']):.4f}
+  per config -- the anti-collapse purpose of the invariant is met with
+  large margin everywhere; the frozen numeric threshold 0.70 is what
+  2/30 configs miss.
+""")
+
+
+# --------------------------------------------------------------------------
+# stage: hashlock (Sec. 32)
+# --------------------------------------------------------------------------
+
+def hashlock() -> dict:
+    pf = load(PREFLIGHT_REPORT)
+    files = sorted(p for p in CFG.glob("m3s25r1_*.json")
+                   if p.name != "m3s25r1_hash_manifest.json") + \
+        sorted(OUT.glob("m3s25r1_*.json")) + \
+        sorted(p for p in DOC.glob("M3_S25_R1_*.md")
+               if p.name != "M3_S25_R1_Human_Approval.md")
+    manifest = {
+        "recorded_at": now(), "head": git_commit(),
+        "python_version": sys.version,
+        "preregistration_round0": {"simulator_calls": 0, "samples": 0},
+        "preflight_verdict": pf["PREFLIGHT_VERDICT"],
+        "scientific_code_hashes": {
+            "scripts/run_m3s25r1.py": sha(ROOT / "scripts/run_m3s25r1.py"),
+            "src/hyptraj/m3s25r1/__init__.py": sha(ROOT / "src/hyptraj/m3s25r1/__init__.py"),
+            "src/hyptraj/m3s25r1/candidates.py": sha(ROOT / "src/hyptraj/m3s25r1/candidates.py"),
+            "src/hyptraj/m3s25r1/history.py": sha(ROOT / "src/hyptraj/m3s25r1/history.py"),
+            "src/hyptraj/m3s25r1/runtime.py": sha(ROOT / "src/hyptraj/m3s25r1/runtime.py"),
+            "scripts/run_m3s2s.py": sha(ROOT / "scripts/run_m3s2s.py"),
+            "src/hyptraj/m3s2s/truth_contract.py": sha(ROOT / "src/hyptraj/m3s2s/truth_contract.py"),
+            "src/hyptraj/m3s2s/instrumentation.py": sha(ROOT / "src/hyptraj/m3s2s/instrumentation.py"),
+            "src/hyptraj/m3s2s/vendored_runtime.py": sha(ROOT / "src/hyptraj/m3s2s/vendored_runtime.py"),
+            "src/hyptraj/m3s2s/truth_execution.py": sha(ROOT / "src/hyptraj/m3s2s/truth_execution.py"),
+            "src/hyptraj/m3d2/experiment.py": sha(ROOT / "src/hyptraj/m3d2/experiment.py"),
+            "src/hyptraj/m3/gradient_estimator.py": sha(ROOT / "src/hyptraj/m3/gradient_estimator.py"),
+            "src/hyptraj/m3wa1r/persistence.py": sha(ROOT / "src/hyptraj/m3wa1r/persistence.py"),
+            "src/hyptraj/m3cf1r0/persistence.py": sha(ROOT / "src/hyptraj/m3cf1r0/persistence.py"),
+            "src/hyptraj/m3cf1/workflow.py": sha(ROOT / "src/hyptraj/m3cf1/workflow.py"),
+            "src/hyptraj/m3d/benchmark_states.py": sha(ROOT / "src/hyptraj/m3d/benchmark_states.py"),
+            "src/hyptraj/m3d/adaptation.py": sha(ROOT / "src/hyptraj/m3d/adaptation.py"),
+            "src/hyptraj/m1d/experiments.py": sha(ROOT / "src/hyptraj/m1d/experiments.py"),
+        },
+        "files": [{"path": p.relative_to(ROOT).as_posix(), "sha256": sha(p),
+                   "size_bytes": p.stat().st_size} for p in files],
+        "PREREG_HASH_LOCK": "PASS",
+    }
+    dump(CFG / "m3s25r1_hash_manifest.json", manifest)
+    return manifest
+
+
+# --------------------------------------------------------------------------
+# gated truth execution (Sec. 14/20/22/34)
+# --------------------------------------------------------------------------
+
+def _p_ref_source_resolver(entry: dict):
+    path = ROOT / entry["source_file"]
+    if not path.exists():
+        raise RuntimeError(
+            f"M3-S25-R1-X: P_ref source missing: {path}; STOP; NO P_ref "
+            "RESAMPLING")
+    raw = path.read_text(encoding="utf-8")
+    if entry["source_stage"] == "M3-D2":
+        refs = json.loads(raw)
+        recs = refs["records"] if isinstance(refs, dict) and "records" in refs \
+            else refs
+        matches = [r for r in recs
+                   if str(r.get("config_id", "")).endswith(entry["config_id"])]
+        if len(matches) != 1:
+            raise RuntimeError(
+                f"M3-S25-R1-X: legacy P_ref ambiguous for "
+                f"{entry['config_id']}")
+        return path, matches[0]
+    return path, json.loads(raw)
+
+
+def _p_refs_for(states: list[dict]) -> dict[str, dict]:
+    registry = load(CFG / "m3s25r1_p_ref_registry.json")
+    out = {}
+    for cid in sorted({s["config_id"] for s in states}):
+        out[cid] = RT.p_ref_from_registry(cid, registry,
+                                          _p_ref_source_resolver,
+                                          record_file_hash)
+    return out
+
+
+def truth_execute() -> dict:
+    """GATED truth command (taskbook Sec. 20/34).  Fail-closed ordering:
+    parent terminal state -> old gate closed -> frozen inputs/universe ->
+    P_ref registry -> restart scan -> authorization -> pure plan ->
+    simulator.  Zero writes before step 6."""
+    # 1. verify parent terminal state
+    pa = load(OUT / "m3s25r1_parent_audit.json")
+    if pa["PARENT_CLOSURE_AUDIT"] != "PASS" or \
+            pa["parent_terminal"] != PARENT_TERMINAL:
+        raise RuntimeError("M3-S25-R1-X: parent terminal state drift")
+    # 2. verify old S2S gate closed
+    for g in ("TRUTH_SAMPLING_AUTHORIZED", "ARM_A_AUTHORIZED",
+              "ARM_B_AUTHORIZED"):
+        if parent_gate(g):
+            raise RuntimeError(
+                f"M3-S25-R1-X: old M3-S2S gate {g} is not closed; the old "
+                "T1 authorization may not be reused")
+    # 3. verify R1 frozen inputs / candidate universe + frozen preflight
+    states = verify_universe_sha_only()
+    pf = verify_frozen_preflight_pass()
+    reg_sha = sha(CFG / "m3s25r1_parent_development_registry.json")
+    contract_sha = sha(CFG / "m3s25r1_contract.json")
+    if contract_sha != EXPECTED_CONTRACT_SHA and \
+            EXPECTED_CONTRACT_SHA != "PENDING-SET-AFTER-GENERATION":
+        raise RuntimeError(
+            f"M3-S25-R1-X: contract sha pin drift: {contract_sha} != "
+            f"{EXPECTED_CONTRACT_SHA}")
+    # 4. verify P_ref registry and source hashes (all 30, before anything)
+    p_refs = _p_refs_for(states)
+    if len(p_refs) != 30:
+        raise RuntimeError("M3-S25-R1-X: P_ref registry incomplete")
+    # 5. verify all existing R1 ledger/restart states (BEFORE authorization)
+    restart = _restart_scan_all(states)
+    # 6. verify R1 human truth authorization
+    if not gate("M3_S25_R1_TRUTH_AUTHORIZED"):
+        raise RuntimeError("M3_S25_R1_TRUTH_AUTHORIZED is not YES")
+    if gate("M3_S25_R1_ARM_A_AUTHORIZED") or gate("M3_S25_R1_ARM_B_AUTHORIZED"):
+        raise RuntimeError(
+            "M3-S25-R1-X: Arm gates must remain NO during the truth stage")
+    # 7. construct pure execution plan (no side effects)
+    plan = RT.truth_execution_plan(states)
+    protocol_hash = sha(CFG / "m3s25r1_contract.json")
+    by_sid = {s["state_id"]: s for s in states}
+    for d in (TRUTH_DISC, TRUTH_CONF):
+        d.mkdir(parents=True, exist_ok=True)
+
+    def run_unit(unit, ledger, out_dir, payload_fn):
+        result = run_trial_transactional(
+            unit["unit_id"], out_dir / f"{unit['state_id']}.json",
+            payload_fn, ledger_path=ledger,
+            pre_hash_validator=lambda rec: None,
+            base_entry={"samples": unit["samples"], "stream": ledger.name
+                        .replace("_ledger.jsonl", "")})
+        if result["status"] != "COMPLETE":
+            raise RuntimeError(
+                f"M3-S25-R1-X: truth unit not durably COMPLETE: "
+                f"{unit['unit_id']}: {result}; CONSUMED_INVALID policy in "
+                "force; NO REPLAY")
+
+    # 8. simulator calls: discovery 240 -> confirmation 240
+    for unit in plan["discovery_units"]:
+        row = by_sid[unit["state_id"]]
+        out = TRUTH_DISC / f"{unit['state_id']}.json"
+        rec = RT.verify_unit_fresh_or_verified(
+            unit["unit_id"], out,
+            [e for e in ledger_entries(TRUTH_LEDGERS["discovery"])
+             if e.get("state_id") == unit["unit_id"]], record_file_hash)
+        if rec is not None:
+            continue
+        run_unit(unit, TRUTH_LEDGERS["discovery"], TRUTH_DISC,
+                 lambda u=unit, r=row, cid=row["config_id"]:
+                 RT.discovery_payload(u, r, p_refs[cid], protocol_hash))
+    for unit in plan["confirmation_units"]:
+        row = by_sid[unit["state_id"]]
+        out = TRUTH_CONF / f"{unit['state_id']}.json"
+        rec = RT.verify_unit_fresh_or_verified(
+            unit["unit_id"], out,
+            [e for e in ledger_entries(TRUTH_LEDGERS["confirmation"])
+             if e.get("state_id") == unit["unit_id"]], record_file_hash)
+        if rec is not None:
+            continue
+        run_unit(unit, TRUTH_LEDGERS["confirmation"], TRUTH_CONF,
+                 lambda u=unit, r=row, cid=row["config_id"]:
+                 RT.confirmation_payload(u, r, p_refs[cid], protocol_hash))
+
+    ledgers = {k: ledger_entries(v) for k, v in TRUTH_LEDGERS.items()}
+    summary = RT.consumption_summary(ledgers)
+    dump(SUM / "m3s25r1_truth_consumption.json", summary)
+    if summary["total"]["actual"] != RT.TRUTH_BUDGET_PLANNED:
+        raise RuntimeError(
+            f"M3-S25-R1-X: truth consumption {summary['total']['actual']} != "
+            f"planned {RT.TRUTH_BUDGET_PLANNED}")
+    print("M3-S25-R1 truth execute: all units durable COMPLETE; "
+          f"consumption total = {summary['total']['actual']:,}")
+    # completion semantics (taskbook Sec. 23/24/26/28): truth assignment ->
+    # inventory -> union pool -> panel freeze or PANEL-BLOCKED -> STOP
+    selection = truth_panel()
+    print(f"M3-S25-R1 truth stage terminus: {selection['PANEL']}; STOP")
+    return summary
+
+
+def truth_panel() -> dict:
+    """Completion semantics ONLY after 480/480 durable COMPLETE."""
+    ledgers = {k: ledger_entries(v) for k, v in TRUTH_LEDGERS.items()}
+    required = {"discovery": N_STATES, "confirmation": N_STATES}
+    for stream, n in required.items():
+        comp = [e for e in ledgers[stream] if e.get("status") == "COMPLETE"]
+        inv = [e for e in ledgers[stream]
+               if e.get("status") == "CONSUMED_INVALID"]
+        if len(comp) != n or inv:
+            raise RuntimeError(
+                f"M3-S25-R1-X: truth stage incomplete ({stream}: "
+                f"{len(comp)}/{n}, consumed-invalid {len(inv)}); no truth "
+                "assignment, no panel selection")
+    conf_records, conf_hash = [], {}
+    for e in (x for x in ledgers["confirmation"]
+              if x.get("status") == "COMPLETE"):
+        sid = e["state_id"].split("|", 1)[1]
+        p = TRUTH_CONF / f"{sid}.json"
+        if e.get("record_file_hash") and \
+                record_file_hash(p) != e["record_file_hash"]:
+            raise RuntimeError(
+                f"M3-S25-R1-X: confirmation hash mismatch: {p}")
+        rec = load(p)
+        conf_records.append(rec)
+        conf_hash[sid] = e["record_file_hash"]
+    truth = RT.assign_truth(conf_records)
+    dump(SUM / "m3s25r1_frozen_truth.json", {
+        "recorded_at": now(), "n_states": len(truth),
+        "composition": RT.truth_composition(truth),
+        "source": "M3S25R1-CONFIRM durable records "
+                  "(ALL_240_R1_CANDIDATES)"})
+    states = verify_universe_sha_only()
+    w_by_cid = {s["config_id"]: s for s in states}
+    new_states = [{"state_id": s["state_id"], "config_id": s["config_id"],
+                   "s2": s["s2"], "u": s["u"],
+                   "rank": s["rank"], "source_stage": "M3-S25-R1",
+                   "truth_artifact_hash": conf_hash[s["state_id"]]}
+                  for s in states]
+    exposed = [{"state_id": s["state_id"], "config_id": s["config_id"],
+                "confirmed_truth": truth[s["state_id"]],
+                "status": "TRUTH_EXPOSED_DEVELOPMENT"}
+               for s in states]
+    dump(SUM / "m3s25r1_truth_exposed_inventory.json", {
+        "recorded_at": now(), "n": len(exposed), "states": exposed,
+        "rule": "development_eligible = YES; "
+                "untouched_confirmation_eligible = NO; retired from all "
+                "future untouched confirmation use"})
+    # union development pool (taskbook Sec. 24)
+    parent_reg = load(CFG / "m3s25r1_parent_development_registry.json")
+    old_states = [{"state_id": e["state_id"], "config_id": e["config_id"],
+                   "s2": e["s2"],
+                   "u": CAND.u_of(e["s2"],
+                                  w_by_cid[e["config_id"]]["legality_s2_lo"]),
+                   "rank": CAND.panel_rank(e["config_id"], e["state_id"]),
+                   "source_stage": "M3-S2S",
+                   "truth_artifact_hash": e["truth_record_file_hash"]}
+                  for e in parent_reg["states"]]
+    # the union pool's frozen truth covers BOTH generations
+    full_truth = dict(truth)
+    for e in parent_reg["states"]:
+        full_truth[e["state_id"]] = e["confirmed_truth"]
+    union = RT.union_development_pool(old_states, new_states)
+    missing = [s["state_id"] for s in union if s["state_id"] not in full_truth]
+    if missing:
+        raise RuntimeError(
+            f"M3-S25-R1-X: union states without frozen truth: {missing[:5]}")
+    dump(SUM / "m3s25r1_development_union.json", {
+        "recorded_at": now(), "n_old": len(old_states),
+        "n_new": len(new_states), "n_union": len(union),
+        "rule": "D_union = D_old u D_new (max 480)"})
+    selection = RT.select_panel(union, full_truth)
+    dump(SUM / "m3s25r1_panel_decision.json", selection)
+    if selection["PANEL"] != "FROZEN":
+        raise RuntimeError(
+            f"M3-S25-R1-PANEL-BLOCKED: {selection.get('reason')}; STOP; "
+            "no top-up, no relaxation (taskbook Sec. 27)")
+    csvwrite(SUM / "m3s25r1_panel.csv",
+             [{"state_id": s["state_id"], "source_stage": s["source_stage"],
+               "truth": full_truth[s["state_id"]],
+               "config_id": s["config_id"],
+               "s2": s["s2"], "u": s["u"], "rank": s["rank"],
+               "truth_artifact_hash": s["truth_artifact_hash"]}
+              for s in selection["panel"]],
+             ["state_id", "source_stage", "truth", "config_id", "s2", "u",
+              "rank", "truth_artifact_hash"])
+    dump(CFG / "m3s25r1_panel.json", {
+        "panel_sha256": selection["panel_sha256"],
+        "n_states": len(selection["panel"]),
+        "n_configs": selection["n_configs"],
+        "states": selection["panel"], "frozen": True})
+    print(f"M3-S25-R1 truth panel: FROZEN ({len(selection['panel'])} states "
+          f"/ {selection['n_configs']} configs, sha "
+          f"{selection['panel_sha256'][:16]}...); STOP -- "
+          "M3_S25_R1_ARM_A_AUTHORIZED must remain NO")
+    return selection
+
+
+# --------------------------------------------------------------------------
+# entry
+# --------------------------------------------------------------------------
+
+def all_stages() -> None:
+    prepare()
+    candidates_stage()
+    p_ref_registry_stage()
+    truth_seed_manifest_stage()
+    budget_stage()
+    preflight()
+    contracts()
+    docs()
+    conflict_doc()
+    hashlock()
+    print("M3-S25-R1 Round 0 prereg freeze complete; all gates remain NO")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("stage", choices=[
+        "prepare", "candidates", "p_ref_registry", "truth_seed_manifest",
+        "budget", "preflight", "contracts", "docs", "hashlock",
+        "truth_execute", "truth_panel", "all"])
+    args = ap.parse_args()
+    if args.stage == "prepare":
+        prepare()
+    elif args.stage == "candidates":
+        candidates_stage()
+    elif args.stage == "p_ref_registry":
+        p_ref_registry_stage()
+    elif args.stage == "truth_seed_manifest":
+        truth_seed_manifest_stage()
+    elif args.stage == "budget":
+        budget_stage()
+    elif args.stage == "preflight":
+        preflight()
+    elif args.stage == "contracts":
+        contracts()
+    elif args.stage == "docs":
+        docs()
+        conflict_doc()
+    elif args.stage == "hashlock":
+        hashlock()
+    elif args.stage == "truth_execute":
+        truth_execute()
+    elif args.stage == "truth_panel":
+        truth_panel()
+    elif args.stage == "all":
+        all_stages()
+
+
+if __name__ == "__main__":
+    main()

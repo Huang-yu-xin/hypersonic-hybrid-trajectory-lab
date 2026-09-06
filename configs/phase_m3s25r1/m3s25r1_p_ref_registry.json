@@ -1,0 +1,581 @@
+{
+  "configs": [
+    {
+      "config_id": "c000",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.067063,
+      "p_ref_full_CI": [
+        0.06654278184147505,
+        0.06758321815852494
+      ],
+      "p_ref_full_SE": 0.00026542230501598764,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c001",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.089218,
+      "p_ref_full_CI": [
+        0.08864937287962138,
+        0.08978662712037863
+      ],
+      "p_ref_full_SE": 0.0002901212087894881,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c004",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.09350000000000001,
+      "p_ref_full_CI": [
+        0.09285572062795586,
+        0.09414427937204417
+      ],
+      "p_ref_full_SE": 0.0003287200056358955,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c006",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.09542,
+      "p_ref_full_CI": [
+        0.09471913381814825,
+        0.09612086618185176
+      ],
+      "p_ref_full_SE": 0.00035759135748416574,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c007",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.08674899999999999,
+      "p_ref_full_CI": [
+        0.08604326125659298,
+        0.087454738743407
+      ],
+      "p_ref_full_SE": 0.00036007740395935066,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c010",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.096929,
+      "p_ref_full_CI": [
+        0.09644975626739001,
+        0.09740824373260999
+      ],
+      "p_ref_full_SE": 0.000244516601524421,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c017",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.080947,
+      "p_ref_full_CI": [
+        0.0803968760198486,
+        0.08149712398015141
+      ],
+      "p_ref_full_SE": 0.0002806806576501973,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "c020",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": null,
+      "p_ref": 0.11257399999999998,
+      "p_ref_full_CI": [
+        0.11203043624166911,
+        0.11311756375833085
+      ],
+      "p_ref_full_SE": 0.00027733354419695084,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+      "record_protocol_hash": null,
+      "record_type": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "sample_count": 1000000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/m3d2_probability_reference.json",
+      "source_stage": "M3-D2"
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.13201800000000002,
+      "p_ref_full_CI": [
+        0.1311114255220122,
+        0.13292457447798786
+      ],
+      "p_ref_full_SE": 0.0004625464983738327,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "ee0a6c3544cc93c9afb3426c0a43ec10b932b9fd75f8eef4ce0024d86b84de75",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_000.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.069794,
+      "p_ref_full_CI": [
+        0.06911297259340429,
+        0.0704750274065957
+      ],
+      "p_ref_full_SE": 0.00034746934737962305,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "12b5951924879162604a805c7c55e4877203be735d583e2864558a4ca142f721",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_001.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.122702,
+      "p_ref_full_CI": [
+        0.12160339682243232,
+        0.12380060317756769
+      ],
+      "p_ref_full_SE": 0.0005605221250152211,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "49e27b84a626077cd0aa2132acf72e6ad494272a4cf52f17d38cfdf057160d85",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_002.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.11476200000000003,
+      "p_ref_full_CI": [
+        0.11382122631361404,
+        0.11570277368638603
+      ],
+      "p_ref_full_SE": 0.0004799953947147497,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "d45481ede3fc4aab526a547119438dbd24c07129504f03e11c2de4a500e8cf23",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_003.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_004",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.10743,
+      "p_ref_full_CI": [
+        0.10674420125946474,
+        0.10811579874053526
+      ],
+      "p_ref_full_SE": 0.0003499037461630664,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "48459502286e2523a04d548a1f17fcea9765d1c2e25ef83ab7aca6276bddb5a7",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_004.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.10465399999999998,
+      "p_ref_full_CI": [
+        0.10381884227756648,
+        0.10548915772243349
+      ],
+      "p_ref_full_SE": 0.0004261087086401159,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "761f0dcdc80a48d7112393b0d03fb7c4053f6ff5631a662c33d66aff22250ea9",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_005.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_006",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.088748,
+      "p_ref_full_CI": [
+        0.08799047482075587,
+        0.08950552517924412
+      ],
+      "p_ref_full_SE": 0.00038649954040961365,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "ea95f613a4381a5ce6f3dc293a35ba5ed7d0fdcf9c0d90b639d3b5cb5283c0fd",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_006.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.08506,
+      "p_ref_full_CI": [
+        0.08445026863207973,
+        0.08566973136792026
+      ],
+      "p_ref_full_SE": 0.00031109314902199426,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "0c8cc4d8a8c8f66e1196abe6cb14de223579a38ebddc9dc1ec5193fff756f2a1",
+      "record_protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_type": "M3CF1N-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/cf1n_new_007.json",
+      "source_stage": "M3-CF1N"
+    },
+    {
+      "config_id": "m3s2s_cfg_000",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.081398,
+      "p_ref_full_CI": [
+        0.08071673038404098,
+        0.08207926961595902
+      ],
+      "p_ref_full_SE": 0.00034759292585618477,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "6435c17f5152162304db3de081c57ca559de3e9523068000fdff474a8c320689",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_000.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_001",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.08186,
+      "p_ref_full_CI": [
+        0.08116941546246169,
+        0.08255058453753832
+      ],
+      "p_ref_full_SE": 0.00035234552419613973,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "94852dde83d3db50ec45187a4622c3a433f904f86d63bfe2cad0cbf881238011",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_001.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.132448,
+      "p_ref_full_CI": [
+        0.13133455159561952,
+        0.1335614484043805
+      ],
+      "p_ref_full_SE": 0.0005680963595062114,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "12e3438a0e028488f536e79b424c70b228c699454c8556e71c8d46d318d095fe",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_002.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.06292,
+      "p_ref_full_CI": [
+        0.06210798260250835,
+        0.06373201739749167
+      ],
+      "p_ref_full_SE": 0.00041430220345717897,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "657607517daa62e05a7d9e3b2535e452624733630713ad3dc02dc68609a867fd",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_003.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_004",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.11150399999999998,
+      "p_ref_full_CI": [
+        0.11073544574171974,
+        0.11227255425828021
+      ],
+      "p_ref_full_SE": 0.0003921267249513251,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "86e181a63b96099b8711dd2bbfc108792794aa3640682f0e35e10cf49df4e0bd",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_004.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.09232599999999999,
+      "p_ref_full_CI": [
+        0.09167228686527984,
+        0.09297971313472014
+      ],
+      "p_ref_full_SE": 0.0003335332383026189,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "e3ea58e66763ce3bdd6a46bc431838ee5fb689b3acd8ab73a0e4dc683ee47903",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_005.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_006",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.102948,
+      "p_ref_full_CI": [
+        0.10202280084192238,
+        0.10387319915807762
+      ],
+      "p_ref_full_SE": 0.00047204906078656057,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "5d8e7651b93ee3100c260c8f61a91b7db93ad93751e721dc5b670b45d4c80bc1",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_006.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "m3s2s_cfg_007",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-CF1N-PREF",
+      "p_ref": 0.076406,
+      "p_ref_full_CI": [
+        0.0758050117322506,
+        0.0770069882677494
+      ],
+      "p_ref_full_SE": 0.0003066323016595817,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "04fdebee3e0fcdb5920341099fc6168db6dce4f40604b17a1472b667c7c13047",
+      "record_protocol_hash": "fae41404e1abccaa7859445b41412da83001353bbed43edc365b5cea5f7606f9",
+      "record_type": "M3S2S-PREF",
+      "sample_count": 500000,
+      "source_file": "results/phase_m3s2s/pref/m3s2s_cfg_007.json",
+      "source_stage": "M3-S2S"
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.12126599999999998,
+      "p_ref_full_CI": [
+        0.12036671988809897,
+        0.122165280111901
+      ],
+      "p_ref_full_SE": 0.00045882481463660593,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "3b049f3c7062fec28b7fac4d5e9246b3730459f3358c4fcdd9545c951fd9efd3",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_000.json",
+      "source_stage": "M3-WCF1"
+    },
+    {
+      "config_id": "wcf1_new_001",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.08326599999999999,
+      "p_ref_full_CI": [
+        0.08242929434596555,
+        0.08410270565403444
+      ],
+      "p_ref_full_SE": 0.00042689848417331433,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "5811a6a10c4f34087ed04bd73891581a4651d050fe1021d2fd8a45f9544d1913",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_001.json",
+      "source_stage": "M3-WCF1"
+    },
+    {
+      "config_id": "wcf1_new_002",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.09701800000000001,
+      "p_ref_full_CI": [
+        0.09603849718133896,
+        0.09799750281866106
+      ],
+      "p_ref_full_SE": 0.0004997555191764951,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "e32ea1c548df63849b6e04ea364654391a6d2b20e062469accf07d16e08dc8ea",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_002.json",
+      "source_stage": "M3-WCF1"
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.08004800000000002,
+      "p_ref_full_CI": [
+        0.07932137113338905,
+        0.08077462886661099
+      ],
+      "p_ref_full_SE": 0.0003707358259348279,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "9829fa6cb7737c12cd198d7635f6e40cb611f5db4d964ddb58056635c74a748a",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_003.json",
+      "source_stage": "M3-WCF1"
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.12243199999999999,
+      "p_ref_full_CI": [
+        0.12153422613845889,
+        0.12332977386154108
+      ],
+      "p_ref_full_SE": 0.00045805630543347927,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "e0af980417245e383ee52c13bd4be16546a068c47785ed560446d48d4bab384c",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_004.json",
+      "source_stage": "M3-WCF1"
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "durable_complete_verified": true,
+      "n_batches": 20,
+      "namespace": "M3-WCF1-PREF",
+      "p_ref": 0.08245,
+      "p_ref_full_CI": [
+        0.08164565026600283,
+        0.08325434973399716
+      ],
+      "p_ref_full_SE": 0.0004103900583591179,
+      "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+      "record_file_hash": "54a9ab1db87797b2c9e01495e7aad6f11e700bbaa9c7d45ab54a136d8c6dec64",
+      "record_protocol_hash": null,
+      "record_type": "M3-WCF1-PREF",
+      "sample_count": 500000,
+      "source_file": "configs/phase_m3s2s/reference_truth_protocol/pref_records/wcf1_new_005.json",
+      "source_stage": "M3-WCF1"
+    }
+  ],
+  "governing_pref_protocol": {
+    "path": "configs/phase_m3s2s/reference_truth_protocol/m3cf1n_pref_protocol.json",
+    "sha256": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a"
+  },
+  "p_ref_sampling_budget": 0,
+  "rule": "P_ref reuse only: source exists -> source hash verified -> protocol compatible -> exactly one durable source; any failure => M3-S25-R1-X / STOP / NO P_ref RESAMPLING",
+  "schema_version": "m3s25r1_p_ref_registry_v1"
+}

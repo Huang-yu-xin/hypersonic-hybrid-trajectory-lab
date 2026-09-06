@@ -1,0 +1,27 @@
+{
+  "TRUTH_BUDGET_FROZEN": true,
+  "TRUTH_BUDGET_MAX": 432000000,
+  "TRUTH_BUDGET_PLANNED": 432000000,
+  "candidate_substitution": false,
+  "confirmation": {
+    "arms": 3,
+    "samples_per_arm": 500000,
+    "samples_per_unit": 1500000,
+    "total": 360000000,
+    "units": 240
+  },
+  "discovery": {
+    "arms": 3,
+    "samples_per_arm": 100000,
+    "samples_per_unit": 300000,
+    "total": 72000000,
+    "units": 240
+  },
+  "early_stop": false,
+  "p_ref_sampling_budget": 0,
+  "parent_budget_relation": "independent NEW budget; does NOT extend the exhausted M3-S2S 436,000,000 budget",
+  "planned_equals_max": true,
+  "schema_version": "m3s25r1_budget_contract_v1",
+  "topup": 0,
+  "truth_units_total": 480
+}

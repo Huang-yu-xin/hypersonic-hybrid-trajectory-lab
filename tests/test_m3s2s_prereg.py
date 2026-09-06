@@ -434,11 +434,20 @@ def test_started_before_simulator_and_consumed_invalid(tmp_path):
                                 pre_hash_validator=lambda r: None)
 
 
-def test_panel_selection_only_after_complete_truth_stage():
-    """truth_panel must refuse while ledgers are incomplete (no simulator
-    has run in this prereg round)."""
+def test_panel_selection_only_after_complete_truth_stage(tmp_path,
+                                                         monkeypatch):
+    """truth_panel must refuse while ledgers are incomplete.  The REAL
+    parent ledgers are sealed at 488/488 durable COMPLETE with terminal
+    verdict M3-S2S-PANEL-BLOCKED (truth stage report, f0d7370), so the
+    refusal semantics are exercised on empty tmp ledgers and the sealed
+    terminal decision is asserted from its artifact."""
+    empty = {k: tmp_path / f"{k}_ledger.jsonl"
+             for k in ("pref", "discovery", "confirmation")}
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", empty)
     with pytest.raises(RuntimeError, match="truth stage incomplete"):
         R.truth_panel()
+    assert R.load(R.SUM / "m3s2s_panel_decision.json")["PANEL"] == \
+        "M3-S2S-PANEL-BLOCKED"
 
 
 def test_panel_blocked_semantics_synthetic():

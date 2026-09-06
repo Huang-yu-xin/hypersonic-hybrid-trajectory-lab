@@ -1,3 +1,5 @@
 configs/phase_m3s2s/reference_truth_protocol/** -text
 configs/phase_m3s2s/m3s2s_candidate_universe.json -text
 configs/phase_m3s2s/m3s2s_new_config_registry.json -text
+configs/phase_m3s25r1/** -text
+docs/phase_m3s25r1/** -text
