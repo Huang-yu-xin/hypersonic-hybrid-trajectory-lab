@@ -173,3 +173,39 @@ Await independent live Git audit and explicit gate-by-gate human authorization.
    Scientific simulator calls = 0; samples = 0.
    TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED = NO;
    ARM_B_AUTHORIZED = NO.  VALUE / RARITY / M3-Q remain BLOCKED.
+
+## RUNTIME-INTEGRITY AMENDMENT (zero-sampling; final authorization audit block)
+
+1. **Vendored CSV SHA guards.**  `load_vendored_csv()` now verifies the
+   exact sha256 frozen in `m3s2s_truth_contract.json["vendored_snapshots"]`
+   before parsing -- covering `m3wcf1_physical_config_manifest.csv` and
+   `m3cf0_raw_physical_candidate_lattice.csv` identically to the JSON/P_ref
+   loaders.  Mismatch => S2S-X / STOP before simulator.
+
+2. **New-config registry runtime pin.**
+   `m3s2s_new_config_registry.json` is pinned at
+   `f33237ad710b104c1b73c7d4512fe431195e31cb0fa411409e7bc1f546e9fd0e`
+   (LF form; the artifact is written as LF bytes and `-text`-frozen in
+   .gitattributes) and verified before `_new_config_registry()` parses;
+   it must define exactly m3s2s_cfg_000..m3s2s_cfg_007 with
+   origin M3-S2S-NEW-CONFIG and a raw_candidate_id each.  Registry drift
+   => S2S-X / STOP.  The frozen candidate universe is untouched.
+
+3. **PREF restart hardening.**  New helper
+   `load_completed_pref_verified(unit, out_path)`: retrieves the COMPLETE
+   ledger entry and requires
+   `record_file_hash(pref_file) == COMPLETE.record_file_hash` before that
+   P_ref may enter discovery or confirmation; missing file, missing hash,
+   duplicate/inconsistent COMPLETE state, or any CONSUMED_INVALID
+   => M3-S2S-X / STOP / NO REPLAY.  Wired into the truth_execute PREF
+   reuse path ahead of all downstream streams.
+
+4. **Evidence:** runtime-integrity tests added (WCF1 CSV tamper, raw-
+   lattice CSV tamper, registry sha tamper, registry config-id drift,
+   completed-PREF tamper before restart with no downstream effects, valid
+   completed-PREF restart, missing file, duplicate COMPLETE); S2S suites
+   51 passed / 0 failed; full regression 2300 passed / 0 failed, 3
+   warnings, 372.18s (exit 0); truth preflight re-run PASS; prereg hash
+   manifest regenerated.  Scientific simulator calls = 0; samples = 0.
+   TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED = NO;
+   ARM_B_AUTHORIZED = NO.  VALUE / RARITY / M3-Q remain BLOCKED.

@@ -84,7 +84,20 @@ def load_vendored(name: str) -> dict:
 
 
 def load_vendored_csv(name: str) -> list[dict]:
-    text = _guarded_read_bytes(VENDORED / VENDORED_FILES[name]).decode("utf-8")
+    """SHA-guarded vendored CSV load (runtime-integrity amendment): the
+    artifact's sha256 MUST equal the value frozen in
+    m3s2s_truth_contract.json["vendored_snapshots"] BEFORE parsing --
+    covers m3wcf1_physical_config_manifest.csv and
+    m3cf0_raw_physical_candidate_lattice.csv.  Mismatch => S2S-X."""
+    contract = json.loads(TRUTH_CONTRACT.read_text(encoding="utf-8"))
+    fname = VENDORED_FILES[name]
+    expected = contract["vendored_snapshots"].get(fname)
+    p = VENDORED / fname
+    got = _sha(p)
+    if expected is None or got != expected:
+        raise VendoredRuntimeError(
+            f"vendored CSV hash mismatch for {name}: {got} != {expected}")
+    text = _guarded_read_bytes(p).decode("utf-8")
     return list(csv.DictReader(io.StringIO(text)))
 
 
@@ -123,11 +136,38 @@ def load_vendored_protocol_constants() -> dict:
     }
 
 
-def _new_config_registry() -> dict:
+EXPECTED_NEW_CONFIG_REGISTRY_SHA = (
+    "f33237ad710b104c1b73c7d4512fe431195e31cb0fa411409e7bc1f546e9fd0e")
+EXPECTED_NEW_CONFIG_IDS = {f"m3s2s_cfg_{i:03d}" for i in range(8)}
+
+
+def verify_new_config_registry() -> dict:
+    """Runtime pin (runtime-integrity amendment): the registry file's
+    sha256 MUST equal the frozen constant AND it must define exactly the
+    8 expected config ids.  Drift => S2S-X / STOP before simulator."""
+    got = _sha_bytes(NEW_CONFIG_REGISTRY.read_bytes())
+    if EXPECTED_NEW_CONFIG_REGISTRY_SHA.startswith("PENDING"):
+        raise VendoredRuntimeError(
+            "new-config registry sha pin not frozen yet "
+            "(run scripts/run_m3s2s.py hashlock to pin)")
+    if got != EXPECTED_NEW_CONFIG_REGISTRY_SHA:
+        raise VendoredRuntimeError(
+            f"new-config registry sha mismatch: {got} != "
+            f"{EXPECTED_NEW_CONFIG_REGISTRY_SHA}")
     reg = json.loads(NEW_CONFIG_REGISTRY.read_text(encoding="utf-8"))
-    if len(reg["configs"]) != 8:
-        raise VendoredRuntimeError("new-config registry shape drift")
+    ids = set(reg.get("configs", {}))
+    if ids != EXPECTED_NEW_CONFIG_IDS:
+        raise VendoredRuntimeError(
+            f"new-config registry config-id drift: {sorted(ids)}")
+    for cid, entry in reg["configs"].items():
+        if entry.get("origin") != "M3-S2S-NEW-CONFIG" or                 not entry.get("raw_candidate_id"):
+            raise VendoredRuntimeError(
+                f"new-config registry entry invalid: {cid}")
     return reg
+
+
+def _new_config_registry() -> dict:
+    return verify_new_config_registry()
 
 
 def resolve_bench_config(cid: str):

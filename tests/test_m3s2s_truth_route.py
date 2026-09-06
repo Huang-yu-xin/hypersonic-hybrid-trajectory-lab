@@ -7,6 +7,7 @@ invoked; the vendored P_ref hash verification runs for real.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from collections import Counter
@@ -205,3 +206,114 @@ def test_route_gates_still_no():
     assert not R._gate("TRUTH_SAMPLING_AUTHORIZED")
     assert not R._gate("ARM_A_AUTHORIZED")
     assert not R._gate("ARM_B_AUTHORIZED")
+
+
+# --------------------------------------------------------------------------
+# RUNTIME-INTEGRITY AMENDMENT: CSV guards, registry pin, PREF restart
+# --------------------------------------------------------------------------
+
+def test_wcf1_manifest_csv_sha_tamper_hard_fail(tmp_path, monkeypatch):
+    from hyptraj.m3s2s import vendored_runtime as VR
+    contract = json.loads(VR.TRUTH_CONTRACT.read_text(encoding="utf-8"))
+    contract["vendored_snapshots"]["m3wcf1_physical_config_manifest.csv"] = "0" * 64
+    bad = tmp_path / "_bad_contract.json"
+    bad.write_text(json.dumps(contract), encoding="utf-8")
+    monkeypatch.setattr(VR, "TRUTH_CONTRACT", bad)
+    with pytest.raises(VR.VendoredRuntimeError, match="vendored CSV hash mismatch"):
+        VR.load_vendored_csv("wcf1_manifest")
+
+
+def test_raw_lattice_csv_sha_tamper_hard_fail(tmp_path, monkeypatch):
+    from hyptraj.m3s2s import vendored_runtime as VR
+    contract = json.loads(VR.TRUTH_CONTRACT.read_text(encoding="utf-8"))
+    contract["vendored_snapshots"]["m3cf0_raw_physical_candidate_lattice.csv"] = "1" * 64
+    bad = tmp_path / "_bad_contract.json"
+    bad.write_text(json.dumps(contract), encoding="utf-8")
+    monkeypatch.setattr(VR, "TRUTH_CONTRACT", bad)
+    with pytest.raises(VR.VendoredRuntimeError, match="vendored CSV hash mismatch"):
+        VR.load_vendored_csv("raw_lattice")
+
+
+def test_new_config_registry_sha_tamper_hard_fail(tmp_path, monkeypatch):
+    from hyptraj.m3s2s import vendored_runtime as VR
+    reg = json.loads(VR.NEW_CONFIG_REGISTRY.read_text(encoding="utf-8"))
+    reg["configs"]["m3s2s_cfg_000"]["raw_candidate_id"] = "tampered"
+    bad = tmp_path / "m3s2s_new_config_registry.json"
+    bad.write_text(json.dumps(reg), encoding="utf-8")
+    monkeypatch.setattr(VR, "NEW_CONFIG_REGISTRY", bad)
+    with pytest.raises(VR.VendoredRuntimeError, match="registry sha mismatch"):
+        VR.verify_new_config_registry()
+
+
+def test_new_config_registry_id_drift_hard_fail(tmp_path, monkeypatch):
+    from hyptraj.m3s2s import vendored_runtime as VR
+    reg = json.loads(VR.NEW_CONFIG_REGISTRY.read_text(encoding="utf-8"))
+    del reg["configs"]["m3s2s_cfg_007"]
+    bad = tmp_path / "m3s2s_new_config_registry.json"
+    bad.write_text(json.dumps(reg), encoding="utf-8")
+    monkeypatch.setattr(VR, "NEW_CONFIG_REGISTRY", bad)
+    # pin matches the tampered file's sha => id validation must trigger
+    monkeypatch.setattr(VR, "EXPECTED_NEW_CONFIG_REGISTRY_SHA",
+                        hashlib.sha256(bad.read_bytes()).hexdigest())
+    with pytest.raises(VR.VendoredRuntimeError, match="config-id drift"):
+        VR.verify_new_config_registry()
+
+
+def _make_completed_pref(tmp_path, tamper=False):
+    """Durable STARTED+COMPLETE ledger entry + record file for one PREF unit."""
+    import hashlib
+    pref = tmp_path / "pref"
+    pref.mkdir(parents=True, exist_ok=True)
+    out = pref / "m3s2s_cfg_000.json"
+    rec = {"record_type": "M3S2S-PREF", "config_id": "m3s2s_cfg_000",
+           "p_ref_full": 0.1}
+    out.write_text(json.dumps(rec), encoding="utf-8")
+    file_hash = hashlib.sha256(out.read_bytes()).hexdigest()
+    if tamper:
+        rec["p_ref_full"] = 0.9
+        out.write_text(json.dumps(rec), encoding="utf-8")
+    ledger = pref / "pref_ledger.jsonl"
+    with ledger.open("w", encoding="utf-8") as h:
+        h.write(json.dumps({"state_id": "PREF|m3s2s_cfg_000",
+                            "status": "STARTED"}) + "\n")
+        h.write(json.dumps({"state_id": "PREF|m3s2s_cfg_000",
+                            "status": "COMPLETE",
+                            "record_file_hash": file_hash}) + "\n")
+    return out, ledger, {"unit_id": "PREF|m3s2s_cfg_000"}
+
+
+def test_completed_pref_tamper_before_restart_hard_fail(tmp_path, monkeypatch):
+    out, ledger, unit = _make_completed_pref(tmp_path, tamper=True)
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", {"pref": ledger})
+    monkeypatch.setattr(R, "TRUTH_PREF", pref_dir := tmp_path / "pref")
+    with pytest.raises(RuntimeError, match="hash mismatch on restart"):
+        R.load_completed_pref_verified(unit, out)
+    # no downstream: discovery dir untouched / never created
+    assert not (tmp_path / "discovery").exists()
+
+
+def test_valid_completed_pref_restart_succeeds(tmp_path, monkeypatch):
+    out, ledger, unit = _make_completed_pref(tmp_path, tamper=False)
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", {"pref": ledger})
+    rec = R.load_completed_pref_verified(unit, out)
+    assert rec["config_id"] == "m3s2s_cfg_000"
+    assert rec["p_ref_full"] == 0.1
+
+
+def test_completed_pref_missing_file_hard_fail(tmp_path, monkeypatch):
+    out, ledger, unit = _make_completed_pref(tmp_path, tamper=False)
+    out.unlink()
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", {"pref": ledger})
+    with pytest.raises(RuntimeError, match="file missing"):
+        R.load_completed_pref_verified(unit, out)
+
+
+def test_completed_pref_duplicate_complete_hard_fail(tmp_path, monkeypatch):
+    out, ledger, unit = _make_completed_pref(tmp_path, tamper=False)
+    with ledger.open("a", encoding="utf-8") as h:
+        h.write(json.dumps({"state_id": "PREF|m3s2s_cfg_000",
+                            "status": "COMPLETE",
+                            "record_file_hash": "x"}) + "\n")
+    monkeypatch.setattr(R, "TRUTH_LEDGERS", {"pref": ledger})
+    with pytest.raises(RuntimeError, match="duplicate/inconsistent"):
+        R.load_completed_pref_verified(unit, out)

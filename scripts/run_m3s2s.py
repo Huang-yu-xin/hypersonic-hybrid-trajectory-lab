@@ -455,7 +455,10 @@ def build_candidates() -> dict:
                                   "origin": spec["origin"]}
                             for cid, spec in specs.items()
                             if spec["origin"] == "M3-S2S-NEW-CONFIG"}}
-    dump(CFG / "m3s2s_new_config_registry.json", registry)
+    # LF-normalized byte write: the registry sha pin must equal the git blob
+    reg_bytes = (json.dumps(registry, indent=2, sort_keys=True,
+                            ensure_ascii=True) + "\n").encode("utf-8")
+    (CFG / "m3s2s_new_config_registry.json").write_bytes(reg_bytes)
     print(f"M3-S2S candidates: {len(candidates)} states / {n_configs} configs "
           f"-> TRUTH_BUDGET_MAX = {plan['TRUTH_BUDGET_MAX']:,} "
           f"(universe sha256 {universe_sha[:16]}...)")
@@ -1149,6 +1152,38 @@ def _ledger(path) -> list:
     return ledger_entries(path) if Path(path).exists() else []
 
 
+def load_completed_pref_verified(unit: dict, out_path: Path) -> dict:
+    """Restart-integrity gate for a durable-COMPLETE PREF unit (runtime-
+    integrity amendment): retrieve the COMPLETE ledger entry and require
+    record_file_hash(pref_file) == COMPLETE.record_file_hash before the
+    P_ref may enter discovery or confirmation.  Mismatch, missing hash,
+    duplicate/inconsistent COMPLETE state, or missing file => M3-S2S-X /
+    STOP / NO REPLAY."""
+    entries = [e for e in _ledger(TRUTH_LEDGERS["pref"])
+               if e.get("state_id") == unit["unit_id"]]
+    completes = [e for e in entries if e.get("status") == "COMPLETE"]
+    started = [e for e in entries if e.get("status") == "STARTED"]
+    invalid = [e for e in entries if e.get("status") == "CONSUMED_INVALID"]
+    uid = unit["unit_id"]
+    if not out_path.exists():
+        raise RuntimeError(
+            f"M3-S2S-X: PREF marked COMPLETE but file missing: {uid}; STOP")
+    if invalid or len(completes) != 1 or len(started) != 1:
+        raise RuntimeError(
+            f"M3-S2S-X: duplicate/inconsistent COMPLETE state for {uid} "
+            f"(COMPLETE={len(completes)}, STARTED={len(started)}, "
+            f"CONSUMED_INVALID={len(invalid)}); STOP; NO REPLAY")
+    recorded = completes[0].get("record_file_hash")
+    if not recorded:
+        raise RuntimeError(
+            f"M3-S2S-X: COMPLETE entry missing record_file_hash: {uid}; STOP")
+    if record_file_hash(out_path) != recorded:
+        raise RuntimeError(
+            f"M3-S2S-X: PREF record hash mismatch on restart: {uid}; "
+            "STOP; NO REPLAY")
+    return load(out_path)
+
+
 def truth_execute() -> dict:
     """GATED: requires TRUTH_SAMPLING_AUTHORIZED: YES.  Runs the three
     truth streams (P_ref 8 / discovery 240 / confirmation 240) under the
@@ -1188,11 +1223,16 @@ def truth_execute() -> dict:
 
     for unit in plan["pref_units"]:
         out = TRUTH_PREF / f"{unit['config_id']}.json"
-        if not (out.exists() and _completed(TRUTH_LEDGERS["pref"],
-                                            unit["unit_id"])):
-            run_unit(unit, TRUTH_LEDGERS["pref"], out,
-                     lambda u=unit: TE.pref_payload(u, protocol_hash),
-                     {"samples": unit["samples"], "stream": "pref"})
+        if out.exists() and _completed(TRUTH_LEDGERS["pref"],
+                                       unit["unit_id"]):
+            # restart path: hash-verified BEFORE the P_ref enters
+            # discovery/confirmation (runtime-integrity amendment)
+            p_refs[unit["config_id"]] = load_completed_pref_verified(unit, out)
+            p_refs[unit["config_id"]]["record_hash"] = record_file_hash(out)
+            continue
+        run_unit(unit, TRUTH_LEDGERS["pref"], out,
+                 lambda u=unit: TE.pref_payload(u, protocol_hash),
+                 {"samples": unit["samples"], "stream": "pref"})
         p_refs[unit["config_id"]] = load(out)
         p_refs[unit["config_id"]]["record_hash"] = record_file_hash(out)
 
