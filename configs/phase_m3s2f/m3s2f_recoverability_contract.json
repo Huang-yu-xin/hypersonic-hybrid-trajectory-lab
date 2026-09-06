@@ -1,0 +1,85 @@
+{
+  "classification": "INCOMPATIBLE",
+  "n_trials_audited": 384,
+  "no_imputation": true,
+  "no_proxy": true,
+  "no_simulator_fallback": true,
+  "recorded_at": "2026-09-06T11:48:13+0800",
+  "replay_required": true,
+  "replay_rule": "reconstruction would require re-running the frozen sampler (simulator call); taskbook Sec. 3.3 classifies this as INCOMPATIBLE",
+  "required_families": [
+    {
+      "desc": "per-batch gradient estimates g_1..g_B",
+      "family": "per_batch_gradient",
+      "patterns": [
+        "gradient.batch_g",
+        "gradient.batch_g_hat",
+        "gradient.batch_gradients"
+      ]
+    },
+    {
+      "desc": "per-batch numerator/denominator pairs",
+      "family": "per_batch_numerator_denominator",
+      "patterns": [
+        "gradient.batch_num",
+        "gradient.batch_den",
+        "gradient.batch_num_den"
+      ]
+    },
+    {
+      "desc": "per-batch action signs",
+      "family": "batch_signs",
+      "patterns": [
+        "gradient.batch_signs"
+      ]
+    },
+    {
+      "desc": "per-batch ESS",
+      "family": "batch_ess",
+      "patterns": [
+        "gradient.batch_ess"
+      ]
+    },
+    {
+      "desc": "per-batch event counts",
+      "family": "batch_event_counts",
+      "patterns": [
+        "gradient.batch_event_counts",
+        "gradient.batch_events"
+      ]
+    },
+    {
+      "desc": "per-batch contribution statistics",
+      "family": "batch_contributions",
+      "patterns": [
+        "gradient.batch_contributions",
+        "gradient.a_vec",
+        "gradient.contributions"
+      ]
+    },
+    {
+      "desc": "paired CRN batch identifiers",
+      "family": "batch_identifiers",
+      "patterns": [
+        "gradient.batch_ids",
+        "gradient.crn_batch_ids"
+      ]
+    },
+    {
+      "desc": "per-bootstrap-replicate gradient values",
+      "family": "bootstrap_replicates",
+      "patterns": [
+        "gradient.bootstrap_g",
+        "gradient.bootstrap_replicate_g"
+      ]
+    },
+    {
+      "desc": "raw or sufficient per-sample statistics to reconstruct batch g",
+      "family": "sample_contributions",
+      "patterns": [
+        "gradient.a_vec_samples",
+        "gradient.per_sample_contributions"
+      ]
+    }
+  ]
+}
