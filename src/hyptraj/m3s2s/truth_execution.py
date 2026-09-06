@@ -57,8 +57,23 @@ def seed(namespace: str, *parts) -> int:
 # execution plan (pure; no simulator)
 # --------------------------------------------------------------------------
 
-def truth_execution_plan(universe_states: list[dict]) -> dict:
-    """Exact unit lists and sample accounting for the three truth streams."""
+def truth_execution_plan(universe_states: list[dict],
+                         namespaces: dict[str, str] | None = None) -> dict:
+    """Exact unit lists and sample accounting for the three truth streams.
+
+    Seed derivation uses the FROZEN VENDORED PROTOCOL NAMESPACES
+    (M3-CF1N-PREF / M3-CF1N-DISCOVERY / M3-CF1N-CONFIRM) taken from
+    ``vendored_runtime.load_vendored_protocol_constants()["namespaces"]`` --
+    never an alternate scientific namespace (execution-readiness fix 1).
+    """
+    if namespaces is None:
+        from hyptraj.m3s2s import vendored_runtime as VR
+        namespaces = VR.load_vendored_protocol_constants()["namespaces"]
+    expected_ns = {"pref": "M3-CF1N-PREF", "discovery": "M3-CF1N-DISCOVERY",
+                   "confirmation": "M3-CF1N-CONFIRM"}
+    if namespaces != expected_ns:
+        raise RuntimeError(
+            f"S2S-X: truth RNG namespace drift: {namespaces} != {expected_ns}")
     configs = sorted({s["config_id"] for s in universe_states})
     new_configs = sorted({s["config_id"] for s in universe_states
                           if s["config_origin"] == "M3-S2S-NEW-CONFIG"})
@@ -71,18 +86,22 @@ def truth_execution_plan(universe_states: list[dict]) -> dict:
     plan = {
         "pref_units": [{"unit_id": f"PREF|{cid}", "config_id": cid,
                         "samples": PREF_SAMPLES_PER_CONFIG,
-                        "seed_key": [seed("M3-S2S-TRUTH-PREF", cid), 42424]}
+                        "namespace": namespaces["pref"],
+                        "seed_key": [seed(namespaces["pref"], cid), 42424]}
                        for cid in new_configs],
         "discovery_units": [{"unit_id": f"DISC|{sid}", "state_id": sid,
                              "samples": 3 * DISCOVERY_SAMPLES_PER_ARM,
-                             "seed_key": [seed("M3-S2S-TRUTH-DISCOVERY", sid),
+                             "namespace": namespaces["discovery"],
+                             "seed_key": [seed(namespaces["discovery"], sid),
                                           42424]}
                             for sid in state_ids],
         "confirmation_units": [{"unit_id": f"CONF|{sid}", "state_id": sid,
                                 "samples": 3 * CONFIRMATION_SAMPLES_PER_ARM,
-                                "seed_key": [seed("M3-S2S-TRUTH-CONFIRM", sid),
-                                             42424]}
+                                "namespace": namespaces["confirmation"],
+                                "seed_key": [seed(namespaces["confirmation"],
+                                                  sid), 42424]}
                                for sid in state_ids],
+        "namespaces": dict(namespaces),
         "confirmation_scope": "ALL_240_FRESH_CANDIDATES",
         "early_stop_on_quota": False,
     }

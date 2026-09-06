@@ -128,3 +128,48 @@ Await independent live Git audit and explicit gate-by-gate human authorization.
    estimator).  Scientific simulator calls = 0; samples = 0.
    TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED = NO;
    ARM_B_AUTHORIZED = NO.
+
+## TRUTH-GATE CODE-FIX AMENDMENT (zero-sampling; final Truth-Gate audit block)
+
+1. **Truth RNG namespace drift fixed.**  `truth_execution_plan()` now
+   derives every truth seed from the FROZEN VENDORED PROTOCOL NAMESPACES
+   (`M3-CF1N-PREF` / `M3-CF1N-DISCOVERY` / `M3-CF1N-CONFIRM`) taken from
+   `vendored_runtime.load_vendored_protocol_constants()["namespaces"]`, with
+   an explicit drift guard (`S2S-X` on any deviation).  The complete truth
+   seed manifest is frozen and audited in
+   `configs/phase_m3s2s/m3s2s_truth_seed_manifest.json`:
+   8 PREF / 240 DISCOVERY / 240 CONFIRMATION units, 488 unique seed keys,
+   0 historical collisions (incl. the CF1N historical seed manifests).
+
+2. **Runtime P_ref hash guard.**  `load_config_p_ref()` verifies the exact
+   sha256 recorded in `m3s2s_truth_contract.json["vendored_snapshots"]`
+   BEFORE parsing, for all three source families (CF1N pref records,
+   WCF1 pref records, `m3d2_probability_reference.json`).  Path containment
+   alone is insufficient; any mismatch => S2S-X / STOP before simulator
+   sampling.  Tamper tests cover all three families.
+
+3. **Happy-path fixes.**  The unresolved `record_hash(...)` is replaced by
+   the canonical persistence-layer helper `record_file_hash`
+   (`src/hyptraj/m3wa1r/persistence.py`) imported at module scope;
+   `truth_execution as TE` is imported at module scope; a lambda
+   late-binding defect in the discovery/confirmation payload closures was
+   found by the new route test and fixed; the truth ledger parent
+   directories are created inside `truth_execute` (pre-simulator
+   engineering class).
+
+4. **Route-level ZERO-SAMPLING test** (`tests/test_m3s2s_truth_route.py`):
+   executes the real control flow truth_execute -> PREF (8) -> discovery
+   (240) -> confirmation (240) -> truth_panel -> frozen 120-state panel
+   with mocked simulator/reference functions and temporary persistence
+   paths; asserts namespaces == frozen contract namespaces, 8/240/240 unit
+   counts, no early stop, planned budget 436,000,000, no candidate
+   substitution, all P_ref vendored hashes verified, panel selection only
+   after all truth records COMPLETE, and no unresolved symbol on the
+   success path; synthetic PANEL-BLOCKED coverage retained.
+
+5. **Evidence:** truth preflight PASS (240/240 vendored-only dry assembly);
+   S2S suites 43 passed / 0 failed; full regression 2292 passed / 0 failed,
+   3 warnings, 959.70s (exit 0); prereg hash manifest regenerated.
+   Scientific simulator calls = 0; samples = 0.
+   TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED = NO;
+   ARM_B_AUTHORIZED = NO.  VALUE / RARITY / M3-Q remain BLOCKED.

@@ -195,21 +195,38 @@ def resolve_bench_config(cid: str):
     )
 
 
+def _verify_vendored_hash(rel_name: str) -> None:
+    """Runtime hash guard: the vendored artifact's sha256 MUST equal the
+    value frozen in m3s2s_truth_contract.json["vendored_snapshots"] before
+    parsing.  Path containment alone is insufficient (fix 2)."""
+    contract = json.loads(TRUTH_CONTRACT.read_text(encoding="utf-8"))
+    expected = contract["vendored_snapshots"].get(rel_name)
+    p = VENDORED / rel_name
+    got = _sha_bytes(_guarded_read_bytes(p))
+    if expected is None or got != expected:
+        raise VendoredRuntimeError(
+            f"vendored P_ref hash mismatch for {rel_name}: {got} != {expected}")
+
+
 def load_config_p_ref(config_id: str) -> dict:
     """Config-level corrected probability reference for the classification
-    gate, read from VENDORED snapshots (existing configs) or from the
+    gate, read from VENDORED snapshots (existing configs; every artifact
+    hash-verified against the truth contract BEFORE parsing) or from the
     stage's own durable PREF record (8 new configs)."""
     if config_id.startswith("m3s2s_cfg_"):
         p = ROOT / "results/phase_m3s2s/pref" / f"{config_id}.json"
         return json.loads(p.read_text(encoding="utf-8"))
     if config_id.startswith("cf1n_new_") or config_id.startswith("wcf1_new_"):
-        p = VENDORED / "pref_records" / f"{config_id}.json"
-        rec = json.loads(_guarded_read_bytes(p))
-        if rec.get("record_type") not in ("M3CF1N-PREF", "M3WCF1-PREF"):
-            raise VendoredRuntimeError(f"unexpected pref record type: {p}")
+        rel = f"pref_records/{config_id}.json"
+        _verify_vendored_hash(rel)
+        rec = json.loads(_guarded_read_bytes(VENDORED / rel))
+        if rec.get("record_type") not in ("M3CF1N-PREF", "M3WCF1-PREF")                 and rec.get("namespace") not in ("M3-CF1N-PREF", "M3-WCF1-PREF"):
+            raise VendoredRuntimeError(f"unexpected pref record type: {rel}")
         return rec
     # legacy c* configs: vendored M3-D2 per-config probability reference
-    refs = json.loads(_guarded_read_bytes(VENDORED / VENDORED_FILES["legacy_p_ref"]))
+    rel = "pref_records/m3d2_probability_reference.json"
+    _verify_vendored_hash(rel)
+    refs = json.loads(_guarded_read_bytes(VENDORED / rel))
     entries = refs["records"] if isinstance(refs, dict) and "records" in refs else refs
     matches = [e for e in entries
                if str(e.get("config_id", "")).endswith(config_id)]

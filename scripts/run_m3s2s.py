@@ -39,6 +39,11 @@ from hyptraj.m3s2s.truth_contract import (  # noqa: E402
     candidate_plan,
 )
 import run_m3s1c as S1C  # noqa: E402  (config resolution + seed helper reuse)
+from hyptraj.m3s2s import truth_execution as TE  # noqa: E402  (module scope)
+from hyptraj.m3wa1r.persistence import (  # noqa: E402
+    record_file_hash,  # canonical file-hash helper (persistence layer)
+    run_trial_transactional,
+)
 
 OUT = ROOT / "results/phase_m3s2s/preflight"
 SUM = ROOT / "results/phase_m3s2s/summary"
@@ -1055,6 +1060,55 @@ def _check_gates_frozen_no():
                 "execution-readiness amendment")
 
 
+def truth_seed_manifest() -> dict:
+    """Freeze + audit the COMPLETE truth seed manifest (8 PREF / 240
+    DISCOVERY / 240 CONFIRMATION units) derived from the vendored
+    protocol namespaces; deterministic uniqueness + zero historical
+    collision (including the CF1N historical seed manifests)."""
+    from hyptraj.m3s2s import vendored_runtime as VRc
+    consts = VRc.load_vendored_protocol_constants()
+    states = VRc.verify_universe()
+    plan = TE.truth_execution_plan(states, namespaces=consts["namespaces"])
+    units = (plan["pref_units"] + plan["discovery_units"]
+             + plan["confirmation_units"])
+    manifest = {
+        "recorded_at": now(),
+        "namespaces": consts["namespaces"],
+        "units": [{"unit_id": u["unit_id"], "namespace": u["namespace"],
+                   "seed_key": u["seed_key"], "samples": u["samples"]}
+                  for u in units],
+        "counts": {"pref": len(plan["pref_units"]),
+                   "discovery": len(plan["discovery_units"]),
+                   "confirmation": len(plan["confirmation_units"])},
+        "frozen_before_first_simulator_call": True,
+    }
+    dump(CFG / "m3s2s_truth_seed_manifest.json", manifest)
+    seed_keys = [tuple(u["seed_key"]) for u in units]
+    assert len(set(seed_keys)) == len(seed_keys) == 488
+    prior = _prior_recorded_seeds()
+    for name in ("m3cf1n_pref_seeds.json", "m3cf1n_discovery_seeds.json",
+                 "m3cf1n_confirmation_seeds.json"):
+        d = load(ROOT / "configs/phase_m3cf1n" / name)
+        for v in d.values():
+            if isinstance(v, list):
+                for item in v:
+                    if isinstance(item, dict) and "seed_key" in item:
+                        prior.add(int(item["seed_key"][0]))
+                    elif isinstance(item, list) and item:
+                        prior.add(int(item[0]))
+    collisions = sorted({k0 for k0, _ in seed_keys if k0 in prior})
+    if collisions:
+        raise RuntimeError(f"S2S-X: truth seed collision: {collisions[:5]}")
+    audit = {"recorded_at": now(), "units": len(units),
+             "unique_seed_keys": len(set(seed_keys)),
+             "historical_collision": 0,
+             "namespaces_match_contract":
+                 manifest["namespaces"] == consts["namespaces"],
+             "TRUTH_SEED_AUDIT": "PASS"}
+    dump(OUT / "m3s2s_truth_seed_audit.json", audit)
+    return audit
+
+
 def truth_preflight() -> dict:
     """Execution-readiness proof WITHOUT authorization or simulator calls:
     vendored-only resolution + tracked universe + full 240-state dry
@@ -1105,10 +1159,10 @@ def truth_execute() -> dict:
         raise RuntimeError("S2S-X: Arm gates must remain NO during truth stage")
     from hyptraj.m3s2s import vendored_runtime as VRc
     states = VRc.verify_universe()
-    VRc.load_vendored_protocol_constants()
-    from hyptraj.m3s2s import truth_execution as TE
-    from hyptraj.m3wa1r.persistence import run_trial_transactional
-    plan = TE.truth_execution_plan(states)
+    consts = VRc.load_vendored_protocol_constants()
+    plan = TE.truth_execution_plan(states, namespaces=consts["namespaces"])
+    for d in (TRUTH_PREF, TRUTH_DISC, TRUTH_CONF):
+        d.mkdir(parents=True, exist_ok=True)
     by_sid = {s["state_id"]: s for s in states}
     protocol_hash = sha(CFG / "m3s2s_truth_contract.json")
     p_refs: dict = {}
@@ -1118,7 +1172,7 @@ def truth_execute() -> dict:
             rec_path = TRUTH_PREF / f"{cid}.json"
             p_refs[cid] = (load(rec_path) if rec_path.exists()
                            else VRc.load_config_p_ref(cid))
-            p_refs[cid]["record_hash"] = record_hash(rec_path) \
+            p_refs[cid]["record_hash"] = record_file_hash(rec_path) \
                 if rec_path.exists() else None
         return p_refs[cid]
 
@@ -1140,7 +1194,7 @@ def truth_execute() -> dict:
                      lambda u=unit: TE.pref_payload(u, protocol_hash),
                      {"samples": unit["samples"], "stream": "pref"})
         p_refs[unit["config_id"]] = load(out)
-        p_refs[unit["config_id"]]["record_hash"] = record_hash(out)
+        p_refs[unit["config_id"]]["record_hash"] = record_file_hash(out)
 
     for unit in plan["discovery_units"]:
         row = by_sid[unit["state_id"]]
@@ -1149,7 +1203,7 @@ def truth_execute() -> dict:
                                        unit["unit_id"]):
             continue
         run_unit(unit, TRUTH_LEDGERS["discovery"], out,
-                 lambda u=unit, r=row, pr=p_ref_for(r["config_id"]):
+                 lambda u=unit, r=row, pr=p_ref_for(row["config_id"]):
                  TE.discovery_payload(u, r, pr, protocol_hash),
                  {"samples": unit["samples"], "stream": "discovery"})
 
@@ -1160,7 +1214,7 @@ def truth_execute() -> dict:
                                        unit["unit_id"]):
             continue
         run_unit(unit, TRUTH_LEDGERS["confirmation"], out,
-                 lambda u=unit, r=row, pr=p_ref_for(r["config_id"]):
+                 lambda u=unit, r=row, pr=p_ref_for(row["config_id"]):
                  TE.confirmation_payload(u, r, pr, protocol_hash),
                  {"samples": unit["samples"], "stream": "confirmation"})
 
@@ -1197,7 +1251,7 @@ def truth_panel() -> dict:
         p = TRUTH_CONF / f"{unit['state_id'].split('|', 1)[1]}.json"
         rec = load(p)
         if unit.get("record_file_hash") and \
-                record_hash(p) != unit["record_file_hash"]:
+                record_file_hash(p) != unit["record_file_hash"]:
             raise RuntimeError(f"S2S-X: confirmation hash mismatch: {p}")
         conf_records.append(rec)
     truth = TE.assign_truth(conf_records)
@@ -1236,7 +1290,9 @@ def main() -> None:
     ap.add_argument("stage", choices=["prepare", "candidates", "preflight",
                                       "contracts", "docs", "hashlock",
                                       "truth_preflight", "truth_execute",
-                                      "truth_panel", "all"])
+                                      "truth_panel",
+                                      "truth_seed_manifest",
+                                      "all"])
     args = ap.parse_args()
     if args.stage == "prepare":
         prepare()
@@ -1250,6 +1306,8 @@ def main() -> None:
         docs()
     elif args.stage == "hashlock":
         hashlock()
+    elif args.stage == "truth_seed_manifest":
+        truth_seed_manifest()
     elif args.stage == "truth_preflight":
         truth_preflight()
     elif args.stage == "truth_execute":
