@@ -311,53 +311,17 @@ def exposure_audit(states: list[dict]) -> dict:
     for q in sorted((ROOT / "results/phase_m3pi1v").glob("quarantine_attempt*")):
         for p in q.rglob("*.csv"):
             exposed["pi1v_attempt2"] |= ids_from_csv(p)
-    # previous confirmations: comparator/policy confirmation streams only.
-    # Exposure evidence = a record carrying COMPARATOR OUTCOME fields for a
-    # candidate (g_hat / S1 / V1 / r_hat / selected_action / deployment ...).
-    # Truth-label reference characterization (confirmed_label / P_ref_hash,
-    # namespaces ...-REF / ...-CONFIRM) and pure prereg identifier/seed rows
-    # are taskbook Sec. 4.4 allowed metadata, NOT exposure.
-    ctrl = ("g_hat", "S1", "V1", "r_hat", "selected_action", "deployment",
-            "action_sign", "ESS_grad")
-
-    def walk_records(obj):
-        if isinstance(obj, dict):
-            yield obj
-            for v in obj.values():
-                yield from walk_records(v)
-        elif isinstance(obj, list):
-            for v in obj:
-                yield from walk_records(v)
-
-    artifact_class: dict[str, str] = {}
-    confirm_paths = [p for p in (ROOT / "results").rglob("*confirm*")
-                     if p.suffix in (".csv", ".json") or p.is_dir()]
-    for p in confirm_paths:
-        if p.is_dir():
-            try:
-                objs = [json.loads(f.read_text(encoding="utf-8"))
-                        for f in sorted(p.glob("*.json"))]
-            except Exception:
-                objs = []
-        elif p.suffix == ".csv":
-            objs = list(csvread(p))
-        else:
-            try:
-                objs = [json.loads(p.read_text(encoding="utf-8"))]
-            except Exception:
-                objs = []
-        kind = "truth_or_prereg"
-        for o in objs:
-            for rec in walk_records(o):
-                if not isinstance(rec, dict):
-                    continue
-                ids = {rec.get("state_id", ""), rec.get("candidate_id", "")}
-                if not (ids & idset):
-                    continue
-                if any(k in rec for k in ctrl):
-                    kind = "comparator"
-                    exposed["previous_confirmations"] |= ids & idset
-        artifact_class[p.relative_to(ROOT).as_posix()] = kind
+    # AMENDMENT B (frozen): see scan_confirm_artifacts / COMPARATOR_FIELDS /
+    # TRUTH_FIELDS below for the frozen truth-vs-comparator semantics.
+    exposed_cf, unresolved, artifact_class = scan_confirm_artifacts(
+        [p for p in (ROOT / "results").rglob("*confirm*")
+         if p.suffix in (".csv", ".json") or p.is_dir()], idset)
+    exposed["previous_confirmations"] |= exposed_cf
+    if unresolved:
+        raise RuntimeError(
+            "STOP: UNRESOLVED exposure classification for candidate-bearing "
+            "records (amendment Sec. 3.6): "
+            f"{sorted(set(unresolved))[:8]}")
     hits: dict[str, set] = {k: set() for k in
                             ("gradient_pilot", "v1_probe", "previous_confirmations")}
     scan_dirs = ["phase_m3pi1v", "phase_m3pi1vn", "phase_m3pi1vnr", "phase_m3uc2r",
@@ -383,13 +347,26 @@ def exposure_audit(states: list[dict]) -> dict:
                             entries.append(json.loads(line))
                         except Exception:
                             pass
+                if not any(isinstance(e, dict) and e.get("state_id") in idset
+                           for e in entries):
+                    continue        # ledger does not touch any candidate
                 comparator_ledger = any(
-                    any(k in e for k in ctrl)
-                    or re.search(r"GRAD|PROBE|TRIAL|V1|S1|POLICY",
-                                 str(e.get("seed_namespace", "")))
-                    for e in entries)
+                    any(k in e for k in COMPARATOR_FIELDS)
+                    or classify_ns(e.get("seed_namespace", "")) == "comparator"
+                    for e in entries if isinstance(e, dict))
                 if not comparator_ledger:
-                    continue        # reference/truth/prereg ledger stream
+                    # candidate ids appear in a non-comparator stream: every
+                    # candidate-bearing entry must classify truth_reference
+                    # (namespace ...-REF / ...-CONFIRM) or the ledger is
+                    # UNRESOLVED (amendment Sec. 3.6)
+                    for e in entries:
+                        if not isinstance(e, dict) or e.get("state_id") not in idset:
+                            continue
+                        if classify_ns(e.get("seed_namespace", "")) != "truth_reference":
+                            raise RuntimeError(
+                                "STOP: UNRESOLVED candidate-bearing ledger "
+                                f"stream: {p} entry {e.get('state_id')}")
+                    continue
                 for sid in idset:
                     if any(sid in json.dumps(e) for e in entries):
                         key = ("v1_probe" if "probe" in p.name and "pi1" in d
@@ -415,9 +392,14 @@ def exposure_audit(states: list[dict]) -> dict:
         "recorded_at": now(), "candidates": len(states),
         "exposure_bits": list(exposed.keys()),
         "any_exposed": False,
-        "bit8_rule": "comparator/policy confirmations only; truth-label "
-                     "reference characterization (confirmed_label, no "
-                     "controller fields) is taskbook Sec.4.4 allowed metadata",
+        "bit8_rule": "AMENDMENT B: previous_confirmation_exposure = "
+                     "controller/comparator/policy-level confirmation only; "
+                     "classification by record content with nearest-ancestor "
+                     "namespace inheritance; truth/reference streams "
+                     "(...-REF / ...-CONFIRM with truth fields, no comparator "
+                     "fields) allowed; unknown candidate-bearing records are "
+                     "UNRESOLVED and STOP the panel freeze (never auto-)",
+        "unresolved_records": 0,
         "confirm_artifact_classification": artifact_class,
         "EXPOSURE_AUDIT": "PASS"})
     return states
@@ -429,37 +411,159 @@ def rank_hex(state: dict) -> str:
         .encode("utf-8")).hexdigest()
 
 
+# --------------------------------------------------------------------------
+# AMENDMENT B (frozen): previous-confirmation exposure semantics.
+# previous_confirmation_exposure = previous controller/comparator/policy-level
+# confirmation exposure -- NOT any artifact whose filename contains "confirm".
+# Classification is by RECORD CONTENT with nearest-ancestor namespace
+# inheritance:
+#   comparator      record carries any comparator/policy field
+#                   (g_hat / CI / gradient_valid / S1 / V1 / r_hat /
+#                   selected_action / deployment / action_sign / ...) or
+#                   sits under a comparator-pattern namespace
+#                   (GRAD|PROBE|TRIAL|V1|S1|POLICY)
+#   truth_reference record carries truth/reference fields (confirmed_label /
+#                   provisional_label / P_ref_hash / p_ref_hash) or sits
+#                   under a truth-stream namespace (...-REF / ...-CONFIRM)
+#                   with no comparator field of its own
+#   unknown         neither -> UNRESOLVED => STOP panel freeze (amendment
+#                   Sec. 3.6: unknown artifacts are NEVER auto-allowed)
+# --------------------------------------------------------------------------
+COMPARATOR_FIELDS = ("g_hat", "g_ci_low", "g_ci_high", "ci_low", "ci_high",
+                     "gradient_valid", "S1", "s1_score", "V1", "v1_score",
+                     "r_hat", "se_r_hat", "selected_action",
+                     "controller_action", "deployment", "deploy",
+                     "abstain", "policy_decision", "action_sign",
+                     "ESS_grad")
+TRUTH_FIELDS = ("confirmed_label", "provisional_label",
+                "P_ref_hash", "p_ref_hash")
+NS_COMPARATOR = re.compile(r"GRAD|PROBE|TRIAL|V1|S1|POLICY")
+
+
+def classify_ns(ns) -> str | None:
+    ns = str(ns)
+    if NS_COMPARATOR.search(ns):
+        return "comparator"
+    if "-REF" in ns or "-CONFIRM" in ns:
+        return "truth_reference"
+    return None
+
+
+def walk_records(obj, ns_ctx=None):
+    """Yield (record, inherited-namespace-classification) pairs."""
+    if isinstance(obj, dict):
+        ns = ns_ctx
+        for nf in ("seed_namespace", "namespace"):
+            if nf in obj:
+                c = classify_ns(obj[nf])
+                if c:
+                    ns = c
+        yield obj, ns
+        for v in obj.values():
+            yield from walk_records(v, ns)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from walk_records(v, ns_ctx)
+
+
+def record_class(rec: dict, ns_ctx) -> str:
+    if any(k in rec for k in COMPARATOR_FIELDS):
+        return "comparator"
+    if any(k in rec for k in TRUTH_FIELDS):
+        return "truth_reference"
+    if ns_ctx in ("comparator", "truth_reference"):
+        return ns_ctx
+    return "unknown"
+
+
+def scan_confirm_artifacts(confirm_paths, idset: set):
+    """Scan candidate-named confirmation artifacts; return
+    (exposed_ids, unresolved, artifact_class)."""
+    exposed_ids: set = set()
+    unresolved: list[str] = []
+    artifact_class: dict[str, str] = {}
+    for p in confirm_paths:
+        if p.is_dir():
+            try:
+                objs = [json.loads(f.read_text(encoding="utf-8"))
+                        for f in sorted(p.glob("*.json"))]
+            except Exception:
+                objs = []
+        elif p.suffix == ".csv":
+            objs = list(csvread(p))
+        else:
+            try:
+                objs = [json.loads(p.read_text(encoding="utf-8"))]
+            except Exception:
+                objs = []
+        kind = "no_candidate_overlap"
+        for o in objs:
+            for rec, ns_ctx in walk_records(o):
+                if not isinstance(rec, dict):
+                    continue
+                ids = {rec.get("state_id", ""), rec.get("candidate_id", "")}
+                if not (ids & idset):
+                    continue
+                k = record_class(rec, ns_ctx)
+                if k == "comparator":
+                    kind = "comparator"
+                    exposed_ids |= ids & idset
+                elif k == "unknown":
+                    kind = "UNRESOLVED"
+                    unresolved.append(
+                        f"{p}:{sorted(ids & idset)[0]}")
+                elif kind != "comparator":
+                    kind = "truth_reference"
+        artifact_class[str(p)] = kind
+    return exposed_ids, unresolved, artifact_class
+
+
 def select_panel(states: list[dict]) -> list[dict]:
     """Taskbook Sec. 4.5: stratify by truth, maximize config diversity,
     canonical hash-rank tie-break (frozen BEFORE any simulator call)."""
-    def pick(pool, k):
-        # Round-based draft: round 1 takes each config's best-ranked state
-        # (max unique configs), round 2 each config's second-ranked state,
-        # ... until k.  Canonical hash-rank order throughout; a config never
-        # contributes a (round+1)-th state before every config has offered
-        # its round-th state.
-        ranked = sorted(pool, key=lambda s: (rank_hex(s), s["state_id"]))
-        by_cfg: dict[str, list] = {}
-        for s in ranked:
-            by_cfg.setdefault(s["config_id"], []).append(s)
-        chosen, round_idx = [], 0
-        while len(chosen) < k:
-            progressed = False
-            for cid in sorted(by_cfg,
-                              key=lambda c: rank_hex(by_cfg[c][0])):
-                if len(chosen) >= k:
-                    break
-                if round_idx < len(by_cfg[cid]):
-                    chosen.append(by_cfg[cid][round_idx])
-                    progressed = True
-            if not progressed:
+def pick_rounds(pool: list[dict], k: int) -> list[dict]:
+    """AMENDMENT A round-based config-diversity draft (taskbook amendment
+    Sec. 2.2): round k takes at most the k-th ranked state from each config;
+    within a round, candidates are ordered only by their own frozen
+    selection_rank; stop exactly at k."""
+    ranked = sorted(pool, key=lambda s: (rank_hex(s), s["state_id"]))
+    by_cfg: dict[str, list] = {}
+    for s in ranked:
+        by_cfg.setdefault(s["config_id"], []).append(s)
+    chosen, round_idx = [], 0
+    while len(chosen) < k:
+        cands = [members[round_idx] for members in by_cfg.values()
+                 if round_idx < len(members)]
+        if not cands:
+            break
+        cands.sort(key=lambda s: (rank_hex(s), s["state_id"]))
+        for s in cands:
+            if len(chosen) >= k:
                 break
-            round_idx += 1
-        return chosen
+            chosen.append(s)
+        round_idx += 1
+    return chosen
 
-    w = pick([s for s in states if s["truth"] == "WIDEN"], W_TARGET)
-    s_ = pick([s for s in states if s["truth"] == "SHRINK"], S_TARGET)
-    nd = pick([s for s in states if s["truth"] in NON_DEPLOYABLE], ND_TARGET)
+
+def select_panel(states: list[dict]) -> list[dict]:
+    """Frozen selection rule (AMENDMENT A, taskbook amendment Sec. 2.2).
+
+    Within each truth stratum:
+      1. group eligible untouched states by config_id;
+      2. within each config_id, sort by the preregistered frozen SHA256
+         selection_rank  = sha256("M3-S1C-PANEL-V1|" + config_id + "|"
+                                    + state_id);
+      3. select in config-diversity rounds (pick_rounds);
+      4. stop exactly at the target count.
+    This lexicographically maximizes physical-config diversity before
+    allowing additional repeated states from an already represented config.
+    No S1/gradient/V1/controller result, theory descriptor, development
+    outcome or manual preference participates in selection.
+    """
+    w = pick_rounds([s for s in states if s["truth"] == "WIDEN"], W_TARGET)
+    s_ = pick_rounds([s for s in states if s["truth"] == "SHRINK"], S_TARGET)
+    nd = pick_rounds([s for s in states if s["truth"] in NON_DEPLOYABLE],
+                     ND_TARGET)
     panel = w + s_ + nd
     if not (len(w) == 8 and len(s_) == 8 and len(nd) == 8
             and len({x["state_id"] for x in panel}) == 24):
@@ -488,10 +592,20 @@ def build_panel(states: list[dict]) -> dict:
         "parent_manifest_sha256":
             sha(PI1VNR / "m3pi1vnr_remaining_protected_reserve.csv"),
         "selection_rule": {
-            "level1": "stratify by frozen truth: 8 WIDEN / 8 SHRINK / 8 ND(HOLD+AMBIGUOUS)",
-            "level2": "maximize unique config_id count; then second state per config",
-            "level3": "hash rank sha256('M3-S1C-PANEL-V1|'+config_id+'|'+state_id), "
-                      "ascending byte order; frozen before any simulator call",
+            "amendment": "AMENDMENT A (round-based config-diversity rule, "
+                         "frozen before any simulator call)",
+            "level1": "stratify by frozen truth: 8 WIDEN / 8 SHRINK / "
+                      "8 ND(HOLD+AMBIGUOUS)",
+            "level2": "config-diversity rounds: round k takes at most the "
+                      "k-th ranked state from each config_id (states sorted "
+                      "within config by frozen selection_rank), candidates "
+                      "within a round ordered only by their own frozen rank; "
+                      "stop exactly at 8 per stratum; lexicographically "
+                      "maximizes physical-config diversity before allowing "
+                      "repeated states from a represented config",
+            "level3": "no S1/gradient/V1/controller result, theory descriptor, "
+                      "development outcome or manual preference may affect "
+                      "selection",
         },
         "rank_seed": PANEL_RANK_SEED,
         "sha256": None,
@@ -821,6 +935,69 @@ NO
 NEXT:
 Await explicit human authorization.
 ```
+
+## AMENDMENT A — frozen config-diversity round rule
+
+Formally frozen (before any simulator call) in the panel contract
+(`configs/phase_m3s1c/m3s1c_panel.json` -> `selection_rule`) and implemented
+verbatim in `scripts/run_m3s1c.py::select_panel`:
+
+```text
+Within each truth stratum:
+1. Group all eligible untouched states by config_id.
+2. Within each config_id: sort states by the preregistered frozen
+   selection_rank = SHA256("M3-S1C-PANEL-V1|" + config_id + "|" + state_id).
+3. Select states in config-diversity rounds:
+   Round k takes at most the k-th ranked state from each config; the
+   candidates within a round are ordered only by their own frozen rank.
+4. Stop immediately when exactly 8 states have been selected for that
+   truth stratum.
+5. No S1, gradient, V1, controller result, theory descriptor, development
+   outcome, or manual preference may affect selection.
+```
+
+Scientific meaning: **lexicographically maximize physical-config diversity
+before allowing additional repeated states from an already represented
+config.**  The canonical rank string used by the implementation is exactly
+`SHA256("M3-S1C-PANEL-V1|" + config_id + "|" + state_id)` (byte-order
+ascending); no deviation exists.  Pool-composition consequence (recorded,
+not a rule change): the W stratum offers only 5 unique configs, so rounds
+2/3 legitimately admit the 2nd/3rd ranked states of already represented
+configs.
+
+## AMENDMENT B — frozen previous-confirmation exposure semantics
+
+`previous_confirmation_exposure` (exposure bit 8) is formally defined as
+**previous controller/comparator/policy-level confirmation exposure** — NOT
+any historical artifact whose filename contains "confirm".  Classification
+is by record content with nearest-ancestor namespace inheritance:
+
+```text
+comparator      record carries any comparator/policy field
+                (g_hat, g_ci_low, g_ci_high, ci_low, ci_high,
+                gradient_valid, S1, s1_score, V1, v1_score, r_hat,
+                se_r_hat, selected_action, controller_action,
+                deployment, deploy, abstain, policy_decision,
+                action_sign, ESS_grad) or sits under a
+                comparator-pattern namespace (GRAD|PROBE|TRIAL|V1|S1|POLICY)
+                => FORBIDDEN (state ineligible)
+
+truth_reference record carries truth/reference fields (confirmed_label,
+                provisional_label, P_ref_hash, p_ref_hash) or sits under a
+                truth-stream namespace (...-REF / ...-CONFIRM) with no
+                comparator field of its own
+                => ALLOWED (this is the frozen high-budget truth stratum
+                that the confirmation panel requires; taskbook Sec. 4.4)
+
+unknown         neither of the above on a candidate-bearing record
+                => UNRESOLVED => STOP panel freeze; unknown artifacts are
+                NEVER auto-allowed (amendment Sec. 3.6)
+```
+
+Without this distinction the confirmation design is self-contradictory: the
+panel requires frozen W/S/HOLD/AMBIGUOUS truth, but the high-budget
+reference characterization that establishes that truth would itself
+disqualify every state.
 """, encoding="utf-8")
 
     (DOC / "M3_S1C_Parent_Audit.md").write_text(f"""# M3-S1C Parent Audit
@@ -859,8 +1036,27 @@ Status: **{ex['EXPOSURE_AUDIT']}** (live, {ex['recorded_at']}); per-state bitset
 Eight preregistered exposure bits per candidate (any 1 => ineligible => STOP):
 PI1VNR development panel; PI1VN partial run; PI1V Attempt-2; gradient pilot;
 V1 probe; S1 threshold search; S1 diagnostics (LOSO/LOCO); previous
-confirmations (UC2R protected confirmation and all prior confirmation-adjacent
-phases, scanned across trial directories, ledgers, panels and manifests).
+confirmations.
+
+## Bit 8 formal semantics (AMENDMENT B)
+
+`previous_confirmation_exposure` = previous **controller/comparator/policy-level**
+confirmation exposure, classified by RECORD CONTENT with nearest-ancestor
+namespace inheritance — never by filename:
+
+- comparator fields (g_hat / CI / gradient_valid / S1 / V1 / r_hat /
+  selected_action / deployment / action_sign / ESS_grad / ...) or a
+  comparator-pattern namespace (GRAD|PROBE|TRIAL|V1|S1|POLICY) => FORBIDDEN;
+- truth/reference fields (confirmed_label / provisional_label / P_ref_hash /
+  p_ref_hash) or a truth-stream namespace (...-REF / ...-CONFIRM) with no
+  comparator field => ALLOWED (the frozen truth stratum the panel requires);
+- UNKNOWN candidate-bearing record => UNRESOLVED => STOP panel freeze
+  (never auto-allowed); unresolved records at this audit = {ex.get('unresolved_records', 0)}.
+
+Without this distinction the confirmation design is self-contradictory: the
+panel requires frozen W/S/HOLD/AMBIGUOUS truth, but the high-budget reference
+characterization that establishes that truth would itself disqualify every
+state.
 
 - Candidates scanned = {ex['candidates']}; any_exposed = {ex['any_exposed']}.
 """, encoding="utf-8")

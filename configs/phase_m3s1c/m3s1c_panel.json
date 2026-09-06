@@ -4,9 +4,10 @@
   "parent_manifest_sha256": "8e51d6ff0962ef968b42c13c4e768ef2a23aebfd5c77e7a1fe7f32142320aa9e",
   "rank_seed": "M3-S1C-PANEL-V1|",
   "selection_rule": {
+    "amendment": "AMENDMENT A (round-based config-diversity rule, frozen before any simulator call)",
     "level1": "stratify by frozen truth: 8 WIDEN / 8 SHRINK / 8 ND(HOLD+AMBIGUOUS)",
-    "level2": "maximize unique config_id count; then second state per config",
-    "level3": "hash rank sha256('M3-S1C-PANEL-V1|'+config_id+'|'+state_id), ascending byte order; frozen before any simulator call"
+    "level2": "config-diversity rounds: round k takes at most the k-th ranked state from each config_id (states sorted within config by frozen selection_rank), candidates within a round ordered only by their own frozen rank; stop exactly at 8 per stratum; lexicographically maximizes physical-config diversity before allowing repeated states from a represented config",
+    "level3": "no S1/gradient/V1/controller result, theory descriptor, development outcome or manual preference may affect selection"
   },
   "sha256": "1b1e390f3c87e3e8556f37a92b6e4e4988a6b738d62eb7c6ab9eb7e39d3921a5",
   "states": [

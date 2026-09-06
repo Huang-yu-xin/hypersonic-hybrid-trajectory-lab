@@ -6,8 +6,10 @@ NO scientific simulator call is performed anywhere in this file.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -364,3 +366,157 @@ def test_prereg_hash_manifest_verifies():
 def test_execution_not_authorized():
     with pytest.raises(RuntimeError, match="human approval required"):
         S._require_authorization()
+
+
+# --------------------------------------------------------------------------
+# AMENDMENT A tests: config-diversity round rule
+# --------------------------------------------------------------------------
+
+def _synth_pool(counts: dict[str, int]) -> list[dict]:
+    pool = []
+    for cid, n in counts.items():
+        for i in range(n):
+            pool.append({"state_id": f"{cid}_s{i}", "config_id": cid,
+                         "truth": "WIDEN", "s2": 1.0 + i})
+    return pool
+
+
+def test_round_rule_5_configs_8_needed():
+    pool = _synth_pool({"cfg_a": 5, "cfg_b": 2, "cfg_c": 1,
+                        "cfg_d": 1, "cfg_e": 1})
+    chosen = S.pick_rounds(pool, 8)
+    assert len(chosen) == 8 == len({c["state_id"] for c in chosen})
+    per_cfg = Counter(c["config_id"] for c in chosen)
+    # round 1: all 5 configs; round 2: the two configs with >=2 members;
+    # round 3: only cfg_a (>=3 members) completes the target
+    assert per_cfg == {"cfg_a": 3, "cfg_b": 2, "cfg_c": 1,
+                       "cfg_d": 1, "cfg_e": 1}
+
+
+def test_round_rule_adequate_configs_one_per_config():
+    pool = _synth_pool({f"c{i}": 2 for i in range(9)})
+    chosen = S.pick_rounds(pool, 8)
+    assert len(chosen) == 8
+    assert len({c["config_id"] for c in chosen}) == 8   # round 1 only
+
+
+def test_round_rule_rank_deterministic_and_order_independent():
+    import random
+    pool = _synth_pool({"cfg_a": 5, "cfg_b": 2, "cfg_c": 1,
+                        "cfg_d": 1, "cfg_e": 1})
+    base = [c["state_id"] for c in S.pick_rounds(pool, 8)]
+    for seed in range(5):
+        shuffled = [dict(x) for x in pool]
+        random.Random(seed).shuffle(shuffled)
+        assert [c["state_id"] for c in S.pick_rounds(shuffled, 8)] == base
+
+
+def test_round_rule_uses_only_frozen_hash_and_metadata():
+    # selection must not depend on controller-signal fields even if present
+    pool = _synth_pool({"cfg_a": 5, "cfg_b": 2, "cfg_c": 1,
+                        "cfg_d": 1, "cfg_e": 1})
+    noisy = [dict(x, g_hat=0.1 * i, S1=5.5, V1=0.7, selected_action="WIDEN")
+             for i, x in enumerate(pool)]
+    assert ([c["state_id"] for c in S.pick_rounds(noisy, 8)]
+            == [c["state_id"] for c in S.pick_rounds(pool, 8)])
+
+
+def test_rank_string_matches_frozen_definition():
+    s = {"state_id": "st", "config_id": "cf"}
+    digest = hashlib.sha256(b"M3-S1C-PANEL-V1|cf|st").hexdigest()
+    assert S.rank_hex(s) == digest
+
+
+def test_frozen_panel_matches_round_rule():
+    # the committed panel must be exactly what the frozen rule produces
+    reserve = S.csvread(S.PI1VNR / "m3pi1vnr_remaining_protected_reserve.csv")
+    panel = json.loads((S.CFG / "m3s1c_panel.json").read_text())
+    committed = {s["state_id"] for s in panel["states"]}
+    assert committed == {s["state_id"] for s in S.select_panel(reserve)}
+    for s in panel["states"]:
+        assert s["selection_rank"] == S.rank_hex(s)
+
+
+# --------------------------------------------------------------------------
+# AMENDMENT B tests: truth-vs-comparator exposure semantics
+# --------------------------------------------------------------------------
+
+def _write_json(p, obj):
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(obj), encoding="utf-8")
+    return p
+
+
+def test_exposure_truth_reference_allowed(tmp_path):
+    # direct truth field
+    f1 = _write_json(tmp_path / "a.json",
+                     {"state_id": "cand_A", "confirmed_label": "WIDEN",
+                      "p_ref_hash": "abc"})
+    # truth-stream namespace inheritance (stage manifest wrapper)
+    f2 = _write_json(tmp_path / "b.json",
+                     {"namespace": "M3-CF1N-CONFIRM",
+                      "records": [{"state_id": "cand_B", "status": "COMPLETE"}]})
+    # reference ledger namespace (...-REF)
+    f3 = _write_json(tmp_path / "c.json",
+                     {"seed_namespace": "M3-WA1R-REF",
+                      "state_id": "cand_A", "status": "COMPLETE"})
+    exposed, unresolved, classes = S.scan_confirm_artifacts(
+        [f1, f2, f3], {"cand_A", "cand_B"})
+    assert not exposed and not unresolved
+    assert all(v == "truth_reference" for v in classes.values())
+
+
+def test_exposure_comparator_forbidden(tmp_path):
+    cases = [
+        {"state_id": "cand_A", "g_hat": 0.1, "g_ci_low": 0.05,
+         "g_ci_high": 0.15},                       # gradient result
+        {"state_id": "cand_A", "S1": 5.5},         # S1 score
+        {"state_id": "cand_A", "V1": 0.7, "r_hat": 0.02},  # V1 artifact
+        {"state_id": "cand_A", "selected_action": "WIDEN",
+         "deployment": "DEPLOY"},                  # controller action
+        {"seed_namespace": "M3-PI1VNR-GRAD",
+         "state_id": "cand_A", "status": "STARTED"},  # comparator namespace
+    ]
+    paths = [_write_json(tmp_path / f"z_confirm_{i}.json", c)
+             for i, c in enumerate(cases)]
+    exposed, unresolved, _ = S.scan_confirm_artifacts(paths, {"cand_A"})
+    assert exposed == {"cand_A"} and not unresolved
+    assert all(v == "comparator" for v in
+               S.scan_confirm_artifacts(paths, {"cand_A"})[2].values())
+
+
+def test_exposure_unknown_is_unresolved_never_autoallowed(tmp_path):
+    # pure identifier/seed row under NO namespace: neither comparator nor
+    # truth => UNRESOLVED (amendment Sec. 3.6)
+    f = _write_json(tmp_path / "m.json",
+                    {"records": [{"state_id": "cand_A", "seed": 123}]})
+    exposed, unresolved, classes = S.scan_confirm_artifacts([f], {"cand_A"})
+    assert not exposed and unresolved
+    assert classes[str(f)] == "UNRESOLVED"
+
+
+def test_exposure_filename_alone_never_decides(tmp_path):
+    # identical plain records: truth-stream namespace => allowed;
+    # no namespace => UNRESOLVED; 'confirm' in the filename saves nothing
+    plain = {"records": [{"state_id": "cand_A", "status": "COMPLETE"}]}
+    f_ns = _write_json(tmp_path / "anything.json",
+                       dict(plain, namespace="M3-X-CONFIRM"))
+    f_noname = _write_json(tmp_path / "plain_confirm.json",
+                           [{"state_id": "cand_A", "status": "COMPLETE"}])
+    f_cmp = _write_json(tmp_path / "harmless_name.json",
+                        {"state_id": "cand_A", "S1": 5.5})
+    exposed, unresolved, classes = S.scan_confirm_artifacts(
+        [f_ns, f_noname, f_cmp], {"cand_A"})
+    assert exposed == {"cand_A"}          # comparator artifact forbidden
+    assert classes[str(f_ns)] == "truth_reference"
+    assert classes[str(f_noname)] == "UNRESOLVED"
+    assert classes[str(f_cmp)] == "comparator"
+
+
+def test_exposure_live_audit_all_42_clean_and_resolved():
+    audit = json.loads((S.OUT / "m3s1c_exposure_audit.json").read_text())
+    assert audit["candidates"] == 42 and audit["any_exposed"] is False
+    assert audit["unresolved_records"] == 0
+    assert audit["EXPOSURE_AUDIT"] == "PASS"
+    rows = S.csvread(S.OUT / "m3s1c_exposure_audit_rows.csv")
+    assert len(rows) == 42 and all(int(r["exposed"]) == 0 for r in rows)
