@@ -1,0 +1,14 @@
+{
+  "ARM_A_GRADIENT_BUDGET": 19200000,
+  "S1_formula": "abs(g_hat) / ((ci_high-ci_low)/(2*1.959963984540054))",
+  "S1_threshold_frozen": 5.4417199447782,
+  "alpha_p": 0.5,
+  "estimator": "hyptraj.m3d.adaptation.gradient_decision (unchanged)",
+  "namespace": "M3-S2S-A-GRAD",
+  "no_topup": true,
+  "replicates_per_state": 8,
+  "samples_per_trial": 20000,
+  "sign_mapping": "g_hat < 0 => WIDEN; g_hat > 0 => SHRINK",
+  "states": 120,
+  "trials": 960
+}

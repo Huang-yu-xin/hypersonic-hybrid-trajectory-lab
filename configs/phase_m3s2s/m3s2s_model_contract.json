@@ -1,0 +1,20 @@
+{
+  "cv": "outer GroupKFold(5) / inner GroupKFold(4), groups=config_id; STOP BEFORE MODELING if class/config feasibility fails",
+  "forbidden": [
+    "MLP",
+    "deep models",
+    "Optuna",
+    "Bayesian search",
+    "XGBoost sweep"
+  ],
+  "objective": "max coverage s.t. ND unsafe <= 0.20 AND wrong <= 0.05",
+  "primary_candidates": [
+    "B0_frozen_S1",
+    "B1_aggregate_gbdt_baseline",
+    "A1_stability_logistic",
+    "A2_stability_gbdt",
+    "A3_stability_margin_logistic",
+    "A4_stability_margin_gbdt"
+  ],
+  "seed": 2026
+}

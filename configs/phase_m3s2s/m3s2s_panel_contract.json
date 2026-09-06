@@ -1,0 +1,21 @@
+{
+  "min_unique_configs": 24,
+  "note": "panel freezes only after truth establishment (T1)",
+  "panel_frozen": false,
+  "quota": {
+    "AMBIGUOUS": 30,
+    "HOLD": 30,
+    "SHRINK": 30,
+    "WIDEN": 30
+  },
+  "rank_seed": "M3-S2S-PANEL-V1|",
+  "round_rule": "round k takes at most the k-th ranked state per config within each truth stratum; stop exactly at quota; S1C Amendment-A semantics",
+  "selection_inputs": [
+    "freshness eligibility",
+    "frozen truth stratum",
+    "config_id",
+    "state_id",
+    "canonical hash rank"
+  ],
+  "states": 120
+}

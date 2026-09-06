@@ -1,0 +1,6 @@
+{
+  "failure_rule": "sampling started without durable COMPLETE => CONSUMED_INVALID => M3-S2S-X for the affected arm => STOP, NO REPLAY, NO SAME-ARM RERUN",
+  "module": "src/hyptraj/m3wa1r/persistence.py (inherited hardened transactional contract)",
+  "pre_simulator_failure": "incident + engineering fix + re-preflight + re-hash (+ re-authorization if hash-locked artifacts changed)",
+  "sidecar_rule": "instrumentation sidecar written + sha256-verified BEFORE ledger COMPLETE; sidecar failure => no COMPLETE"
+}

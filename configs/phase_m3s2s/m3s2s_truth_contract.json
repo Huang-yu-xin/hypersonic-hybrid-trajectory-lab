@@ -1,0 +1,39 @@
+{
+  "TRUTH_BUDGET_MAX": 436000000,
+  "TRUTH_SAMPLING_REQUIRED": true,
+  "confirmation_budget_per_state": 1500000,
+  "discovery_budget_per_state": 300000,
+  "event_semantics": "corrected full-event v2",
+  "phases": [
+    {
+      "config": "configs/phase_m3cf1n/m3cf1n_pref_protocol.json",
+      "namespace": "M3-CF1N-PREF",
+      "note": "config-level corrected full-event P_ref; reusable for new s2 states on already-characterized corrected configs => 0 new",
+      "phase": "pref",
+      "samples_per_config": 500000,
+      "sha256": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a"
+    },
+    {
+      "arms": 3,
+      "config": "configs/phase_m3cf1n/m3cf1n_discovery_protocol.json",
+      "direction_margin": 0.05,
+      "hold_band": 0.03,
+      "improvement_threshold": -0.01,
+      "min_arm_ess": 20,
+      "namespace": "M3-CF1N-DISCOVERY",
+      "phase": "discovery",
+      "samples_per_arm": 100000,
+      "sha256": "637aae8962d0e4ed989ea3572977a2e0a847014e711ea7f03166d6925fdc467f"
+    },
+    {
+      "arms": 3,
+      "config": "configs/phase_m3cf1n/m3cf1n_confirmation_protocol.json",
+      "namespace": "M3-CF1N-CONFIRM",
+      "paired_crn_batches": 20,
+      "phase": "confirmation",
+      "samples_per_arm": 500000,
+      "sha256": "4b51e3e798ba6ba89f3776d90b8ecd896048d29789633410b26fb09c558a01ff"
+    }
+  ],
+  "retirement_rule": "every truth-sampled state enters m3s2s_truth_exposed_inventory and is retired from all future untouched confirmation use whether or not it enters the 120-state panel"
+}

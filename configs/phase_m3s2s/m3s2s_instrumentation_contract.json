@@ -1,0 +1,72 @@
+{
+  "checks": {
+    "N_BOOTSTRAP_actual": 500,
+    "aggregate_estimator_unchanged": true,
+    "arm_a_delta": "persistence only: the replicate array (bootstrap_g) and the four per-sample arrays are additionally persisted; all estimator numbers are bit-identical",
+    "batches_field_semantics": "gradient.batches = 20 is a CONFIGURATION constant of the protocol record; the bootstrap is stratified by source strata, NOT by 20 independent batches (source-verified)",
+    "bootstrap_method": "fixed-stratified bootstrap: resample WITHIN each source stratum at preserved sizes; full point pipeline recomputed per replicate; percentiles (2.5/97.5) form the CI",
+    "bootstrap_seed_construction": "np.random.default_rng([seed, 424243]) inside stratified_bootstrap_gradient_ci (bootstrap_seed_key)",
+    "ess_definition": "ESS_grad from scalar_gradient_estimate (variance-mass importance weighting)",
+    "event_counts_online": "event indicator from topology labels (topology != S0), available online",
+    "per_sample_arrays": [
+      "a_full (a_vec)",
+      "resp_k (resp)",
+      "sq_radius (sq)",
+      "source_strata (strata)"
+    ]
+  },
+  "schema_version": "m3s2s_instr_v1",
+  "sidecar": {
+    "arrays": {
+      "a_vec": [
+        "float64",
+        [
+          "n_samples"
+        ],
+        "variance-mass importance per sample: event * weight (variance_mass_importance output)",
+        true
+      ],
+      "bootstrap_g": [
+        "float64",
+        [
+          "N_BOOTSTRAP"
+        ],
+        "per-bootstrap-replicate gradient value; NaN where the replicate point estimate was invalid",
+        true
+      ],
+      "resp": [
+        "float64",
+        [
+          "n_samples"
+        ],
+        "selected-component responsibility per sample (component_responsibility output)",
+        true
+      ],
+      "sq": [
+        "float64",
+        [
+          "n_samples"
+        ],
+        "squared distance of each sample to the selected component center",
+        true
+      ],
+      "strata": [
+        "int64",
+        [
+          "n_samples"
+        ],
+        "source-stratum id per sample (draw_online_pilot)",
+        true
+      ]
+    },
+    "bootstrap_caveat": "bootstrap draws are resamples of the same 20k online samples -- NEVER independent scientific trials; N_BOOTSTRAP is not a sample size for standalone inference",
+    "format": "np.savez_compressed",
+    "integrity": "instrumentation_sha256 recorded in the trial record; sidecar durable + hash verified BEFORE ledger COMPLETE",
+    "schema_version": "m3s2s_instr_v1"
+  },
+  "source_file": [
+    "src/hyptraj/m3d/adaptation.py",
+    "src/hyptraj/m3/gradient_estimator.py"
+  ],
+  "source_sha256": "ab62a6c24a6f6bd9a621c4d0f0f4f1c0c615118066d9326846025a20853f12e9"
+}

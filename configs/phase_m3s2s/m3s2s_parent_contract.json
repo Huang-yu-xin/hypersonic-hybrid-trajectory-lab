@@ -1,0 +1,14 @@
+{
+  "lineage": [
+    "5403e53",
+    "76e99ac",
+    "1f4b0d1",
+    "86ad583"
+  ],
+  "m3_q": "BLOCKED",
+  "parent_verdict": "M3-S2F-R",
+  "rarity_shift": "BLOCKED",
+  "tier_a_dataset_sha256": "f5f684fdb693123c878ebed567a29a98a80cffca774849d85a8204320a76cedd",
+  "tier_a_role": "historical baseline / mechanism replication ONLY; never in Arm-A primary candidate selection",
+  "value": "BLOCKED"
+}

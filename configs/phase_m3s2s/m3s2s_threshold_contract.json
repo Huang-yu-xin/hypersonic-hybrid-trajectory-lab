@@ -1,0 +1,8 @@
+{
+  "gates": {
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_max": 0.05
+  },
+  "rule": "inner grouped OOF: safety-constrained max coverage; tie-break lower unsafe, lower AMBIGUOUS unsafe, higher threshold, canonical"
+}

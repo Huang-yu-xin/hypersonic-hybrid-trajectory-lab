@@ -1,0 +1,16 @@
+{
+  "excluded_sets": [
+    "PI1V attempts",
+    "PI1VN retired",
+    "PI1VNR dev panel",
+    "S1C panel",
+    "ML0 Tier-A",
+    "all gradient pilots",
+    "all V1 probes",
+    "S1 threshold-search/diagnostic panels",
+    "prior controller confirmation panels",
+    "18 protected reserve"
+  ],
+  "rule": "content-based comparator classification (inherited M3-S1C Amendment B); filename-only forbidden; UNKNOWN => UNRESOLVED => ineligible",
+  "truth_reference_only_allowed": true
+}

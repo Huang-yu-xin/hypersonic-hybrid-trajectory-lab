@@ -1,0 +1,64 @@
+{
+  "bootstrap_secondary_only": [
+    "boot_skewness",
+    "boot_excess_kurtosis"
+  ],
+  "bootstrap_stability": [
+    "boot_mean",
+    "boot_median",
+    "boot_std",
+    "boot_MAD",
+    "boot_IQR",
+    "boot_q05",
+    "boot_q25",
+    "boot_q50",
+    "boot_q75",
+    "boot_q95",
+    "boot_mean_minus_median",
+    "boot_sign_probability",
+    "boot_opposite_sign_probability",
+    "boot_near_zero_probability",
+    "boot_quantile_asymmetry",
+    "boot_tail_imbalance"
+  ],
+  "event_ess_diagnostics": [
+    "event_count",
+    "event_rate",
+    "ESS_grad",
+    "ESS_per_event",
+    "ESS_fraction"
+  ],
+  "forbidden": [
+    "truth",
+    "stratum",
+    "confirmed_label",
+    "high-budget gain",
+    "reference action result",
+    "panel identity",
+    "state_id/config_id as X"
+  ],
+  "influence_concentration": [
+    "max_abs_influence_fraction",
+    "top_1pct_abs_influence_fraction",
+    "top_5pct_abs_influence_fraction",
+    "top_10pct_abs_influence_fraction",
+    "herfindahl_concentration",
+    "effective_contribution_count"
+  ],
+  "leakage_rule": "bootstrap features computed WITHIN a trial only; no cross-replicate aggregation into features",
+  "practical_margin": {
+    "M_delta": "(|g_hat|-delta)/SE_g",
+    "delta_candidates_q": [
+      0.1,
+      0.25,
+      0.4,
+      0.5
+    ],
+    "delta_rule": "derived from outer-train only; selected via inner grouped OOF"
+  },
+  "robust_vs_classical": [
+    "g_hat_minus_boot_median",
+    "abs_g_hat_minus_boot_median",
+    "relative_robust_discrepancy"
+  ]
+}

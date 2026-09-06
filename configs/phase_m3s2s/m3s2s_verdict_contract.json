@@ -1,0 +1,7 @@
+{
+  "M3_S2S_A": "Arm-A safety-compliant candidate (coverage>=0.75, unsafe<=0.20, wrong<=0.05, AMB unsafe<0.25) + gain vs aggregate GBDT >= 0.03 or unsafe reduction vs S1 >= 0.05 at coverage >= 0.75; Arm B NOT RUN",
+  "M3_S2S_B_GATE": "Arm A validly completes, no compliant candidate; ARM_B_ELIGIBLE assessed; STOP for human review",
+  "M3_S2S_C": "separately authorized Arm B yields compliant candidate with required gain vs best Arm-A",
+  "M3_S2S_D": "Arm B validly completes, still no compliant candidate (valid negative)",
+  "M3_S2S_X": "integrity failures (contamination, truth-contract violation, seed collision, leakage, persistence failure, unauthorized arm execution)"
+}

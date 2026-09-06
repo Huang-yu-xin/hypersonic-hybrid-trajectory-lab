@@ -1,0 +1,28 @@
+{
+  "ARM_B_AUTHORIZED": false,
+  "ARM_B_MAX_BUDGET": 38400000,
+  "crn_rule": "paired CRN with center required; exact pairing semantics must be audited and frozen before authorization, else STOP",
+  "delta_candidate_grid": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "delta_coordinate": "u = log s^2",
+  "delta_rule": "engineering feasibility filter first; scientific delta selection frozen before Arm-B authorization; if compared, delta is an inner-CV hyperparameter",
+  "eligibility": "only after valid M3-S2S-B-GATE + explicit human ARM_B_AUTHORIZED: YES commit",
+  "local_shape_features": [
+    "local_sign_persistence",
+    "left_sign_match",
+    "right_sign_match",
+    "three_point_sign_pattern",
+    "gradient_slope",
+    "left_slope",
+    "right_slope",
+    "slope_asymmetry",
+    "relative_gradient_slope",
+    "local_gradient_range",
+    "local_S1_range",
+    "g_double_prime_descriptive"
+  ],
+  "status": "CANDIDATE_PROTOCOL_ONLY"
+}
