@@ -1,0 +1,43 @@
+{
+  "dataset_sha256": "f5f684fdb693123c878ebed567a29a98a80cffca774849d85a8204320a76cedd",
+  "feature_contract": "configs/phase_m3ml0/m3ml0_feature_contract.json",
+  "state_level": [
+    "panel",
+    "state_id",
+    "config_id",
+    "truth",
+    "s2",
+    "curvature_c",
+    "label_deploy",
+    "trials",
+    "S1_median",
+    "S1_mean",
+    "S1_std",
+    "S1_min",
+    "S1_max",
+    "g_hat_median",
+    "ESS_median",
+    "SE_g_median",
+    "CI_width_median"
+  ],
+  "trial_level": [
+    "panel",
+    "state_id",
+    "config_id",
+    "s2",
+    "rep",
+    "seed",
+    "g_hat",
+    "g_ci_low",
+    "g_ci_high",
+    "ESS_grad",
+    "M2_hat",
+    "responsibility_mass",
+    "D_hat",
+    "gradient_valid",
+    "S1",
+    "truth",
+    "curvature_c",
+    "label_deploy"
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "B1_logistic_s1": {
+    "features": [
+      "S1"
+    ],
+    "grid": [
+      {
+        "C": 0.1,
+        "class_weight": null
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 1.0,
+        "class_weight": null
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 10.0,
+        "class_weight": null
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced"
+      }
+    ]
+  },
+  "B2_s2_logistic": {
+    "features": [
+      "S1",
+      "g_hat",
+      "SE_g",
+      "s2",
+      "curvature_c"
+    ],
+    "grid": [
+      {
+        "C": 0.1,
+        "class_weight": null
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 1.0,
+        "class_weight": null
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 10.0,
+        "class_weight": null
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced"
+      }
+    ]
+  },
+  "B3_gbdt": {
+    "estimator": "sklearn.ensemble.HistGradientBoostingClassifier",
+    "features": [
+      "S1",
+      "g_hat",
+      "abs_g_hat",
+      "SE_g",
+      "CI_width",
+      "s2",
+      "curvature_c",
+      "ESS_grad",
+      "gradient_valid"
+    ],
+    "grid": [
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      }
+    ]
+  },
+  "B4_mlp": {
+    "reason": "48 independent states < 100 (taskbook Sec. 9)",
+    "status": "NOT_AUTHORIZED"
+  },
+  "library_versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.9.0"
+  },
+  "seed": 2026
+}

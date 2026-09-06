@@ -1,0 +1,12 @@
+{
+  "protected_reserve_use": 0,
+  "replicates_per_state": 8,
+  "samples_per_trial": 20000,
+  "states": 48,
+  "tier_a_sources": [
+    "PI1VNR fresh development panel (24 states, exposed by construction)",
+    "M3-S1C confirmation panel (24 states, EXPOSED by M3-S1C-B)"
+  ],
+  "tier_b_policy": "inventory only; NOT merged into primary ML result",
+  "trials": 384
+}

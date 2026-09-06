@@ -1,0 +1,45 @@
+{
+  "dataset_sha256": "f5f684fdb693123c878ebed567a29a98a80cffca774849d85a8204320a76cedd",
+  "durable_complete_check": {
+    "pi1vnr": {
+      "complete": 192,
+      "consumed_invalid": 0,
+      "unique": 192
+    },
+    "s1c": {
+      "complete": 192,
+      "consumed_invalid": 0,
+      "unique": 192
+    }
+  },
+  "recorded_at": "2026-09-06T10:53:51+0800",
+  "rows": 384,
+  "sources": {
+    "pi1vnr_panel_csv": {
+      "path": "results/phase_m3pi1vnr/summary/m3pi1vnr_fresh_development_panel.csv",
+      "sha256": "1914bf6d2c173107b955c00b2c49e9775c3e0c4e14ab0354b3f10d7e2fdcbd66",
+      "states": 24
+    },
+    "pi1vnr_trials_dir": {
+      "ledger": "results/phase_m3pi1vnr/trials/trial_ledger.jsonl",
+      "path": "results/phase_m3pi1vnr/trials",
+      "trials": 192
+    },
+    "s1c_panel_csv": {
+      "path": "results/phase_m3s1c/preflight/m3s1c_panel.csv",
+      "sha256": "1b1e390f3c87e3e8556f37a92b6e4e4988a6b738d62eb7c6ab9eb7e39d3921a5"
+    },
+    "s1c_panel_json": {
+      "path": "configs/phase_m3s1c/m3s1c_panel.json",
+      "sha256": "5fa972e24cbc3dd88c3c6e1e120527cc2b971690f65b01a5b12b254d9b120969",
+      "states": 24
+    },
+    "s1c_trials_dir": {
+      "ledger": "results/phase_m3s1c/trials/trial_ledger.jsonl",
+      "path": "results/phase_m3s1c/trials",
+      "trials": 192
+    }
+  },
+  "states": 48,
+  "states_parquet_sha256": "70723964d968a7cf918cc4f4d3957ef2e7703abbd7f78cf529d1589542d6d0b4"
+}

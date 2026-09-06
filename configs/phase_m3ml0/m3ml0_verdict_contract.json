@@ -1,0 +1,12 @@
+{
+  "M3_ML0_A": "some candidate: safety-compliant AND coverage gain vs frozen S1 >= 0.05 AND AMBIGUOUS unsafe < frozen S1 AMBIGUOUS unsafe",
+  "M3_ML0_B": "some candidate safety-compliant but gain < 5pp or no AMBIGUOUS improvement",
+  "M3_ML0_C": "no safety-compliant candidate",
+  "M3_ML0_X": "leakage / corrupted source / protected contamination / grouping violation / unrecoverable construction error",
+  "coverage_gain_min": 0.05,
+  "gates": {
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_max": 0.05
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "no_legal_threshold": "ABSTAIN-ALL sentinel (counts as coverage failure, never success)",
+  "rule": "inner-OOF probability midpoints + sentinels; keep ND unsafe <= 0.20; maximize deployable coverage; tie-break lower ND unsafe, lower harmful deployment, higher threshold, canonical",
+  "unsafe_max": 0.2
+}

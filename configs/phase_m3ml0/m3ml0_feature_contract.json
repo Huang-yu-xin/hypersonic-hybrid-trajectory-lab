@@ -1,0 +1,112 @@
+{
+  "F0_core": [
+    "S1",
+    "g_hat",
+    "SE_g",
+    "s2",
+    "curvature_c"
+  ],
+  "F0_full": [
+    "S1",
+    "g_hat",
+    "abs_g_hat",
+    "SE_g",
+    "CI_width",
+    "s2",
+    "curvature_c",
+    "ESS_grad",
+    "gradient_valid"
+  ],
+  "F1_available": [
+    "ESS_grad"
+  ],
+  "F1_not_available": [
+    "p_hat_grad",
+    "batch_dispersion",
+    "gradient_batch_variance"
+  ],
+  "availability_audit": {
+    "CI_width": {
+      "available_before_action": true,
+      "source": "g_ci_high-g_ci_low",
+      "truth_derived": false
+    },
+    "ESS_grad": {
+      "available_before_action": true,
+      "source": "trial record gradient.ESS_grad",
+      "truth_derived": false
+    },
+    "S1": {
+      "available_before_action": true,
+      "source": "trial record S1 (computed from the trial's own gradient CI)",
+      "truth_derived": false
+    },
+    "SE_g": {
+      "available_before_action": true,
+      "source": "(g_ci_high-g_ci_low)/(2*1.959963984540054)",
+      "truth_derived": false
+    },
+    "abs_g_hat": {
+      "available_before_action": true,
+      "source": "|g_hat|",
+      "truth_derived": false
+    },
+    "batch_dispersion": {
+      "available_before_action": false,
+      "included": false,
+      "reason": "per-batch gradient values not persisted"
+    },
+    "curvature_c": {
+      "available_before_action": true,
+      "source": "frozen BenchmarkConfig parameter",
+      "truth_derived": false
+    },
+    "g_hat": {
+      "available_before_action": true,
+      "source": "trial record gradient.g_hat",
+      "truth_derived": false
+    },
+    "gradient_batch_variance": {
+      "available_before_action": false,
+      "included": false,
+      "reason": "per-batch gradient values not persisted"
+    },
+    "gradient_valid": {
+      "available_before_action": true,
+      "source": "trial record gradient.valid",
+      "truth_derived": false
+    },
+    "p_hat_grad": {
+      "available_before_action": false,
+      "included": false,
+      "reason": "not persisted in trial records"
+    },
+    "s2": {
+      "available_before_action": true,
+      "source": "frozen state metadata",
+      "truth_derived": false
+    }
+  },
+  "forbidden_features": [
+    "truth",
+    "label_deploy",
+    "confirmed_label",
+    "provisional_label",
+    "P_ref",
+    "p_ref",
+    "r_hat",
+    "high_budget_gain",
+    "probe_outcome",
+    "V1_ref",
+    "state_id",
+    "config_id",
+    "source_stage",
+    "panel",
+    "panel_name",
+    "is_development",
+    "is_confirmation",
+    "rep",
+    "seed"
+  ],
+  "invalid_gradient_rule": "invalid rows are never model input and map deterministically to ABSTAIN in every policy"
+}

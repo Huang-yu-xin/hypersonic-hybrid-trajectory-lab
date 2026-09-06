@@ -1,0 +1,9 @@
+{
+  "deterministic": true,
+  "fallback_rule": "5-fold -> 4-fold -> Leave-One-Config-Out; any downgrade must be recorded in the audit",
+  "group": "config_id",
+  "inner": "GroupKFold(n_splits=4) on outer-train configs",
+  "outer": "GroupKFold(n_splits=5)",
+  "row_order": "canonical (panel, state_id, rep) before splitting",
+  "seed": 2026
+}
