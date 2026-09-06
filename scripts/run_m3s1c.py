@@ -1223,6 +1223,7 @@ def _completed_trials() -> set[str]:
 def execute() -> None:
     _require_authorization()
     verify_prereg()
+    TRIALS.mkdir(parents=True, exist_ok=True)
     # empty destination (taskbook Sec. 11 step 2)
     if TRIAL_LEDGER.exists():
         counts = Counter(e.get("status") for e in ledger_entries(TRIAL_LEDGER))
@@ -1520,7 +1521,7 @@ def _curvature_lookup() -> dict[str, float]:
             matches = [r for r in _freeze["benchmark_configs"]
                        if r["config_id"].endswith(cid)]
             if len(matches) == 1:
-                out[cid] = float(matches[0]["curvature_c"])
+                out[cid] = float(matches[0]["params"]["curvature_c"])
     return out
 
 
