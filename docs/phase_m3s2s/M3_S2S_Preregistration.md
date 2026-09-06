@@ -66,3 +66,20 @@ VALUE / RARITY / M3-Q = BLOCKED
 NEXT:
 Await independent live Git audit and explicit gate-by-gate human authorization.
 ```
+
+## Prereg lock evidence (first round)
+
+- Tests: S2S prereg suite 20 passed / 0 failed; full regression 2269 passed /
+  0 failed, 3 warnings, 336.12s (python -m pytest -q, exit 0).
+- Prereg hash manifest: `results/phase_m3s2s/preflight/m3s2s_prereg_hashes.json`
+  (results/ is gitignored by repo policy — the manifest is results-local and
+  re-derivable; the REMOTE-AUDITABLE locks are the committed contracts in
+  `configs/phase_m3s2s/` and the hash anchors recorded in this doc:
+  panel rule seed `M3-S2S-PANEL-V1|`, rank string, TRUTH_BUDGET_MAX
+  436,000,000, ARM_A_GRADIENT_BUDGET 19,200,000, ARM_B_MAX_BUDGET
+  38,400,000, N_BOOTSTRAP 500, sidecar schema m3s2s_instr_v1, seed
+  namespaces M3-S2S-A-GRAD / M3-S2S-B-GRAD).
+- Truth-contract phase hashes (canonical CF1N protocol) are committed inside
+  `configs/phase_m3s2s/m3s2s_truth_contract.json`.
+- Authorization gates: TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED =
+  NO; ARM_B_AUTHORIZED = NO.  Simulator calls 0; samples 0.
