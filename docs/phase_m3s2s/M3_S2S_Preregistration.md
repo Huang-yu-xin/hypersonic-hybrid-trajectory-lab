@@ -9,7 +9,7 @@ COMPLETE
 
 PARENT:
 M3-S2F-R verified = YES
-base = 86ad583
+base = cdadca4
 Tier-A dataset hash match = YES
 
 RESERVE:
@@ -46,6 +46,20 @@ ARM B:
 authorized = NO (candidate protocol only; delta grid {0.05,0.10,0.20} log s^2)
 ARM_B_MAX_BUDGET = 38,400,000; eligible only after M3-S2S-B-GATE + human YES
 
+TRUTH SCOPE (AMENDMENT):
+confirmation_scope = ALL_240_FRESH_CANDIDATES
+early_stop_on_quota = false
+discovery_states = 240
+confirmation_states = 240
+TRUTH_BUDGET_PLANNED = 436,000,000
+TRUTH_BUDGET_MAX = 436,000,000
+CF1N estimator/label semantics reused verbatim (scope change only)
+
+CANDIDATE UNIVERSE (AMENDMENT):
+tracked artifact = configs/phase_m3s2s/m3s2s_candidate_universe.json
+candidate_universe_sha256 = d74a7be70318c3e6a0769e915eb6f46d4f5d4065e236dab31bd64a2989451f18
+vendored truth protocol = configs/phase_m3s2s/reference_truth_protocol/ (7 byte-exact snapshots)
+
 SEEDS:
 Arm-A candidate pool = 1920 seeds (960 = frozen panel subset)
 unique = 1920, historical collision = 0
@@ -66,20 +80,3 @@ VALUE / RARITY / M3-Q = BLOCKED
 NEXT:
 Await independent live Git audit and explicit gate-by-gate human authorization.
 ```
-
-## Prereg lock evidence (first round)
-
-- Tests: S2S prereg suite 20 passed / 0 failed; full regression 2269 passed /
-  0 failed, 3 warnings, 336.12s (python -m pytest -q, exit 0).
-- Prereg hash manifest: `results/phase_m3s2s/preflight/m3s2s_prereg_hashes.json`
-  (results/ is gitignored by repo policy — the manifest is results-local and
-  re-derivable; the REMOTE-AUDITABLE locks are the committed contracts in
-  `configs/phase_m3s2s/` and the hash anchors recorded in this doc:
-  panel rule seed `M3-S2S-PANEL-V1|`, rank string, TRUTH_BUDGET_MAX
-  436,000,000, ARM_A_GRADIENT_BUDGET 19,200,000, ARM_B_MAX_BUDGET
-  38,400,000, N_BOOTSTRAP 500, sidecar schema m3s2s_instr_v1, seed
-  namespaces M3-S2S-A-GRAD / M3-S2S-B-GRAD).
-- Truth-contract phase hashes (canonical CF1N protocol) are committed inside
-  `configs/phase_m3s2s/m3s2s_truth_contract.json`.
-- Authorization gates: TRUTH_SAMPLING_AUTHORIZED = NO; ARM_A_AUTHORIZED =
-  NO; ARM_B_AUTHORIZED = NO.  Simulator calls 0; samples 0.

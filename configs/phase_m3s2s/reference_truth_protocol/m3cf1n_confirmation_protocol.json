@@ -1,0 +1,16 @@
+{
+  "arms": [
+    "base",
+    "widen",
+    "shrink"
+  ],
+  "confirm_all_nine_frozen_states_per_eligible_config": true,
+  "event_semantics_schema_version": 2,
+  "finite_action_samples_per_eligible_config": 13500000,
+  "maximum_finite_action_samples": 108000000,
+  "namespace": "M3-CF1N-CONFIRM",
+  "no_new_states": true,
+  "paired_crn_batches": 20,
+  "samples_per_arm": 500000,
+  "stage": "CF1N-4 confirmation"
+}

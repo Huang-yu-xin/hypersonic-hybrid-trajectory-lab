@@ -1,0 +1,22 @@
+{
+  "adaptive_refinement": false,
+  "arms": [
+    "base",
+    "widen",
+    "shrink"
+  ],
+  "direction_margin": 0.05,
+  "event": "topology != S0",
+  "event_semantics_schema_version": 2,
+  "finite_action_samples": 21600000,
+  "grid_refinement": false,
+  "hold_band": 0.03,
+  "improvement_threshold": -0.01,
+  "min_arm_ess": 20,
+  "namespace": "M3-CF1N-DISCOVERY",
+  "paired_crn_batches": 20,
+  "probability_domain": "full-event probability",
+  "samples_per_arm": 100000,
+  "stage": "CF1N-2 discovery",
+  "states": 72
+}

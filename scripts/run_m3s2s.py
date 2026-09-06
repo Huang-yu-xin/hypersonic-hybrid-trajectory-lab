@@ -250,9 +250,66 @@ def _all_corrected_configs() -> dict[str, dict]:
     return cfgs
 
 
+VENDORED_TRUTH_PROTOCOL = {
+    "m3cf1n_pref_protocol.json":
+        "configs/phase_m3cf1n/m3cf1n_pref_protocol.json",
+    "m3cf1n_discovery_protocol.json":
+        "configs/phase_m3cf1n/m3cf1n_discovery_protocol.json",
+    "m3cf1n_confirmation_protocol.json":
+        "configs/phase_m3cf1n/m3cf1n_confirmation_protocol.json",
+    "m3cf1n_configs.json": "configs/phase_m3cf1n/m3cf1n_configs.json",
+    "m3wcf1_physical_config_manifest.csv":
+        "results/phase_m3wcf1/summary/m3wcf1_physical_config_manifest.csv",
+    "M1_D_Benchmark_Freeze.json":
+        "docs/phase_m1d/M1_D_Benchmark_Freeze.json",
+    "m3cf0_raw_physical_candidate_lattice.csv":
+        "results/phase_m3cf0/summary/m3cf0_raw_physical_candidate_lattice.csv",
+}
+
+
+def vendor_truth_protocol() -> dict:
+    """Byte-exact immutable snapshots of the canonical truth protocol and
+    the physical-config definition sources (amendment requirement 2).
+    Contents are never altered; SHA256 equality with the originals is
+    asserted at vendoring time and re-verified by tests."""
+    dst_dir = CFG / "reference_truth_protocol"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    out = {}
+    for name, rel in VENDORED_TRUTH_PROTOCOL.items():
+        src = ROOT / rel
+        dst = dst_dir / name
+        dst.write_bytes(src.read_bytes())
+        s_src, s_dst = sha(src), sha(dst)
+        if s_src != s_dst:
+            raise RuntimeError(f"S2S-X: vendored snapshot mismatch: {name}")
+        out[name] = {"vendored_path": dst.relative_to(ROOT).as_posix(),
+                     "source_path": rel, "sha256": s_src}
+    return out
+
+
+def _config_source_artifacts() -> dict[str, dict]:
+    """Per-family physical-config definition source (vendored path + hash)."""
+    vend = {n: v for n, v in VENDORED_TRUTH_PROTOCOL.items()}
+    sources = {
+        "legacy_c": {"path": "configs/phase_m3s2s/reference_truth_protocol/"
+                             "M1_D_Benchmark_Freeze.json"},
+        "cf1n_new": {"path": "configs/phase_m3s2s/reference_truth_protocol/"
+                             "m3cf1n_configs.json"},
+        "wcf1_new": {"path": "configs/phase_m3s2s/reference_truth_protocol/"
+                             "m3wcf1_physical_config_manifest.csv"},
+        "M3-S2S-NEW-CONFIG": {"path": "configs/phase_m3s2s/reference_truth_"
+                                      "protocol/m3cf0_raw_physical_candidate_"
+                                      "lattice.csv"},
+    }
+    for k, v in sources.items():
+        v["sha256"] = sha(ROOT / v["path"])
+    return sources
+
+
 def build_candidates() -> dict:
     """Fresh candidate state plan: legality-gated, log-spaced, freshness-
     excluding new s2 points on all corrected configs (NO truth yet)."""
+    vendor_truth_protocol()
     existing = _existing_characterized_s2()
     windows = _config_windows()
     candidates = []
@@ -272,11 +329,22 @@ def build_candidates() -> dict:
             k += 1
             if k == CANDIDATE_POINTS_PER_CONFIG:
                 break
+        origin = w["origin"]
+        fam = ("legacy_c" if cid.startswith(("c0", "c1", "c2"))
+               and "_" not in cid else
+               "cf1n_new" if cid.startswith("cf1n_new") else
+               "wcf1_new" if cid.startswith("wcf1_new") else "M3-S2S-NEW-CONFIG")
+        src_art = _config_source_artifacts()[fam]
         for s2 in pts:
             sid = f"{cid}_s2s_{s2:.10f}"
             candidates.append({
                 "state_id": sid, "config_id": cid, "s2": s2,
                 "rank": rank_hex(cid, sid),
+                "config_origin": origin,
+                "config_source_path": src_art["path"],
+                "config_source_sha256": src_art["sha256"],
+                "freshness_status": "FRESH_UNCHARACTERIZED",
+                "exposure_status": "CONTROLLER_EXPOSURE_0",
                 "legality_margin_min_eig": w["s2_min_legality"] * s2 / 0.5,
             })
     if len(candidates) < PANEL_STATES:
@@ -288,7 +356,12 @@ def build_candidates() -> dict:
     with (OUT / "m3s2s_candidate_plan.csv").open("w", newline="",
                                                  encoding="utf-8") as h:
         w = csv.DictWriter(h, fieldnames=["state_id", "config_id", "s2",
-                                          "rank", "legality_margin_min_eig"])
+                                          "rank", "config_origin",
+                                          "config_source_path",
+                                          "config_source_sha256",
+                                          "freshness_status",
+                                          "exposure_status",
+                                          "legality_margin_min_eig"])
         w.writeheader()
         w.writerows(candidates)
     plan = candidate_plan(len(candidates), n_configs)
@@ -317,10 +390,29 @@ def build_candidates() -> dict:
         "note": "candidates are truth-UNLABELED; panel selection happens "
                 "after truth establishment under the frozen 30/30/30/30 "
                 "quota + round rule"})
+    # AMENDMENT (conditional-pass audit): git-tracked full candidate universe
+    universe = {
+        "schema_version": "m3s2s_candidate_universe_v1",
+        # no timestamp: the tracked universe sha256 must be content-deterministic
+        "n_states": len(candidates),
+        "n_configs": n_configs,
+        "rank_seed": PANEL_RANK_SEED,
+        "freshness_rule": "new log-spaced legality-gated s2 points excluding "
+                          "every characterized value; verified against all "
+                          "panel/registry artifacts",
+        "vendored_truth_protocol": vendor_truth_protocol(),
+        "states": candidates,
+    }
+    dump(CFG / "m3s2s_candidate_universe.json", universe)
+    universe_sha = sha(CFG / "m3s2s_candidate_universe.json")
+    dump(OUT / "m3s2s_candidate_universe_hash.json", {
+        "recorded_at": now(),
+        "candidate_universe_sha256": universe_sha})
     print(f"M3-S2S candidates: {len(candidates)} states / {n_configs} configs "
-          f"-> TRUTH_BUDGET_MAX = {plan['TRUTH_BUDGET_MAX']:,}")
+          f"-> TRUTH_BUDGET_MAX = {plan['TRUTH_BUDGET_MAX']:,} "
+          f"(universe sha256 {universe_sha[:16]}...)")
     return {"candidates": candidates, "n_configs": n_configs, "plan": plan,
-            "truth": audit}
+            "truth": audit, "universe_sha256": universe_sha}
 
 
 # --------------------------------------------------------------------------
@@ -463,9 +555,24 @@ def contracts(cand: dict) -> None:
         "phases": audit_truth_protocol()["phases"],
         "event_semantics": audit_truth_protocol()["event_semantics"],
         "TRUTH_SAMPLING_REQUIRED": True,
+        "estimator_and_label_reuse": "CF1N per-state estimator / corrected "
+                                     "event semantics / label thresholds "
+                                     "reused VERBATIM (no retune)",
+        "confirmation_scope": "ALL_240_FRESH_CANDIDATES",
+        "early_stop_on_quota": False,
+        "discovery_states": 240,
+        "confirmation_states": 240,
+        "TRUTH_BUDGET_PLANNED": 436_000_000,
+        "TRUTH_BUDGET_MAX": 436_000_000,
         "discovery_budget_per_state": DISCOVERY_BUDGET_PER_STATE,
         "confirmation_budget_per_state": CONFIRMATION_BUDGET_PER_STATE,
-        "TRUTH_BUDGET_MAX": cand["plan"]["TRUTH_BUDGET_MAX"],
+        "rationale": "all four frozen truth strata (WIDEN/SHRINK/HOLD/"
+                     "AMBIGUOUS) require high-budget truth before the "
+                     "balanced 30/30/30/30 panel is selected",
+        "vendored_reference_protocol": "configs/phase_m3s2s/"
+                                       "reference_truth_protocol/",
+        "vendored_snapshots": {k: v["sha256"] for k, v in
+                               vendor_truth_protocol().items()},
         "retirement_rule": cand["plan"]["retirement_rule"]})
     dump(CFG / "m3s2s_panel_contract.json", {
         "states": PANEL_STATES, "quota": PANEL_TARGETS,
@@ -596,6 +703,8 @@ def docs() -> None:
     sd = load(OUT / "m3s2s_seed_collision_audit.json")
     pf = load(OUT / "m3s2s_path_disk_preflight.json")
     instr = audit_estimator_source()
+    universe_sha = load(OUT / "m3s2s_candidate_universe_hash.json")[
+        "candidate_universe_sha256"]
     DOC.mkdir(parents=True, exist_ok=True)
     (DOC / "M3_S2S_Preregistration.md").write_text(f"""# M3-S2S Preregistration
 
@@ -644,6 +753,20 @@ batches=20 is a config constant, NOT 20 batch gradients (source-verified)
 ARM B:
 authorized = NO (candidate protocol only; delta grid {{0.05,0.10,0.20}} log s^2)
 ARM_B_MAX_BUDGET = 38,400,000; eligible only after M3-S2S-B-GATE + human YES
+
+TRUTH SCOPE (AMENDMENT):
+confirmation_scope = ALL_240_FRESH_CANDIDATES
+early_stop_on_quota = false
+discovery_states = 240
+confirmation_states = 240
+TRUTH_BUDGET_PLANNED = 436,000,000
+TRUTH_BUDGET_MAX = 436,000,000
+CF1N estimator/label semantics reused verbatim (scope change only)
+
+CANDIDATE UNIVERSE (AMENDMENT):
+tracked artifact = configs/phase_m3s2s/m3s2s_candidate_universe.json
+candidate_universe_sha256 = {universe_sha}
+vendored truth protocol = configs/phase_m3s2s/reference_truth_protocol/ (7 byte-exact snapshots)
 
 SEEDS:
 Arm-A candidate pool = {sd['pool']} seeds (960 = frozen panel subset)

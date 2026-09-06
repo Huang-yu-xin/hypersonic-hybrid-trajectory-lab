@@ -1,6 +1,6 @@
 # M3-S2S Exposure Firewall Audit
 
-Status: **PASS** (2026-09-06T12:24:43+0800).
+Status: **PASS** (2026-09-06T12:53:48+0800).
 
 - Exclusion manifest is content-based (comparator-field detection with
   namespace inheritance; filename-only classification forbidden).

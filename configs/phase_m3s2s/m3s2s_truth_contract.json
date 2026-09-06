@@ -1,8 +1,14 @@
 {
   "TRUTH_BUDGET_MAX": 436000000,
+  "TRUTH_BUDGET_PLANNED": 436000000,
   "TRUTH_SAMPLING_REQUIRED": true,
   "confirmation_budget_per_state": 1500000,
+  "confirmation_scope": "ALL_240_FRESH_CANDIDATES",
+  "confirmation_states": 240,
   "discovery_budget_per_state": 300000,
+  "discovery_states": 240,
+  "early_stop_on_quota": false,
+  "estimator_and_label_reuse": "CF1N per-state estimator / corrected event semantics / label thresholds reused VERBATIM (no retune)",
   "event_semantics": "corrected full-event v2",
   "phases": [
     {
@@ -35,5 +41,16 @@
       "sha256": "4b51e3e798ba6ba89f3776d90b8ecd896048d29789633410b26fb09c558a01ff"
     }
   ],
-  "retirement_rule": "every truth-sampled state enters m3s2s_truth_exposed_inventory and is retired from all future untouched confirmation use whether or not it enters the 120-state panel"
+  "rationale": "all four frozen truth strata (WIDEN/SHRINK/HOLD/AMBIGUOUS) require high-budget truth before the balanced 30/30/30/30 panel is selected",
+  "retirement_rule": "every truth-sampled state enters m3s2s_truth_exposed_inventory and is retired from all future untouched confirmation use whether or not it enters the 120-state panel",
+  "vendored_reference_protocol": "configs/phase_m3s2s/reference_truth_protocol/",
+  "vendored_snapshots": {
+    "M1_D_Benchmark_Freeze.json": "be2ef47157b95f479949f706de6285827b70e15fa0488e4cdbfc128bd6bb61de",
+    "m3cf0_raw_physical_candidate_lattice.csv": "87eba89a14e16bba979f22a17ed340a954ebe06a2874a88f2aa803ffc33d04ab",
+    "m3cf1n_configs.json": "21ffc2d86fd8b5adba2718c40c82480bb1f808e2430ab7aa4c9b0d07c47d3639",
+    "m3cf1n_confirmation_protocol.json": "4b51e3e798ba6ba89f3776d90b8ecd896048d29789633410b26fb09c558a01ff",
+    "m3cf1n_discovery_protocol.json": "637aae8962d0e4ed989ea3572977a2e0a847014e711ea7f03166d6925fdc467f",
+    "m3cf1n_pref_protocol.json": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+    "m3wcf1_physical_config_manifest.csv": "18ca0ae9c6617da7d0fbbb5ab8c59225c6c0dd2b0f9fd32ac7db4a68f51432cf"
+  }
 }

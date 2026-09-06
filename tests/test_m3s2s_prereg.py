@@ -263,3 +263,57 @@ def test_prereg_hash_lock():
     mismatch = [e["path"] for e in hm["files"]
                 if R.sha(R.ROOT / e["path"]) != e["sha256"]]
     assert not mismatch and hm["PREREG_HASH_LOCK"] == "PASS"
+
+
+# --------------------------------------------------------------------------
+# AMENDMENT (conditional-pass audit): tracked universe, vendored protocol,
+# truth scope
+# --------------------------------------------------------------------------
+
+def test_candidate_universe_tracked_and_complete():
+    u = R.load(R.CFG / "m3s2s_candidate_universe.json")
+    assert u["n_states"] == 240 and u["n_configs"] == 30
+    assert len(u["states"]) == 240
+    required = {"state_id", "config_id", "s2", "rank", "config_origin",
+                "config_source_path", "config_source_sha256",
+                "freshness_status", "exposure_status"}
+    assert all(required <= set(s) for s in u["states"])
+    assert all(s["freshness_status"] == "FRESH_UNCHARACTERIZED"
+               for s in u["states"])
+    assert all(s["exposure_status"] == "CONTROLLER_EXPOSURE_0"
+               for s in u["states"])
+    assert len({s["state_id"] for s in u["states"]}) == 240
+
+
+def test_candidate_universe_sha_deterministic_and_anchored():
+    assert R.sha(R.CFG / "m3s2s_candidate_universe.json") == \
+        R.load(R.OUT / "m3s2s_candidate_universe_hash.json")[
+            "candidate_universe_sha256"]
+    doc = (R.DOC / "M3_S2S_Preregistration.md").read_text(encoding="utf-8")
+    assert R.load(R.OUT / "m3s2s_candidate_universe_hash.json")[
+        "candidate_universe_sha256"] in doc
+
+
+def test_vendored_truth_protocol_byte_exact():
+    for name, meta in R.vendor_truth_protocol().items():
+        v = R.ROOT / meta["vendored_path"]
+        s = R.ROOT / meta["source_path"]
+        assert v.read_bytes() == s.read_bytes()
+        assert R.sha(v) == R.sha(s) == meta["sha256"]
+
+
+def test_truth_contract_scope_fields():
+    tc = R.load(R.CFG / "m3s2s_truth_contract.json")
+    assert tc["confirmation_scope"] == "ALL_240_FRESH_CANDIDATES"
+    assert tc["early_stop_on_quota"] is False
+    assert tc["discovery_states"] == 240 and tc["confirmation_states"] == 240
+    assert tc["TRUTH_BUDGET_PLANNED"] == tc["TRUTH_BUDGET_MAX"] == 436_000_000
+    assert "VERBATIM" in tc["estimator_and_label_reuse"]
+    assert len(tc["vendored_snapshots"]) == 7
+
+
+def test_vendored_snapshots_match_frozen_contract_hashes():
+    tc = R.load(R.CFG / "m3s2s_truth_contract.json")
+    for name, sha_val in tc["vendored_snapshots"].items():
+        p = (R.CFG / "reference_truth_protocol" / name)
+        assert R.sha(p) == sha_val

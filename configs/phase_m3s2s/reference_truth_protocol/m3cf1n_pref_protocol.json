@@ -1,0 +1,11 @@
+{
+  "CF1_P_ref_reuse": false,
+  "configs": 8,
+  "event_semantics_schema_version": 2,
+  "expected_samples": 4000000,
+  "n_batches": 20,
+  "namespace": "M3-CF1N-PREF",
+  "samples_per_config": 500000,
+  "stage": "CF1N-1 P_ref generation",
+  "stream": "new config-specific corrected full-event reference"
+}
