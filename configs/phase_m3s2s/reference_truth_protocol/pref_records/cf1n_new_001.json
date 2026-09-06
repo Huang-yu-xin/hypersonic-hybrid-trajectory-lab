@@ -1,0 +1,55 @@
+{
+  "config_id": "cf1n_new_001",
+  "event_schema": "corrected full-event v2",
+  "event_semantics_schema_version": 2,
+  "n_batches": 20,
+  "namespace": "M3-CF1N-PREF",
+  "p_batches": [
+    0.0714,
+    0.06964,
+    0.06892,
+    0.06924,
+    0.06948,
+    0.06788,
+    0.07044,
+    0.0682,
+    0.07012,
+    0.07,
+    0.07184,
+    0.07052,
+    0.06912,
+    0.06964,
+    0.07092,
+    0.07016,
+    0.06648,
+    0.06804,
+    0.07024,
+    0.0736
+  ],
+  "p_ref_full": 0.069794,
+  "p_ref_full_CI": [
+    0.06911297259340429,
+    0.0704750274065957
+  ],
+  "p_ref_full_SE": 0.00034746934737962305,
+  "protocol_hash": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+  "record_type": "M3CF1N-PREF",
+  "sample_count": 500000,
+  "seed_key": [
+    732058384,
+    991
+  ],
+  "source_hashes": {
+    "grid": "c4f32d55f1e41a785a77cd0c6cde9a1caebb68b39759df7234b375e965d99e84",
+    "pref_protocol": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
+    "prereg": "f8dc56173b523e6abbc9216887b82385834781fe94ca5f9ec692ca026f76cb9a",
+    "replacement_configs": "d6c12507ccde00ac27fdd0718ffabf91b0881e9110deda5aa2251433c23cfef2"
+  },
+  "topology_counts": {
+    "S0": 465103,
+    "S1": 13827,
+    "S2": 16601,
+    "S3": 1650,
+    "S4": 2819
+  }
+}

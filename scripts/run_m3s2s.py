@@ -13,6 +13,7 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import math
 import shutil
 import subprocess
@@ -266,6 +267,18 @@ VENDORED_TRUTH_PROTOCOL = {
         "results/phase_m3cf0/summary/m3cf0_raw_physical_candidate_lattice.csv",
 }
 
+# per-config historical P_ref records vendored into pref_records/
+PREF_RECORD_SOURCES = (
+    [("legacy_p_ref", "results/phase_m3d2/summary/m3d2_probability_reference.json")]
+    + [("cf1n_pref_records", f"results/phase_m3cf1n/pref/{cid}.json")
+     for cid in ("cf1n_new_000", "cf1n_new_001", "cf1n_new_002",
+                 "cf1n_new_003", "cf1n_new_004", "cf1n_new_005",
+                 "cf1n_new_006", "cf1n_new_007")]
+    + [("wcf1_pref_records", f"results/phase_m3wcf1/pref/{cid}.json")
+       for cid in ("wcf1_new_000", "wcf1_new_001", "wcf1_new_002",
+                   "wcf1_new_003", "wcf1_new_004", "wcf1_new_005")]
+)
+
 
 def vendor_truth_protocol() -> dict:
     """Byte-exact immutable snapshots of the canonical truth protocol and
@@ -284,7 +297,23 @@ def vendor_truth_protocol() -> dict:
             raise RuntimeError(f"S2S-X: vendored snapshot mismatch: {name}")
         out[name] = {"vendored_path": dst.relative_to(ROOT).as_posix(),
                      "source_path": rel, "sha256": s_src}
+    base_snapshots = dict(out)
+    (dst_dir / "pref_records").mkdir(exist_ok=True)
+    for sub, rel in PREF_RECORD_SOURCES:
+        src = ROOT / rel
+        dst = dst_dir / "pref_records" / Path(rel).name
+        dst.write_bytes(src.read_bytes())
+        s_src, s_dst = sha(src), sha(dst)
+        if s_src != s_dst:
+            raise RuntimeError(f"S2S-X: vendored snapshot mismatch: {rel}")
+        out[f"pref_records/{Path(rel).name}"] = {
+            "vendored_path": dst.relative_to(ROOT).as_posix(),
+            "source_path": rel, "sha256": s_src}
+    vendor_truth_protocol.base_snapshots = base_snapshots
     return out
+
+
+vendor_truth_protocol.base_snapshots = {}
 
 
 def _config_source_artifacts() -> dict[str, dict]:
@@ -400,14 +429,28 @@ def build_candidates() -> dict:
         "freshness_rule": "new log-spaced legality-gated s2 points excluding "
                           "every characterized value; verified against all "
                           "panel/registry artifacts",
-        "vendored_truth_protocol": vendor_truth_protocol(),
+        "vendored_truth_protocol": vendor_truth_protocol.base_snapshots,
         "states": candidates,
     }
-    dump(CFG / "m3s2s_candidate_universe.json", universe)
-    universe_sha = sha(CFG / "m3s2s_candidate_universe.json")
+    # LF-normalized byte write: the tracked artifact must be byte-identical
+    # to the git blob (the earlier CRLF working-tree rendering sha'd
+    # differently on Windows; execution pins the LF form)
+    universe_bytes = (json.dumps(universe, indent=2, sort_keys=True,
+                                 ensure_ascii=True) + "\n").encode("utf-8")
+    (CFG / "m3s2s_candidate_universe.json").write_bytes(universe_bytes)
+    universe_sha = hashlib.sha256(universe_bytes).hexdigest()
     dump(OUT / "m3s2s_candidate_universe_hash.json", {
         "recorded_at": now(),
         "candidate_universe_sha256": universe_sha})
+    # new-config registry (config_id -> raw_candidate_id), tracked; the
+    # vendored raw lattice provides the physical definitions at runtime
+    specs = _all_corrected_configs()
+    registry = {"schema_version": "m3s2s_new_config_registry_v1",
+                "configs": {cid: {"raw_candidate_id": spec["raw_row"]["config_id"],
+                                  "origin": spec["origin"]}
+                            for cid, spec in specs.items()
+                            if spec["origin"] == "M3-S2S-NEW-CONFIG"}}
+    dump(CFG / "m3s2s_new_config_registry.json", registry)
     print(f"M3-S2S candidates: {len(candidates)} states / {n_configs} configs "
           f"-> TRUTH_BUDGET_MAX = {plan['TRUTH_BUDGET_MAX']:,} "
           f"(universe sha256 {universe_sha[:16]}...)")
@@ -947,6 +990,10 @@ def hashlock() -> dict:
             "scripts/run_m3s2s.py": sha(ROOT / "scripts/run_m3s2s.py"),
             "src/hyptraj/m3s2s/truth_contract.py": sha(ROOT / "src/hyptraj/m3s2s/truth_contract.py"),
             "src/hyptraj/m3s2s/instrumentation.py": sha(ROOT / "src/hyptraj/m3s2s/instrumentation.py"),
+            "src/hyptraj/m3s2s/vendored_runtime.py": sha(ROOT / "src/hyptraj/m3s2s/vendored_runtime.py"),
+            "src/hyptraj/m3s2s/truth_execution.py": sha(ROOT / "src/hyptraj/m3s2s/truth_execution.py"),
+            "src/hyptraj/m3d2/experiment.py": sha(ROOT / "src/hyptraj/m3d2/experiment.py"),
+            "src/hyptraj/m3/gradient_estimator.py": sha(ROOT / "src/hyptraj/m3/gradient_estimator.py"),
             "src/hyptraj/m3wa1r/persistence.py": sha(ROOT / "src/hyptraj/m3wa1r/persistence.py"),
             "src/hyptraj/m3d/adaptation.py": sha(ROOT / "src/hyptraj/m3d/adaptation.py"),
         },
@@ -976,14 +1023,220 @@ def all_stages() -> None:
     preflight()
     contracts(cand)
     docs()
+    truth_preflight()
     hashlock()
     print("M3-S2S prereg freeze complete; all three gates remain NO")
+
+
+# --------------------------------------------------------------------------
+# gated truth-execution stages (execution-readiness amendment, items 3-6)
+# --------------------------------------------------------------------------
+
+TRUTH_PREF = ROOT / "results/phase_m3s2s/pref"
+TRUTH_DISC = ROOT / "results/phase_m3s2s/discovery"
+TRUTH_CONF = ROOT / "results/phase_m3s2s/confirmation"
+TRUTH_LEDGERS = {"pref": TRUTH_PREF / "pref_ledger.jsonl",
+                 "discovery": TRUTH_DISC / "discovery_ledger.jsonl",
+                 "confirmation": TRUTH_CONF / "confirmation_ledger.jsonl"}
+
+
+def _gate(name: str) -> bool:
+    txt = APPROVAL_DOC.read_text(encoding="utf-8")
+    m = re.search(rf"^{name}:\s*(\w+)\s*$", txt, re.M)
+    return bool(m and m.group(1).strip().upper() == "YES")
+
+
+def _check_gates_frozen_no():
+    for gate in ("TRUTH_SAMPLING_AUTHORIZED", "ARM_A_AUTHORIZED",
+                 "ARM_B_AUTHORIZED"):
+        if _gate(gate):
+            raise RuntimeError(
+                f"S2S prereg lock violated: {gate} must remain NO during the "
+                "execution-readiness amendment")
+
+
+def truth_preflight() -> dict:
+    """Execution-readiness proof WITHOUT authorization or simulator calls:
+    vendored-only resolution + tracked universe + full 240-state dry
+    assembly + empty destination."""
+    _check_gates_frozen_no()
+    from hyptraj.m3s2s import vendored_runtime as VRc
+    states = VRc.verify_universe()
+    consts = VRc.load_vendored_protocol_constants()
+    from hyptraj.m3d.benchmark_states import assemble_state
+    assembled = 0
+    for s in states:
+        bench = VRc.resolve_bench_config(s["config_id"])
+        st = assemble_state(bench, float(s["s2"]), short_config=s["config_id"])
+        if isinstance(st, dict):
+            raise RuntimeError(f"S2S-X: dry assembly failed: {s['state_id']}")
+        assembled += 1
+    for phase, ledger in TRUTH_LEDGERS.items():
+        if ledger.exists() and ledger.read_text(encoding="utf-8").strip():
+            raise RuntimeError(f"S2S-X: destination not empty: {ledger}")
+    out = {"recorded_at": now(), "universe_verified": 240,
+           "vendored_protocols_verified": 3,
+           "dry_assembly": assembled, "destination_empty": True,
+           "TRUTH_PREFLIGHT": "PASS"}
+    dump(OUT / "m3s2s_truth_preflight.json", out)
+    print(f"M3-S2S truth preflight: PASS ({assembled}/240 vendored-only dry "
+          "assembly; gates frozen NO)")
+    return out
+
+
+def _completed(ledger, unit_id) -> bool:
+    from hyptraj.m3cf1r0.persistence import ledger_entries
+    return any(e.get("state_id") == unit_id and e.get("status") == "COMPLETE"
+               for e in ledger_entries(ledger))
+
+
+def _ledger(path) -> list:
+    from hyptraj.m3cf1r0.persistence import ledger_entries
+    return ledger_entries(path) if Path(path).exists() else []
+
+
+def truth_execute() -> dict:
+    """GATED: requires TRUTH_SAMPLING_AUTHORIZED: YES.  Runs the three
+    truth streams (P_ref 8 / discovery 240 / confirmation 240) under the
+    hardened transactional contract with exact per-stream consumption."""
+    if not _gate("TRUTH_SAMPLING_AUTHORIZED"):
+        raise RuntimeError("TRUTH_SAMPLING_AUTHORIZED is not YES")
+    if _gate("ARM_A_AUTHORIZED") or _gate("ARM_B_AUTHORIZED"):
+        raise RuntimeError("S2S-X: Arm gates must remain NO during truth stage")
+    from hyptraj.m3s2s import vendored_runtime as VRc
+    states = VRc.verify_universe()
+    VRc.load_vendored_protocol_constants()
+    from hyptraj.m3s2s import truth_execution as TE
+    from hyptraj.m3wa1r.persistence import run_trial_transactional
+    plan = TE.truth_execution_plan(states)
+    by_sid = {s["state_id"]: s for s in states}
+    protocol_hash = sha(CFG / "m3s2s_truth_contract.json")
+    p_refs: dict = {}
+
+    def p_ref_for(cid: str) -> dict:
+        if cid not in p_refs:
+            rec_path = TRUTH_PREF / f"{cid}.json"
+            p_refs[cid] = (load(rec_path) if rec_path.exists()
+                           else VRc.load_config_p_ref(cid))
+            p_refs[cid]["record_hash"] = record_hash(rec_path) \
+                if rec_path.exists() else None
+        return p_refs[cid]
+
+    def run_unit(unit, ledger, out_dir, payload_fn, extra):
+        result = run_trial_transactional(
+            unit["unit_id"], out_dir, payload_fn, ledger_path=ledger,
+            pre_hash_validator=lambda rec: None, base_entry=extra)
+        if result["status"] != "COMPLETE":
+            raise RuntimeError(
+                f"M3-S2S-X: truth unit not durably COMPLETE: "
+                f"{unit['unit_id']}: {result}; CONSUMED_INVALID policy in "
+                "force; NO REPLAY")
+
+    for unit in plan["pref_units"]:
+        out = TRUTH_PREF / f"{unit['config_id']}.json"
+        if not (out.exists() and _completed(TRUTH_LEDGERS["pref"],
+                                            unit["unit_id"])):
+            run_unit(unit, TRUTH_LEDGERS["pref"], out,
+                     lambda u=unit: TE.pref_payload(u, protocol_hash),
+                     {"samples": unit["samples"], "stream": "pref"})
+        p_refs[unit["config_id"]] = load(out)
+        p_refs[unit["config_id"]]["record_hash"] = record_hash(out)
+
+    for unit in plan["discovery_units"]:
+        row = by_sid[unit["state_id"]]
+        out = TRUTH_DISC / f"{unit['state_id']}.json"
+        if out.exists() and _completed(TRUTH_LEDGERS["discovery"],
+                                       unit["unit_id"]):
+            continue
+        run_unit(unit, TRUTH_LEDGERS["discovery"], out,
+                 lambda u=unit, r=row, pr=p_ref_for(r["config_id"]):
+                 TE.discovery_payload(u, r, pr, protocol_hash),
+                 {"samples": unit["samples"], "stream": "discovery"})
+
+    for unit in plan["confirmation_units"]:
+        row = by_sid[unit["state_id"]]
+        out = TRUTH_CONF / f"{unit['state_id']}.json"
+        if out.exists() and _completed(TRUTH_LEDGERS["confirmation"],
+                                       unit["unit_id"]):
+            continue
+        run_unit(unit, TRUTH_LEDGERS["confirmation"], out,
+                 lambda u=unit, r=row, pr=p_ref_for(r["config_id"]):
+                 TE.confirmation_payload(u, r, pr, protocol_hash),
+                 {"samples": unit["samples"], "stream": "confirmation"})
+
+    summary = TE.consumption_summary({
+        "pref": _ledger(TRUTH_LEDGERS["pref"]),
+        "discovery": _ledger(TRUTH_LEDGERS["discovery"]),
+        "confirmation": _ledger(TRUTH_LEDGERS["confirmation"])})
+    dump(SUM / "m3s2s_truth_consumption.json", summary)
+    print("M3-S2S truth execute: all units durable COMPLETE; "
+          f"consumption = {summary}")
+    return summary
+
+
+def truth_panel() -> dict:
+    """Completion semantics: truth assignment + exposed inventory + 120-state
+    panel freeze ONLY after every required truth record is durable
+    COMPLETE.  Panel-blocked semantics per taskbook Sec. 47."""
+    from hyptraj.m3s2s import vendored_runtime as VRc
+    states = VRc.verify_universe()
+    ledgers = {k: _ledger(v) for k, v in TRUTH_LEDGERS.items()}
+    required = {"pref": 8, "discovery": 240, "confirmation": 240}
+    for stream, n in required.items():
+        comp = [e for e in ledgers[stream] if e.get("status") == "COMPLETE"]
+        inv = [e for e in ledgers[stream]
+               if e.get("status") == "CONSUMED_INVALID"]
+        if len(comp) != n or inv:
+            raise RuntimeError(
+                f"S2S-X: truth stage incomplete ({stream}: {len(comp)}/{n}, "
+                f"consumed-invalid {len(inv)}); no truth assignment, no "
+                "panel selection")
+    conf_records = []
+    for unit in (e for e in ledgers["confirmation"]
+                 if e.get("status") == "COMPLETE"):
+        p = TRUTH_CONF / f"{unit['state_id'].split('|', 1)[1]}.json"
+        rec = load(p)
+        if unit.get("record_file_hash") and \
+                record_hash(p) != unit["record_file_hash"]:
+            raise RuntimeError(f"S2S-X: confirmation hash mismatch: {p}")
+        conf_records.append(rec)
+    truth = TE.assign_truth(conf_records)
+    dump(SUM / "m3s2s_frozen_truth.json", {
+        "recorded_at": now(), "n_states": len(truth),
+        "composition": dict(Counter(truth.values())),
+        "source": "M3S2S-CONFIRM durable records (ALL_240_FRESH_CANDIDATES)"})
+    exposed = [{"state_id": s["state_id"], "config_id": s["config_id"],
+                "confirmed_truth": truth[s["state_id"]],
+                "status": "TRUTH_EXPOSED_DEVELOPMENT"}
+               for s in states]
+    dump(SUM / "m3s2s_truth_exposed_inventory.json", {
+        "recorded_at": now(), "n": len(exposed), "states": exposed,
+        "rule": "retired from all future untouched confirmation use"})
+    by_sid = {s["state_id"]: s for s in states}
+    panel_states = [dict(by_sid[sid], truth=t) for sid, t in truth.items()]
+    selection = TE.select_panel(panel_states, truth)
+    dump(SUM / "m3s2s_panel_decision.json", selection)
+    if selection["PANEL"] != "FROZEN":
+        raise RuntimeError(
+            f"M3-S2S-PANEL-BLOCKED: {selection.get('reason')}; STOP")
+    dump(CFG / "m3s2s_panel.json", {
+        "panel_sha256": selection["panel_sha256"],
+        "n_states": len(selection["panel"]),
+        "n_configs": selection["n_configs"],
+        "states": selection["panel"], "frozen": True})
+    print(f"M3-S2S truth panel: FROZEN ({len(selection['panel'])} states / "
+          f"{selection['n_configs']} configs, sha "
+          f"{selection['panel_sha256'][:16]}...); STOP -- "
+          "ARM_A_AUTHORIZED must remain NO")
+    return selection
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("stage", choices=["prepare", "candidates", "preflight",
-                                      "contracts", "docs", "hashlock", "all"])
+                                      "contracts", "docs", "hashlock",
+                                      "truth_preflight", "truth_execute",
+                                      "truth_panel", "all"])
     args = ap.parse_args()
     if args.stage == "prepare":
         prepare()
@@ -997,6 +1250,12 @@ def main() -> None:
         docs()
     elif args.stage == "hashlock":
         hashlock()
+    elif args.stage == "truth_preflight":
+        truth_preflight()
+    elif args.stage == "truth_execute":
+        truth_execute()
+    elif args.stage == "truth_panel":
+        truth_panel()
     elif args.stage == "all":
         all_stages()
 

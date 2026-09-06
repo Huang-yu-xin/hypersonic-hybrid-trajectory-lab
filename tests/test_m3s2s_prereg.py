@@ -309,7 +309,7 @@ def test_truth_contract_scope_fields():
     assert tc["discovery_states"] == 240 and tc["confirmation_states"] == 240
     assert tc["TRUTH_BUDGET_PLANNED"] == tc["TRUTH_BUDGET_MAX"] == 436_000_000
     assert "VERBATIM" in tc["estimator_and_label_reuse"]
-    assert len(tc["vendored_snapshots"]) == 7
+    assert len(tc["vendored_snapshots"]) == 22
 
 
 def test_vendored_snapshots_match_frozen_contract_hashes():
@@ -317,3 +317,173 @@ def test_vendored_snapshots_match_frozen_contract_hashes():
     for name, sha_val in tc["vendored_snapshots"].items():
         p = (R.CFG / "reference_truth_protocol" / name)
         assert R.sha(p) == sha_val
+
+
+# --------------------------------------------------------------------------
+# EXECUTION-READINESS AMENDMENT: vendored runtime + gated truth stage
+# --------------------------------------------------------------------------
+
+def test_universe_sha_pinned_and_verified():
+    from hyptraj.m3s2s import vendored_runtime as VR
+    states = VR.verify_universe()
+    assert len(states) == 240
+    assert VR.EXPECTED_UNIVERSE_SHA == ("1ff92a140e8ceb0878100ebdeea6bdcf5f6f"
+                                        "5fd91ec0838bf9a84b3931412ca0")
+
+
+def test_universe_sha_change_hard_fails(tmp_path, monkeypatch):
+    from hyptraj.m3s2s import vendored_runtime as VR
+    u = json.loads(R.ROOT.joinpath("configs/phase_m3s2s/m3s2s_candidate_universe.json")
+                   .read_text(encoding="utf-8"))
+    u["states"][0]["s2"] = 999.0
+    bad = tmp_path / "m3s2s_candidate_universe.json"
+    bad.write_text(json.dumps(u), encoding="utf-8")
+    monkeypatch.setattr(VR, "UNIVERSE", bad)
+    with pytest.raises(VR.VendoredRuntimeError, match="sha mismatch"):
+        VR.verify_universe()
+
+
+def test_vendored_protocol_hash_change_hard_fails(tmp_path, monkeypatch):
+    import json as _json
+    from hyptraj.m3s2s import vendored_runtime as VR
+    contract = _json.loads(VR.TRUTH_CONTRACT.read_text(encoding="utf-8"))
+    contract["vendored_snapshots"]["m3cf1n_pref_protocol.json"] = "0" * 64
+    bad_contract = tmp_path / "_tmp_contract.json"
+    bad_contract.write_text(_json.dumps(contract), encoding="utf-8")
+    monkeypatch.setattr(VR, "TRUTH_CONTRACT", bad_contract)
+    with pytest.raises(VR.VendoredRuntimeError, match="hash mismatch"):
+        VR.load_vendored("pref")
+
+
+def test_clean_checkout_vendored_only(tmp_path, monkeypatch):
+    """Truth resolution + preflight inputs must succeed with the four
+    historical roots inaccessible (clean-checkout simulation)."""
+    import builtins
+    from hyptraj.m3s2s import vendored_runtime as VR
+    forbidden = VR.FORBIDDEN_RUNTIME_ROOTS
+    real_open = builtins.open
+
+    def guarded_open(file, *a, **kw):
+        s = str(file).replace("\\", "/")
+        for f in forbidden:
+            if f in s:
+                raise PermissionError(f"clean-checkout guard: {s}")
+        return real_open(file, *a, **kw)
+
+    monkeypatch.setattr(builtins, "open", guarded_open)
+    states = VR.verify_universe()
+    consts = VR.load_vendored_protocol_constants()
+    assert consts["confirmation_samples_per_arm"] == 500_000
+    from hyptraj.m3d.benchmark_states import assemble_state
+    for s in states[:12]:   # sampled dry assembly under the guard
+        bench = VR.resolve_bench_config(s["config_id"])
+        st = assemble_state(bench, float(s["s2"]), short_config=s["config_id"])
+        assert not isinstance(st, dict)
+
+
+def test_truth_execution_plan_exact():
+    from hyptraj.m3s2s import vendored_runtime as VR
+    from hyptraj.m3s2s import truth_execution as TE
+    states = VR.verify_universe()
+    plan = TE.truth_execution_plan(states)
+    assert len(plan["pref_units"]) == 8
+    assert len(plan["discovery_units"]) == 240
+    assert len(plan["confirmation_units"]) == 240
+    assert plan["pref_samples"] == 4_000_000
+    assert plan["discovery_samples"] == 72_000_000
+    assert plan["confirmation_samples"] == 360_000_000
+    assert plan["total_samples"] == TE.TRUTH_BUDGET_PLANNED == \
+        TE.TRUTH_BUDGET_MAX == 436_000_000
+    assert plan["early_stop_on_quota"] is False
+    assert plan["confirmation_scope"] == "ALL_240_FRESH_CANDIDATES"
+
+
+def test_no_candidate_substitution_and_no_protected_overlap():
+    from hyptraj.m3s2s import vendored_runtime as VR
+    from hyptraj.m3s2s import truth_execution as TE
+    states = VR.verify_universe()
+    plan = TE.truth_execution_plan(states)
+    universe_ids = {s["state_id"] for s in states}
+    plan_ids = ({u["state_id"] for u in plan["discovery_units"]}
+                | {u["state_id"] for u in plan["confirmation_units"]})
+    assert plan_ids == universe_ids
+    protected = {r["state_id"] for r in R.csvread(
+        R.OUT / "m3s2s_protected_reserve_18.csv")}
+    assert not (universe_ids & protected)
+
+
+def test_started_before_simulator_and_consumed_invalid(tmp_path):
+    from hyptraj.m3cf1r0.persistence import ledger_entries
+    from hyptraj.m3wa1r.persistence import run_trial_transactional
+    ledger = tmp_path / "ledger.jsonl"
+    final = tmp_path / "out" / "u.json"
+
+    def sim():
+        raise RuntimeError("exploded after STARTED")
+
+    result = run_trial_transactional("DISC|x", final, sim,
+                                     ledger_path=ledger,
+                                     pre_hash_validator=lambda r: None)
+    assert result["status"] == "CONSUMED_INVALID"
+    entries = ledger_entries(ledger)
+    assert entries[0]["status"] == "STARTED"
+    from hyptraj.m3pi1vr0.persistence import ReplayError
+    with pytest.raises(ReplayError):
+        run_trial_transactional("DISC|x", final, lambda: {"ok": 1},
+                                ledger_path=ledger,
+                                pre_hash_validator=lambda r: None)
+
+
+def test_panel_selection_only_after_complete_truth_stage():
+    """truth_panel must refuse while ledgers are incomplete (no simulator
+    has run in this prereg round)."""
+    with pytest.raises(RuntimeError, match="truth stage incomplete"):
+        R.truth_panel()
+
+
+def test_panel_blocked_semantics_synthetic():
+    from hyptraj.m3s2s import truth_execution as TE
+    states = [{"state_id": f"s{i}", "config_id": f"c{i % 5}",
+               "rank": R.rank_hex(f"c{i % 5}", f"s{i}"), "truth": "WIDEN"}
+              for i in range(40)]
+    truth = {s["state_id"]: "WIDEN" for s in states}
+    out = TE.select_panel(states, truth)
+    assert out["PANEL"] == "M3-S2S-PANEL-BLOCKED"
+
+
+def test_panel_freeze_synthetic_meets_design():
+    from hyptraj.m3s2s import truth_execution as TE
+    states, truth = [], {}
+    for gi, grp in enumerate(("WIDEN", "SHRINK", "HOLD", "AMBIGUOUS")):
+        for i in range(30):
+            cid = f"c{gi}_{i % 8}"
+            sid = f"{cid}_{grp}_{i}"
+            states.append({"state_id": sid, "config_id": cid,
+                           "rank": R.rank_hex(cid, sid)})
+            truth[sid] = grp
+    out = TE.select_panel(states, truth)
+    assert out["PANEL"] == "FROZEN"
+    assert len(out["panel"]) == 120 and out["n_configs"] >= 8
+    from collections import Counter
+    assert Counter(t for t in truth.values()) == {
+        "WIDEN": 30, "SHRINK": 30, "HOLD": 30, "AMBIGUOUS": 30}
+
+
+def test_consumption_accounting_planned_actual_difference():
+    from hyptraj.m3s2s import truth_execution as TE
+    ledgers = {
+        "pref": [{"status": "COMPLETE", "samples": 500_000}] * 8,
+        "discovery": [{"status": "COMPLETE", "samples": 300_000}] * 240,
+        "confirmation": [{"status": "COMPLETE", "samples": 1_500_000}] * 240,
+    }
+    s = TE.consumption_summary(ledgers)
+    assert s["pref"] == {"planned": 4_000_000, "actual": 4_000_000,
+                         "difference": 0, "topup": 0}
+    assert s["total"]["planned"] == 436_000_000
+    assert s["total"]["actual"] == 436_000_000
+
+
+def test_truth_stage_gates_frozen_no():
+    assert not R._gate("TRUTH_SAMPLING_AUTHORIZED")
+    assert not R._gate("ARM_A_AUTHORIZED")
+    assert not R._gate("ARM_B_AUTHORIZED")

@@ -1,0 +1,70 @@
+{
+  "config_id": "cf0raw_b20300315_c085",
+  "event_schema": "corrected full-event v2",
+  "event_semantics_schema_version": 2,
+  "n_batches": 20,
+  "namespace": "M3-WCF1-PREF",
+  "p_batches": [
+    0.08116,
+    0.08224,
+    0.07952,
+    0.07836,
+    0.08036,
+    0.0802,
+    0.0764,
+    0.07988,
+    0.07976,
+    0.08072,
+    0.08232,
+    0.07768,
+    0.08048,
+    0.08176,
+    0.0818,
+    0.08012,
+    0.0778,
+    0.08152,
+    0.078,
+    0.08088
+  ],
+  "p_ref_full": 0.08004800000000002,
+  "p_ref_full_CI": [
+    0.07932137113338905,
+    0.08077462886661099
+  ],
+  "p_ref_full_SE": 0.0003707358259348279,
+  "physical_fields": {
+    "curvature_c": 0.35,
+    "curved_1": false,
+    "curved_2": false,
+    "curved_3": false,
+    "curved_4": true,
+    "h_1": 1.8872573496953484,
+    "h_2": 2.2265754138536407,
+    "h_3": 2.4535471710865817,
+    "h_4": 1.6100527584489361,
+    "offset_1": 0.0,
+    "offset_2": 0.0,
+    "offset_3": 0.0,
+    "offset_4": -0.4767294241461415,
+    "theta_1": 228.7222870331591,
+    "theta_2": 310.33143049854255,
+    "theta_3": 28.82774790406712,
+    "theta_4": 157.16384268369492
+  },
+  "recorded_at": "2026-09-05T15:32:54+0800",
+  "sample_count": 500000,
+  "schema": "m3wcf1_pref_v1",
+  "scientific_payload_hash": "529807c5b16bf91a80fb5eaabc7c23ca0a68a00224bfc34d3fc8747619a0ab38",
+  "seed_key": [
+    1476130269,
+    901
+  ],
+  "topology_counts": {
+    "S0": 459976,
+    "S1": 14317,
+    "S2": 6390,
+    "S3": 3571,
+    "S4": 15746
+  },
+  "wcf1_config_id": "wcf1_new_003"
+}

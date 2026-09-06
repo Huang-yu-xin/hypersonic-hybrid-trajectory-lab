@@ -51,6 +51,21 @@
     "m3cf1n_confirmation_protocol.json": "4b51e3e798ba6ba89f3776d90b8ecd896048d29789633410b26fb09c558a01ff",
     "m3cf1n_discovery_protocol.json": "637aae8962d0e4ed989ea3572977a2e0a847014e711ea7f03166d6925fdc467f",
     "m3cf1n_pref_protocol.json": "91ff5dd8898936ccff740490deaeb4f253832c0fdd56ccf7f965baef580f767a",
-    "m3wcf1_physical_config_manifest.csv": "18ca0ae9c6617da7d0fbbb5ab8c59225c6c0dd2b0f9fd32ac7db4a68f51432cf"
+    "m3wcf1_physical_config_manifest.csv": "18ca0ae9c6617da7d0fbbb5ab8c59225c6c0dd2b0f9fd32ac7db4a68f51432cf",
+    "pref_records/cf1n_new_000.json": "ee0a6c3544cc93c9afb3426c0a43ec10b932b9fd75f8eef4ce0024d86b84de75",
+    "pref_records/cf1n_new_001.json": "12b5951924879162604a805c7c55e4877203be735d583e2864558a4ca142f721",
+    "pref_records/cf1n_new_002.json": "49e27b84a626077cd0aa2132acf72e6ad494272a4cf52f17d38cfdf057160d85",
+    "pref_records/cf1n_new_003.json": "d45481ede3fc4aab526a547119438dbd24c07129504f03e11c2de4a500e8cf23",
+    "pref_records/cf1n_new_004.json": "48459502286e2523a04d548a1f17fcea9765d1c2e25ef83ab7aca6276bddb5a7",
+    "pref_records/cf1n_new_005.json": "761f0dcdc80a48d7112393b0d03fb7c4053f6ff5631a662c33d66aff22250ea9",
+    "pref_records/cf1n_new_006.json": "ea95f613a4381a5ce6f3dc293a35ba5ed7d0fdcf9c0d90b639d3b5cb5283c0fd",
+    "pref_records/cf1n_new_007.json": "0c8cc4d8a8c8f66e1196abe6cb14de223579a38ebddc9dc1ec5193fff756f2a1",
+    "pref_records/m3d2_probability_reference.json": "f6b5aef9fa42f03bc834cc3d660592df2ef96f560ab7b394779b9d74ad796b43",
+    "pref_records/wcf1_new_000.json": "3b049f3c7062fec28b7fac4d5e9246b3730459f3358c4fcdd9545c951fd9efd3",
+    "pref_records/wcf1_new_001.json": "5811a6a10c4f34087ed04bd73891581a4651d050fe1021d2fd8a45f9544d1913",
+    "pref_records/wcf1_new_002.json": "e32ea1c548df63849b6e04ea364654391a6d2b20e062469accf07d16e08dc8ea",
+    "pref_records/wcf1_new_003.json": "9829fa6cb7737c12cd198d7635f6e40cb611f5db4d964ddb58056635c74a748a",
+    "pref_records/wcf1_new_004.json": "e0af980417245e383ee52c13bd4be16546a068c47785ed560446d48d4bab384c",
+    "pref_records/wcf1_new_005.json": "54a9ab1db87797b2c9e01495e7aad6f11e700bbaa9c7d45ab54a136d8c6dec64"
   }
 }

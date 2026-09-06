@@ -1,0 +1,409 @@
+{
+  "schema_version": "raretopo-m3d2-probability-reference-set-v0",
+  "created_utc": "2026-08-31T13:39:08+00:00",
+  "git_commit": "59d324229bef9890052a4f7204d68d793d680e8a",
+  "records": [
+    {
+      "config_id": "m1d_b20260827_c000",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        0
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.067063,
+      "p_ref_full_SE": 0.00026542230501598764,
+      "p_ref_full_CI": [
+        0.06654278184147505,
+        0.06758321815852494
+      ],
+      "p_batches": [
+        0.06776,
+        0.06646,
+        0.06722,
+        0.06542,
+        0.0682,
+        0.06728,
+        0.06672,
+        0.06588,
+        0.06888,
+        0.06846,
+        0.06588,
+        0.06682,
+        0.06966,
+        0.06748,
+        0.06728,
+        0.06562,
+        0.06676,
+        0.06538,
+        0.06614,
+        0.06796
+      ],
+      "topology_counts": {
+        "S0": 932937,
+        "S1": 27987,
+        "S2": 5692,
+        "S3": 22946,
+        "S4": 10438
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c001",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        1
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.089218,
+      "p_ref_full_SE": 0.0002901212087894881,
+      "p_ref_full_CI": [
+        0.08864937287962138,
+        0.08978662712037863
+      ],
+      "p_batches": [
+        0.08974,
+        0.09086,
+        0.09006,
+        0.08904,
+        0.09144,
+        0.08964,
+        0.09052,
+        0.0882,
+        0.08714,
+        0.09016,
+        0.08856,
+        0.08808,
+        0.088,
+        0.09138,
+        0.08738,
+        0.0893,
+        0.0897,
+        0.08742,
+        0.08852,
+        0.08922
+      ],
+      "topology_counts": {
+        "S0": 910782,
+        "S1": 12536,
+        "S2": 10517,
+        "S3": 7037,
+        "S4": 59128
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c004",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        2
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.09350000000000001,
+      "p_ref_full_SE": 0.0003287200056358955,
+      "p_ref_full_CI": [
+        0.09285572062795586,
+        0.09414427937204417
+      ],
+      "p_batches": [
+        0.09254,
+        0.09458,
+        0.09426,
+        0.09274,
+        0.08964,
+        0.09264,
+        0.0934,
+        0.09586,
+        0.095,
+        0.09348,
+        0.09346,
+        0.09404,
+        0.09266,
+        0.09074,
+        0.0939,
+        0.0943,
+        0.09434,
+        0.09298,
+        0.09402,
+        0.09542
+      ],
+      "topology_counts": {
+        "S0": 906500,
+        "S1": 15576,
+        "S2": 48666,
+        "S3": 13613,
+        "S4": 15645
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c006",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        3
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.09542,
+      "p_ref_full_SE": 0.00035759135748416574,
+      "p_ref_full_CI": [
+        0.09471913381814825,
+        0.09612086618185176
+      ],
+      "p_batches": [
+        0.09506,
+        0.09476,
+        0.09182,
+        0.09716,
+        0.09514,
+        0.09486,
+        0.09668,
+        0.0962,
+        0.09336,
+        0.09544,
+        0.09348,
+        0.0953,
+        0.09532,
+        0.09606,
+        0.09628,
+        0.09906,
+        0.09702,
+        0.09548,
+        0.09354,
+        0.09638
+      ],
+      "topology_counts": {
+        "S0": 904580,
+        "S1": 22358,
+        "S2": 19907,
+        "S3": 42628,
+        "S4": 10527
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c007",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        4
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.08674899999999999,
+      "p_ref_full_SE": 0.00036007740395935066,
+      "p_ref_full_CI": [
+        0.08604326125659298,
+        0.087454738743407
+      ],
+      "p_batches": [
+        0.08976,
+        0.08738,
+        0.08766,
+        0.08804,
+        0.0871,
+        0.08758,
+        0.08744,
+        0.08674,
+        0.08394,
+        0.0864,
+        0.08358,
+        0.08942,
+        0.08816,
+        0.0868,
+        0.08672,
+        0.08442,
+        0.08516,
+        0.0863,
+        0.08602,
+        0.08636
+      ],
+      "topology_counts": {
+        "S0": 913251,
+        "S1": 30647,
+        "S2": 24724,
+        "S3": 23946,
+        "S4": 7432
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c010",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        5
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.096929,
+      "p_ref_full_SE": 0.000244516601524421,
+      "p_ref_full_CI": [
+        0.09644975626739001,
+        0.09740824373260999
+      ],
+      "p_batches": [
+        0.09846,
+        0.09696,
+        0.09756,
+        0.09742,
+        0.09452,
+        0.09598,
+        0.09622,
+        0.09856,
+        0.0974,
+        0.098,
+        0.09532,
+        0.09736,
+        0.09588,
+        0.09688,
+        0.09614,
+        0.09658,
+        0.09706,
+        0.0988,
+        0.09636,
+        0.09712
+      ],
+      "topology_counts": {
+        "S0": 903071,
+        "S1": 39686,
+        "S2": 14864,
+        "S3": 39264,
+        "S4": 3115
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c017",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        6
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.080947,
+      "p_ref_full_SE": 0.0002806806576501973,
+      "p_ref_full_CI": [
+        0.0803968760198486,
+        0.08149712398015141
+      ],
+      "p_batches": [
+        0.08066,
+        0.07782,
+        0.08114,
+        0.0805,
+        0.07932,
+        0.08208,
+        0.0804,
+        0.0814,
+        0.08274,
+        0.08142,
+        0.0799,
+        0.08256,
+        0.08092,
+        0.08002,
+        0.0807,
+        0.08256,
+        0.08188,
+        0.0809,
+        0.07962,
+        0.0824
+      ],
+      "topology_counts": {
+        "S0": 919053,
+        "S1": 44135,
+        "S2": 8795,
+        "S3": 12684,
+        "S4": 15333
+      }
+    },
+    {
+      "config_id": "m1d_b20260827_c020",
+      "schema_version": "raretopo-m3d2-full-event-reference-v0",
+      "event_semantics_schema_version": 2,
+      "event_definition_id": "FULL_TOPOLOGY_EVENT_S1_S4",
+      "nominal_topology": "S0",
+      "sampling_law": "N(0,I_2) direct target Monte Carlo",
+      "seed_key": [
+        3202000,
+        7
+      ],
+      "sample_count": 1000000,
+      "n_batches": 20,
+      "batch_n": 50000,
+      "p_ref_full": 0.11257399999999998,
+      "p_ref_full_SE": 0.00027733354419695084,
+      "p_ref_full_CI": [
+        0.11203043624166911,
+        0.11311756375833085
+      ],
+      "p_batches": [
+        0.11266,
+        0.11356,
+        0.1144,
+        0.1138,
+        0.11112,
+        0.1129,
+        0.11406,
+        0.11272,
+        0.11404,
+        0.11114,
+        0.1124,
+        0.11118,
+        0.1125,
+        0.1115,
+        0.11084,
+        0.11222,
+        0.11126,
+        0.11132,
+        0.11306,
+        0.1148
+      ],
+      "topology_counts": {
+        "S0": 887426,
+        "S1": 48205,
+        "S2": 39333,
+        "S3": 16069,
+        "S4": 8967
+      }
+    }
+  ],
+  "simulator_samples": 8000000,
+  "wall_clock_s": 2.161725000012666
+}

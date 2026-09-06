@@ -1,0 +1,37 @@
+{
+  "configs": {
+    "m3s2s_cfg_000": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c059"
+    },
+    "m3s2s_cfg_001": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c001"
+    },
+    "m3s2s_cfg_002": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c046"
+    },
+    "m3s2s_cfg_003": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c070"
+    },
+    "m3s2s_cfg_004": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c094"
+    },
+    "m3s2s_cfg_005": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c100"
+    },
+    "m3s2s_cfg_006": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c058"
+    },
+    "m3s2s_cfg_007": {
+      "origin": "M3-S2S-NEW-CONFIG",
+      "raw_candidate_id": "cf0raw_b20300315_c109"
+    }
+  },
+  "schema_version": "m3s2s_new_config_registry_v1"
+}
