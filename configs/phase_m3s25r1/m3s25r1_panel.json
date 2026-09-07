@@ -1,0 +1,1088 @@
+{
+  "frozen": true,
+  "n_configs": 30,
+  "n_states": 120,
+  "panel_sha256": "2bdb9a91562cc44c6dd9e1d1c0d49f8950e531c3108ea61b6d03eb0c153ce2b8",
+  "states": [
+    {
+      "config_id": "m3s2s_cfg_001",
+      "rank": "00bbf0cd034389a3b703e9c269236dee5fb8ca10d56b6e7be655366f92fbf819",
+      "s2": 0.5708962240933458,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_001_s2s_0.5708962241",
+      "truth_artifact_hash": "c4c3ceb4883171f27631033c6fb060659d65fef1714a1343673d52d1167920e3",
+      "u": 0.03076923076923078
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "rank": "00ec6ff9e5f5ae2c11cf26ca77c4fce9acf62e27166b4da21f83e8164bff2313",
+      "s2": 7.296235856432921,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_001_s25r1_7.2962358564",
+      "truth_artifact_hash": "e99efab4cfb26e1cd6fb882a64f46319d094bdf5ac79514500c10d955b67c9eb",
+      "u": 0.9661931818181818
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "rank": "01476b4ba7c7f27bdfb02a5738e89661aa8e280b71af2c42573ed5f5a8148b69",
+      "s2": 2.045693218813351,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_003_s25r1_2.0456932188",
+      "truth_artifact_hash": "e612fc51c9135064df8a69de8072eea857dc93b2099614f1b0172d3557300eba",
+      "u": 0.4993371212121211
+    },
+    {
+      "config_id": "c006",
+      "rank": "028c95b2bd855853234d676e746121e8fc35a4bafbb345a69f91f41f3d3a85f9",
+      "s2": 2.3028076477164583,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c006_s25r1_2.3028076477",
+      "truth_artifact_hash": "f0b7e0199ca1ddaa4487e420338b8cdb489f1d68280fd3f968a54dc534d70720",
+      "u": 0.5428030303030302
+    },
+    {
+      "config_id": "m3s2s_cfg_004",
+      "rank": "03fbb3054d755d99c9823f5d07131427ace3add3065eba221bf2fbafcc4164ab",
+      "s2": 7.623286751204756,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_004_s25r1_7.6232867512",
+      "truth_artifact_hash": "d55e6b2143b945af534cc28ad5f6a41d90cd52f251dbc63e822f9021b2acf070",
+      "u": 0.9822916666666667
+    },
+    {
+      "config_id": "c001",
+      "rank": "042a6ffc319c6729fea8ffe4bcfc059afb7e87256b78c7ed80548de3e7eb7959",
+      "s2": 2.470171404021675,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c001_s25r1_2.4701714040",
+      "truth_artifact_hash": "880681ef0204f5ce4df4ccac08870a913c8a95ba57b884d116b48b8f7e5349bf",
+      "u": 0.568560606060606
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "rank": "04551e340d720d7e59cbbddc05b14fea3ac153faa3805f46253296e81ccbe8ed",
+      "s2": 0.6750763676944642,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_003_s2s_0.6750763677",
+      "truth_artifact_hash": "488345458eb660de31db94b71c3ab2c4a4ba65ea7a8041d931973a02e2d0431c",
+      "u": 0.09230769230769229
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "rank": "047f633bdb795bf3f30b193f98d61662d58d59cab2fc0d20b25708dedde4777d",
+      "s2": 2.9566845757565385,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_005_s25r1_2.9566845758",
+      "truth_artifact_hash": "09163db9408fcbef1b8a74ea0b93e86a2b21f83f0112237d69a8f03ecb036b09",
+      "u": 0.6345643939393939
+    },
+    {
+      "config_id": "m3s2s_cfg_007",
+      "rank": "04a8ef54dc3929a1be936af562152426e04ab8dccfc05b49e25d26b8f2156fa7",
+      "s2": 2.5249267628168854,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_007_s25r1_2.5249267628",
+      "truth_artifact_hash": "e47b86e1810327db20e9f02182ee5283e2a7844597206f699a570ed8bb0ab9a0",
+      "u": 0.5766098484848484
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "rank": "0571b6cf26981ecec9c332dae2005e1519491aaa37734266598eec650141cdbc",
+      "s2": 0.8623542127621714,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_001_s25r1_0.8623542128",
+      "truth_artifact_hash": "6a4a883cfc90c126b8d9131455bfcd248b3e76af9ea1a4e6d8f1cec7848e540f",
+      "u": 0.18219696969696966
+    },
+    {
+      "config_id": "wcf1_new_001",
+      "rank": "0644dccaa9869f1da2de78e293df6e3bc53c7098c511ce2b1337247b44a70658",
+      "s2": 7.20088453181997,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_001_s25r1_7.2008845318",
+      "truth_artifact_hash": "e8ab5e4e2c657af3620b9b47ccad93f5e6e381a3d53bd45f106feb4acc7f7cdc",
+      "u": 0.9613636363636365
+    },
+    {
+      "config_id": "wcf1_new_002",
+      "rank": "06ba4cd1de591d09078c563c3b52f18a74b41054c60791011ee6323ade90b03f",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_002_s2s_0.5474673667",
+      "truth_artifact_hash": "a34fd2d389c7d8d8d9f6cf60623a279025c234d86fc0cc00a10c672fbaa42c6b",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "c020",
+      "rank": "0734a138c22643d9218ecb65f6a9e67c9f85cb74e1385cff9ee5f5fb4f1aa78c",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "c020_s2s_0.5474673667",
+      "truth_artifact_hash": "0a879894b4fb71cc75fca618f2d20649c908cdc0022e89aaa3fb53ffffecee72",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "rank": "086a0ca0d520f661b9a9f1063a6e834dbabda644456d0b534badd4601a929ee0",
+      "s2": 0.5953277190250709,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_003_s2s_0.5953277190",
+      "truth_artifact_hash": "4cc585f0ccc2524bbc6438f5900ba0b2a78de2ec0fd94be6eb1d3b91ef3d730c",
+      "u": 0.04615384615384613
+    },
+    {
+      "config_id": "cf1n_new_006",
+      "rank": "095ec91404f1af2370e5c5191e763aa0d15a13afbcd8e37a4a05b501d2b0f1a5",
+      "s2": 0.7039662502331828,
+      "source_stage": "M3-S2S",
+      "state_id": "cf1n_new_006_s2s_0.7039662502",
+      "truth_artifact_hash": "e8685b086d084d5a296a41c9421b26cf04c416ab56a20e0adab94f00da93b432",
+      "u": 0.10769230769230771
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "rank": "0a0c49b4e13fc92e2f8887149862e14917c3778e93c561a52fef3e4255805196",
+      "s2": 0.6750763676944642,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_000_s2s_0.6750763677",
+      "truth_artifact_hash": "bdd753ce9789e246281c365621341884731e6e5717a7228e1bf4a65121057b41",
+      "u": 0.09230769230769229
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "rank": "0aba6ea5b4a10da3b620fcde07df3462f0af684b7a569c19f2f266619bc6ae8c",
+      "s2": 1.2628832322046626,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_003_s25r1_1.2628832322",
+      "truth_artifact_hash": "845f6c31e6a8612f86b16b604219fb54a26bfccf683d4588674f0100eddba05c",
+      "u": 0.3222537878787879
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "rank": "0ae24a5fdec825ea2dbea03cd4e1369f20b4e2f1add327abbc147c3203531ea8",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_005_s2s_0.7340924748",
+      "truth_artifact_hash": "603e8d1cab10bc12ec127817df36710ecbd92362d63f2ad30d48f2d9e7b4def9",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "rank": "0b6f8654890079e2ef999e10cb6273d6a33664e9641eb5e778743fe144fc55e1",
+      "s2": 4.425926518014937,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_002_s25r1_4.4259265180",
+      "truth_artifact_hash": "e18bd88580fde1620aa8af1176f46e04546beee892c90e1c353ad24eafd01ee3",
+      "u": 0.7826704545454547
+    },
+    {
+      "config_id": "c007",
+      "rank": "0b8178c32e78167fb683259207a0846598966792c56c109c0d48a92c3e27dae7",
+      "s2": 5.0260873852773935,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c007_s25r1_5.0260873853",
+      "truth_artifact_hash": "8509a4316b6265784df1128f61cc26db0eabe3c8b534acf6632c133d036f38fe",
+      "u": 0.8293560606060606
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "rank": "0c5f314fd3836ce7fb528550f9363ac5a8c195557bfb32cd59c043b7f4b69f98",
+      "s2": 1.3726052042600168,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_002_s25r1_1.3726052043",
+      "truth_artifact_hash": "b2596a7481f8f287d040cec0b48c13978fc525eba3e779ba3ad82d1885f55426",
+      "u": 0.3528409090909091
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "rank": "0c6d239c5243007a08499f08abca767f08d40e942c39bbe771e01f2bab1c844f",
+      "s2": 3.4471236862687626,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_005_s25r1_3.4471236863",
+      "truth_artifact_hash": "91664744802e3a421e067fc01f0e9e24628ce8a5d6b95a99d66475d30a32a34c",
+      "u": 0.6909090909090909
+    },
+    {
+      "config_id": "m3s2s_cfg_006",
+      "rank": "0c8bebe66315b2f2c840bdedd5a2d0acc6c28c34b72976c9c6e62e215f73f735",
+      "s2": 4.406561746978047,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_006_s25r1_4.4065617470",
+      "truth_artifact_hash": "b8711d91eb534f78eaed21e6d22cdd99a8548cc1491ccc657598d5a318f1d2cd",
+      "u": 0.7810606060606059
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "rank": "0cfe0c47ebaef46b8a29ccf2a3ec0e947429c2f4844f301c1f1cc08f6029a026",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_005_s2s_0.7340924748",
+      "truth_artifact_hash": "b4eedb04637f63781e9b379469d060377001d92ab1950c46ce519c28c3483d14",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "m3s2s_cfg_001",
+      "rank": "0d55ed4ce1717fcfda09298e502d16fb1b6109bf2f078bd563cd4d179cd93f7a",
+      "s2": 4.180688309738426,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_001_s25r1_4.1806883097",
+      "truth_artifact_hash": "26d73b0a77b9cc2d4c338185d47243452cac3a9ab8c176e7f2f2ba1c2fe207cc",
+      "u": 0.7617424242424242
+    },
+    {
+      "config_id": "c001",
+      "rank": "0d6adf952853923c331d247f8032894e8c22d7b0622cc367d7a5c956e9a52a7e",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "c001_s2s_0.5474673667",
+      "truth_artifact_hash": "379031424f192f81f20427b866632a00c93a6d6e68839ed835b04b8ff4e429a9",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "c017",
+      "rank": "0dc9d2e73715a00291aab09505976c68f819ffab800108542ef598f3a025bd6f",
+      "s2": 1.161932107815011,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c017_s25r1_1.1619321078",
+      "truth_artifact_hash": "0ecec0967b6bd256e9a594446519f2c4c681af6b1485c6c15fcdc3fe06dbd1dd",
+      "u": 0.29166666666666663
+    },
+    {
+      "config_id": "c006",
+      "rank": "0e2f61ae9bba42c31080b8cf3c4e0d12f715e66bee559eeb6d2deb025debf957",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "c006_s2s_0.6473720893",
+      "truth_artifact_hash": "1d4a0bf7a854db97bb62c79e5b33ac64b076218996fa9fb324e34865bdd504a7",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "rank": "0f22115d5549c51b7eca123792c57e5e51c264592f0a96b11bba4176fd0ad086",
+      "s2": 1.1721668396538596,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_000_s25r1_1.1721668397",
+      "truth_artifact_hash": "09c549d0541556783c4dfb4d689064ff7d66c6834ece792b82c531e8ff74e7cc",
+      "u": 0.29488636363636356
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "0fec5e6fb0ca15f776937bf893c62992b2c66eb9b1b87d802d4fcf77457bcdc1",
+      "s2": 5.8855390450514635,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_004_s25r1_5.8855390451",
+      "truth_artifact_hash": "394690f878564527c57f97a798b5c4d76d58f70232c4325dc9d4fda416a21a66",
+      "u": 0.8873106060606061
+    },
+    {
+      "config_id": "wcf1_new_001",
+      "rank": "10410629095e3323c330dbde6a9c5e7314fac5138e6d1424ae0b0b321882f577",
+      "s2": 0.5708962240933458,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_001_s2s_0.5708962241",
+      "truth_artifact_hash": "c9ad99c1b2381ae6d839cc47e2fa3ee534ecccb41afe75d08b78f9e4b4ca2476",
+      "u": 0.03076923076923078
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "11967a983f8b0418e4fb3478bb9e67cc77b769fe5f3c4314e25628a75bc2d053",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_004_s2s_0.7340924748",
+      "truth_artifact_hash": "ed1c7418c8bc1b8c211c3c1e6aac631219a86120f5b946d05cdf26f1d7688613",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "rank": "121980d2b961b6a1498495ac169f42f8a4fb1083faa865ae57a2d59836200d3a",
+      "s2": 3.3282976109619073,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_005_s25r1_3.3282976110",
+      "truth_artifact_hash": "4a2d752ca00dd3db8c88dd21103fe062065dab1a74ecb5128e2cecf3d668c225",
+      "u": 0.6780303030303031
+    },
+    {
+      "config_id": "c020",
+      "rank": "12607cf4a3733f01b13f2dd95340f244b443e46f87fa027920da8cc5b56588ba",
+      "s2": 3.863400084688053,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c020_s25r1_3.8634000847",
+      "truth_artifact_hash": "c557ada843c4cccf61129a99b65b947a5b616e82477ce93f6f8134fad83e3d30",
+      "u": 0.7327651515151515
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "rank": "1371a2563431aa7d682d7198b8629d600c1797a87f199a9fd34af4e6640527db",
+      "s2": 1.841350082025258,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_003_s25r1_1.8413500820",
+      "truth_artifact_hash": "4d4a3908bae572bb7f0543f5ce5abd02cd5515135d48745e93230c51ece56bc0",
+      "u": 0.46070075757575757
+    },
+    {
+      "config_id": "cf1n_new_004",
+      "rank": "1413c4d6c269c93b3e97fe79be85e061e8da4361d8a081794dcff833b83c7521",
+      "s2": 1.336963670205001,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_004_s25r1_1.3369636702",
+      "truth_artifact_hash": "12030f9e75a1caa6b957387e85f5fe09ef070e85fdf42588ea21f41cb9d3b6f8",
+      "u": 0.34318181818181814
+    },
+    {
+      "config_id": "m3s2s_cfg_000",
+      "rank": "1518ce11513c1ba3798a8473a184991ea21c144b8936cbf3c5ccf32e16c2c9c9",
+      "s2": 0.5953277190250709,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_000_s2s_0.5953277190",
+      "truth_artifact_hash": "45cc1e6d2eb399e84d097523f3fabc5b7738d1ed446996f8b951bb5d51429bb1",
+      "u": 0.04615384615384613
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "rank": "1562d658bdf016a0d1f1b8095f5c28cfa48999c94b523bb713c6eaebdd76711f",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_005_s2s_0.5474673667",
+      "truth_artifact_hash": "a7978b04c8421084eab86526b964882f290f79fceef857523677a4fa50d905c7",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "15a39f8f10f5c609628a2f8a5a932333dbf02e99ae28a4da79f546959817ca0e",
+      "s2": 0.5708962240933458,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_004_s2s_0.5708962241",
+      "truth_artifact_hash": "d128870ba7a22bf920d8f03464fc036e37fa042671658478b50bfbfdb7cbfe18",
+      "u": 0.03076923076923078
+    },
+    {
+      "config_id": "m3s2s_cfg_007",
+      "rank": "1637276392af8c5fdd70af81b9af35f9862349a7a39cd675202638118c331be1",
+      "s2": 7.964997573352264,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_007_s25r1_7.9649975734",
+      "truth_artifact_hash": "4723f29dd749c9ed09075406645d7a77ac4d014901f64d38579b48b874cdde77",
+      "u": 0.9983901515151516
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "rank": "16ee35084d889cfd38eedf829af92a362225aff73586dac7fe1c0732bcf4907a",
+      "s2": 0.6750763676944642,
+      "source_stage": "M3-S2S",
+      "state_id": "cf1n_new_007_s2s_0.6750763677",
+      "truth_artifact_hash": "ce840a0ac182d617de6648aa183fb65ef406d8c52ebe3abe3fd89ab2752875cd",
+      "u": 0.09230769230769229
+    },
+    {
+      "config_id": "m3s2s_cfg_004",
+      "rank": "1932199c273e081dda4229a128281510ce128aebdeaf8ffb707ae9de268a8c60",
+      "s2": 3.812910993760432,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_004_s25r1_3.8129109938",
+      "truth_artifact_hash": "04ee7b360798ebdf60c46fe2f43298da4199c8742f0b165cf35e9d25ffd57fa8",
+      "u": 0.727935606060606
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "rank": "1936e81400609b5d7b1072f0b05354d3d7739925d2340d36fb468188b35c898f",
+      "s2": 5.297635883866693,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_003_s25r1_5.2976358839",
+      "truth_artifact_hash": "befaebaaf461ab85922229e1a0798be2585c2db154414c0d84b189ad47700dfa",
+      "u": 0.8486742424242424
+    },
+    {
+      "config_id": "m3s2s_cfg_007",
+      "rank": "19d5db159ea9377f1aebadd49995ce76512d8d3cd232417ebbf4d5987a306382",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_007_s2s_0.6473720893",
+      "truth_artifact_hash": "e9effdd796363472c40d7a74689bf9ffc194b0c4d78f95c09da28de9148f6aa3",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "c001",
+      "rank": "1babd2bb690a53136070dc8e6320e560c6bdfc79a352b4548213708c4015fa18",
+      "s2": 4.810460395213478,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c001_s25r1_4.8104603952",
+      "truth_artifact_hash": "e024bacd93dda28be3b6fd1c96f48b07bc126852084ffaf8c3bed45ab81c07c8",
+      "u": 0.8132575757575757
+    },
+    {
+      "config_id": "c004",
+      "rank": "1bb195010653834a1699451e1e7c0848d56a293f1ed64f2ba3adde82ee84b353",
+      "s2": 0.9835939853508554,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c004_s25r1_0.9835939854",
+      "truth_artifact_hash": "8ad7a61fb3679ffdf981250601b79c310c573aed5b547801272834e32fc5752c",
+      "u": 0.23049242424242422
+    },
+    {
+      "config_id": "c000",
+      "rank": "1df680028ee38e22b2bf571c438af3c5b964df66507bcb12e8b3b1b0087e4d3b",
+      "s2": 0.7039662502331828,
+      "source_stage": "M3-S2S",
+      "state_id": "c000_s2s_0.7039662502",
+      "truth_artifact_hash": "aeba701d74fda4fc3932bdb1d85a3b297b2d645cb741e1ee0388f840c997b84c",
+      "u": 0.10769230769230771
+    },
+    {
+      "config_id": "m3s2s_cfg_001",
+      "rank": "1f473a224e511b5c6f7eb7a287672a5fe01216ad54078480a37027aadcd3069a",
+      "s2": 6.424998469638752,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_001_s25r1_6.4249984696",
+      "truth_artifact_hash": "f1564cbd768eee94237a1d57627d5289df2230606a14a4ef26f72c42f2be2b16",
+      "u": 0.9195075757575758
+    },
+    {
+      "config_id": "m3s2s_cfg_000",
+      "rank": "1fe92e6df4cf0298155c9bf333e28c163ebb4053a759b74b106e66ee7ab19f3c",
+      "s2": 3.4020747300592924,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_000_s25r1_3.4020747301",
+      "truth_artifact_hash": "7032145cfa47b198ed38b1e35378a2a7a64c9d311399f55f7bead5bcf82c756d",
+      "u": 0.6860795454545455
+    },
+    {
+      "config_id": "c010",
+      "rank": "20c790078b77533c8ea3cfa913c525f796ff70447e480b0cb37de9d5d8fd994c",
+      "s2": 0.9413962688671675,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c010_s25r1_0.9413962689",
+      "truth_artifact_hash": "0cef18fe2513c3b517bde35c012491a5aae1d13e0b4562842f548f1b64807c4d",
+      "u": 0.2143939393939394
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "rank": "2118466a25aba963007842d178ae8083b145d35d9a5fd551b000d994bd6c109e",
+      "s2": 1.1876882190530829,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_002_s25r1_1.1876882191",
+      "truth_artifact_hash": "5fd82053bf7fece3694e692d32b56d7a83adb64e1569816f28951885fe9ee3c4",
+      "u": 0.29971590909090906
+    },
+    {
+      "config_id": "c006",
+      "rank": "216dbe17ac840aba3ac2919b35da805818ba3f75249eea73b1dc6b771bd341f3",
+      "s2": 0.6208047593981708,
+      "source_stage": "M3-S2S",
+      "state_id": "c006_s2s_0.6208047594",
+      "truth_artifact_hash": "217c18ea904bc2f752e8bde3ed5d386adcb6df5064cd6eb9c0d49a6e9b5cfdcc",
+      "u": 0.06153846153846152
+    },
+    {
+      "config_id": "c006",
+      "rank": "226b5441f2843621f69ddfa887452215578d3e3c7a7e1ed310134291d25c425b",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "c006_s2s_0.5474673667",
+      "truth_artifact_hash": "141462bca911c20e79da7625ff68591c964c9fc82bd155dece9b37521eeccfd5",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "rank": "23a789a643b9b8fe047c73b95dfe5e7fb7c8fbc1ae9d1fa50103fd17d533cd5d",
+      "s2": 4.36808601444072,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_003_s25r1_4.3680860144",
+      "truth_artifact_hash": "3eee0d37763870bc4cad8d3b006d616224cce30e413c19b33d113fbf10feaed0",
+      "u": 0.777840909090909
+    },
+    {
+      "config_id": "c004",
+      "rank": "25787c6d6c14326b59786c85992dd86da382d937fde751693a1400e3c6904646",
+      "s2": 0.6208047593981708,
+      "source_stage": "M3-S2S",
+      "state_id": "c004_s2s_0.6208047594",
+      "truth_artifact_hash": "7a2dfa7c7cd67bc53b72c8a2e9c49340931a45e60e63b247d8447657182b2def",
+      "u": 0.06153846153846152
+    },
+    {
+      "config_id": "c007",
+      "rank": "2740f60adfaad09ca6dc9b7f0d8852aecb22f5097cb4b8323634e9c37f10f4c4",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "c007_s2s_0.7340924748",
+      "truth_artifact_hash": "a9be8571833b5b899acf3501a8fe3bfae41ba30fa4561770fd270aeb65d7dc9e",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "c000",
+      "rank": "275aef4b1fbface1ef7074170ed8b7fe9a6c043168bf443d74b7a20726c24474",
+      "s2": 0.5474673667434494,
+      "source_stage": "M3-S2S",
+      "state_id": "c000_s2s_0.5474673667",
+      "truth_artifact_hash": "88892979b0c7f1679f9ddce0bfd08ba45f4979b1b8e500f534f043d922260eeb",
+      "u": 0.01538461538461539
+    },
+    {
+      "config_id": "cf1n_new_004",
+      "rank": "27e2aae049e2932b2f52530729c847b2ee91754b9d11703a25ca179d11070872",
+      "s2": 3.4320414745219754,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_004_s25r1_3.4320414745",
+      "truth_artifact_hash": "ff41668793c058ea4782f12214e3644f7d72753a9672e55ce0424a10cbbcd443",
+      "u": 0.6892992424242425
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "rank": "295717474198413db77d4697669300946495783bdb1b8de3b94c6e736db5cd4d",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_003_s2s_0.6473720893",
+      "truth_artifact_hash": "3ae181a16aa505d91cf5c454d46df33ae9aec11365513294ccc46ca1a0442d9d",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "c006",
+      "rank": "298dbe10a92eaee03130887d91a1ab10007d759239d26e91bdb6f6c8c7925edc",
+      "s2": 5.859788026463114,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c006_s25r1_5.8597880265",
+      "truth_artifact_hash": "b62db5f415676feed735621b629912f6b87be01ea0e6881574af731ccc83c4b3",
+      "u": 0.8857007575757576
+    },
+    {
+      "config_id": "c007",
+      "rank": "2a7b307edf77ed1fb3816c82f7737f87403d9c4b4202bb3114c2635faa64421d",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "c007_s2s_0.6473720893",
+      "truth_artifact_hash": "571ad5d9331bdc831e6c328033f849f3196d401873f1774045ce638c0853a7f2",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "c004",
+      "rank": "2b15f4e95fde55213411163b88ebcd5f8712d287774cfcafd1a750c7064f3e92",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "c004_s2s_0.7340924748",
+      "truth_artifact_hash": "e75aa2511dcc47e6975288d1045c80409753532bfecccab8d485297f945a0c92",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "m3s2s_cfg_006",
+      "rank": "2ca372c2baedbb0764c51204a4ba04315651460f1036bfb37ae8004fb2028825",
+      "s2": 0.6750763676944642,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_006_s2s_0.6750763677",
+      "truth_artifact_hash": "a74d8effaebdb6e460f572cf684f88a45889c859800b4f7de28a8c0e1f73fe41",
+      "u": 0.09230769230769229
+    },
+    {
+      "config_id": "c000",
+      "rank": "2ce1962645ea9b2aefe16441c48e3d1b9178975fb95ca996bd7cc70dc6d21970",
+      "s2": 2.0367426904589405,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c000_s25r1_2.0367426905",
+      "truth_artifact_hash": "9c2c24d677e6dc461d74abd13024d65955bbeee86dfc3bef897f6b64362c2a78",
+      "u": 0.49772727272727274
+    },
+    {
+      "config_id": "c006",
+      "rank": "312f3e036207856436becac329d1bc34890df4ebd7c2f00e310803579cb6e617",
+      "s2": 7.860906493499283,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c006_s25r1_7.8609064935",
+      "truth_artifact_hash": "1f22fe5e5c2459dadd613d20c6e33eebe5184ac36439b2b1490481ac95bb1e6a",
+      "u": 0.9935606060606059
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "rank": "315b27629cb8a46e7e1bfed237de9c9efbff1b8746da33a6f2cfdd338015a9b7",
+      "s2": 1.7165914252377463,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_005_s25r1_1.7165914252",
+      "truth_artifact_hash": "4b69e3932f58614640bd3398e3c09addcb76864012ad1cb7b615d7b64f7104f5",
+      "u": 0.4349431818181818
+    },
+    {
+      "config_id": "wcf1_new_003",
+      "rank": "3463a4dbfd62e45ee7a87339ba90da58abdb87af6545436ed9f01af0a1f6a464",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_003_s2s_0.7340924748",
+      "truth_artifact_hash": "1090fe92106b68fa90c329b30d10aa536b54bf17d982f291ab5893fbdea57667",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "34a6998ebb8e2b7652b09a72fb9297a7a2e256cad9ba51299555da4970a9536f",
+      "s2": 7.425337891976374,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_004_s25r1_7.4253378920",
+      "truth_artifact_hash": "4cd808a3be85910baf87da3377145a483162ba7c563068c819baaa80038467cf",
+      "u": 0.9726325757575758
+    },
+    {
+      "config_id": "m3s2s_cfg_004",
+      "rank": "34c52266a0320e2f45a367db4cc5f94b73c47c85f05ff380c1f8e8f69350300e",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_004_s2s_0.7340924748",
+      "truth_artifact_hash": "ab51648012e5684b5bce5e9a4b1b8236135c9498c16e39d4c557f8251524b5ae",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "rank": "353af58b8fb9bc64e02581cb35ba26232504065a6e59efec2a4122eaeaf7e04b",
+      "s2": 3.2704295377885777,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_003_s25r1_3.2704295378",
+      "truth_artifact_hash": "b4641b640357c6e298d081ba8b09d342e24adfd4ba41fd28986f518cbbad6613",
+      "u": 0.6715909090909091
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "rank": "382bb006e838aa855c3704c67e74de303de8aff1ce7d8e4133fc9152e792975a",
+      "s2": 1.992574052210921,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_005_s25r1_1.9925740522",
+      "truth_artifact_hash": "44e839d59caa901cbc1687f7d5d66d8f848895e37d5f068d6ebf6d894c2d20a3",
+      "u": 0.4896780303030303
+    },
+    {
+      "config_id": "m3s2s_cfg_007",
+      "rank": "38775a660603e5f8845a6e8eb3531edf7c5f2489b6a3a54742eb85579f8c1c8b",
+      "s2": 2.128038878307266,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_007_s25r1_2.1280388783",
+      "truth_artifact_hash": "5e5e670c79d27a2773d2fc3dbd32514b1a0ee6ac885ac1b2272e402caa63735b",
+      "u": 0.5138257575757575
+    },
+    {
+      "config_id": "m3s2s_cfg_000",
+      "rank": "389790287d46a25ae6f7cfcc6f16a2f9dd7660fb15a17f31a3aa0e62719450e0",
+      "s2": 0.7340924748408014,
+      "source_stage": "M3-S2S",
+      "state_id": "m3s2s_cfg_000_s2s_0.7340924748",
+      "truth_artifact_hash": "da20fc945a260ae00063c6d397c4d325df5a19d3bdce24659fc4fbe7ee1c0336",
+      "u": 0.12307692307692308
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "rank": "39f5a1559b221ea8afafdad635fd5cc9ecdcde6d7e4ea67c85e38afaa7713040",
+      "s2": 2.165693109380792,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_007_s25r1_2.1656931094",
+      "truth_artifact_hash": "cd306786819261cbd05c05e8d46c132f68aa90b961fc1d435dfc12d50ed1f2e1",
+      "u": 0.5202651515151515
+    },
+    {
+      "config_id": "c007",
+      "rank": "3b6a87e136e1d1338254201b9c88ac226f0c6b1b8e93a81e981a6d414e58ab9e",
+      "s2": 2.3955029808656003,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c007_s25r1_2.3955029809",
+      "truth_artifact_hash": "7a21eeab982083f94b062b522394b7fe288bfb718506a3d414efff72710e5178",
+      "u": 0.5572916666666666
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "rank": "3c184e42f6ff47b0fce0737d9b999aa653478900e309beb9c561afa89b403e87",
+      "s2": 5.583855553375567,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_001_s25r1_5.5838555534",
+      "truth_artifact_hash": "375046ac1632b34ceab0fe22251860c63073dae3375dcf7945a770f073547ef7",
+      "u": 0.8679924242424243
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "3c4a6148fddc2fcad3be4abd4a33f3cd4fcd6bc8a2d1c6611d1dc969e30605b6",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_004_s2s_0.6473720893",
+      "truth_artifact_hash": "6f545d18a30e32ce897b0cf9cf2cead793fc7e479c509c6f074856da552441a9",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "c007",
+      "rank": "3ca29b1183d4ea2e4adc1c30f8aa9d30e3f0a1864b05ef045d45456acbdb3005",
+      "s2": 1.6357585836558257,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c007_s25r1_1.6357585837",
+      "truth_artifact_hash": "deb1a5ec36ea4950a27f9f51f06bbb0c402f31296c64b28938b7dacb35091498",
+      "u": 0.4172348484848485
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "rank": "3cb721dc9b50376c0983fa28aa2ea1da95b03b51c4b9ed6e258e90ff82b1c905",
+      "s2": 0.6208047593981708,
+      "source_stage": "M3-S2S",
+      "state_id": "cf1n_new_000_s2s_0.6208047594",
+      "truth_artifact_hash": "e9082e9fa799133bfad10790ce78511c750a6877e4196b00c4e27e16646eca6e",
+      "u": 0.06153846153846152
+    },
+    {
+      "config_id": "cf1n_new_007",
+      "rank": "3defe9ef1bcd3b2565a0d9505abaa904379c5be0fcee6310efaa5ef2e794ae5b",
+      "s2": 3.1164277707715455,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_007_s25r1_3.1164277708",
+      "truth_artifact_hash": "19bf209d2d2040cb7141edc6713552eb24459a83d4d3f1722f9850b2d8bc48a4",
+      "u": 0.6538825757575758
+    },
+    {
+      "config_id": "cf1n_new_004",
+      "rank": "4206486f14048fba66e049f68546f25d7ddd193e1b3ef2ac99e602e962503636",
+      "s2": 5.963473074062353,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_004_s25r1_5.9634730741",
+      "truth_artifact_hash": "db0a25ddfb4578b9b4c0043bfd9f63cfc2dcbcc995f075409cbb3b13d1347668",
+      "u": 0.8921401515151515
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "rank": "43fb1bcefdd813aea75f3f946c392df74d8ae732a85d563ccf7ed79b7bdeb2b2",
+      "s2": 5.092640888210114,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_002_s25r1_5.0926408882",
+      "truth_artifact_hash": "26049d76af501fbc0d52e7d47d7bf9bd6577011cdffa4be538e9c0a46f501040",
+      "u": 0.8341856060606061
+    },
+    {
+      "config_id": "c007",
+      "rank": "4e5112bf42affadcc1838b28617027b3f824a661da3ac49bb931c9f810c06031",
+      "s2": 4.162396530251093,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c007_s25r1_4.1623965303",
+      "truth_artifact_hash": "7ac4242e99df2dcf09ea0b08a59e43c48b16e7c1c56fa4ff9ea5742866fa788e",
+      "u": 0.7601325757575758
+    },
+    {
+      "config_id": "c004",
+      "rank": "4f3a42acfe6f9173929eab937f609d99293802991e2637d0903427ba116e554d",
+      "s2": 7.26431261138675,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c004_s25r1_7.2643126114",
+      "truth_artifact_hash": "caff2df932e96e92214b6de627af1730e5f1323cbc1e442e843dde1022081537",
+      "u": 0.9645833333333335
+    },
+    {
+      "config_id": "cf1n_new_006",
+      "rank": "50ebe59b1003f49330b31f769a6ebea0788854e220b7c57ba4772fc27b238b86",
+      "s2": 7.044726728754504,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_006_s25r1_7.0447267288",
+      "truth_artifact_hash": "9136ec0e23263a4f130f16fa10e1370982c39adbd4f121173db829ed8674ca5b",
+      "u": 0.9533143939393941
+    },
+    {
+      "config_id": "c007",
+      "rank": "55b941aadccdd17f721e52e573e0e2e92664104dd38fea405194cc85583535bf",
+      "s2": 0.6208047593981708,
+      "source_stage": "M3-S2S",
+      "state_id": "c007_s2s_0.6208047594",
+      "truth_artifact_hash": "cfef889c0ddae736902c3b1eaa7a863228f184351d64c4f3e7656adea36b38e0",
+      "u": 0.06153846153846152
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "rank": "55cc6d7552e858ec0578c6e91e34fa7e1cb862d0dea256cbc11e90c80e6a7841",
+      "s2": 2.879910297420927,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_000_s25r1_2.8799102974",
+      "truth_artifact_hash": "be66265bd5af8b57693132192faafe7c966aece341efe66c2c14a378040b8682",
+      "u": 0.624905303030303
+    },
+    {
+      "config_id": "c017",
+      "rank": "57f49520b35ff2fb9543f08f34cf2be86146548d44dcb8640ddd401890ae641f",
+      "s2": 2.063712448489754,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c017_s25r1_2.0637124485",
+      "truth_artifact_hash": "3cabdf5337916098763d2a7bc36eff37fdc276c2ea6ff16a38c0656af9b802c7",
+      "u": 0.5025568181818182
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "rank": "5a31da9f1a95f7868ea4f7d382a0ea6cc17adc3752bc83e8e9d3e80754b4eb08",
+      "s2": 2.323091637282035,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_002_s25r1_2.3230916373",
+      "truth_artifact_hash": "36d72c7b1a2faacbeb5381ffeda0fab5a7ebeca144bb2ca65e4ab0caf0fbf01c",
+      "u": 0.5460227272727273
+    },
+    {
+      "config_id": "c006",
+      "rank": "5b80c33f701de2d99f4ad9dfe171ee04ad3e2669dde99f70f26058bb190cf9aa",
+      "s2": 0.5708962240933458,
+      "source_stage": "M3-S2S",
+      "state_id": "c006_s2s_0.5708962241",
+      "truth_artifact_hash": "9bdc77cd02a824c6eb6730a16004b594ab4c2f8ae2fe3de149d518c98ffd2aca",
+      "u": 0.03076923076923078
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "rank": "5e817cd61d011f46ccc776c0dbfe1e7bfd296198273df0743582bdd3edeea0c7",
+      "s2": 6.952662267251274,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_002_s25r1_6.9526622673",
+      "truth_artifact_hash": "cc5c4f1f66512b5f810dc3ece57dd3a696b5a31d57594a6f124546c7402c1d36",
+      "u": 0.9484848484848484
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "rank": "5e83faaf86109669e062cf758f004ab671d5c8d6a853e2b0f6b3049b38ee5f98",
+      "s2": 2.615071086652177,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_005_s25r1_2.6150710867",
+      "truth_artifact_hash": "2fac4a1e8a3f9c887e36a3de6bf1e5e2e0668299aa3ad3a43e78cf5a929e6b6e",
+      "u": 0.5894886363636364
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "rank": "5fe4664991b0a67e161158a06fc801ed3bde54f34fe208cec93a657c627c51eb",
+      "s2": 2.2627694489017665,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_002_s25r1_2.2627694489",
+      "truth_artifact_hash": "7c929def19c7acc537cd93efbb0bd4d9d1665b0b795489bd434f3f7907857d6e",
+      "u": 0.5363636363636364
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "rank": "6705d2923b8b8b88189ba96d942e4910021422b1aa53e4ea9b7d260665aad4f3",
+      "s2": 6.068992759543905,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_000_s25r1_6.0689927595",
+      "truth_artifact_hash": "47c0797b65ea86d0db22adf7208f92f1d64f7327631f250e573a14d8d7066f81",
+      "u": 0.8985795454545455
+    },
+    {
+      "config_id": "cf1n_new_005",
+      "rank": "6a5691732eaca8e8b692b61eae52de92436b6d844c42ac6a0bbefaa878ed0eb0",
+      "s2": 7.392849786364052,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_005_s25r1_7.3928497864",
+      "truth_artifact_hash": "815404ef8cf873f2bf14821886324c5100c28f8e22fefc72ec9e5c06d18d05c9",
+      "u": 0.9710227272727273
+    },
+    {
+      "config_id": "c006",
+      "rank": "72c2242a21a5737725acb8752404275adef5a91ba313dbbd387985cbc0b047c3",
+      "s2": 0.5953277190250709,
+      "source_stage": "M3-S2S",
+      "state_id": "c006_s2s_0.5953277190",
+      "truth_artifact_hash": "6464891c669f9c313346bfab4758da911b968768dfc5aea8d6bf7ecbf1b38f51",
+      "u": 0.04615384615384613
+    },
+    {
+      "config_id": "wcf1_new_000",
+      "rank": "761013f74ee013ef1a1ef8a73e9f604c1b3243a8f23c1b68bbc02cf400831c79",
+      "s2": 0.6473720893133662,
+      "source_stage": "M3-S2S",
+      "state_id": "wcf1_new_000_s2s_0.6473720893",
+      "truth_artifact_hash": "aa4a407ab28ccc593bc681934f7c5e1be254efeb0e34a4a26fe814c57b05f4d2",
+      "u": 0.07692307692307693
+    },
+    {
+      "config_id": "m3s2s_cfg_002",
+      "rank": "796fcc72b1cca9849dfd147e6501260964d70fe6b4d5cf3621d8555308230d02",
+      "s2": 2.805129566135376,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_002_s25r1_2.8051295661",
+      "truth_artifact_hash": "1c0dc239c80f6f16124e98ef636353e85721d7be94d62d582406239a8d83824a",
+      "u": 0.6152462121212121
+    },
+    {
+      "config_id": "c010",
+      "rank": "7abbaaa17c31486572017598e7b3849f6dc0ad85cdbe750fd447e2dea75981e9",
+      "s2": 7.044726728754504,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c010_s25r1_7.0447267288",
+      "truth_artifact_hash": "0a9271a20331c477269116839c12d292445cc4583fc014eccf10f9f1473c230c",
+      "u": 0.9533143939393941
+    },
+    {
+      "config_id": "c020",
+      "rank": "7ec05f2cd62717445db010a608cee5454a6fcf3418afcbe1c3d685730f40c847",
+      "s2": 5.004096728398859,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c020_s25r1_5.0040967284",
+      "truth_artifact_hash": "01fee1a1b9c8ba0ad373b4adf87f61482feffa1a69de7480030aff18401ace73",
+      "u": 0.8277462121212122
+    },
+    {
+      "config_id": "c017",
+      "rank": "8051294e36f1484d980d82bf6cfb7dfc47a768b1515ef64b9d284e2882bb6764",
+      "s2": 6.453233322891907,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c017_s25r1_6.4532333229",
+      "truth_artifact_hash": "3aeac7edc5a8b02294b97e396be2eab6ada5f2450a0b869623ee22e7e1485db7",
+      "u": 0.9211174242424243
+    },
+    {
+      "config_id": "m3s2s_cfg_003",
+      "rank": "820d237d876868458dc0e13724809a32d368097abc8acc5721ca224f82361573",
+      "s2": 2.1847693428979427,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_003_s25r1_2.1847693429",
+      "truth_artifact_hash": "008dfc0c3a4e979013bf7b3085e9981f3b6dea3f71a1c979b5af468f812c38ba",
+      "u": 0.5234848484848484
+    },
+    {
+      "config_id": "wcf1_new_002",
+      "rank": "89070e9395bcb8b8909d9684d1048a41f9882d9e7ff9e5af56cc4f7e331ef095",
+      "s2": 4.217513373323632,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_002_s25r1_4.2175133733",
+      "truth_artifact_hash": "0d99d369f5b359047cb4b55d7b45d5ad24832115403487c375fe1dbe60605efd",
+      "u": 0.7649621212121211
+    },
+    {
+      "config_id": "cf1n_new_006",
+      "rank": "911684d7d553e9ee394e8c2e142535bd5dccb3d158d66bb7261bdef4015fb4cb",
+      "s2": 5.63304023794645,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_006_s25r1_5.6330402379",
+      "truth_artifact_hash": "31c2270ed2fd2a914bedf96638d68420c3f7df8c2fbcfcebfe01cd646dd24167",
+      "u": 0.8712121212121212
+    },
+    {
+      "config_id": "wcf1_new_004",
+      "rank": "962631ab40d803af7ebc7cd93c37e5f528ba40ceddcbccab9383900524142f3c",
+      "s2": 1.9751759648367304,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_004_s25r1_1.9751759648",
+      "truth_artifact_hash": "615e74d64595a2f1e924112bd84f080ceb3b0e7db39e642e34c978428423b38c",
+      "u": 0.48645833333333327
+    },
+    {
+      "config_id": "c000",
+      "rank": "96435fa058a340ed1e8e293e23e0e6c8fb892391e02911441cfc496724801f84",
+      "s2": 6.5386845397049465,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c000_s25r1_6.5386845397",
+      "truth_artifact_hash": "e909fd13f9cfc4207faeab3d6517a340bd942565cc3fcb5ae8a21f102ea7b4ee",
+      "u": 0.9259469696969698
+    },
+    {
+      "config_id": "cf1n_new_000",
+      "rank": "a407fb50b84b2c1671fb04e37ffdd9aafa5d6b374822254739b24c4c8c24e277",
+      "s2": 3.8803779151054245,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_000_s25r1_3.8803779151",
+      "truth_artifact_hash": "6000bde1a02478165973f9d9a6944eaaf4e7e244c0a373666170d1516ee78e5a",
+      "u": 0.734375
+    },
+    {
+      "config_id": "wcf1_new_002",
+      "rank": "aa2e74aaa429453a2ef6f86df809afc708487cb26f9c9382f6b228c8096930d6",
+      "s2": 7.044726728754504,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_002_s25r1_7.0447267288",
+      "truth_artifact_hash": "1970eb129c68f8420946f8467d559d8cc36ad00062d28c28125b0fa5436bb368",
+      "u": 0.9533143939393941
+    },
+    {
+      "config_id": "wcf1_new_005",
+      "rank": "ae31a3516fcf211fa8c9363be918d04c06f115dac7ee2a67974c8d247454774d",
+      "s2": 1.7241350390169943,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_005_s25r1_1.7241350390",
+      "truth_artifact_hash": "065d70d0d7a618cc06d4b557071173023ef49083bdc8dd923ecd467a896c3b98",
+      "u": 0.4365530303030303
+    },
+    {
+      "config_id": "m3s2s_cfg_005",
+      "rank": "b7de1ae149d818a460359cd47b9681836667b57de2b484cd5b0ef27211cc20aa",
+      "s2": 7.044726728754504,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_005_s25r1_7.0447267288",
+      "truth_artifact_hash": "4fbe531fffe00b71fb956e5f68c4db668642bd3c48f00b3bdca958804d000539",
+      "u": 0.9533143939393941
+    },
+    {
+      "config_id": "wcf1_new_001",
+      "rank": "c11d06f47b213d483458ec6568c9de300233a5d8859c0efd5ebcb085d0f02fe0",
+      "s2": 4.706141137804123,
+      "source_stage": "M3-S25-R1",
+      "state_id": "wcf1_new_001_s25r1_4.7061411378",
+      "truth_artifact_hash": "67c0f6c193936c046b058dd5c54de35d36c7c932e7a8a075aa0fc480b2d519df",
+      "u": 0.8052083333333333
+    },
+    {
+      "config_id": "cf1n_new_003",
+      "rank": "c5060de9bdff72232583ea7f5a791c5f2e65c0f9fede75541ddc7083bb9c6e6e",
+      "s2": 4.162396530251093,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_003_s25r1_4.1623965303",
+      "truth_artifact_hash": "572d6a3c549e6a26230d55b06cbf5119cf0f9bae187535ea3dd80e1835300eb7",
+      "u": 0.7601325757575758
+    },
+    {
+      "config_id": "m3s2s_cfg_001",
+      "rank": "c993addce677bbdd3e57df30219bc0266c69d256b1e31e28669c2592788d9506",
+      "s2": 2.8422740056358347,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_001_s25r1_2.8422740056",
+      "truth_artifact_hash": "5e1a1b97ae5be5db031a8095caadb4aa1f72c1afcd047f8ccc20fe0980b782c2",
+      "u": 0.6200757575757576
+    },
+    {
+      "config_id": "cf1n_new_001",
+      "rank": "cb7ccf0bf0e8630587c124df312a8221c54edfa354e302175e6ce0ff1ebf88be",
+      "s2": 1.915470280239289,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_001_s25r1_1.9154702802",
+      "truth_artifact_hash": "928ae08044f85d05f2ee9dd1c190bd28a8fd225e2c136aaeb9cb7cbde6a7b3a9",
+      "u": 0.47518939393939397
+    },
+    {
+      "config_id": "c010",
+      "rank": "d20d704ce5e9142394c6bbc0a735c401609e8bff1f40d28cfb7770dedb4cef24",
+      "s2": 5.137498770604292,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c010_s25r1_5.1374987706",
+      "truth_artifact_hash": "cc23a0553c6bf1c2dc5c7ee6e0449e499a2afa1feaed91ed057dd66ed82a1a99",
+      "u": 0.837405303030303
+    },
+    {
+      "config_id": "c000",
+      "rank": "e27b5c28837d91a201f56d25ffc547254383af1b96a638c6432a5409c938e136",
+      "s2": 2.969677817001163,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c000_s25r1_2.9696778170",
+      "truth_artifact_hash": "d87703849b578d1c33d44704e44fbb01c3071da80db8cd542486f34ceb378c1c",
+      "u": 0.6361742424242425
+    },
+    {
+      "config_id": "c017",
+      "rank": "e31fe610328a99fd22f6148de85b405b8f006b0e4478ef30a9dc876d381fb7d7",
+      "s2": 5.8855390450514635,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c017_s25r1_5.8855390451",
+      "truth_artifact_hash": "d8088d2b504bfb51fa53d80b338b7950b8b65387c48dc9b04ee8d61c1779a186",
+      "u": 0.8873106060606061
+    },
+    {
+      "config_id": "c000",
+      "rank": "efd3caea242d4fef673250a6a0877df8b6440125c68d65162f8f8ccc68096221",
+      "s2": 3.417025252026482,
+      "source_stage": "M3-S25-R1",
+      "state_id": "c000_s25r1_3.4170252520",
+      "truth_artifact_hash": "5c5b0b8892cbd2353bd1c2e1bc539d7c89c5ffad6e895bb7fdc57c2104c695ac",
+      "u": 0.687689393939394
+    },
+    {
+      "config_id": "m3s2s_cfg_000",
+      "rank": "f1898e4935d3e142721ad4d5d7b636f74236f25aa9159283e450a9e1570b33e2",
+      "s2": 5.8855390450514635,
+      "source_stage": "M3-S25-R1",
+      "state_id": "m3s2s_cfg_000_s25r1_5.8855390451",
+      "truth_artifact_hash": "55756d7e074286de273980878c27fb8dd73fdb0e33ecf94aab892b3527104db6",
+      "u": 0.8873106060606061
+    },
+    {
+      "config_id": "cf1n_new_002",
+      "rank": "f5917c12b2734271535120af438f53c4f10f578dfc85fbcab9c7cf9edcc3afea",
+      "s2": 2.626563096919122,
+      "source_stage": "M3-S25-R1",
+      "state_id": "cf1n_new_002_s25r1_2.6265630969",
+      "truth_artifact_hash": "4b32c5860c16ac7bb07ac9ae189b7d066f8995b2e1fe2b548fb73ec564d0b5f7",
+      "u": 0.5910984848484847
+    }
+  ]
+}
