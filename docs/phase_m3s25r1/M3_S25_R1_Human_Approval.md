@@ -6,12 +6,30 @@ M3-S2S T1 gate is CLOSED (see `docs/phase_m3s2s/M3_S2S_Closure_Record.md`)
 and may not be reused for any R1 activity.
 
 ```text
-M3_S25_R1_TRUTH_AUTHORIZED: YES
+M3_S25_R1_TRUTH_AUTHORIZED: NO
 M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
-AUTHORIZATION_DATE: 2026-09-06
+AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0)
 ```
+
+## Truth gate closure record (M3-S25-R1-A0, closure-only, 2026-09-06)
+
+```text
+M3_S25_R1_TRUTH_AUTHORIZED = NO
+status = CLOSED / EXERCISED
+truth terminal HEAD = 089c6a48c73831fbd95e2caa5b21137b485080aa
+```
+
+- The M3-S25-R1.2 truth authorization was exercised exactly once
+  (480/480 durable COMPLETE, exact 432,000,000 samples, 0
+  CONSUMED_INVALID, terminal M3-S25-R1-PANEL-FROZEN) and is now
+  permanently NO: no truth re-run, no top-up, no replay under M3-S25-R1.
+  This closure prevents accidental truth re-entry during the A0 / Arm-A
+  stages.  Any further truth sampling requires a NEW preregistered stage
+  with its own approval file and gate names.
+- `M3_S25_R1_ARM_A_AUTHORIZED` and `M3_S25_R1_ARM_B_AUTHORIZED` remain
+  NO.  VALUE / RARITY / M3-Q remain BLOCKED.
 
 ## T1 authorization record (Truth Gate ONLY, M3-S25-R1.2)
 

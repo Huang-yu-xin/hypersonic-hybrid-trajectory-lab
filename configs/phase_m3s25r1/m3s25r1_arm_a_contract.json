@@ -1,0 +1,233 @@
+{
+  "S1_formula": "abs(g_hat) / ((g_ci_high-g_ci_low)/(2*1.959963984540054))",
+  "S1_threshold_frozen": 5.4417199447782,
+  "alpha_p": 0.5,
+  "estimator": "hyptraj.m3d.adaptation.gradient_decision (unmodified; bit-exact crosscheck enforced on every trial)",
+  "feature_contract": "parent m3s2s feature family (bootstrap stability + robust vs classical + influence concentration + event/ESS diagnostics + practical margin), per-trial rows only",
+  "improvement_criterion": {
+    "at_coverage_min": 0.75,
+    "coverage_gain_vs_aggregate_gbdt": 0.03,
+    "unsafe_reduction_vs_frozen_s1": 0.05
+  },
+  "inherited_parent_contract_sha256": {
+    "m3s2s_arm_b_contract.json": "527c3c413855bd418e737dfa8a374a343a86d7e5097f219b4721271dea0161d8",
+    "m3s2s_feature_contract.json": "f48e767e9f060229805a93e8b2fde4bb17fed0960de0cdd1bf6c085f026163fc",
+    "m3s2s_gradient_protocol.json": "d7cee6a72264dfd4aa4d3a5c62a6f1fef8a1b90e007fa50b82713310c9328aa9",
+    "m3s2s_instrumentation_contract.json": "7b1b5b95c1725be0eccd7c9070d79006975ec90aa525392a1a460f6c70aeac14",
+    "m3s2s_model_contract.json": "9a4361b706fb7ffc16397a70ea963ca3f5e4bf4a54b9b48ec30f2925dc213533",
+    "m3s2s_panel_contract.json": "437ed94818175ead80946a1acd2c7bdf410528f2df21df52dbaa53a69da0fe12",
+    "m3s2s_persistence_contract.json": "6b97c42365f0b727b34f717f3e2fd39997398213ed287edf7b4b3c7690b1cf53",
+    "m3s2s_threshold_contract.json": "de76e1b4b2fb19f5d82429a86df46542e184186178bf66d36d92738d8ef84727",
+    "m3s2s_verdict_contract.json": "3c4507251b7e8d900bb9950db7438c076aec60703895bde3eeb74d68f8275256"
+  },
+  "instrumentation": {
+    "N_BOOTSTRAP": 500,
+    "lossless": true,
+    "schema": "m3s2s_instr_v1",
+    "sidecar_arrays": [
+      "a_vec",
+      "resp",
+      "sq",
+      "strata",
+      "bootstrap_g"
+    ]
+  },
+  "model_contract": {
+    "cv": "outer GroupKFold(5) / inner GroupKFold(4), groups = config_id; no test-fold threshold/delta tuning",
+    "delta_quantiles": [
+      0.1,
+      0.25,
+      0.4,
+      0.5
+    ],
+    "delta_rule": "delta = q-quantile of |g_hat| over outer-train only; selected via inner grouped OOF",
+    "grids": {
+      "gbdt": [
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        }
+      ],
+      "logistic": [
+        {
+          "C": 0.1,
+          "class_weight": null
+        },
+        {
+          "C": 0.1,
+          "class_weight": "balanced"
+        },
+        {
+          "C": 1.0,
+          "class_weight": null
+        },
+        {
+          "C": 1.0,
+          "class_weight": "balanced"
+        },
+        {
+          "C": 10.0,
+          "class_weight": null
+        },
+        {
+          "C": 10.0,
+          "class_weight": "balanced"
+        }
+      ]
+    },
+    "primary_candidates": [
+      "B0_frozen_S1",
+      "B1_aggregate_gbdt_baseline",
+      "A1_stability_logistic",
+      "A2_stability_gbdt",
+      "A3_stability_margin_logistic",
+      "A4_stability_margin_gbdt"
+    ]
+  },
+  "namespace": "M3-S25-R1-A-GRAD",
+  "panel": {
+    "n_states": 120,
+    "panel_body_sha256": "2bdb9a91562cc44c6dd9e1d1c0d49f8950e531c3108ea61b6d03eb0c153ce2b8",
+    "panel_file_sha256": "136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff"
+  },
+  "persistence": "STARTED -> 20k simulator -> aggregate gradient record -> sidecar -> sidecar SHA verify -> record SHA verify -> COMPLETE; restart requires exactly one STARTED + one COMPLETE + both hashes",
+  "rebind": "frozen M3-S2S Arm-A contracts inherited VERBATIM to the R1 panel; no scientific retuning",
+  "safety_gates": {
+    "ambiguous_unsafe_max": 0.25,
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_max": 0.05
+  },
+  "schema_version": "m3s25r1_arm_a_contract_v1",
+  "seed_audit": {
+    "ARM_A_SEED_AUDIT": "PASS",
+    "historical_collision": 0,
+    "truth_stream_collision": 0,
+    "unique_seeds": 960,
+    "units": 960
+  },
+  "seed_manifest": "configs/phase_m3s25r1/m3s25r1_arm_a_seed_manifest.json",
+  "stage": "M3-S25-R1-A0",
+  "trials": {
+    "ARM_A_BUDGET": 19200000,
+    "n_trials": 960,
+    "no_topup": true,
+    "replicates": 8,
+    "samples_per_trial": 20000,
+    "states": 120
+  },
+  "truth_manifest_rule": "evaluation-only; SEALED until 960/960 durable COMPLETE; never in the Arm-A sampling execution view",
+  "verdicts": {
+    "b_gate": "M3-S25-R1-B-GATE",
+    "failure": "M3-S25-R1-X",
+    "success": "M3-S25-R1-A"
+  }
+}

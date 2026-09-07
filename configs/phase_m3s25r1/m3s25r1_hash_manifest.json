@@ -2,6 +2,16 @@
   "PREREG_HASH_LOCK": "PASS",
   "files": [
     {
+      "path": "configs/phase_m3s25r1/m3s25r1_arm_a_contract.json",
+      "sha256": "234c651654ffaaca32f32036befd4b4ea6038174dca7b80e78356f488d0f3570",
+      "size_bytes": 7096
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_arm_a_seed_manifest.json",
+      "sha256": "20cbe999286df7c4664a53067a1796b7b1ce9da37eb5c42939e07a456b8bf30d",
+      "size_bytes": 298111
+    },
+    {
       "path": "configs/phase_m3s25r1/m3s25r1_budget_contract.json",
       "sha256": "38a9f4379de1ac6ed6fa1d77f45932820ae3d73626b5cd4a031f1f4dbb03a708",
       "size_bytes": 710
@@ -22,6 +32,16 @@
       "size_bytes": 23269
     },
     {
+      "path": "configs/phase_m3s25r1/m3s25r1_panel.json",
+      "sha256": "136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff",
+      "size_bytes": 44649
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_panel_truth_manifest.json",
+      "sha256": "75f5993bc6a251220e5e533f0b96de153bcef313d95706e6e0b7294db57af880",
+      "size_bytes": 47882
+    },
+    {
       "path": "configs/phase_m3s25r1/m3s25r1_parent_development_registry.json",
       "sha256": "0ab0bc04b4221a32e17ffda5ebd52361ec7e466e570ed1ce5b365ad9c906f4f5",
       "size_bytes": 158262
@@ -37,6 +57,16 @@
       "size_bytes": 17873
     },
     {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_arm_a_preflight.json",
+      "sha256": "c2a8f06467ce084529f506917e53ad4bb7961bf32e78b97cccc7594ffaf21baa",
+      "size_bytes": 4341
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_arm_a_seed_audit.json",
+      "sha256": "f82d7f0a5b609072be766f82b8fbe0c460933b14efc3247ebe0a8593a992f232",
+      "size_bytes": 177
+    },
+    {
       "path": "results/phase_m3s25r1/preflight/m3s25r1_candidate_universe_hash.json",
       "sha256": "cf99370a4e2b89b8e1aa74e75fc842f99802702aafd5716ef69fbe46fb87eb63",
       "size_bytes": 243
@@ -47,13 +77,18 @@
       "size_bytes": 7218
     },
     {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_panel_truth_manifest_audit.json",
+      "sha256": "4f71e7ff84121f426e08261de009fac8c1da02d9ccd9e20f08494b7d9fb91074",
+      "size_bytes": 669
+    },
+    {
       "path": "results/phase_m3s25r1/preflight/m3s25r1_parent_audit.json",
       "sha256": "2aaed1cfe3bbe69e32e3807f3eb3c69d190676101db86c83eba07ed85d2967bc",
       "size_bytes": 902
     },
     {
       "path": "results/phase_m3s25r1/preflight/m3s25r1_preflight.json",
-      "sha256": "629c33dc13969c20fa345b511b6e8412a89db4e16f18e6c1b41ea16fd7d6a561",
+      "sha256": "71be1679cd788abe61759689632a42d38cbf757094e3d421c5c14859baddc859",
       "size_bytes": 18405
     },
     {
@@ -85,6 +120,16 @@
       "path": "docs/phase_m3s25r1/M3_S25_R1_2_Amendment_Taskbook.md",
       "sha256": "dcb2e1b7ee432da835b5d968c5e9f336836b49a1608e1e180d7356cfdf810790",
       "size_bytes": 3086
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A0_Record.md",
+      "sha256": "58067c8d482bc8680d9b62ff63eb620a09f92f8febae673867551bd49d5d91ca",
+      "size_bytes": 3513
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A0_Taskbook.md",
+      "sha256": "0565084c901ad5b7ea6af83e67d081fc513e433c68e664c29380698fe300f78d",
+      "size_bytes": 4251
     },
     {
       "path": "docs/phase_m3s25r1/M3_S25_R1_Budget_Audit.md",
@@ -130,18 +175,23 @@
       "path": "docs/phase_m3s25r1/M3_S25_R1_Taskbook.md",
       "sha256": "6beab50a6322efb3be5726705f08d2aedc615a26bce8d9380879a5587b78bff6",
       "size_bytes": 22247
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Truth_Stage_Report.md",
+      "sha256": "57feb76f224da04c12a8320a4ed580997de09ce96cbf57f2586ba14cc31f0623",
+      "size_bytes": 2889
     }
   ],
-  "head": "615b5a408c8759fd4744608c95ff1aae514bd93a",
+  "head": "089c6a48c73831fbd95e2caa5b21137b485080aa",
   "preflight_verdict": "PASS",
   "preregistration_round0": {
     "samples": 0,
     "simulator_calls": 0
   },
   "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
-  "recorded_at": "2026-09-06T23:24:13+0800",
+  "recorded_at": "2026-09-07T11:30:42+0800",
   "scientific_code_hashes": {
-    "scripts/run_m3s25r1.py": "92f5c700d67b9124a59e2e1cf382e3e208b1894126ccba99290573c761c6f514",
+    "scripts/run_m3s25r1.py": "623baaf38766a46b458196b78cdaf3b33ffe85b0a3b29e51eef84531b56b2904",
     "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
     "src/hyptraj/m1d/experiments.py": "a5208f22221cae8d55c3792d1f3569813d3455347200ba4c9621d6be2b4cfd1e",
     "src/hyptraj/m3/gradient_estimator.py": "daccaf9ce550c16ea9233434bcbb652bd8dc126595e47eee8b6f9771d7993d24",
