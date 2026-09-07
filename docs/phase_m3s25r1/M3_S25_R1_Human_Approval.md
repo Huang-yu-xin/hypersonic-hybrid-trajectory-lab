@@ -6,12 +6,35 @@ M3-S2S T1 gate is CLOSED (see `docs/phase_m3s2s/M3_S2S_Closure_Record.md`)
 and may not be reused for any R1 activity.
 
 ```text
-M3_S25_R1_TRUTH_AUTHORIZED: NO
+M3_S25_R1_TRUTH_AUTHORIZED: YES
 M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
-AUTHORIZER: (awaiting explicit gate-by-gate human authorization)
-AUTHORIZATION_DATE: (not yet granted)
+AUTHORIZER: Human
+AUTHORIZATION_DATE: 2026-09-06
 ```
+
+## T1 authorization record (Truth Gate ONLY, M3-S25-R1.2)
+
+- M3-S25-R1.2 execution-readiness live audit: **PASS** (human, 2026-09-06).
+- Explicit human authorization: "M3-S25-R1.2 execution-readiness live
+  audit: PASS.  Human authorization is granted for the Truth Gate ONLY."
+- Scope: the frozen truth streams ONLY -- discovery for all 240 frozen
+  candidate states (3 x 100,000 = 72,000,000) and confirmation for all 240
+  states (3 x 500,000 = 360,000,000); P_ref sampling = 0 (reuse registry);
+  planned = max = 432,000,000; early_stop = false; topup = 0; candidate
+  substitution = false.  After 480/480 durable COMPLETE the frozen truth /
+  exposed-inventory / union-pool / panel-selection logic runs (FROZEN
+  120-state panel or M3-S25-R1-PANEL-BLOCKED), then STOP.  Persistence
+  rules strict: STARTED before simulator; any consumed unit without a
+  durable COMPLETE => CONSUMED_INVALID => M3-S25-R1-X => STOP => NO REPLAY.
+- Frozen at authorization: candidate universe SHA
+  `9d1f704a4d9b8ca8b3eda4069e5e0a76e3c103cef65e315c4223058d6e600d02`;
+  contract SHA
+  `96585379805a2cc5f390f37b3563357123de497c2df05b58eb5f6efe166fab98`
+  (branch base `55e4c5358281a58472263cfe3c723b45c012b2c1`).
+- `M3_S25_R1_ARM_A_AUTHORIZED` and `M3_S25_R1_ARM_B_AUTHORIZED` remain NO;
+  no Arm A or Arm B activity is authorized.  VALUE / RARITY / M3-Q remain
+  BLOCKED.
 
 Gate semantics (taskbook Sec. 21/29):
 
