@@ -217,11 +217,17 @@ def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
 # --------------------------------------------------------------------------
 
 def arm_a_trial(st, seed_value: int, state_id: str, rep: int, config_id: str,
-                s2: float, contract_shas: dict) -> tuple[dict, dict]:
+                s2: float, contract_shas: dict,
+                namespace: str = ARM_A_NAMESPACE) -> tuple[dict, dict]:
     """One Arm-A trial.  Re-executes the frozen ``gradient_decision``
     pipeline step by step, captures (a_vec, resp, sq, strata,
     bootstrap_g), and PROVES bit-exact equality with the unmodified
-    estimator output.  Returns (record, sidecar_arrays)."""
+    estimator output.  Returns (record, sidecar_arrays).
+
+    The ``namespace`` parameter carries the trial's seed-namespace
+    provenance into the durable record (the original Arm-A stream uses
+    the M3-S25-R1-A-GRAD default; the A1R replacement stream passes its
+    own namespace explicitly)."""
     z, logp, logr, strata = draw_online_pilot(st, seed_value,
                                               n_pilot=N_SAMPLES,
                                               alpha=ALPHA_P)
@@ -304,7 +310,7 @@ def arm_a_trial(st, seed_value: int, state_id: str, rep: int, config_id: str,
         "s2": float(s2),
         "curvature_c": float(st.bench_cfg.curvature_c),  # online frozen
         # config metadata (ML0 B3 comparator feature); NOT truth
-        "seed": int(seed_value), "namespace": ARM_A_NAMESPACE,
+        "seed": int(seed_value), "namespace": namespace,
         "samples": N_SAMPLES, "alpha_p": ALPHA_P,
         "gradient": {
             "g_hat": float(g["g_hat"]),

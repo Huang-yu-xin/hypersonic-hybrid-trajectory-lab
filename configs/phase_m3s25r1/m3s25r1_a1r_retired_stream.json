@@ -20,8 +20,8 @@
   "old_ledger_sha256_expected": "e5ce5c5a6350443f796558246c434fc0fbe2b855d029d38341fac0db31391c48",
   "old_stage": "M3-S25-R1 Arm-A",
   "old_terminal": "M3-S25-R1-X",
-  "old_terminal_head": "089c6a48c73831fbd95e2caa5b21137b485080aa",
-  "rule": "no old Arm-A unit or seed may appear in the replacement stage A1R; the old ledger/artifacts are preserved verbatim and never reused, truncated, ignored or reinterpreted",
+  "old_terminal_head": "73e91823fc562a8b5be65a86fa6f1e2a01803d42",
+  "rule": "logical unit_id slots intentionally repeat because A1R reruns the same frozen 120 x 8 design; the forbidden reuse is old seed values, old seed keys, old artifacts and old scientific realizations/data -- never unit_id naming; the old ledger/artifacts are preserved verbatim and never reused, truncated, ignored or reinterpreted",
   "schema_version": "m3s25r1_a1r_retired_stream_v1",
   "units": [
     {

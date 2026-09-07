@@ -101,6 +101,7 @@ PANEL_TRUTH_MANIFEST = CFG / "m3s25r1_panel_truth_manifest.json"
 ARM_A_CONTRACT = CFG / "m3s25r1_arm_a_contract.json"
 ARM_A_SEED_MANIFEST = CFG / "m3s25r1_arm_a_seed_manifest.json"
 TRUTH_TERMINAL_HEAD = "089c6a48c73831fbd95e2caa5b21137b485080aa"
+OLD_ARM_A_TERMINAL_HEAD = "73e91823fc562a8b5be65a86fa6f1e2a01803d42"
 PANEL_TRUTH_MANIFEST_PIN = ("75f5993bc6a251220e5e533f0b96de15"
                          "3bcef313d95706e6e0b7294db57af880")
 ARM_A_CONTRACT_PIN = ("f02fc399834e5d950d46f29d8e609f1b"
@@ -126,10 +127,10 @@ A1R_EVAL = SUM / "m3s25r1_a1r_evaluation.json"
 A1R_RETIRED = CFG / "m3s25r1_a1r_retired_stream.json"
 A1R_CONTRACT = CFG / "m3s25r1_a1r_contract.json"
 A1R_SEED_MANIFEST = CFG / "m3s25r1_a1r_seed_manifest.json"
-A1R_RETIRED_PIN = ("7a2010cedf7a5b75d46b427e3a10a45e"
-                           "60bff301c08777ebc9c14701392d8168")
-A1R_CONTRACT_PIN = ("3855d3a24547a9035cce0d18f8df4cb2"
-                           "a3a0f344b73266b8a182fb8fe3926123")
+A1R_RETIRED_PIN = ("7e673af48d3547fd2dedbd4a9fe882d7"
+                           "1c1598fb8f55bef52e6e1b4695f9ab41")
+A1R_CONTRACT_PIN = ("fdf0c42d4922890a6c17b004278253ec"
+                           "4a4797e76373ece6292c7512b2863985")
 A1R_SEED_MANIFEST_PIN = ("067062d89f76486aacb6dfd892d0f77f"
                            "ae9729c1063a201388ceea892c336b6e")
 
@@ -2460,7 +2461,7 @@ def a1r_retired_stream_stage() -> dict:
         "schema_version": "m3s25r1_a1r_retired_stream_v1",
         "old_stage": "M3-S25-R1 Arm-A",
         "old_terminal": "M3-S25-R1-X",
-        "old_terminal_head": TRUTH_TERMINAL_HEAD,
+        "old_terminal_head": OLD_ARM_A_TERMINAL_HEAD,
         "old_arm_a_seed_manifest_sha256":
             sha_bytes(ARM_A_SEED_MANIFEST.read_bytes()),
         "old_incident_report_sha256":
@@ -2475,8 +2476,11 @@ def a1r_retired_stream_stage() -> dict:
             "samples_consumed": 20000},
         "counts": {"total_units": 960, "consumed_invalid": 1,
                    "complete": 0, "never_started": 959},
-        "rule": "no old Arm-A unit or seed may appear in the replacement "
-                "stage A1R; the old ledger/artifacts are preserved "
+        "rule": "logical unit_id slots intentionally repeat because "
+                "A1R reruns the same frozen 120 x 8 design; the "
+                "forbidden reuse is old seed values, old seed keys, old "
+                "artifacts and old scientific realizations/data -- never "
+                "unit_id naming; the old ledger/artifacts are preserved "
                 "verbatim and never reused, truncated, ignored or "
                 "reinterpreted",
         "units": units,
@@ -2568,7 +2572,7 @@ def a1r_contract_stage() -> dict:
         "schema_version": "m3s25r1_a1r_contract_v1",
         "stage": "M3-S25-R1-A1R",
         "parent_terminal": "M3-S25-R1-X (old Arm-A stage, PERMANENT)",
-        "parent_terminal_head": TRUTH_TERMINAL_HEAD,
+        "parent_terminal_head": OLD_ARM_A_TERMINAL_HEAD,
         "scientific_inheritance": {
             "rule": "SAME frozen scientific panel and contracts, "
                     "byte-identical; no truth resampling, no panel "
@@ -2674,6 +2678,15 @@ def _verify_frozen_a1r_inputs() -> dict:
         raise RuntimeError(
             "M3-S25-R1-A1R-X: the old Arm-A ledger was modified after "
             "retirement (preservation violated)")
+    # A1R0.1: runtime-verify the incident provenance SHAs match the
+    # retired stream's frozen pins exactly
+    if sha(DOC / "M3_S25_R1_Arm_A_Incident_Report.md") !=             retired["old_incident_report_sha256"]:
+        raise RuntimeError(
+            "M3-S25-R1-A1R-X: incident-report SHA drift vs retired stream")
+    if sha_bytes(ARM_A_SEED_MANIFEST.read_bytes()) !=             retired["old_arm_a_seed_manifest_sha256"]:
+        raise RuntimeError(
+            "M3-S25-R1-A1R-X: old Arm-A seed-manifest SHA drift vs "
+            "retired stream")
     manifest_sha = sha_bytes(PANEL_TRUTH_MANIFEST.read_bytes())
     if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
             and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
@@ -2730,7 +2743,7 @@ def a1r_preflight() -> dict:
     checks = {}
     head = git_commit()
     checks["parent_incident_head_ancestor"] = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", TRUTH_TERMINAL_HEAD, head],
+        ["git", "merge-base", "--is-ancestor", OLD_ARM_A_TERMINAL_HEAD, head],
         cwd=ROOT, capture_output=True).returncode == 0
     # old stage terminal X + old gate CLOSED
     led = ledger_entries(ARM_A_LEDGER) if Path(ARM_A_LEDGER).exists() else []
@@ -2881,7 +2894,8 @@ def arm_a1r_execute() -> dict:
                     f"M3-S25-R1-A1R-X: assembly failed for {s['state_id']}")
             record, arrays = AA.arm_a_trial(
                 st, plan_seeds[unit_id], s["state_id"], rep,
-                s["config_id"], float(s["s2"]), contract_shas)
+                s["config_id"], float(s["s2"]), contract_shas,
+                namespace=A1R_NAMESPACE)
             record["recorded_at"] = now()
             record["stream"] = "arm_a1r_gradient"
             record["instrumentation_sha256"] = \
@@ -2891,6 +2905,16 @@ def arm_a1r_execute() -> dict:
         def validate(payload):
             if payload.get("schema") != AA.TRIAL_SCHEMA:
                 raise RuntimeError("M3-S25-R1-A1R-X: trial schema drift")
+            # A1R0.1: namespace + seed provenance are part of the frozen
+            # pre-hash contract
+            if payload.get("namespace") != A1R_NAMESPACE:
+                raise RuntimeError(
+                    f"M3-S25-R1-A1R-X: trial namespace drift: "
+                    f"{payload.get('namespace')!r} != {A1R_NAMESPACE!r}")
+            if payload.get("seed") != plan_seeds[unit_id]:
+                raise RuntimeError(
+                    f"M3-S25-R1-A1R-X: trial seed drift vs the frozen "
+                    f"A1R seed manifest for {unit_id}")
             if not payload.get("instrumentation_sha256"):
                 raise RuntimeError("M3-S25-R1-A1R-X: sidecar hash missing")
             if record_file_hash(side_p) != payload["instrumentation_sha256"]:

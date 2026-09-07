@@ -12,7 +12,7 @@
   },
   "corrected_instrumentation": {
     "code_sha256": {
-      "src/hyptraj/m3s25r1/arm_a.py": "53019d199726d789a3eeb664127402a4f82623921c474e3e5cc0fd4845a4ba02",
+      "src/hyptraj/m3s25r1/arm_a.py": "5198a588c529d473fc2883bd932d6cea467e62eba3f330501e63f0e26dbc6858",
       "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6"
     },
     "crosscheck": "unmodified gradient_decision bit-exact crosscheck remains MANDATORY on every trial",
@@ -38,11 +38,11 @@
   "old_stream_retirement": {
     "old_ledger_sha256_expected": "e5ce5c5a6350443f796558246c434fc0fbe2b855d029d38341fac0db31391c48",
     "retired_stream": "configs/phase_m3s25r1/m3s25r1_a1r_retired_stream.json",
-    "retired_stream_sha256": "7a2010cedf7a5b75d46b427e3a10a45e60bff301c08777ebc9c14701392d8168",
+    "retired_stream_sha256": "7e673af48d3547fd2dedbd4a9fe882d71c1598fb8f55bef52e6e1b4695f9ab41",
     "rule": "the old failed 20k realization is EXPOSED / CONSUMED_INVALID and must never enter the replacement dataset, features, CV, metrics or verdict"
   },
   "parent_terminal": "M3-S25-R1-X (old Arm-A stage, PERMANENT)",
-  "parent_terminal_head": "089c6a48c73831fbd95e2caa5b21137b485080aa",
+  "parent_terminal_head": "73e91823fc562a8b5be65a86fa6f1e2a01803d42",
   "persistence": {
     "chain": "STARTED -> 20k sampling -> transactional sidecar -> record hash -> COMPLETE",
     "dir": "results/phase_m3s25r1/arm_a1r/",

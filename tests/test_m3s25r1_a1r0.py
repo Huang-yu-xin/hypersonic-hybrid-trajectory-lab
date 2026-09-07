@@ -55,6 +55,8 @@ def test_gate_state_after_a1r0():
 def test_retired_stream_record_complete():
     r = R.load(R.A1R_RETIRED)
     assert r["old_terminal"] == "M3-S25-R1-X"
+    assert r["old_terminal_head"] == R.OLD_ARM_A_TERMINAL_HEAD
+    assert R.OLD_ARM_A_TERMINAL_HEAD == "73e91823fc562a8b5be65a86fa6f1e2a01803d42"
     assert len(r["units"]) == 960
     assert r["counts"] == {"total_units": 960, "consumed_invalid": 1,
                            "complete": 0, "never_started": 959}
@@ -69,7 +71,8 @@ def test_retired_stream_record_complete():
     assert r["old_incident_report_sha256"] == R.sha(
         R.DOC / "M3_S25_R1_Arm_A_Incident_Report.md")
     assert r["old_ledger_sha256_expected"] == R.sha(R.ARM_A_LEDGER)
-    assert "no old Arm-A unit or seed may appear" in r["rule"]
+    assert "unit_id slots intentionally repeat" in r["rule"]
+    assert "forbidden reuse is old seed values" in r["rule"]
     assert R.sha_bytes(R.A1R_RETIRED.read_bytes()) == R.A1R_RETIRED_PIN
     # the old ledger/artifacts are preserved verbatim
     assert R.sha_bytes(R.ARM_A_LEDGER.read_bytes()) == \
@@ -142,6 +145,7 @@ def test_a1r_contract_budget_and_inheritance():
         "success": "M3-S25-R1-A1R-A", "b_gate": "M3-S25-R1-A1R-B-GATE",
         "failure": "M3-S25-R1-A1R-X"}
     assert c["namespace"] == "M3-S25-R1-A1R-GRAD"
+    assert c["parent_terminal_head"] == R.OLD_ARM_A_TERMINAL_HEAD
     assert R.sha_bytes(R.A1R_CONTRACT.read_bytes()) == R.A1R_CONTRACT_PIN
 
 
@@ -206,7 +210,7 @@ def test_old_seed_value_in_new_manifest_causes_preflight_failure(
 
 def _mock_trial(monkeypatch, calls):
     def fake_arm_a_trial(st, seed_value, state_id, rep, config_id, s2,
-                         contract_shas):
+                         contract_shas, namespace=R.A1R_NAMESPACE):
         calls["trials"] += 1
         rng = np.random.default_rng(seed_value % (2**31))
         record = {
@@ -333,8 +337,14 @@ def test_route_a1r_execute_960_and_evaluate(a1r_route, monkeypatch):
     assert Counter(e["status"] for e in entries) == {"STARTED": 960,
                                                      "COMPLETE": 960}
     # every namespace is the NEW one; the old stream is untouched
+    # (A1R0.1: manifest / ledger / durable record namespace all agree)
     assert all(e.get("seed_namespace") == "M3-S25-R1-A1R-GRAD"
                for e in entries)
+    for u in R.load(R.A1R_SEED_MANIFEST)["units"]:
+        assert u["namespace"] == "M3-S25-R1-A1R-GRAD"
+    rec = json.loads(next(R.A1R_TRIALS.rglob("rep0.json")).read_text(
+        encoding="utf-8"))
+    assert rec["namespace"] == "M3-S25-R1-A1R-GRAD"
     old_ledger = R.ledger_entries(R.ARM_A_LEDGER)
     assert sum(1 for e in old_ledger
                if e.get("status") == "CONSUMED_INVALID") == 1

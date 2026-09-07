@@ -124,3 +124,48 @@ VALUE / RARITY / M3-Q          = BLOCKED
 STOP.  Awaiting the fresh A1R execution-readiness audit; only an
 explicit human `M3_S25_R1_A1R_ARM_A_AUTHORIZED: YES` commit enables
 `python scripts/run_m3s25r1.py arm_a1r_execute`.
+
+
+## A1R0.1 provenance amendment (zero sampling)
+
+Applied per the human A1R0.1 instruction:
+
+1. **Dedicated terminal-head binding**: a frozen
+   `OLD_ARM_A_TERMINAL_HEAD = "73e91823fc562a8b5be65a86fa6f1e2a01803d42"`
+   constant now binds A1R to the old Arm-A incident terminal (NOT the
+   truth-terminal `089c6a48...`).  Used by the retired-stream
+   `old_terminal_head`, the A1R contract `parent_terminal_head`, and the
+   A1R preflight `parent_incident_head_ancestor` ancestry check.  The
+   preflight mechanically requires the incident terminal HEAD to be an
+   ancestor of the current HEAD.
+2. **Runtime provenance SHA bindings**: `_verify_frozen_a1r_inputs()`
+   now verifies (a) the current incident-report SHA == the retired
+   stream's frozen `old_incident_report_sha256`; (b) the current old
+   Arm-A ledger SHA == the retired stream's frozen
+   `old_ledger_sha256_expected`; (c) the current old Arm-A seed-manifest
+   SHA == the retired stream's frozen
+   `old_arm_a_seed_manifest_sha256`.  Any mismatch => M3-S25-R1-A1R-X =>
+   STOP before simulator.
+3. **Trial-record namespace provenance**: `arm_a_trial` gains a
+   `namespace` parameter (default `M3-S25-R1-A-GRAD`, preserving the old
+   Arm-A behavior); the durable record carries
+   `record["namespace"] = namespace`.  `arm_a1r_execute` passes
+   `namespace=A1R_NAMESPACE` explicitly, and the pre-hash validator
+   requires `payload["namespace"] == M3-S25-R1-A1R-GRAD`,
+   `payload["seed"] == plan_seeds[unit_id]`, and the ledger's
+   `seed_namespace == M3-S25-R1-A1R-GRAD`.  Route test proves all three
+   agree (manifest / ledger / durable JSON).
+4. **Retired-stream wording corrected** (A1R0.1 item 3): "logical
+   unit_id slots intentionally repeat because A1R reruns the same frozen
+   120 x 8 design; the forbidden reuse is old seed values, old seed
+   keys, old artifacts and old scientific realizations/data -- never
+   unit_id naming".  No seed values altered.
+5. **Regenerated provenance artifacts** (only the affected ones):
+   retired stream SHA `7e673af4...` (terminal HEAD + wording corrected);
+   A1R contract SHA `fdf0c42d...` (parent_terminal_head + wording).
+   Replacement seed manifest, panel, truth manifest, and the A0.2
+   rebind contract are BYTE-IDENTICAL (verified).
+
+Updated pins: A1R_RETIRED_PIN = `7e673af4...`;
+A1R_CONTRACT_PIN = `fdf0c42d...`;
+A1R_SEED_MANIFEST_PIN = `067062d8...` (unchanged).
