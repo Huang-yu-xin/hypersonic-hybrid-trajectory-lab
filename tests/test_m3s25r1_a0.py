@@ -28,14 +28,19 @@ from hyptraj.m3s25r1 import arm_a_eval as AE  # noqa: E402
 # gates + truth closure
 # --------------------------------------------------------------------------
 
-def test_all_gates_no_and_truth_closed():
+def test_gate_state_per_authorization():
+    """Post-A0.2-audit authorized state: TRUTH closed, ARM A YES (as
+    granted), ARM B NO."""
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
     txt = R.APPROVAL_DOC.read_text(encoding="utf-8")
     assert "M3_S25_R1_TRUTH_AUTHORIZED: NO" in txt
+    assert "M3_S25_R1_ARM_A_AUTHORIZED: YES" in txt
+    assert "M3_S25_R1_ARM_B_AUTHORIZED: NO" in txt
     assert "status = CLOSED / EXERCISED" in txt
     assert R.TRUTH_TERMINAL_HEAD in txt
+    assert "DO NOT execute Arm B" in txt
 
 
 # --------------------------------------------------------------------------
@@ -144,11 +149,18 @@ def test_arm_a_preflight_full_checklist():
     assert pf["frozen_pins"]["universe_sha256"] == R.EXPECTED_UNIVERSE_SHA
 
 
-def test_arm_a_preflight_cannot_flip_gates(protect_arm_a_preflight_report):
-    R.arm_a_preflight()
-    assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
+def test_arm_a_preflight_frozen_readiness_record():
+    """The FROZEN pre-arm-A-authorization readiness report stays PASS
+    (it was produced while the gate was NO); the live gate is now the
+    authorized YES, so the preflight is NOT re-run post-authorization
+    (its fail-closed gate/destination checks reflect the readiness
+    round by design)."""
+    pf = R.load(R.OUT / "m3s25r1_arm_a_preflight.json")
+    assert pf["PREFLIGHT_VERDICT"] == "PASS"
+    assert pf["checks"]["arm_a_gate_no"] is True   # readiness round
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
 
 
 # --------------------------------------------------------------------------
@@ -308,13 +320,43 @@ def arm_a_route(tmp_path, monkeypatch):
 
 
 def test_route_arm_a_execute_gated_refusal(arm_a_route, monkeypatch):
-    """With the frozen gates all NO, arm_a_execute refuses AFTER the
-    restart scan and BEFORE any write (zero trials, zero simulator)."""
+    """Refusal mechanism (isolated): with the ARM_A gate NO in a tmp
+    approval doc and a fresh tmp destination, arm_a_execute refuses
+    AFTER the restart scan and BEFORE any write."""
+    approval = arm_a_route["tmp"] / "approval_no.md"
+    approval.write_text("M3_S25_R1_TRUTH_AUTHORIZED: NO\n"
+                        "M3_S25_R1_ARM_A_AUTHORIZED: NO\n"
+                        "M3_S25_R1_ARM_B_AUTHORIZED: NO\n", encoding="utf-8")
+    monkeypatch.setattr(R, "APPROVAL_DOC", approval)
     with pytest.raises(RuntimeError,
                        match="M3_S25_R1_ARM_A_AUTHORIZED is not YES"):
         R.arm_a_execute()
     assert arm_a_route["calls"]["trials"] == 0
     assert not R.ARM_A_TRIALS.exists()
+
+
+def test_consumed_unit_fails_closed_before_any_simulator():
+    """The REAL consumed unit (incident) keeps the runtime fail-closed:
+    the restart scan hits CONSUMED_INVALID BEFORE the authorization gate
+    and BEFORE any simulator call, even with the authorized gate YES."""
+    calls = {"trials": 0}
+
+    def _boom(*a, **k):
+        calls["trials"] += 1
+        raise AssertionError("simulator reached")
+
+    import hyptraj.m3d.adaptation as AD
+    monkey = pytest.MonkeyPatch()
+    monkey.setattr(AA, "arm_a_trial", _boom)
+    try:
+        with pytest.raises(RuntimeError, match="CONSUMED_INVALID"):
+            R.arm_a_execute()
+    finally:
+        monkey.undo()
+    assert calls["trials"] == 0
+    led = R.ledger_entries(R.ARM_A_LEDGER)
+    assert sum(1 for e in led if e.get("status") == "CONSUMED_INVALID") == 1
+    assert sum(1 for e in led if e.get("status") == "COMPLETE") == 0
 
 
 def test_route_arm_a_execute_to_960_and_evaluate(arm_a_route, monkeypatch):
@@ -420,9 +462,9 @@ def test_split_feasibility_on_frozen_panel():
     assert all(e["inner_GroupKFold4_feasible"] for e in feas["outer"])
 
 
-def test_route_gates_still_no_after_all_tests():
+def test_route_gates_match_authorization_after_all_tests():
     assert not R.gate("M3_S25_R1_TRUTH_AUTHORIZED")
-    assert not R.gate("M3_S25_R1_ARM_A_AUTHORIZED")
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
     assert not R.gate("M3_S25_R1_ARM_B_AUTHORIZED")
 
 
@@ -451,7 +493,9 @@ def test_hashlock_covers_arm_a_and_ml0_chain():
 def test_panel_file_sha_enforced_at_runtime(tmp_path, monkeypatch):
     """A0.1 item 2: the frozen panel FILE sha is enforced even when the
     stored panel_sha256 field is unchanged.  Tamper an s2 field in a copy
-    => arm_a_execute hard-fails BEFORE STARTED / simulator."""
+    => arm_a_execute hard-fails BEFORE STARTED / simulator (isolated tmp
+    ledger so the tamper refusal is observed before the consumed-unit
+    scan)."""
     calls = {"trials": 0}
     _mock_trial(monkeypatch, calls)
     panel = json.loads((R.CFG / "m3s25r1_panel.json").read_text("utf-8"))
@@ -464,7 +508,6 @@ def test_panel_file_sha_enforced_at_runtime(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="panel FILE sha drift"):
         R.arm_a_execute()
     assert calls["trials"] == 0
-    assert not R.ARM_A_TRIALS.exists()
 
 
 def test_sidecar_transactional_fault_injection(tmp_path):
@@ -669,3 +712,22 @@ def test_sidecar_dir_fsync_fail_closed(tmp_path, monkeypatch):
     monkeypatch.undo()
     sha = AA.write_sidecar_transactional(side, arrays)
     assert sha == R.record_file_hash(side)
+
+
+def test_arm_a_trial_crosscheck_passes_on_real_state():
+    """A0.2 incident regression: the bit-exact crosscheck between the
+    trial's instrumented pipeline and the UNMODIFIED estimator passes on
+    a REAL state assembly (the first failed trial's config; a test-local
+    seed -- never a frozen manifest seed).  Slow but decisive."""
+    import run_m3s25r1 as R
+    from hyptraj.m3d.benchmark_states import assemble_state
+    s = R.load(R.PANEL_JSON)["states"][0]
+    bench = R.VR.resolve_bench_config(s["config_id"])
+    st = assemble_state(bench, float(s["s2"]), short_config=s["config_id"])
+    record, arrays = AA.arm_a_trial(
+        st, 777, s["state_id"], 0, s["config_id"], float(s["s2"]),
+        {"test": "sha"})
+    assert record["estimator_crosscheck_exact"] is True
+    assert record["valid"] is True
+    assert arrays["bootstrap_g"].shape == (500,)
+    assert np.isfinite(arrays["bootstrap_g"]).sum() == 500

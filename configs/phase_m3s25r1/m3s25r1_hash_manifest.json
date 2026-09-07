@@ -132,6 +132,11 @@
       "size_bytes": 4251
     },
     {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_Arm_A_Incident_Report.md",
+      "sha256": "28ce38a4f8fb077e4555856e86e77db01bd705be5475d9e46f90aa57d78be34e",
+      "size_bytes": 3963
+    },
+    {
       "path": "docs/phase_m3s25r1/M3_S25_R1_Budget_Audit.md",
       "sha256": "ee5a3f0c9371f0c031ce85b5fc293b6026ea7744d1466c6eb8c08c35991cf4f3",
       "size_bytes": 571
@@ -182,14 +187,14 @@
       "size_bytes": 2889
     }
   ],
-  "head": "20ad2045c1948f2389f540662642d7b4aa2cae89",
+  "head": "d3116d2594c0f46216cb14c82d4262493f716282",
   "preflight_verdict": "PASS",
   "preregistration_round0": {
     "samples": 0,
     "simulator_calls": 0
   },
   "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
-  "recorded_at": "2026-09-07T13:28:28+0800",
+  "recorded_at": "2026-09-07T14:43:01+0800",
   "scientific_code_hashes": {
     "scripts/run_m3s25r1.py": "a465da3c0f7337680d16e3ead2444c017e124a8d95c0b3cf2e70610448c19c80",
     "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
@@ -206,7 +211,7 @@
     "src/hyptraj/m3ml0/threshold.py": "3882c6024e90b535c0a039eda4081c63da1d8175fa428dfc503811251c781707",
     "src/hyptraj/m3pi1vr0/persistence.py": "6f2386bb87fc03ce3db73d23f69d758c1e4b03f22543f87db30203da62bb2427",
     "src/hyptraj/m3s25r1/__init__.py": "382ea08aed9a65e2d69bc39679428afd9782d8188a61ae595071e6ba448c698a",
-    "src/hyptraj/m3s25r1/arm_a.py": "9c54a63a792fd0745446528794d6d1cfb0d91e3821f2a91f64655431b339db6d",
+    "src/hyptraj/m3s25r1/arm_a.py": "42ff705bc306495de31aaf940b863cd77c94f080661a0a0e39d8c8a1e570903e",
     "src/hyptraj/m3s25r1/arm_a_eval.py": "1dfc05389a4c2082ac8d469ee4fab650cc97331614b34adba5d491793cbf25d5",
     "src/hyptraj/m3s25r1/candidates.py": "f15b0525be01f3f8f9f5c9e82c7dbc5a88399266433e49e6e840a10c260cce86",
     "src/hyptraj/m3s25r1/history.py": "a9077da05bafc1a9241ebc98b9060f13174e48ebc4cfb4e9ce275bb1d10fb565",

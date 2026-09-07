@@ -424,15 +424,17 @@ def test_prereg_round_zero_simulator_calls(protect_preflight_report,
                  "classify_reference_state"):
         monkeypatch.setattr(EXP, name, _boom)
         monkeypatch.setattr(RT, name, _boom, raising=False)
-    R.preflight()
+    # the frozen R1.2-era round-0 preflight (produced while every gate
+    # was NO) remains the execution-readiness record; it is NOT
+    # re-run post-authorization (its round-0 gate-freeze check would
+    # honestly report the now-authorized ARM A).
     pf = R.load(R.PREFLIGHT_REPORT)
-    assert pf["simulator_calls"] == 0 and pf["samples"] == 0
-    assert pf["PREFLIGHT_VERDICT"] == "PASS"    # structural invariants (R1.2)
+    assert pf["PREFLIGHT_VERDICT"] == "PASS"
     assert pf["overall"] == "EXECUTION-READY"
-    # a PASS preflight cannot enable truth on its own: the human gate
-    # stays NO and truth_execute refuses at the authorization step
+    apf = R.load(R.OUT / "m3s25r1_arm_a_preflight.json")
+    assert apf["PREFLIGHT_VERDICT"] == "PASS"
+    assert apf["simulator_calls"] == 0 and apf["samples"] == 0
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
 
 
@@ -635,9 +637,9 @@ def test_restart_missing_complete_artifact_fails(tmp_path):
 # gate isolation (Sec. 31)
 # --------------------------------------------------------------------------
 
-def test_all_r1_gates_no_and_parent_closed():
+def test_gates_match_authorization_and_parent_closed():
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
     assert R.parent_gate("TRUTH_SAMPLING_AUTHORIZED") is False
     assert R.parent_gate("ARM_A_AUTHORIZED") is False
@@ -667,15 +669,15 @@ def test_import_cannot_flip_gates():
         f"sys.path.insert(0, r'{ROOT}')\n"
         f"sys.path.insert(0, r'{scripts_dir}')\n"
         "import run_m3s25r1 as R\n"
-        "print(all(not R.gate(g) for g in (\n"
-        "    'M3_S25_R1_TRUTH_AUTHORIZED', 'M3_S25_R1_ARM_A_AUTHORIZED',\n"
-        "    'M3_S25_R1_ARM_B_AUTHORIZED')))\n")
+        "print((not R.gate('M3_S25_R1_TRUTH_AUTHORIZED'),\n"
+        "       R.gate('M3_S25_R1_ARM_A_AUTHORIZED'),\n"
+        "       not R.gate('M3_S25_R1_ARM_B_AUTHORIZED')))\n")
     out = subprocess.run([sys.executable, "-c", code], capture_output=True,
                          text=True)
     assert out.returncode == 0, out.stderr
-    assert out.stdout.strip() == "True"
+    assert out.stdout.strip() == "(True, True, True)"
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
 
 

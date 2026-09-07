@@ -235,7 +235,23 @@ def arm_a_trial(st, seed_value: int, state_id: str, rep: int, config_id: str,
     sq = np.einsum("ni,ni->n", z - prop.centers[k][None, :],
                    z - prop.centers[k][None, :])
     est = scalar_gradient_estimate(a_vec, resp, sq, s2=st.s2, dim=st.dim)
-    # -- frozen bootstrap loop, replicated bit-for-bit to capture reps ----
+    # -- the CI comes from the FROZEN bootstrap function itself --
+    # (A0.2 incident fix: the earlier capture used the quantile argument
+    # 0.025 while the frozen stratified_bootstrap_gradient_ci uses
+    # tail = (1 - 0.95)/2 = 0.025000000000000022; a 1-ULP difference in
+    # the quantile argument produced a 1-ULP difference in g_ci_low and
+    # tripped the bit-exact crosscheck on the first real trial.  Calling
+    # the frozen function on the identical inputs is bit-identical to
+    # gradient_decision's internal call by construction.)
+    from hyptraj.m3.gradient_estimator import stratified_bootstrap_gradient_ci
+    boot = stratified_bootstrap_gradient_ci(
+        a_vec, resp, sq, strata, s2=st.s2, dim=st.dim, n_bootstrap=N_BOOTSTRAP,
+        bootstrap_seed_key=(int(seed_value), 424243))
+    lo = float(boot["g_ci_low"])
+    hi = float(boot["g_ci_high"])
+    # -- replicate capture for the lossless sidecar only (the same rng
+    # consumption as the frozen function; the captured replicate array is
+    # bit-identical to its internal one) --
     rng = np.random.default_rng([int(seed_value), 424243])
     s_arr = np.asarray(strata).astype(int)
     strata_ids = np.unique(s_arr)
@@ -249,9 +265,6 @@ def arm_a_trial(st, seed_value: int, state_id: str, rep: int, config_id: str,
         e = scalar_gradient_estimate(a_vec[idx], resp[idx], sq[idx],
                                      s2=st.s2, dim=st.dim)
         reps[b] = e["g_hat"] if e["valid_pointwise"] else np.nan
-    good = reps[np.isfinite(reps)]
-    lo = float(np.quantile(good, 0.025)) if good.size >= 2 else float("nan")
-    hi = float(np.quantile(good, 0.975)) if good.size >= 2 else float("nan")
     # -- bit-exact crosscheck against the UNMODIFIED parent estimator -----
     ref = gradient_decision(st, seed_value, z, logp, logr, strata)["gradient"]
     exact = (float(est["g_hat"]) == float(ref["g_hat"])
