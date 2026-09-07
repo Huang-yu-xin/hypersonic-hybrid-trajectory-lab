@@ -151,20 +151,25 @@ def sha_bytes(b: bytes) -> str:
 # seed plan (960 units; frozen derivation)
 # --------------------------------------------------------------------------
 
-def arm_a_seed_plan(panel_states: list[dict]) -> dict:
-    """960 logical units (120 states x 8 replicates) under the NEW
-    M3-S25-R1-A-GRAD namespace."""
+def arm_a_seed_plan(panel_states: list[dict],
+                    namespace: str = ARM_A_NAMESPACE) -> dict:
+    """960 logical units (120 states x 8 replicates) under the given
+    gradient namespace (the original Arm-A stream uses
+    M3-S25-R1-A-GRAD; the A1R replacement stream uses its own new
+    namespace and is audited for zero overlap against the retired
+    stream)."""
     state_ids = sorted(s["state_id"] for s in panel_states)
     if len(state_ids) != N_STATES or len(set(state_ids)) != N_STATES:
         raise RuntimeError("M3-S25-R1-X: panel shape drift for Arm-A seeds")
-    planned = {f"{sid}|rep{rep}": seed(ARM_A_NAMESPACE, sid, rep)
+    planned = {f"{sid}|rep{rep}": seed(namespace, sid, rep)
                for sid in state_ids for rep in range(REPLICATES)}
     units = [{"unit_id": f"{sid}|rep{rep}", "state_id": sid, "rep": rep,
-              "namespace": ARM_A_NAMESPACE,
+              "namespace": namespace,
+              "seed": planned[f"{sid}|rep{rep}"],
               "seed_key": [planned[f"{sid}|rep{rep}"], 42424],
               "samples": N_SAMPLES}
              for sid in state_ids for rep in range(REPLICATES)]
-    return {"namespace": ARM_A_NAMESPACE, "planned_seeds": planned,
+    return {"namespace": namespace, "planned_seeds": planned,
             "units": units, "n_units": len(units),
             "n_trials": N_TRIALS, "budget": BUDGET}
 

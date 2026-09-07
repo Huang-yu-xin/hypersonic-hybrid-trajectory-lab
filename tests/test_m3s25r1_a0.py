@@ -28,19 +28,18 @@ from hyptraj.m3s25r1 import arm_a_eval as AE  # noqa: E402
 # gates + truth closure
 # --------------------------------------------------------------------------
 
-def test_gate_state_per_authorization():
-    """Post-A0.2-audit authorized state: TRUTH closed, ARM A YES (as
-    granted), ARM B NO."""
+def test_gate_state_after_a1r0():
+    """Post-A1R0 state: the old Arm-A gate is CLOSED / EXERCISED /
+    TERMINAL-X; the replacement A1R gates are NO; TRUTH closed."""
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED") is False
     txt = R.APPROVAL_DOC.read_text(encoding="utf-8")
-    assert "M3_S25_R1_TRUTH_AUTHORIZED: NO" in txt
-    assert "M3_S25_R1_ARM_A_AUTHORIZED: YES" in txt
-    assert "M3_S25_R1_ARM_B_AUTHORIZED: NO" in txt
-    assert "status = CLOSED / EXERCISED" in txt
+    assert "status = CLOSED / EXERCISED / TERMINAL-X" in txt
+    assert "M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO" in txt
     assert R.TRUTH_TERMINAL_HEAD in txt
-    assert "DO NOT execute Arm B" in txt
 
 
 # --------------------------------------------------------------------------
@@ -158,7 +157,7 @@ def test_arm_a_preflight_frozen_readiness_record():
     pf = R.load(R.OUT / "m3s25r1_arm_a_preflight.json")
     assert pf["PREFLIGHT_VERDICT"] == "PASS"
     assert pf["checks"]["arm_a_gate_no"] is True   # readiness round
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
 
@@ -462,10 +461,12 @@ def test_split_feasibility_on_frozen_panel():
     assert all(e["inner_GroupKFold4_feasible"] for e in feas["outer"])
 
 
-def test_route_gates_match_authorization_after_all_tests():
+def test_route_gates_closed_after_all_tests():
     assert not R.gate("M3_S25_R1_TRUTH_AUTHORIZED")
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert not R.gate("M3_S25_R1_ARM_A_AUTHORIZED")
     assert not R.gate("M3_S25_R1_ARM_B_AUTHORIZED")
+    assert not R.gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED")
+    assert not R.gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED")
 
 
 # --------------------------------------------------------------------------

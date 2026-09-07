@@ -637,10 +637,14 @@ def test_restart_missing_complete_artifact_fails(tmp_path):
 # gate isolation (Sec. 31)
 # --------------------------------------------------------------------------
 
-def test_gates_match_authorization_and_parent_closed():
+def test_gates_closed_and_parent_sealed():
+    """Post-A1R0 state: every R1 gate NO (old Arm-A CLOSED/
+    EXERCISED/TERMINAL-X; A1R gates NO); parent gates sealed."""
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED") is False
     assert R.parent_gate("TRUTH_SAMPLING_AUTHORIZED") is False
     assert R.parent_gate("ARM_A_AUTHORIZED") is False
     assert R.parent_gate("ARM_B_AUTHORIZED") is False
@@ -669,15 +673,18 @@ def test_import_cannot_flip_gates():
         f"sys.path.insert(0, r'{ROOT}')\n"
         f"sys.path.insert(0, r'{scripts_dir}')\n"
         "import run_m3s25r1 as R\n"
-        "print((not R.gate('M3_S25_R1_TRUTH_AUTHORIZED'),\n"
-        "       R.gate('M3_S25_R1_ARM_A_AUTHORIZED'),\n"
-        "       not R.gate('M3_S25_R1_ARM_B_AUTHORIZED')))\n")
+        "print(all(not R.gate(g) for g in (\n"
+        "    'M3_S25_R1_TRUTH_AUTHORIZED', 'M3_S25_R1_ARM_A_AUTHORIZED',\n"
+        "    'M3_S25_R1_ARM_B_AUTHORIZED', 'M3_S25_R1_A1R_ARM_A_AUTHORIZED',\n"
+        "    'M3_S25_R1_A1R_ARM_B_AUTHORIZED')))\n")
     out = subprocess.run([sys.executable, "-c", code], capture_output=True,
                          text=True)
     assert out.returncode == 0, out.stderr
-    assert out.stdout.strip() == "(True, True, True)"
+    assert out.stdout.strip() == "True"
     assert R.gate("M3_S25_R1_TRUTH_AUTHORIZED") is False
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED") is False
+    assert R.gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED") is False
     assert R.gate("M3_S25_R1_ARM_B_AUTHORIZED") is False
 
 

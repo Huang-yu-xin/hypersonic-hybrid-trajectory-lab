@@ -117,6 +117,21 @@ PARENT_CONTRACTS = (
     "m3s2s_arm_b_contract.json", "m3s2s_verdict_contract.json",
     "m3s2s_panel_contract.json")
 
+# ---- M3-S25-R1-A1R0: replacement Arm-A preregistration (zero sampling) ----
+A1R_NAMESPACE = "M3-S25-R1-A1R-GRAD"
+A1R_DIR = ROOT / "results/phase_m3s25r1/arm_a1r"
+A1R_TRIALS = A1R_DIR / "trials"
+A1R_LEDGER = A1R_DIR / "trial_ledger.jsonl"
+A1R_EVAL = SUM / "m3s25r1_a1r_evaluation.json"
+A1R_RETIRED = CFG / "m3s25r1_a1r_retired_stream.json"
+A1R_CONTRACT = CFG / "m3s25r1_a1r_contract.json"
+A1R_SEED_MANIFEST = CFG / "m3s25r1_a1r_seed_manifest.json"
+A1R_RETIRED_PIN = ("7a2010cedf7a5b75d46b427e3a10a45e"
+                           "60bff301c08777ebc9c14701392d8168")
+A1R_CONTRACT_PIN = ("3855d3a24547a9035cce0d18f8df4cb2"
+                           "a3a0f344b73266b8a182fb8fe3926123")
+A1R_SEED_MANIFEST_PIN = ("067062d89f76486aacb6dfd892d0f77f"
+                           "ae9729c1063a201388ceea892c336b6e")
 
 # --------------------------------------------------------------------------
 # helpers
@@ -2412,6 +2427,575 @@ def arm_a_evaluate() -> dict:
 
 
 
+# ==========================================================================
+# M3-S25-R1-A1R0: Replacement Arm-A preregistration (ZERO SAMPLING)
+# ==========================================================================
+
+def a1r_retired_stream_stage() -> dict:
+    """A1R0 item 2: freeze the failed old Arm-A stream as RETIRED
+    evidence (tracked).  All 960 old logical units are RETIRED FROM
+    REPLACEMENT; the old ledger/artifacts are preserved verbatim."""
+    old_manifest = load(ARM_A_SEED_MANIFEST)
+    old_ledger = ledger_entries(ARM_A_LEDGER) \
+        if Path(ARM_A_LEDGER).exists() else []
+    consumed = [e for e in old_ledger if e.get("status") == "CONSUMED_INVALID"]
+    completes = [e for e in old_ledger if e.get("status") == "COMPLETE"]
+    started = [e for e in old_ledger if e.get("status") == "STARTED"]
+    if len(consumed) != 1 or completes or len(started) != 1:
+        raise RuntimeError(
+            "M3-S25-R1-A1R0-X: old Arm-A ledger state drift "
+            f"(consumed={len(consumed)}, complete={len(completes)}, "
+            f"started={len(started)})")
+    consumed_unit = consumed[0]["state_id"]
+    if consumed_unit not in old_manifest["planned_seeds"]:
+        raise RuntimeError("M3-S25-R1-A1R0-X: consumed unit unknown to the "
+                           "old seed manifest")
+    units = []
+    for unit_id, seed_value in sorted(old_manifest["planned_seeds"].items()):
+        status = ("CONSUMED_INVALID_20K" if unit_id == consumed_unit
+                  else "RETIRED_FRESH_NEVER_STARTED")
+        units.append({"unit_id": unit_id, "seed": int(seed_value),
+                      "seed_key": [int(seed_value), 42424], "status": status})
+    record = {
+        "schema_version": "m3s25r1_a1r_retired_stream_v1",
+        "old_stage": "M3-S25-R1 Arm-A",
+        "old_terminal": "M3-S25-R1-X",
+        "old_terminal_head": TRUTH_TERMINAL_HEAD,
+        "old_arm_a_seed_manifest_sha256":
+            sha_bytes(ARM_A_SEED_MANIFEST.read_bytes()),
+        "old_incident_report_sha256":
+            sha(DOC / "M3_S25_R1_Arm_A_Incident_Report.md"),
+        "old_ledger_path": ARM_A_LEDGER.relative_to(ROOT).as_posix(),
+        "old_ledger_sha256_expected": sha_bytes(ARM_A_LEDGER.read_bytes()),
+        "consumed_unit": {
+            "unit_id": consumed_unit,
+            "seed": int(old_manifest["planned_seeds"][consumed_unit]),
+            "seed_key": [int(old_manifest["planned_seeds"][consumed_unit]),
+                         42424],
+            "samples_consumed": 20000},
+        "counts": {"total_units": 960, "consumed_invalid": 1,
+                   "complete": 0, "never_started": 959},
+        "rule": "no old Arm-A unit or seed may appear in the replacement "
+                "stage A1R; the old ledger/artifacts are preserved "
+                "verbatim and never reused, truncated, ignored or "
+                "reinterpreted",
+        "units": units,
+    }
+    data = dump_json(A1R_RETIRED, record)
+    dump(OUT / "m3s25r1_a1r_retired_stream_audit.json", {
+        "recorded_at": now(),
+        "retired_stream_sha256": sha_bytes(data),
+        **record["counts"]})
+    print(f"M3-S25-R1-A1R0 retired stream frozen: 960 units retired "
+          f"(1 consumed / 959 fresh), sha {sha_bytes(data)[:16]}...")
+    return record
+
+
+def a1r_seed_manifest_stage() -> dict:
+    """A1R0 item 5: an entirely NEW 960-unit seed stream under the new
+    M3-S25-R1-A1R-GRAD namespace; zero collisions against the retired
+    old Arm-A stream, R1 truth seeds, S2S Arm-A/truth seeds, CF1N and all
+    recorded historical scientific streams."""
+    retired = load(A1R_RETIRED)
+    old_values = {u["seed"] for u in retired["units"]}
+    old_keys = {tuple(u["seed_key"]) for u in retired["units"]}
+    panel_states = load(PANEL_JSON)["states"]
+    plan = AA.arm_a_seed_plan(panel_states, namespace=A1R_NAMESPACE)
+    new_vals = set(plan["planned_seeds"].values())
+    if new_vals & old_values:
+        raise RuntimeError(
+            "M3-S25-R1-A1R0-X: replacement seeds overlap the RETIRED old "
+            f"Arm-A stream: {sorted(new_vals & old_values)[:5]}")
+    dump(A1R_SEED_MANIFEST, {
+        "schema_version": "m3s25r1_a1r_seed_manifest_v1",
+        "frozen_before_first_simulator_call": True,
+        "old_stream_exclusion": {
+            "retired_stream": "configs/phase_m3s25r1/"
+                              "m3s25r1_a1r_retired_stream.json",
+            "old_values_overlap": 0,
+            "rule": "no old Arm-A unit or seed may appear in A1R"},
+        **{k: plan[k] for k in ("namespace", "planned_seeds", "units",
+                                "n_units", "n_trials", "budget")}})
+    # typed per-stream collision audit (incl. the retired pool)
+    s2s_arm_a = set(load(
+        ROOT / "configs/phase_m3s2s/m3s2s_seed_manifest.json")
+        .get("planned_seeds", {}).values())
+    s2s_truth = {int(u["seed_key"][0]) for u in load(
+        ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
+        .get("units", [])}
+    r1_truth = {int(u["seed_key"][0]) for u in load(
+        CFG / "m3s25r1_truth_seed_manifest.json")["units"]}
+    csv_history = _prior_recorded_seeds()
+    cf1n_ints = set()
+    for name in ("m3cf1n_pref_seeds.json", "m3cf1n_discovery_seeds.json",
+                 "m3cf1n_confirmation_seeds.json"):
+        d = load(ROOT / "configs/phase_m3cf1n" / name)
+        for v in d.values():
+            if isinstance(v, list):
+                for item in v:
+                    if isinstance(item, dict) and "seed_key" in item:
+                        cf1n_ints.add(int(item["seed_key"][0]))
+                    elif isinstance(item, list) and item:
+                        cf1n_ints.add(int(item[0]))
+    pools = {"retired_old_arm_a_seeds": old_values,
+             "m3s2s_arm_a_candidate_seeds": s2s_arm_a,
+             "m3s2s_truth_seeds": s2s_truth,
+             "m3s25r1_truth_seeds": r1_truth,
+             "recorded_historical_seed_pools": csv_history,
+             "m3cf1n_seed_pools": cf1n_ints}
+    truth_key_pools = {
+        "m3s25r1_truth_seed_keys": {tuple(u["seed_key"]) for u in load(
+            CFG / "m3s25r1_truth_seed_manifest.json")["units"]},
+        "retired_old_arm_a_seed_keys": old_keys}
+    audit = AA.seed_collision_audit(plan, pools, truth_key_pools)
+    dump(OUT / "m3s25r1_a1r_seed_audit.json", {"recorded_at": now(), **audit})
+    print(f"M3-S25-R1-A1R0 seeds: 960 new units under {A1R_NAMESPACE}, "
+          "0 collisions (incl. the retired old stream)")
+    return plan
+
+
+def a1r_contract_stage() -> dict:
+    """A1R0 items 3/4/6/7: the replacement contract -- the SAME frozen
+    scientific panel and contracts (inherited by exact SHA), the
+    corrected instrumentation implementation, separate persistence
+    paths, the replacement budget with cumulative accounting, and the
+    A1R-local terminal names."""
+    a0_contract = load(ARM_A_CONTRACT)
+    panel = load(PANEL_JSON)
+    old_ledger_sha = sha_bytes(ARM_A_LEDGER.read_bytes())
+    retired_sha = sha_bytes(A1R_RETIRED.read_bytes())
+    contract = {
+        "schema_version": "m3s25r1_a1r_contract_v1",
+        "stage": "M3-S25-R1-A1R",
+        "parent_terminal": "M3-S25-R1-X (old Arm-A stage, PERMANENT)",
+        "parent_terminal_head": TRUTH_TERMINAL_HEAD,
+        "scientific_inheritance": {
+            "rule": "SAME frozen scientific panel and contracts, "
+                    "byte-identical; no truth resampling, no panel "
+                    "reselection",
+            "panel_body_sha256": panel["panel_sha256"],
+            "panel_file_sha256": sha(PANEL_JSON),
+            "panel_truth_manifest_sha256": sha(PANEL_TRUTH_MANIFEST),
+            "a0_rebind_contract_sha256":
+                sha_bytes(ARM_A_CONTRACT.read_bytes()),
+            "inherited_parent_contract_sha256": _parent_contract_hashes(),
+            "estimator": a0_contract["estimator"],
+            "alpha_p": AA.ALPHA_P,
+            "S1_threshold_frozen": AA.S1_THRESHOLD,
+            "feature_families": a0_contract["feature_contract"],
+            "b1_comparator": a0_contract["b1_comparator"],
+            "model_grids": a0_contract["model_contract"]["grids"],
+            "cv": a0_contract["model_contract"]["cv"],
+            "safety_gates": AA.GATES,
+            "improvement_criterion": AA.IMPROVEMENT,
+            "arm_b_rules": "unchanged; never authorized with Arm A",
+        },
+        "corrected_instrumentation": {
+            "fix": "post-incident A0.2 correction: CI bounds come from "
+                   "the frozen stratified_bootstrap_gradient_ci on the "
+                   "identical inputs (bit-identical to gradient_decision's "
+                   "internal call); the replicate capture loop is "
+                   "sidecar-only",
+            "crosscheck": "unmodified gradient_decision bit-exact "
+                          "crosscheck remains MANDATORY on every trial",
+            "code_sha256": {
+                "src/hyptraj/m3s25r1/arm_a.py":
+                    sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py"),
+                "src/hyptraj/m3s25r1/arm_a_eval.py":
+                    sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py")},
+            "transactional_sidecar": "temp -> write -> flush -> fsync -> "
+                                     "atomic rename -> parent-dir fsync "
+                                     "(fail-closed) -> SHA verify"},
+        "old_stream_retirement": {
+            "retired_stream": "configs/phase_m3s25r1/"
+                              "m3s25r1_a1r_retired_stream.json",
+            "retired_stream_sha256": retired_sha,
+            "old_ledger_sha256_expected": old_ledger_sha,
+            "rule": "the old failed 20k realization is EXPOSED / "
+                    "CONSUMED_INVALID and must never enter the "
+                    "replacement dataset, features, CV, metrics or "
+                    "verdict"},
+        "namespace": A1R_NAMESPACE,
+        "seed_manifest": "configs/phase_m3s25r1/m3s25r1_a1r_seed_manifest.json",
+        "persistence": {
+            "dir": "results/phase_m3s25r1/arm_a1r/",
+            "ledger": "results/phase_m3s25r1/arm_a1r/trial_ledger.jsonl",
+            "rule": "separate replacement paths; never reuse, truncate, "
+                    "ignore or reinterpret the old Arm-A ledger",
+            "chain": "STARTED -> 20k sampling -> transactional sidecar -> "
+                     "record hash -> COMPLETE",
+            "failure": "any replacement consumed-invalid unit => "
+                       "M3-S25-R1-A1R-X => STOP => NO REPLAY"},
+        "budget": {
+            "n_trials": 960, "samples_per_trial": 20000,
+            "replacement_planned": 19_200_000,
+            "replacement_max": 19_200_000,
+            "topup": 0, "substitution": 0,
+            "old_invalid_stage_samples": 20_000,
+            "cumulative_if_replacement_completes": 19_220_000,
+            "rule": "the old 20,000 never counts toward replacement "
+                    "completeness; cumulative project consumption is "
+                    "reported separately"},
+        "evaluation_protocol": {
+            "frozen": "B0/B1/A1-A4 comparison, outer GroupKFold(5) / "
+                      "inner GroupKFold(4), groups = config_id; no "
+                      "test-fold tuning; truth manifest unseals ONLY "
+                      "after 960/960 durable COMPLETE with 0 "
+                      "CONSUMED_INVALID and exactly 19,200,000 "
+                      "replacement samples",
+            "terminal_names": {"success": "M3-S25-R1-A1R-A",
+                               "b_gate": "M3-S25-R1-A1R-B-GATE",
+                               "failure": "M3-S25-R1-A1R-X"}},
+        "gates": {"M3_S25_R1_A1R_ARM_A_AUTHORIZED": "NO",
+                  "M3_S25_R1_A1R_ARM_B_AUTHORIZED": "NO",
+                  "old_M3_S25_R1_ARM_A_AUTHORIZED": "NO (CLOSED/EXERCISED/"
+                                                    "TERMINAL-X)",
+                  "truth": "NO (CLOSED/EXERCISED)",
+                  "value_rarity_m3q": "BLOCKED"},
+    }
+    data = dump_json(A1R_CONTRACT, contract)
+    print(f"M3-S25-R1-A1R0 contract frozen (sha {sha_bytes(data)[:16]}...) "
+          f"replacement 19,200,000; cumulative 19,220,000")
+    return contract
+
+
+def _verify_frozen_a1r_inputs() -> dict:
+    if sha_bytes(UNIVERSE.read_bytes()) != EXPECTED_UNIVERSE_SHA:
+        raise RuntimeError("M3-S25-R1-A1R-X: universe SHA drift")
+    if sha_bytes((CFG / "m3s25r1_contract.json").read_bytes()) \
+            != EXPECTED_CONTRACT_SHA:
+        raise RuntimeError("M3-S25-R1-A1R-X: contract SHA drift")
+    got_panel = sha_bytes(PANEL_JSON.read_bytes())
+    if got_panel != EXPECTED_PANEL_FILE_SHA:
+        raise RuntimeError("M3-S25-R1-A1R-X: panel FILE sha drift")
+    retired = load(A1R_RETIRED)
+    got_ledger = sha_bytes(ARM_A_LEDGER.read_bytes())
+    if got_ledger != retired["old_ledger_sha256_expected"]:
+        raise RuntimeError(
+            "M3-S25-R1-A1R-X: the old Arm-A ledger was modified after "
+            "retirement (preservation violated)")
+    manifest_sha = sha_bytes(PANEL_TRUTH_MANIFEST.read_bytes())
+    if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A1R-X: truth manifest SHA drift")
+    a1r_contract_sha = sha_bytes(A1R_CONTRACT.read_bytes())
+    if A1R_CONTRACT_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and a1r_contract_sha != A1R_CONTRACT_PIN:
+        raise RuntimeError("M3-S25-R1-A1R-X: A1R contract SHA drift")
+    a1r_seeds_sha = sha_bytes(A1R_SEED_MANIFEST.read_bytes())
+    if A1R_SEED_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and a1r_seeds_sha != A1R_SEED_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A1R-X: A1R seed manifest SHA drift")
+    a1r_retired_sha = sha_bytes(A1R_RETIRED.read_bytes())
+    if A1R_RETIRED_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and a1r_retired_sha != A1R_RETIRED_PIN:
+        raise RuntimeError("M3-S25-R1-A1R-X: A1R retired-stream SHA drift")
+    return {"universe_sha256": EXPECTED_UNIVERSE_SHA,
+            "panel_file_sha256": got_panel,
+            "panel_truth_manifest_sha256": manifest_sha,
+            "old_ledger_sha256": got_ledger,
+            "a1r_contract_sha256": a1r_contract_sha,
+            "a1r_seed_manifest_sha256": a1r_seeds_sha,
+            "a1r_retired_stream_sha256": a1r_retired_sha}
+
+
+def _a1r_old_stream_exclusion() -> dict:
+    """Mechanical proof (A1R0 item 5): no old Arm-A SEED VALUE appears in
+    the replacement stream.  Unit IDs intentionally repeat (the same 120
+    panel states x 8 replicate slots are re-run with entirely new seeds --
+    that is the replacement design); what is retired is the old
+    REALIZATION (seeds + data), which must never enter A1R."""
+    retired = load(A1R_RETIRED)
+    old_vals = {u["seed"] for u in retired["units"]}
+    old_keys = {tuple(u["seed_key"]) for u in retired["units"]}
+    manifest = load(A1R_SEED_MANIFEST)
+    new_vals = set(manifest["planned_seeds"].values())
+    new_keys = {tuple(u["seed_key"]) for u in manifest["units"]}
+    overlap_vals = sorted(new_vals & old_vals)
+    overlap_keys = sorted(new_keys & old_keys)
+    if overlap_vals or overlap_keys:
+        raise RuntimeError(
+            f"M3-S25-R1-A1R-X: retired-seed overlap: vals={overlap_vals[:3]} "
+            f"keys={overlap_keys[:3]}")
+    return {"old_seed_value_overlap": 0, "old_seed_key_overlap": 0,
+            "old_values_total": len(old_vals),
+            "EXCLUSION": "PASS",
+            "note": "unit_id slots intentionally repeat; seeds are "
+                    "entirely new"}
+
+
+def a1r_preflight() -> dict:
+    """A1R0 item 9: the full zero-sampling replacement readiness
+    checklist."""
+    checks = {}
+    head = git_commit()
+    checks["parent_incident_head_ancestor"] = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", TRUTH_TERMINAL_HEAD, head],
+        cwd=ROOT, capture_output=True).returncode == 0
+    # old stage terminal X + old gate CLOSED
+    led = ledger_entries(ARM_A_LEDGER) if Path(ARM_A_LEDGER).exists() else []
+    c = Counter(e.get("status") for e in led)
+    checks["old_stage_terminal_x"] = (c.get("CONSUMED_INVALID", 0) == 1
+                                      and c.get("COMPLETE", 0) == 0)
+    checks["old_arm_a_gate_closed"] = not gate("M3_S25_R1_ARM_A_AUTHORIZED")
+    checks["truth_gate_closed"] = not gate("M3_S25_R1_TRUTH_AUTHORIZED")
+    checks["old_arm_b_gate_no"] = not gate("M3_S25_R1_ARM_B_AUTHORIZED")
+    retired = load(A1R_RETIRED)
+    checks["consumed_unit_retired"] = any(
+        u["status"] == "CONSUMED_INVALID_20K"
+        and u["unit_id"] == retired["consumed_unit"]["unit_id"]
+        for u in retired["units"])
+    pins = _verify_frozen_a1r_inputs()
+    checks["old_ledger_preserved"] = True
+    excl = _a1r_old_stream_exclusion()
+    checks["old_seed_stream_excluded"] = excl["EXCLUSION"] == "PASS"
+    # same panel / truth / contracts
+    checks["same_panel_and_contracts"] = (
+        pins["panel_file_sha256"] == EXPECTED_PANEL_FILE_SHA
+        and pins["panel_truth_manifest_sha256"]
+        == PANEL_TRUTH_MANIFEST_PIN)
+    contract = load(A1R_CONTRACT)
+    checks["corrected_instrumentation_sha"] = (
+        contract["corrected_instrumentation"]["code_sha256"]
+        ["src/hyptraj/m3s25r1/arm_a.py"]
+        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py")
+        and contract["corrected_instrumentation"]["code_sha256"]
+        ["src/hyptraj/m3s25r1/arm_a_eval.py"]
+        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py"))
+    seeds_cfg = load(A1R_SEED_MANIFEST)
+    audit = load(OUT / "m3s25r1_a1r_seed_audit.json")
+    checks["new_seeds_960_unique"] = (seeds_cfg["n_units"] == 960
+                                      and audit["unique_seeds"] == 960
+                                      and audit["historical_collision"] == 0)
+    checks["replacement_destination_empty"] = (
+        (not A1R_TRIALS.exists() or not any(A1R_TRIALS.iterdir()))
+        and not A1R_LEDGER.exists() and not A1R_EVAL.exists())
+    reserve = {r["state_id"] for r in csvread(
+        OUT / "m3s25r1_protected_reserve_18.csv")}
+    panel_ids = {s["state_id"] for s in load(PANEL_JSON)["states"]}
+    checks["reserve_untouched"] = len(reserve) == 18 \
+        and not (reserve & panel_ids)
+    checks["evaluation_truth_sealed"] = verify_panel_truth_manifest()[
+        "PANEL_TRUTH_MANIFEST_AUDIT"] == "PASS"
+    checks["a1r_arm_a_gate_no"] = not gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED")
+    checks["a1r_arm_b_gate_no"] = not gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED")
+    checks["zero_sampling"] = True
+    failed = sorted(k for k, v in checks.items() if not v)
+    report = {
+        "recorded_at": now(), "simulator_calls": 0, "samples": 0,
+        "checks": checks, "failed_checks": failed,
+        "frozen_pins": pins, "old_stream_exclusion": excl,
+        "PREFLIGHT_VERDICT": "PASS" if not failed else "FAIL",
+        "overall": ("A1R EXECUTION-READY (gates remain NO; awaiting the "
+                    "human replacement-execution audit)" if not failed else
+                    "A1R NOT EXECUTION-READY: " + ", ".join(failed)),
+    }
+    dump(OUT / "m3s25r1_a1r_preflight.json", report)
+    print(f"M3-S25-R1-A1R0 preflight: {report['PREFLIGHT_VERDICT']} "
+          f"({len(checks) - len(failed)}/{len(checks)} checks PASS)")
+    return report
+
+
+def verify_frozen_a1r_preflight_pass() -> dict:
+    pf = load(OUT / "m3s25r1_a1r_preflight.json")
+    if pf.get("PREFLIGHT_VERDICT") != "PASS":
+        raise RuntimeError(
+            f"M3-S25-R1-A1R-X: frozen A1R preflight verdict is "
+            f"{pf.get('PREFLIGHT_VERDICT')!r}; execution not authorized; "
+            "STOP")
+    return pf
+
+
+def _a1r_restart_scan(panel_states: list[dict]) -> dict:
+    entries = ledger_entries(A1R_LEDGER) \
+        if Path(A1R_LEDGER).exists() else []
+    summary = {"fresh": 0, "complete_verified": 0}
+    for s in panel_states:
+        slug_dir = A1R_TRIALS / bounded_slug(s["state_id"])
+        for rep in range(AA.REPLICATES):
+            unit_id = f"{s['state_id']}|rep{rep}"
+            rec = AA.verify_arm_a_trial_fresh_or_verified(
+                unit_id, slug_dir / f"rep{rep}.json",
+                slug_dir / f"rep{rep}_instrumentation.npz", entries,
+                record_file_hash, record_file_hash)
+            if rec is None:
+                summary["fresh"] += 1
+            else:
+                summary["complete_verified"] += 1
+    return summary
+
+
+def arm_a1r_execute() -> dict:
+    """GATED by M3_S25_R1_A1R_ARM_A_AUTHORIZED: YES.  Fail-closed
+    ordering: old terminal X + old gate closed -> frozen pins + retired
+    exclusion -> restart scan (NEW ledger) -> gates -> pure plan ->
+    simulator.  Zero writes before the gate."""
+    import hyptraj.m3d.benchmark_states as BS
+    decision = load(SUM / "m3s25r1_panel_decision.json")
+    if decision.get("PANEL") != "FROZEN":
+        raise RuntimeError("M3-S25-R1-A1R-X: truth terminal is not "
+                           "PANEL-FROZEN")
+    if gate("M3_S25_R1_TRUTH_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A1R-X: truth gate must remain "
+                           "CLOSED/EXERCISED")
+    if gate("M3_S25_R1_ARM_A_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A1R-X: the OLD Arm-A gate is "
+                           "CLOSED/TERMINAL-X and must remain NO")
+    if gate("M3_S25_R1_ARM_B_AUTHORIZED") \
+            or gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A1R-X: Arm B must remain NO")
+    panel = load(PANEL_JSON)
+    if panel["panel_sha256"] != AA.FROZEN_PANEL_SHA:
+        raise RuntimeError("M3-S25-R1-A1R-X: panel SHA drift")
+    _verify_frozen_a1r_inputs()
+    _a1r_old_stream_exclusion()
+    seeds_cfg = load(A1R_SEED_MANIFEST)
+    panel_states = panel["states"]
+    restart = _a1r_restart_scan(panel_states)
+    if not gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED"):
+        raise RuntimeError(
+            "M3_S25_R1_A1R_ARM_A_AUTHORIZED is not YES")
+    contract_shas = {"a1r_contract": sha(A1R_CONTRACT),
+                     "stage_contract": sha(CFG / "m3s25r1_contract.json"),
+                     "panel_truth_manifest": sha(PANEL_TRUTH_MANIFEST)}
+    plan_seeds = seeds_cfg["planned_seeds"]
+    A1R_TRIALS.mkdir(parents=True, exist_ok=True)
+
+    def run_trial(s, rep):
+        unit_id = f"{s['state_id']}|rep{rep}"
+        slug_dir = A1R_TRIALS / bounded_slug(s["state_id"])
+        rec_p = slug_dir / f"rep{rep}.json"
+        side_p = slug_dir / f"rep{rep}_instrumentation.npz"
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            unit_id, rec_p, side_p, ledger_entries(A1R_LEDGER),
+            record_file_hash, record_file_hash)
+        if rec is not None:
+            return
+
+        def compute():
+            bench = VR.resolve_bench_config(s["config_id"])
+            st = BS.assemble_state(bench, float(s["s2"]),
+                                   short_config=s["config_id"])
+            if isinstance(st, dict):
+                raise RuntimeError(
+                    f"M3-S25-R1-A1R-X: assembly failed for {s['state_id']}")
+            record, arrays = AA.arm_a_trial(
+                st, plan_seeds[unit_id], s["state_id"], rep,
+                s["config_id"], float(s["s2"]), contract_shas)
+            record["recorded_at"] = now()
+            record["stream"] = "arm_a1r_gradient"
+            record["instrumentation_sha256"] = \
+                AA.write_sidecar_transactional(side_p, arrays)
+            return record
+
+        def validate(payload):
+            if payload.get("schema") != AA.TRIAL_SCHEMA:
+                raise RuntimeError("M3-S25-R1-A1R-X: trial schema drift")
+            if not payload.get("instrumentation_sha256"):
+                raise RuntimeError("M3-S25-R1-A1R-X: sidecar hash missing")
+            if record_file_hash(side_p) != payload["instrumentation_sha256"]:
+                raise RuntimeError("M3-S25-R1-A1R-X: sidecar hash mismatch")
+            if "truth" in payload or payload.get("confirmed_truth") \
+                    or payload.get("corrected_class"):
+                raise RuntimeError(
+                    "M3-S25-R1-A1R-X: truth label leaked into the "
+                    "execution view")
+
+        result = run_trial_transactional(
+            unit_id, rec_p, compute, ledger_path=A1R_LEDGER,
+            pre_hash_validator=validate,
+            base_entry={"panel_state_id": s["state_id"], "rep_id": rep,
+                        "config_id": s["config_id"],
+                        "seed_namespace": A1R_NAMESPACE,
+                        "seed": plan_seeds[unit_id],
+                        "samples": AA.N_SAMPLES,
+                        "stream": "arm_a1r_gradient"})
+        if result["status"] != "COMPLETE":
+            raise RuntimeError(
+                f"M3-S25-R1-A1R-X: trial not durably COMPLETE: {unit_id}: "
+                f"{result}; CONSUMED_INVALID policy in force; NO REPLAY")
+
+    for s in panel_states:
+        for rep in range(AA.REPLICATES):
+            run_trial(s, rep)
+    entries = ledger_entries(A1R_LEDGER)
+    counts = Counter(e.get("status") for e in entries)
+    complete = counts.get("COMPLETE", 0)
+    invalid = counts.get("CONSUMED_INVALID", 0)
+    if invalid or complete != AA.N_TRIALS:
+        raise RuntimeError(
+            f"M3-S25-R1-A1R-X: replacement incomplete ({complete}/960, "
+            f"invalid {invalid}); STOP")
+    consumed = sum(AA.N_SAMPLES for e in entries
+                   if e.get("status") == "COMPLETE")
+    summary = {"n_trials": complete, "CONSUMED_INVALID": invalid,
+               "replacement_samples": consumed,
+               "replacement_planned": AA.BUDGET, "topup": 0,
+               "old_invalid_stage_samples": 20_000,
+               "cumulative_project_samples": 20_000 + consumed}
+    dump(SUM / "m3s25r1_a1r_consumption.json", summary)
+    print(f"M3-S25-R1-A1R execute: {complete}/960 durable COMPLETE; "
+          f"replacement {consumed:,}; cumulative "
+          f"{summary['cumulative_project_samples']:,}; STOP -- evaluation "
+          "is a separate stage")
+    return summary
+
+
+def arm_a1r_evaluate() -> dict:
+    """ONLY after 960/960 durable COMPLETE (0 CONSUMED_INVALID, exactly
+    19,200,000 replacement samples): unseal the SAME sealed truth
+    manifest and run the frozen comparison with A1R-local terminal
+    names."""
+    verify_frozen_a1r_preflight_pass()
+    _verify_frozen_a1r_inputs()
+    _a1r_old_stream_exclusion()
+    entries = ledger_entries(A1R_LEDGER) \
+        if Path(A1R_LEDGER).exists() else []
+    counts = Counter(e.get("status") for e in entries)
+    complete = counts.get("COMPLETE", 0)
+    invalid = counts.get("CONSUMED_INVALID", 0)
+    if invalid or complete != AA.N_TRIALS:
+        raise RuntimeError(
+            f"M3-S25-R1-A1R-X: evaluation requires 960/960 durable "
+            f"COMPLETE (got {complete}, invalid {invalid}); the old 20k "
+            "never counts; STOP")
+    manifest_sha = sha(PANEL_TRUTH_MANIFEST)
+    if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A1R-X: truth manifest SHA drift")
+    truth_by_state = {s["state_id"]: s["truth"] for s in
+                      load(PANEL_TRUTH_MANIFEST)["states"]}
+    records, sidecars = [], []
+    for s in load(PANEL_JSON)["states"]:
+        slug_dir = A1R_TRIALS / bounded_slug(s["state_id"])
+        for rep in range(AA.REPLICATES):
+            unit_id = f"{s['state_id']}|rep{rep}"
+            rec = AA.verify_arm_a_trial_fresh_or_verified(
+                unit_id, slug_dir / f"rep{rep}.json",
+                slug_dir / f"rep{rep}_instrumentation.npz", entries,
+                record_file_hash, record_file_hash)
+            if rec is None:
+                raise RuntimeError(
+                    f"M3-S25-R1-A1R-X: trial missing at evaluation: "
+                    f"{unit_id}")
+            records.append(rec)
+            with np.load(slug_dir / f"rep{rep}_instrumentation.npz") as z:
+                sidecars.append({k: z[k] for k in z.files})
+    results = AE.run_comparison(records, sidecars, truth_by_state)
+    verdict = AE.verdict(results, complete, invalid,
+                         prefix="M3-S25-R1-A1R")
+    out = {"recorded_at": now(),
+           "truth_manifest_unsealed": {"sha256": manifest_sha,
+                                       "after_complete_960": True},
+           "results": results, "verdict": verdict}
+    dump(A1R_EVAL, out)
+    print(f"M3-S25-R1-A1R evaluate: VERDICT = {verdict['VERDICT']} "
+          f"({verdict.get('compliant', [])}); STOP")
+    return out
+
+
+
+
 # --------------------------------------------------------------------------
 # entry
 # --------------------------------------------------------------------------
@@ -2438,6 +3022,15 @@ def a0_stages() -> None:
     print("M3-S25-R1-A0 complete; ARM_A/ARM_B remain NO; zero sampling")
 
 
+def a1r_stages() -> None:
+    """M3-S25-R1-A1R0: zero-sampling replacement Arm-A preregistration."""
+    a1r_retired_stream_stage()
+    a1r_seed_manifest_stage()
+    a1r_contract_stage()
+    a1r_preflight()
+    print("M3-S25-R1-A1R0 complete; all A1R gates remain NO; zero sampling")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("stage", choices=[
@@ -2445,7 +3038,9 @@ def main() -> None:
         "budget", "preflight", "contracts", "docs", "hashlock",
         "truth_execute", "truth_panel", "all", "a0",
         "panel_truth_manifest", "arm_a_contracts", "arm_a_preflight",
-        "arm_a_execute", "arm_a_evaluate"])
+        "arm_a_execute", "arm_a_evaluate", "a1r",
+        "a1r_retired_stream", "a1r_seed_manifest", "a1r_contract",
+        "a1r_preflight", "arm_a1r_execute", "arm_a1r_evaluate"])
     args = ap.parse_args()
     if args.stage == "prepare":
         prepare()
@@ -2484,6 +3079,20 @@ def main() -> None:
         arm_a_execute()
     elif args.stage == "arm_a_evaluate":
         arm_a_evaluate()
+    elif args.stage == "a1r":
+        a1r_stages()
+    elif args.stage == "a1r_retired_stream":
+        a1r_retired_stream_stage()
+    elif args.stage == "a1r_seed_manifest":
+        a1r_seed_manifest_stage()
+    elif args.stage == "a1r_contract":
+        a1r_contract_stage()
+    elif args.stage == "a1r_preflight":
+        a1r_preflight()
+    elif args.stage == "arm_a1r_execute":
+        arm_a1r_execute()
+    elif args.stage == "arm_a1r_evaluate":
+        arm_a1r_evaluate()
 
 
 if __name__ == "__main__":

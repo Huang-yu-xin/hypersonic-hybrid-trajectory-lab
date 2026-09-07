@@ -461,7 +461,8 @@ def run_comparison(records: list[dict], sidecars: list[dict],
     return results
 
 
-def verdict(results: dict, complete: int, consumed_invalid: int) -> dict:
+def verdict(results: dict, complete: int, consumed_invalid: int,
+            prefix: str = "M3-S25-R1") -> dict:
     """Frozen R1-local terminal names; the scientific gate is the
     parent's."""
     if consumed_invalid or complete != 960:
@@ -490,8 +491,8 @@ def verdict(results: dict, complete: int, consumed_invalid: int) -> dict:
         if ok and improved:
             compliant[name] = True
     if compliant:
-        return {"VERDICT": "M3-S25-R1-A", "compliant": sorted(compliant),
+        return {"VERDICT": f"{prefix}-A", "compliant": sorted(compliant),
                 "note": "Arm-A development success; Arm B NOT RUN"}
-    return {"VERDICT": "M3-S25-R1-B-GATE",
+    return {"VERDICT": f"{prefix}-B-GATE",
             "note": "valid Arm-A completion but no compliant candidate; "
                     "STOP for separate Arm-B review"}

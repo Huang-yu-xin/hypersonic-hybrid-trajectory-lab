@@ -7,12 +7,37 @@ and may not be reused for any R1 activity.
 
 ```text
 M3_S25_R1_TRUTH_AUTHORIZED: NO
-M3_S25_R1_ARM_A_AUTHORIZED: YES
+M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
+M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO
+M3_S25_R1_A1R_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
 AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
-                             Arm-A authorized 2026-09-06)
+                             Arm-A authorized 2026-09-06; CLOSED at A1R0)
 ```
+
+## Old Arm-A gate closure record (M3-S25-R1-A1R0, closure-only, 2026-09-07)
+
+```text
+M3_S25_R1_ARM_A_AUTHORIZED = NO
+status = CLOSED / EXERCISED / TERMINAL-X
+terminal HEAD = 73e91823fc562a8b5be65a86fa6f1e2a01803d42
+```
+
+- The original Arm-A authorization (Human, 2026-09-06; commit `d3116d2`)
+  was exercised exactly once and terminated on the first trial: unit
+  `m3s2s_cfg_001_s2s_0.5708962241|rep0` CONSUMED_INVALID (20,000 samples
+  consumed; 959 units never started) => the stage is PERMANENTLY
+  TERMINAL `M3-S25-R1-X`.  No replay, continuation, top-up, or
+  single-unit substitution is permitted.  The original authorization
+  record and the incident history below are PRESERVED verbatim.
+- The failed stream is retired as evidence
+  (`configs/phase_m3s25r1/m3s25r1_a1r_retired_stream.json`): no old
+  Arm-A unit or seed may appear in the replacement stage A1R.
+- The replacement stage is M3-S25-R1-A1R with its own independent gates
+  (`M3_S25_R1_A1R_ARM_A_AUTHORIZED` / `M3_S25_R1_A1R_ARM_B_AUTHORIZED`,
+  both NO; Codex/tests/scripts may never self-flip them).
+- TRUTH remains CLOSED / NO.  VALUE / RARITY / M3-Q remain BLOCKED.
 
 ## Arm-A authorization record (ARM A ONLY, 2026-09-06)
 

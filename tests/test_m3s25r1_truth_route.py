@@ -284,7 +284,9 @@ def test_route_real_p_ref_registry_hash_verified():
         assert rec["sample_count"] > 0
 
 
-def test_route_gates_match_authorization_after_all_tests():
+def test_route_gates_closed_after_all_tests():
     assert not R.gate("M3_S25_R1_TRUTH_AUTHORIZED")
-    assert R.gate("M3_S25_R1_ARM_A_AUTHORIZED") is True
+    assert not R.gate("M3_S25_R1_ARM_A_AUTHORIZED")
     assert not R.gate("M3_S25_R1_ARM_B_AUTHORIZED")
+    assert not R.gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED")
+    assert not R.gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED")

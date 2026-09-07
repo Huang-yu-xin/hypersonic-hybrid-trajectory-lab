@@ -2,6 +2,21 @@
   "PREREG_HASH_LOCK": "PASS",
   "files": [
     {
+      "path": "configs/phase_m3s25r1/m3s25r1_a1r_contract.json",
+      "sha256": "3855d3a24547a9035cce0d18f8df4cb2a3a0f344b73266b8a182fb8fe3926123",
+      "size_bytes": 12252
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_a1r_retired_stream.json",
+      "sha256": "7a2010cedf7a5b75d46b427e3a10a45e60bff301c08777ebc9c14701392d8168",
+      "size_bytes": 194068
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_a1r_seed_manifest.json",
+      "sha256": "067062d89f76486aacb6dfd892d0f77fae9729c1063a201388ceea892c336b6e",
+      "size_bytes": 324810
+    },
+    {
       "path": "configs/phase_m3s25r1/m3s25r1_arm_a_contract.json",
       "sha256": "f02fc399834e5d950d46f29d8e609f1b8df3697097a705db6de8d5474c6085d6",
       "size_bytes": 11214
@@ -55,6 +70,21 @@
       "path": "results/phase_m3s25r1/preflight/m3s25r1_1_preflight_R1_1_historical.json",
       "sha256": "5cdf399fd9ab7b8a76840ef10e1a6b12744bfbc656e816f55e473160fc2e54aa",
       "size_bytes": 17873
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_a1r_preflight.json",
+      "sha256": "24c3540264c2e3865673b3be3a07bdab2959ca6896b8395af364f1a47dc38f0c",
+      "size_bytes": 1781
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_a1r_retired_stream_audit.json",
+      "sha256": "ac4950fc27aa19012177aff403bf06f5d16dc6fb538552057e25f4d1215d259a",
+      "size_bytes": 231
+    },
+    {
+      "path": "results/phase_m3s25r1/preflight/m3s25r1_a1r_seed_audit.json",
+      "sha256": "5af5beedb9b61d77d76d61d13d8500cfbb2bc6f18cbc7a4ca552b8fe3879f7f0",
+      "size_bytes": 481
     },
     {
       "path": "results/phase_m3s25r1/preflight/m3s25r1_arm_a_preflight.json",
@@ -132,6 +162,11 @@
       "size_bytes": 4251
     },
     {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A1R0_Record.md",
+      "sha256": "2f013aaaff7ed57a054a498280681bc08a09243bc1f9a2d33fb80329422335e7",
+      "size_bytes": 5582
+    },
+    {
       "path": "docs/phase_m3s25r1/M3_S25_R1_Arm_A_Incident_Report.md",
       "sha256": "28ce38a4f8fb077e4555856e86e77db01bd705be5475d9e46f90aa57d78be34e",
       "size_bytes": 3963
@@ -187,16 +222,16 @@
       "size_bytes": 2889
     }
   ],
-  "head": "d3116d2594c0f46216cb14c82d4262493f716282",
+  "head": "73e91823fc562a8b5be65a86fa6f1e2a01803d42",
   "preflight_verdict": "PASS",
   "preregistration_round0": {
     "samples": 0,
     "simulator_calls": 0
   },
   "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
-  "recorded_at": "2026-09-07T14:43:01+0800",
+  "recorded_at": "2026-09-07T17:56:36+0800",
   "scientific_code_hashes": {
-    "scripts/run_m3s25r1.py": "a465da3c0f7337680d16e3ead2444c017e124a8d95c0b3cf2e70610448c19c80",
+    "scripts/run_m3s25r1.py": "28e642966309c7768fb99c4e9911fa778b1265b420e73072a7d1e8a740a9cc27",
     "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
     "src/hyptraj/m1d/experiments.py": "a5208f22221cae8d55c3792d1f3569813d3455347200ba4c9621d6be2b4cfd1e",
     "src/hyptraj/m3/gradient_estimator.py": "daccaf9ce550c16ea9233434bcbb652bd8dc126595e47eee8b6f9771d7993d24",
@@ -211,8 +246,8 @@
     "src/hyptraj/m3ml0/threshold.py": "3882c6024e90b535c0a039eda4081c63da1d8175fa428dfc503811251c781707",
     "src/hyptraj/m3pi1vr0/persistence.py": "6f2386bb87fc03ce3db73d23f69d758c1e4b03f22543f87db30203da62bb2427",
     "src/hyptraj/m3s25r1/__init__.py": "382ea08aed9a65e2d69bc39679428afd9782d8188a61ae595071e6ba448c698a",
-    "src/hyptraj/m3s25r1/arm_a.py": "42ff705bc306495de31aaf940b863cd77c94f080661a0a0e39d8c8a1e570903e",
-    "src/hyptraj/m3s25r1/arm_a_eval.py": "1dfc05389a4c2082ac8d469ee4fab650cc97331614b34adba5d491793cbf25d5",
+    "src/hyptraj/m3s25r1/arm_a.py": "53019d199726d789a3eeb664127402a4f82623921c474e3e5cc0fd4845a4ba02",
+    "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6",
     "src/hyptraj/m3s25r1/candidates.py": "f15b0525be01f3f8f9f5c9e82c7dbc5a88399266433e49e6e840a10c260cce86",
     "src/hyptraj/m3s25r1/history.py": "a9077da05bafc1a9241ebc98b9060f13174e48ebc4cfb4e9ce275bb1d10fb565",
     "src/hyptraj/m3s25r1/runtime.py": "8b574e657ecf43f1fd6d4a5a1bd6d6e08c2bbf68f30dff34938faf7ab146558c",

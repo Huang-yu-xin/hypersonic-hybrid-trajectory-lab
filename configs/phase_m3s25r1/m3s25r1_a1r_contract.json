@@ -1,0 +1,364 @@
+{
+  "budget": {
+    "cumulative_if_replacement_completes": 19220000,
+    "n_trials": 960,
+    "old_invalid_stage_samples": 20000,
+    "replacement_max": 19200000,
+    "replacement_planned": 19200000,
+    "rule": "the old 20,000 never counts toward replacement completeness; cumulative project consumption is reported separately",
+    "samples_per_trial": 20000,
+    "substitution": 0,
+    "topup": 0
+  },
+  "corrected_instrumentation": {
+    "code_sha256": {
+      "src/hyptraj/m3s25r1/arm_a.py": "53019d199726d789a3eeb664127402a4f82623921c474e3e5cc0fd4845a4ba02",
+      "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6"
+    },
+    "crosscheck": "unmodified gradient_decision bit-exact crosscheck remains MANDATORY on every trial",
+    "fix": "post-incident A0.2 correction: CI bounds come from the frozen stratified_bootstrap_gradient_ci on the identical inputs (bit-identical to gradient_decision's internal call); the replicate capture loop is sidecar-only",
+    "transactional_sidecar": "temp -> write -> flush -> fsync -> atomic rename -> parent-dir fsync (fail-closed) -> SHA verify"
+  },
+  "evaluation_protocol": {
+    "frozen": "B0/B1/A1-A4 comparison, outer GroupKFold(5) / inner GroupKFold(4), groups = config_id; no test-fold tuning; truth manifest unseals ONLY after 960/960 durable COMPLETE with 0 CONSUMED_INVALID and exactly 19,200,000 replacement samples",
+    "terminal_names": {
+      "b_gate": "M3-S25-R1-A1R-B-GATE",
+      "failure": "M3-S25-R1-A1R-X",
+      "success": "M3-S25-R1-A1R-A"
+    }
+  },
+  "gates": {
+    "M3_S25_R1_A1R_ARM_A_AUTHORIZED": "NO",
+    "M3_S25_R1_A1R_ARM_B_AUTHORIZED": "NO",
+    "old_M3_S25_R1_ARM_A_AUTHORIZED": "NO (CLOSED/EXERCISED/TERMINAL-X)",
+    "truth": "NO (CLOSED/EXERCISED)",
+    "value_rarity_m3q": "BLOCKED"
+  },
+  "namespace": "M3-S25-R1-A1R-GRAD",
+  "old_stream_retirement": {
+    "old_ledger_sha256_expected": "e5ce5c5a6350443f796558246c434fc0fbe2b855d029d38341fac0db31391c48",
+    "retired_stream": "configs/phase_m3s25r1/m3s25r1_a1r_retired_stream.json",
+    "retired_stream_sha256": "7a2010cedf7a5b75d46b427e3a10a45e60bff301c08777ebc9c14701392d8168",
+    "rule": "the old failed 20k realization is EXPOSED / CONSUMED_INVALID and must never enter the replacement dataset, features, CV, metrics or verdict"
+  },
+  "parent_terminal": "M3-S25-R1-X (old Arm-A stage, PERMANENT)",
+  "parent_terminal_head": "089c6a48c73831fbd95e2caa5b21137b485080aa",
+  "persistence": {
+    "chain": "STARTED -> 20k sampling -> transactional sidecar -> record hash -> COMPLETE",
+    "dir": "results/phase_m3s25r1/arm_a1r/",
+    "failure": "any replacement consumed-invalid unit => M3-S25-R1-A1R-X => STOP => NO REPLAY",
+    "ledger": "results/phase_m3s25r1/arm_a1r/trial_ledger.jsonl",
+    "rule": "separate replacement paths; never reuse, truncate, ignore or reinterpret the old Arm-A ledger"
+  },
+  "schema_version": "m3s25r1_a1r_contract_v1",
+  "scientific_inheritance": {
+    "S1_threshold_frozen": 5.4417199447782,
+    "a0_rebind_contract_sha256": "f02fc399834e5d950d46f29d8e609f1b8df3697097a705db6de8d5474c6085d6",
+    "alpha_p": 0.5,
+    "arm_b_rules": "unchanged; never authorized with Arm A",
+    "b1_comparator": {
+      "curvature_c_route": "curvature_c = online frozen config metadata persisted in every trial record (truth-free)",
+      "features": [
+        "S1",
+        "g_hat",
+        "abs_g_hat",
+        "SE_g",
+        "CI_width",
+        "s2",
+        "curvature_c",
+        "ESS_grad",
+        "gradient_valid"
+      ],
+      "grid": [
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        }
+      ],
+      "ml0_feature_contract_sha256": "09eebf92a61ba5ec718522272d36dedb175581f0c96eb9e1329f73a49a789931",
+      "ml0_model_grid_sha256": "2ac6ed5e9497b3b931ccc4badde9fd2620a24db691e8cee1edd0493121b134c8",
+      "source": "ML0-style aggregate GBDT baseline (ML0 B3)"
+    },
+    "cv": "outer GroupKFold(5) / inner GroupKFold(4), groups = config_id; no test-fold threshold/delta tuning",
+    "estimator": "hyptraj.m3d.adaptation.gradient_decision (unmodified; bit-exact crosscheck enforced on every trial)",
+    "feature_families": "parent m3s2s feature family (bootstrap stability + robust vs classical + influence concentration + event/ESS diagnostics + practical margin), per-trial rows only",
+    "improvement_criterion": {
+      "at_coverage_min": 0.75,
+      "coverage_gain_vs_aggregate_gbdt": 0.03,
+      "unsafe_reduction_vs_frozen_s1": 0.05
+    },
+    "inherited_parent_contract_sha256": {
+      "m3s2s_arm_b_contract.json": "527c3c413855bd418e737dfa8a374a343a86d7e5097f219b4721271dea0161d8",
+      "m3s2s_feature_contract.json": "f48e767e9f060229805a93e8b2fde4bb17fed0960de0cdd1bf6c085f026163fc",
+      "m3s2s_gradient_protocol.json": "d7cee6a72264dfd4aa4d3a5c62a6f1fef8a1b90e007fa50b82713310c9328aa9",
+      "m3s2s_instrumentation_contract.json": "7b1b5b95c1725be0eccd7c9070d79006975ec90aa525392a1a460f6c70aeac14",
+      "m3s2s_model_contract.json": "9a4361b706fb7ffc16397a70ea963ca3f5e4bf4a54b9b48ec30f2925dc213533",
+      "m3s2s_panel_contract.json": "437ed94818175ead80946a1acd2c7bdf410528f2df21df52dbaa53a69da0fe12",
+      "m3s2s_persistence_contract.json": "6b97c42365f0b727b34f717f3e2fd39997398213ed287edf7b4b3c7690b1cf53",
+      "m3s2s_threshold_contract.json": "de76e1b4b2fb19f5d82429a86df46542e184186178bf66d36d92738d8ef84727",
+      "m3s2s_verdict_contract.json": "3c4507251b7e8d900bb9950db7438c076aec60703895bde3eeb74d68f8275256"
+    },
+    "model_grids": {
+      "gbdt": [
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 50,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 7,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.03,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 0,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        },
+        {
+          "l2_regularization": 1,
+          "learning_rate": 0.1,
+          "max_iter": 100,
+          "max_leaf_nodes": 15,
+          "random_state": 2026
+        }
+      ],
+      "logistic": [
+        {
+          "C": 0.1,
+          "class_weight": null
+        },
+        {
+          "C": 0.1,
+          "class_weight": "balanced"
+        },
+        {
+          "C": 1.0,
+          "class_weight": null
+        },
+        {
+          "C": 1.0,
+          "class_weight": "balanced"
+        },
+        {
+          "C": 10.0,
+          "class_weight": null
+        },
+        {
+          "C": 10.0,
+          "class_weight": "balanced"
+        }
+      ]
+    },
+    "panel_body_sha256": "2bdb9a91562cc44c6dd9e1d1c0d49f8950e531c3108ea61b6d03eb0c153ce2b8",
+    "panel_file_sha256": "136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff",
+    "panel_truth_manifest_sha256": "75f5993bc6a251220e5e533f0b96de153bcef313d95706e6e0b7294db57af880",
+    "rule": "SAME frozen scientific panel and contracts, byte-identical; no truth resampling, no panel reselection",
+    "safety_gates": {
+      "ambiguous_unsafe_max": 0.25,
+      "coverage_min": 0.75,
+      "unsafe_max": 0.2,
+      "wrong_max": 0.05
+    }
+  },
+  "seed_manifest": "configs/phase_m3s25r1/m3s25r1_a1r_seed_manifest.json",
+  "stage": "M3-S25-R1-A1R"
+}
