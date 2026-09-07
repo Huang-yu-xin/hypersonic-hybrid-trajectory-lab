@@ -85,6 +85,57 @@ def seed(namespace: str, *parts) -> int:
         2**31 - 1) + 1
 
 
+# --------------------------------------------------------------------------
+# transactional sidecar write (A0.1 item 3): temp -> write -> flush ->
+# fsync(file) -> atomic rename -> fsync(parent dir) -> SHA256 verify final
+# sidecar.  Only after this may the JSON record reach durable COMPLETE.
+# --------------------------------------------------------------------------
+
+class InjectedSidecarFault(RuntimeError):
+    pass
+
+
+SIDECAR_FAULT_TAGS = ("SIDECAR_BEFORE_FSYNC", "SIDECAR_AFTER_FSYNC_BEFORE_RENAME",
+                      "SIDECAR_AFTER_VERIFY")
+
+
+def write_sidecar_transactional(side_path: Path, arrays: dict,
+                                fault: str | None = None) -> str:
+    """Durable lossless sidecar write with injected-fault support for
+    tests.  Returns the final sidecar sha256.  Any failure AFTER the
+    scientific sampling has happened leaves the unit without a durable
+    COMPLETE => CONSUMED_INVALID => M3-S25-R1-X => STOP => NO REPLAY."""
+    import os
+    import uuid as _uuid
+    from hyptraj.m3cf1r0.persistence import fsync_directory
+    if fault and fault not in SIDECAR_FAULT_TAGS:
+        raise ValueError(f"unknown sidecar fault tag {fault!r}")
+    side_path.parent.mkdir(parents=True, exist_ok=True)
+    temp = side_path.parent / f".{side_path.name}.tmp.{_uuid.uuid4().hex}"
+    with open(temp, "wb") as h:
+        np.savez_compressed(h, **arrays)
+        h.flush()
+        if fault == "SIDECAR_BEFORE_FSYNC":
+            raise InjectedSidecarFault("injected failure before sidecar fsync")
+        os.fsync(h.fileno())
+    if fault == "SIDECAR_AFTER_FSYNC_BEFORE_RENAME":
+        raise InjectedSidecarFault(
+            "injected failure after sidecar fsync, before rename")
+    os.replace(temp, side_path)
+    fsync_directory(side_path.parent)
+    final_sha = sha_bytes(side_path.read_bytes())
+    if fault == "SIDECAR_AFTER_VERIFY":
+        raise InjectedSidecarFault(
+            "injected failure after sidecar verify, before record write")
+    return final_sha
+
+
+def seed(namespace: str, *parts) -> int:
+    material = "|".join((namespace, *(str(x) for x in parts))).encode("utf-8")
+    return int.from_bytes(hashlib.sha256(material).digest()[:4], "big") % (
+        2**31 - 1) + 1
+
+
 def sha_bytes(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
@@ -111,19 +162,39 @@ def arm_a_seed_plan(panel_states: list[dict]) -> dict:
             "n_trials": N_TRIALS, "budget": BUDGET}
 
 
-def seed_collision_audit(plan: dict, prior_seed_values: set[int],
-                         truth_seed_keys: set[tuple]) -> dict:
+def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
+                         truth_key_pools: dict[str, set[tuple]]) -> dict:
+    """A0.1 item 6: explicit, type-consistent seed-collision proof.
+
+    - 960 logical units: len(vals) == 960 AND len(set(vals)) == 960.
+    - Integer seed VALUES are audited only against integer pools;
+      seed_key TUPLES only against tuple pools (never mixed).
+    - Per-stream zero-collision proof over every named pool."""
     vals = list(plan["planned_seeds"].values())
-    if len(set(vals)) != len(vals) != N_TRIALS:
-        raise RuntimeError("M3-S25-R1-X: duplicate Arm-A seed values")
-    hist = sorted({v for v in vals if v in prior_seed_values})
-    if hist:
+    if not (len(vals) == N_TRIALS and len(set(vals)) == N_TRIALS):
         raise RuntimeError(
-            f"M3-S25-R1-X: Arm-A seed historical collision: {hist[:5]}")
+            f"M3-S25-R1-X: Arm-A seed pool not 960 unique values "
+            f"(len={len(vals)}, unique={len(set(vals))})")
     keys = [tuple(u["seed_key"]) for u in plan["units"]]
-    if len(set(keys)) != len(keys) or set(keys) & truth_seed_keys:
-        raise RuntimeError("M3-S25-R1-X: Arm-A seed truth-stream collision")
-    return {"units": len(vals), "unique_seeds": len(set(vals)),
+    if len(keys) != N_TRIALS or len(set(keys)) != N_TRIALS:
+        raise RuntimeError("M3-S25-R1-X: Arm-A seed keys not 960 unique")
+    collisions = {}
+    for pool_name, pool in pools.items():
+        hits = sorted({v for v in vals if v in pool})
+        collisions[pool_name] = len(hits)
+        if hits:
+            raise RuntimeError(
+                f"M3-S25-R1-X: Arm-A seed collision with {pool_name}: "
+                f"{hits[:5]}")
+    for pool_name, pool in truth_key_pools.items():
+        hits = sorted({k for k in keys if k in pool})
+        collisions[pool_name] = len(hits)
+        if hits:
+            raise RuntimeError(
+                f"M3-S25-R1-X: Arm-A seed-key collision with {pool_name}: "
+                f"{hits[:5]}")
+    return {"units": N_TRIALS, "unique_seeds": len(set(vals)),
+            "per_stream_collisions": collisions,
             "historical_collision": 0, "truth_stream_collision": 0,
             "ARM_A_SEED_AUDIT": "PASS"}
 
@@ -206,6 +277,8 @@ def arm_a_trial(st, seed_value: int, state_id: str, rep: int, config_id: str,
         "recorded_at": None,          # stamped by the persistence layer
         "state_id": state_id, "rep_id": rep, "config_id": config_id,
         "s2": float(s2),
+        "curvature_c": float(st.bench_cfg.curvature_c),  # online frozen
+        # config metadata (ML0 B3 comparator feature); NOT truth
         "seed": int(seed_value), "namespace": ARM_A_NAMESPACE,
         "samples": N_SAMPLES, "alpha_p": ALPHA_P,
         "gradient": {

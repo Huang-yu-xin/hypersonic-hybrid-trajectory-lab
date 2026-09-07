@@ -65,3 +65,52 @@ VALUE / RARITY / M3-Q      = BLOCKED
 STOP.  Awaiting the Arm-A execution-readiness audit; only an explicit
 human `M3_S25_R1_ARM_A_AUTHORIZED: YES` commit enables
 `python scripts/run_m3s25r1.py arm_a_execute`.
+
+
+## A0.1 amendment (conditional-PASS fixes; zero sampling)
+
+Applied per the human's A0.1 instruction (scientific rebind CONDITIONALLY
+PASS):
+
+1. Scientific-code hash lock completed: `scientific_code_hashes` now
+   covers `m3s25r1/arm_a.py`, `m3s25r1/arm_a_eval.py`,
+   `m3ml0/evaluation.py`, `m3ml0/threshold.py`, `m3ml0/features.py`,
+   `m3ml0/models.py`, `m3pi1vr0/persistence.py` (plus the existing
+   estimator/persistence chain); a test proves the entries exist and
+   match current bytes.
+2. Frozen panel FILE SHA enforced at runtime: `EXPECTED_PANEL_FILE_SHA`
+   = `136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff`
+   AND the rebind contract's `panel.panel_file_sha256`; the stored
+   `panel_sha256` field alone is not trusted.  Tamper test: modifying an
+   s2 field while keeping `panel_sha256` unchanged hard-fails
+   `arm_a_execute` before STARTED/simulator.
+3. Sidecar durability made genuinely transactional: temp -> write ->
+   flush -> fsync(file) -> atomic rename -> fsync(parent dir) -> SHA256
+   verify, before the JSON record may reach durable COMPLETE; injected
+   tests for BEFORE_FSYNC / AFTER_FSYNC_BEFORE_RENAME / AFTER_VERIFY all
+   yield CONSUMED_INVALID with no false COMPLETE.
+4. B1 comparator restored to the EXACT ML0 B3 aggregate GBDT feature set
+   (`S1, g_hat, abs_g_hat, SE_g, CI_width, s2, curvature_c, ESS_grad,
+   gradient_valid`) with the frozen ML0 HistGradientBoosting grid;
+   `curvature_c` is online frozen config metadata persisted in every
+   trial record (truth-free route); the ML0 feature-contract and
+   model-grid SHAs are recorded in the rebind contract.
+5. Success eligibility restricted: B0/B1 are comparators only; only
+   A1-A4 may trigger `M3-S25-R1-A`; a B1-only-compliant scenario
+   deterministically yields `M3-S25-R1-B-GATE` (synthetic regression
+   test).
+6. Seed-audit proof repaired: explicit `len(vals) == 960 and
+   len(set(vals)) == 960` conditions; type-consistent per-stream pools
+   (integer seed VALUES vs integer pools, seed_key TUPLES vs tuple
+   pools) with explicit zero-collision proof against M3-S2S Arm-A
+   candidate seeds, M3-S2S truth seeds, M3-S25-R1 truth seeds, all
+   recorded historical scientific seed pools and the CF1N manifests.
+   The 960-unit seed manifest stayed BYTE-IDENTICAL
+   (`20cbe999...`).
+7. Secondary-metrics contract completed: OOF probabilities are preserved
+   from the nested CV and ROC-AUC / PR-AUC / Brier / ECE are reported on
+   scored OOF rows; report-only, never affecting the primary verdict.
+
+Updated rebind contract sha: `f02fc399834e5d950d46f29d8e609f1b8df3697097
+a705db6de8d5474c6085d6` (pin updated in the runner; the panel truth
+manifest and the 960-unit seed manifest are unchanged byte-for-byte).

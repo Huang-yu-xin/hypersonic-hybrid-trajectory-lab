@@ -237,7 +237,8 @@ def _mock_trial(monkeypatch, calls):
         record = {
             "schema": AA.TRIAL_SCHEMA, "recorded_at": None,
             "state_id": state_id, "rep_id": rep, "config_id": config_id,
-            "s2": float(s2), "seed": int(seed_value),
+            "s2": float(s2), "curvature_c": 0.5,
+            "seed": int(seed_value),
             "namespace": AA.ARM_A_NAMESPACE, "samples": AA.N_SAMPLES,
             "alpha_p": AA.ALPHA_P,
             "gradient": {"g_hat": float(rng.normal(0, 0.1)),
@@ -423,3 +424,173 @@ def test_route_gates_still_no_after_all_tests():
     assert not R.gate("M3_S25_R1_TRUTH_AUTHORIZED")
     assert not R.gate("M3_S25_R1_ARM_A_AUTHORIZED")
     assert not R.gate("M3_S25_R1_ARM_B_AUTHORIZED")
+
+
+# --------------------------------------------------------------------------
+# A0.1 amendments
+# --------------------------------------------------------------------------
+
+def test_hashlock_covers_arm_a_and_ml0_chain():
+    """A0.1 item 1: the scientific-code hash lock covers the Arm-A and
+    ML0 evaluation chain, and every entry matches current bytes."""
+    hm = R.load(R.CFG / "m3s25r1_hash_manifest.json")
+    required = ["src/hyptraj/m3s25r1/arm_a.py",
+                "src/hyptraj/m3s25r1/arm_a_eval.py",
+                "src/hyptraj/m3ml0/evaluation.py",
+                "src/hyptraj/m3ml0/threshold.py",
+                "src/hyptraj/m3ml0/features.py",
+                "src/hyptraj/m3ml0/models.py",
+                "src/hyptraj/m3pi1vr0/persistence.py",
+                "src/hyptraj/m3wa1r/persistence.py",
+                "src/hyptraj/m3d/adaptation.py",
+                "src/hyptraj/m3/gradient_estimator.py"]
+    for path in required:
+        assert hm["scientific_code_hashes"].get(path) == R.sha(R.ROOT / path), path
+
+
+def test_panel_file_sha_enforced_at_runtime(tmp_path, monkeypatch):
+    """A0.1 item 2: the frozen panel FILE sha is enforced even when the
+    stored panel_sha256 field is unchanged.  Tamper an s2 field in a copy
+    => arm_a_execute hard-fails BEFORE STARTED / simulator."""
+    calls = {"trials": 0}
+    _mock_trial(monkeypatch, calls)
+    panel = json.loads((R.CFG / "m3s25r1_panel.json").read_text("utf-8"))
+    tampered = json.loads(json.dumps(panel))
+    tampered["states"][0]["s2"] = tampered["states"][0]["s2"] + 0.001
+    assert tampered["panel_sha256"] == panel["panel_sha256"]  # field kept
+    bad = tmp_path / "m3s25r1_panel.json"
+    bad.write_text(json.dumps(tampered), encoding="utf-8")
+    monkeypatch.setattr(R, "PANEL_JSON", bad)
+    with pytest.raises(RuntimeError, match="panel FILE sha drift"):
+        R.arm_a_execute()
+    assert calls["trials"] == 0
+    assert not R.ARM_A_TRIALS.exists()
+
+
+def test_sidecar_transactional_fault_injection(tmp_path):
+    """A0.1 item 3: injected failures before/after sidecar fsync/rename
+    and after verify => no false COMPLETE (no record, no COMPLETE entry)."""
+    from hyptraj.m3s25r1.arm_a import (InjectedSidecarFault, N_SAMPLES,
+                                       write_sidecar_transactional)
+    from hyptraj.m3wa1r.persistence import run_trial_transactional
+    arrays = {"a_vec": np.zeros(N_SAMPLES), "resp": np.zeros(N_SAMPLES),
+              "sq": np.zeros(N_SAMPLES), "strata": np.zeros(N_SAMPLES, int),
+              "bootstrap_g": np.zeros(500)}
+    for tag in ("SIDECAR_BEFORE_FSYNC", "SIDECAR_AFTER_FSYNC_BEFORE_RENAME",
+                "SIDECAR_AFTER_VERIFY"):
+        trial_dir = tmp_path / tag
+        trial_dir.mkdir(parents=True, exist_ok=True)
+        side = trial_dir / "rep0_instrumentation.npz"
+        rec = trial_dir / "rep0.json"
+        ledger = trial_dir / "ledger.jsonl"
+
+        def compute(tag=tag, side=side, arrays=arrays):
+            sha = write_sidecar_transactional(side, arrays, fault=tag)
+            return {"schema": AA.TRIAL_SCHEMA,
+                    "instrumentation_sha256": sha}
+
+        result = run_trial_transactional(
+            f"unit|{tag}", rec, compute, ledger_path=ledger,
+            pre_hash_validator=lambda r: None)
+        assert result["status"] == "CONSUMED_INVALID", tag
+        assert not rec.exists(), tag
+        assert not any(e.get("status") == "COMPLETE"
+                       for e in R.ledger_entries(ledger)), tag
+    # clean write: durable sidecar + verified sha
+    side = tmp_path / "ok" / "rep0_instrumentation.npz"
+    sha = write_sidecar_transactional(side, arrays)
+    assert sha == R.record_file_hash(side)
+    assert side.exists() and not any(
+        p.name.startswith(".") for p in side.parent.iterdir())
+
+
+def test_b1_comparator_is_ml0_b3_exact():
+    """A0.1 item 4: B1 uses the EXACT ML0 F0_FULL feature set and the
+    frozen ML0 HistGradientBoosting grid; the ML0 feature-contract and
+    model-grid SHAs are recorded in the rebind contract."""
+    ml0_features = R.ROOT / "src/hyptraj/m3ml0/features.py"
+    text = ml0_features.read_text(encoding="utf-8")
+    assert 'B3_FEATURES = F0_FULL' in text
+    assert ('F0_FULL = ["S1", "g_hat", "abs_g_hat", "SE_g", "CI_width", '
+            '"s2",\n           "curvature_c", "ESS_grad", "gradient_valid"]'
+            in text)
+    assert AE.ML0_B1_FEATURES == ["S1", "g_hat", "abs_g_hat", "SE_g",
+                                  "CI_width", "s2", "curvature_c",
+                                  "ESS_grad", "gradient_valid"]
+    assert AE.MODEL_FEATURES["B1_aggregate_gbdt_baseline"] == \
+        AE.ML0_B1_FEATURES
+    c = R.load(R.ARM_A_CONTRACT)
+    assert c["b1_comparator"]["features"] == AE.ML0_B1_FEATURES
+    assert c["b1_comparator"]["grid"] == AA.GBDT_GRID
+    assert c["b1_comparator"]["ml0_feature_contract_sha256"] == \
+        R.sha(ml0_features)
+    assert c["b1_comparator"]["ml0_model_grid_sha256"] == \
+        R.sha(R.ROOT / "src/hyptraj/m3ml0/models.py")
+    assert "curvature_c" in c["b1_comparator"]["curvature_c_route"]
+
+
+def test_only_a_models_can_trigger_success():
+    """A0.1 item 5: B0/B1 are comparators only.  If only B1 is
+    compliant/improved but A1-A4 are not, the verdict remains
+    M3-S25-R1-B-GATE (synthetic regression for exactly this case)."""
+    def m(cov, uns, wrong, amb):
+        return {"deployable_coverage": cov, "nd_unsafe": uns,
+                "wrong_direction_rate": wrong, "ambiguous_unsafe": amb}
+    b0 = m(0.50, 0.40, 0.10, 0.40)
+    # B1: fully compliant AND improved over B0 -- yet B0/B1 can never
+    # trigger M3-S25-R1-A
+    b1 = m(0.90, 0.05, 0.01, 0.10)
+    a_bad = m(0.60, 0.30, 0.08, 0.30)
+    results = {"B0_frozen_S1": b0, "B1_aggregate_gbdt_baseline": b1,
+               "A1_stability_logistic": a_bad, "A2_stability_gbdt": a_bad,
+               "A3_stability_margin_logistic": a_bad,
+               "A4_stability_margin_gbdt": a_bad}
+    v = AE.verdict(results, 960, 0)
+    assert v["VERDICT"] == "M3-S25-R1-B-GATE"
+    # and an eligible A-model triggers success under the same comparators
+    results2 = dict(results)
+    results2["A2_stability_gbdt"] = m(0.90, 0.05, 0.01, 0.10)
+    v2 = AE.verdict(results2, 960, 0)
+    assert v2["VERDICT"] == "M3-S25-R1-A"
+    assert "A2_stability_gbdt" in v2["compliant"]
+    assert "B1_aggregate_gbdt_baseline" not in v2["compliant"]
+
+
+def test_seed_audit_explicit_pools():
+    """A0.1 item 6: explicit 960 conditions, type-consistent pools, and
+    per-stream zero-collision proof; the 960-unit manifest stays
+    byte-identical."""
+    plan = AA.arm_a_seed_plan(
+        R.load(R.PANEL_JSON)["states"])
+    pools = {"m3s2s_arm_a": set(range(1, 100)), "r1_truth": {12345}}
+    truth_keys = {"m3s2s_truth": {(1, 42424)}}
+    audit = AA.seed_collision_audit(plan, pools, truth_keys)
+    assert audit["units"] == 960 and audit["unique_seeds"] == 960
+    assert audit["per_stream_collisions"] == {
+        "m3s2s_arm_a": 0, "r1_truth": 0, "m3s2s_truth": 0}
+    assert audit["ARM_A_SEED_AUDIT"] == "PASS"
+    # duplicate values must fail the EXPLICIT conditions
+    bad = {"namespace": "x", "units": plan["units"][:1] * 2,
+           "n_trials": 960, "budget": 1,
+           "planned_seeds": {"a|rep0": 7, "b|rep0": 7}}
+    with pytest.raises(RuntimeError, match="not 960 unique values"):
+        AA.seed_collision_audit(bad, pools, truth_keys)
+    # frozen manifest unchanged (values untouched by the audit rework)
+    assert R.sha_bytes(R.ARM_A_SEED_MANIFEST.read_bytes())         == R.ARM_A_SEED_MANIFEST_PIN
+
+
+def test_secondary_metrics_contract():
+    """A0.1 item 7: OOF probabilities are preserved; ROC-AUC / PR-AUC /
+    Brier / ECE are reported on scored OOF rows and never affect the
+    primary verdict."""
+    from hyptraj.m3s25r1.arm_a_eval import secondary_metrics
+    rows = [{"_truth": "WIDEN" if i % 2 == 0 else "HOLD"} for i in range(50)]
+    oof_prob = {i: 0.5 + 0.4 * ((-1) ** (i % 2)) * 0.5 for i in range(50)}
+    m = secondary_metrics(oof_prob, rows)
+    assert m["n_scored"] == 50
+    assert 0.0 <= m["roc_auc"] <= 1.0 and 0.0 <= m["pr_auc"] <= 1.0
+    assert 0.0 <= m["brier"] <= 1.0 and 0.0 <= m["ece"] <= 1.0
+    # verdict never reads the secondary metrics
+    import inspect
+    src = inspect.getsource(AE.verdict)
+    assert "secondary" not in src and "roc_auc" not in src

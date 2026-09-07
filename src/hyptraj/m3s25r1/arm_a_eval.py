@@ -54,10 +54,15 @@ INFLUENCE_CONCENTRATION = ["max_abs_influence_fraction",
                            "effective_contribution_count"]
 EVENT_ESS = ["event_count", "event_rate", "ESS_grad", "ESS_per_event",
              "ESS_fraction"]
-AGGREGATE_FEATURES = ["g_hat", "se_g", "ESS_grad", "event_rate", "s2"]
+# A0.1 item 4: B1 = the frozen ML0 B3 aggregate GBDT comparator with the
+# EXACT ML0 F0_FULL feature set (src/hyptraj/m3ml0/features.py);
+# curvature_c is online frozen config metadata, not truth.
+ML0_B1_FEATURES = ["S1", "g_hat", "abs_g_hat", "SE_g", "CI_width", "s2",
+                   "curvature_c", "ESS_grad", "gradient_valid"]
+AGGREGATE_FEATURES = ML0_B1_FEATURES
 STABILITY_FEATURES = (BOOTSTRAP_STABILITY + ROBUST_VS_CLASSICAL
                       + INFLUENCE_CONCENTRATION + EVENT_ESS
-                      + AGGREGATE_FEATURES)
+                      + ["g_hat", "SE_g", "ESS_grad", "event_rate", "s2"])
 
 MODEL_FEATURES = {
     "B1_aggregate_gbdt_baseline": AGGREGATE_FEATURES,
@@ -66,6 +71,10 @@ MODEL_FEATURES = {
     "A3_stability_margin_logistic": STABILITY_FEATURES,
     "A4_stability_margin_gbdt": STABILITY_FEATURES,
 }
+# A0.1 item 5: comparators (B0/B1) can never trigger M3-S25-R1-A
+SUCCESS_ELIGIBLE = ("A1_stability_logistic", "A2_stability_gbdt",
+                    "A3_stability_margin_logistic",
+                    "A4_stability_margin_gbdt")
 
 
 # --------------------------------------------------------------------------
@@ -139,21 +148,30 @@ def feature_row(record: dict, sidecar_arrays: dict) -> dict:
     med = boot["boot_median"]
     row = dict(boot)
     row.update(infl)
+    valid = bool(record["valid"])
+    s1v = float(record["S1"]) if valid and record.get("S1") is not None         else math.nan
+    gh = float(g["g_hat"]) if valid else math.nan
+    ciw = (float(g["g_ci_high"]) - float(g["g_ci_low"]))         if valid else math.nan
     row.update({
         "g_hat_minus_boot_median": float(g["g_hat"]) - med,
-        "abs_g_hat_minus_boot_median": abs(float(g["g_hat"]) - med),
+        "abs_g_hat_minus_boot_median": abs(float(g["g_hat"])) - med,
         "relative_robust_discrepancy":
             abs(float(g["g_hat"]) - med) / max(abs(med), 1e-300),
-        "g_hat": float(g["g_hat"]),
-        "se_g": float(se_g),
+        "g_hat": gh,
+        "abs_g_hat": abs(gh) if valid else math.nan,
+        "SE_g": float(se_g),
+        "CI_width": ciw,
+        "curvature_c": float(record["curvature_c"]),
+        "gradient_valid": 1.0 if valid else 0.0,
         "ESS_grad": ess,
         "ESS_per_event": (ess / event_count) if event_count else 0.0,
         "ESS_fraction": ess / N_SAMPLES,
         "event_count": float(event_count),
         "event_rate": float(record["event_rate"]),
         "s2": float(record["s2"]),
+        "S1": s1v,
         "_abs_g_hat": abs(float(g["g_hat"])),
-        "_gradient_valid": bool(record["valid"]),
+        "_gradient_valid": valid,
         "_action_sign": record.get("selected_action"),
         "_s1": record.get("S1"),
         "_config_id": record["config_id"],
@@ -276,8 +294,9 @@ def _row_matrix(rows: list[dict], feats: list[str],
     for i, r in enumerate(rows):
         for j, f in enumerate(cols):
             if f == "M_delta":
-                out[i, j] = (r["_abs_g_hat"] - delta) / r["se_g"] \
-                    if r["se_g"] else 0.0
+                den = r.get("SE_g") or r.get("se_g") or 0.0
+                out[i, j] = (r["_abs_g_hat"] - delta) / den \
+                    if den else 0.0
             else:
                 out[i, j] = r[f]
     return out
@@ -296,9 +315,13 @@ def _grid_combos(name: str) -> list[dict]:
 
 def nested_cv_eval(name: str, rows: list[dict]) -> dict:
     """Grouped nested CV for one trained candidate.  rows carry '_truth'
-    (unsealed truth manifest) and the features."""
+    (unsealed truth manifest) and the features.  OOF probabilities are
+    preserved for the frozen secondary-metrics contract (ROC-AUC / PR-AUC
+    / Brier / ECE on scored OOF rows); they never affect the primary
+    verdict."""
     n = len(rows)
     oof_deploy = [False] * n
+    oof_prob: dict[int, float] = {}
     selection_log = []
     folds = outer_folds(_canonical_order(rows), 5)
     for k, (tr, te) in enumerate(folds):
@@ -358,12 +381,45 @@ def nested_cv_eval(name: str, rows: list[dict]) -> dict:
         for j, i in enumerate(te_v):
             if not np.isnan(probs_te[j]):
                 oof_deploy[i] = bool(probs_te[j] >= best["threshold"])
-    return {"oof_deploy": oof_deploy, "selection_log": selection_log}
+                oof_prob[i] = float(probs_te[j])
+    return {"oof_deploy": oof_deploy, "oof_prob": oof_prob,
+            "selection_log": selection_log}
 
 
 def frozen_s1_deploy(rows: list[dict]) -> list[bool]:
     return [bool(r["_gradient_valid"] and r["_s1"] is not None
                  and float(r["_s1"]) >= S1_THRESHOLD) for r in rows]
+
+
+def secondary_metrics(oof_prob: dict[int, float],
+                      rows: list[dict]) -> dict:
+    """Frozen secondary metrics on SCORED OOF rows (A0.1 item 7):
+    ROC-AUC / PR-AUC / Brier / ECE (10 equal-width bins).  These never
+    affect the primary verdict."""
+    from sklearn.metrics import (average_precision_score, brier_score_loss,
+                                 roc_auc_score)
+    idx = sorted(oof_prob)
+    if len(idx) < 2:
+        return {"roc_auc": None, "pr_auc": None, "brier": None, "ece": None,
+                "n_scored": len(idx)}
+    p = np.asarray([oof_prob[i] for i in idx], dtype=float)
+    y = np.asarray([1 if rows[i]["_truth"] in ("WIDEN", "SHRINK") else 0
+                    for i in idx], dtype=int)
+    out = {"n_scored": int(len(idx))}
+    out["roc_auc"] = float(roc_auc_score(y, p)) if len(set(y)) == 2 else None
+    out["pr_auc"] = (float(average_precision_score(y, p))
+                     if len(set(y)) == 2 else None)
+    out["brier"] = float(brier_score_loss(y, p))
+    # ECE: 10 equal-width bins on [0, 1]
+    bins = np.clip((p * 10.0).astype(int), 0, 9)
+    ece = 0.0
+    for b in range(10):
+        m = bins == b
+        if m.sum() == 0:
+            continue
+        ece += (m.sum() / len(p)) * abs(float(y[m].mean()) - float(p[m].mean()))
+    out["ece"] = float(ece)
+    return out
 
 
 def policy_metrics(rows: list[dict], deploy: list[bool]) -> dict:
@@ -400,6 +456,7 @@ def run_comparison(records: list[dict], sidecars: list[dict],
         cv = nested_cv_eval(name, rows)
         m = policy_metrics(rows, cv["oof_deploy"])
         m["selection_log"] = cv["selection_log"]
+        m["secondary"] = secondary_metrics(cv["oof_prob"], rows)
         results[name] = m
     return results
 
@@ -415,7 +472,10 @@ def verdict(results: dict, complete: int, consumed_invalid: int) -> dict:
     b0 = results["B0_frozen_S1"]
     compliant = {}
     for name, m in results.items():
-        if name == "n_trials" or name not in MODEL_FEATURES:
+        # A0.1 item 5: B0/B1 are COMPARATORS ONLY; only A1-A4 may trigger
+        # M3-S25-R1-A.  If only B1 is compliant/improved, the verdict
+        # remains M3-S25-R1-B-GATE.
+        if name not in SUCCESS_ELIGIBLE:
             continue
         ok = (m["deployable_coverage"] >= GATES["coverage_min"]
               and m["nd_unsafe"] <= GATES["unsafe_max"]

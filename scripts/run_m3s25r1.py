@@ -103,10 +103,13 @@ ARM_A_SEED_MANIFEST = CFG / "m3s25r1_arm_a_seed_manifest.json"
 TRUTH_TERMINAL_HEAD = "089c6a48c73831fbd95e2caa5b21137b485080aa"
 PANEL_TRUTH_MANIFEST_PIN = ("75f5993bc6a251220e5e533f0b96de15"
                          "3bcef313d95706e6e0b7294db57af880")
-ARM_A_CONTRACT_PIN = ("234c651654ffaaca32f32036befd4b4e"
-                         "a6038174dca7b80e78356f488d0f3570")
+ARM_A_CONTRACT_PIN = ("f02fc399834e5d950d46f29d8e609f1b"
+                         "8df3697097a705db6de8d5474c6085d6")
 ARM_A_SEED_MANIFEST_PIN = ("20cbe999286df7c4664a53067a1796b7"
                          "b1ce9da37eb5c42939e07a456b8bf30d")
+PANEL_JSON = CFG / "m3s25r1_panel.json"
+EXPECTED_PANEL_FILE_SHA = ("136830a2bdd5291882564e6bba922161"
+                           "ae519139573921161c50f7dfa20950ff")
 PARENT_CONTRACTS = (
     "m3s2s_gradient_protocol.json", "m3s2s_instrumentation_contract.json",
     "m3s2s_feature_contract.json", "m3s2s_model_contract.json",
@@ -1612,6 +1615,13 @@ def hashlock() -> dict:
             "src/hyptraj/m3s25r1/candidates.py": sha(ROOT / "src/hyptraj/m3s25r1/candidates.py"),
             "src/hyptraj/m3s25r1/history.py": sha(ROOT / "src/hyptraj/m3s25r1/history.py"),
             "src/hyptraj/m3s25r1/runtime.py": sha(ROOT / "src/hyptraj/m3s25r1/runtime.py"),
+            "src/hyptraj/m3s25r1/arm_a.py": sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py"),
+            "src/hyptraj/m3s25r1/arm_a_eval.py": sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py"),
+            "src/hyptraj/m3ml0/evaluation.py": sha(ROOT / "src/hyptraj/m3ml0/evaluation.py"),
+            "src/hyptraj/m3ml0/threshold.py": sha(ROOT / "src/hyptraj/m3ml0/threshold.py"),
+            "src/hyptraj/m3ml0/features.py": sha(ROOT / "src/hyptraj/m3ml0/features.py"),
+            "src/hyptraj/m3ml0/models.py": sha(ROOT / "src/hyptraj/m3ml0/models.py"),
+            "src/hyptraj/m3pi1vr0/persistence.py": sha(ROOT / "src/hyptraj/m3pi1vr0/persistence.py"),
             "scripts/run_m3s2s.py": sha(ROOT / "scripts/run_m3s2s.py"),
             "src/hyptraj/m3s2s/truth_contract.py": sha(ROOT / "src/hyptraj/m3s2s/truth_contract.py"),
             "src/hyptraj/m3s2s/instrumentation.py": sha(ROOT / "src/hyptraj/m3s2s/instrumentation.py"),
@@ -1882,7 +1892,7 @@ def panel_truth_manifest_stage() -> dict:
     """A0 item 2: tracked evaluation-only truth manifest for the FROZEN
     panel (never modified; never used during Arm-A sampling; sealed until
     960/960 trials are durable COMPLETE)."""
-    panel = load(CFG / "m3s25r1_panel.json")
+    panel = load(PANEL_JSON)
     rows = csvread(SUM / "m3s25r1_panel.csv")
     by_sid = {r["state_id"]: r for r in rows}
     entries = []
@@ -1898,7 +1908,7 @@ def panel_truth_manifest_stage() -> dict:
         "role": "evaluation-only; SEALED until 960/960 Arm-A trials are "
                 "durable COMPLETE; never used during Arm-A sampling",
         "panel_body_sha256": panel["panel_sha256"],
-        "panel_file_sha256": sha(CFG / "m3s25r1_panel.json"),
+        "panel_file_sha256": sha(PANEL_JSON),
         "n_states": len(entries),
         "states": entries,
     }
@@ -1916,7 +1926,7 @@ def panel_truth_manifest_stage() -> dict:
 def verify_panel_truth_manifest() -> dict:
     """Mechanical verification (A0 item 2): identity, composition,
     diversity, source mix, SHRINK origin; binding to both panel SHAs."""
-    panel = load(CFG / "m3s25r1_panel.json")
+    panel = load(PANEL_JSON)
     m = load(PANEL_TRUTH_MANIFEST)
     from collections import Counter
     ids = [s["state_id"] for s in m["states"]]
@@ -1940,7 +1950,7 @@ def verify_panel_truth_manifest() -> dict:
             m["panel_body_sha256"] == panel["panel_sha256"]
             == AA.FROZEN_PANEL_SHA,
         "panel_file_sha_bound": m["panel_file_sha256"]
-        == sha(CFG / "m3s25r1_panel.json"),
+        == sha(PANEL_JSON),
         "required_fields": all(
             {"state_id", "truth", "config_id", "source_stage", "s2", "u",
              "rank", "truth_artifact_hash"} <= set(s)
@@ -1964,7 +1974,7 @@ def arm_a_contracts_stage() -> dict:
     """A0 item 3: rebind the frozen parent Arm-A contracts to the R1
     panel (no scientific retuning) + freeze the 960-unit seed manifest."""
     import hyptraj.m3s2s.instrumentation as IN
-    panel = load(CFG / "m3s25r1_panel.json")
+    panel = load(PANEL_JSON)
     states = panel["states"]
     if panel["panel_sha256"] != AA.FROZEN_PANEL_SHA:
         raise RuntimeError("M3-S25-R1-A0-X: panel SHA drift")
@@ -1974,15 +1984,40 @@ def arm_a_contracts_stage() -> dict:
         "frozen_before_first_simulator_call": True,
         **{k: plan[k] for k in ("namespace", "planned_seeds", "units",
                                 "n_units", "n_trials", "budget")}})
-    # collision audit
-    prior = _prior_recorded_seeds()
-    d = load(ROOT / "configs/phase_m3s2s/m3s2s_seed_manifest.json")
-    prior |= set(d.get("planned_seeds", {}).values())
-    d = load(ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
-    prior |= {tuple(u["seed_key"]) for u in d.get("units", [])}
-    r1_truth = load(CFG / "m3s25r1_truth_seed_manifest.json")
-    truth_keys = {tuple(u["seed_key"]) for u in r1_truth["units"]}
-    audit = AA.seed_collision_audit(plan, prior, truth_keys)
+    # collision audit (A0.1 item 6): type-consistent per-stream pools;
+    # integer seed VALUES vs integer pools, seed_key TUPLES vs tuple pools
+    s2s_arm_a = set(load(
+        ROOT / "configs/phase_m3s2s/m3s2s_seed_manifest.json")
+        .get("planned_seeds", {}).values())
+    s2s_truth = {int(u["seed_key"][0]) for u in load(
+        ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
+        .get("units", [])}
+    r1_truth = {int(u["seed_key"][0]) for u in load(
+        CFG / "m3s25r1_truth_seed_manifest.json")["units"]}
+    csv_history = _prior_recorded_seeds()
+    cf1n_ints: set = set()
+    for name in ("m3cf1n_pref_seeds.json", "m3cf1n_discovery_seeds.json",
+                 "m3cf1n_confirmation_seeds.json"):
+        d = load(ROOT / "configs/phase_m3cf1n" / name)
+        for v in d.values():
+            if isinstance(v, list):
+                for item in v:
+                    if isinstance(item, dict) and "seed_key" in item:
+                        cf1n_ints.add(int(item["seed_key"][0]))
+                    elif isinstance(item, list) and item:
+                        cf1n_ints.add(int(item[0]))
+    pools = {"m3s2s_arm_a_candidate_seeds": s2s_arm_a,
+             "m3s2s_truth_seeds": s2s_truth,
+             "m3s25r1_truth_seeds": r1_truth,
+             "recorded_historical_seed_pools": csv_history,
+             "m3cf1n_seed_pools": cf1n_ints}
+    truth_key_pools = {
+        "m3s2s_truth_seed_keys": {tuple(u["seed_key"]) for u in load(
+            ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
+            .get("units", [])},
+        "m3s25r1_truth_seed_keys": {tuple(u["seed_key"]) for u in load(
+            CFG / "m3s25r1_truth_seed_manifest.json")["units"]}}
+    audit = AA.seed_collision_audit(plan, pools, truth_key_pools)
     dump(OUT / "m3s25r1_arm_a_seed_audit.json", {
         "recorded_at": now(), **audit})
     contract = {
@@ -1999,7 +2034,7 @@ def arm_a_contracts_stage() -> dict:
         "S1_threshold_frozen": AA.S1_THRESHOLD,
         "panel": {"n_states": 120,
                   "panel_body_sha256": panel["panel_sha256"],
-                  "panel_file_sha256": sha(CFG / "m3s25r1_panel.json")},
+                  "panel_file_sha256": sha(PANEL_JSON)},
         "trials": {"states": AA.N_STATES, "replicates": AA.REPLICATES,
                    "samples_per_trial": AA.N_SAMPLES, "n_trials":
                        AA.N_TRIALS,
@@ -2030,6 +2065,28 @@ def arm_a_contracts_stage() -> dict:
                           "only; selected via inner grouped OOF"},
         "safety_gates": AA.GATES,
         "improvement_criterion": AA.IMPROVEMENT,
+        "b1_comparator": {
+            "source": "ML0-style aggregate GBDT baseline (ML0 B3)",
+            "features": AE.ML0_B1_FEATURES,
+            "grid": AA.GBDT_GRID,
+            "ml0_feature_contract_sha256":
+                sha(ROOT / "src/hyptraj/m3ml0/features.py"),
+            "ml0_model_grid_sha256":
+                sha(ROOT / "src/hyptraj/m3ml0/models.py"),
+            "curvature_c_route": "curvature_c = online frozen config metadata "
+                                 "persisted in every trial record "
+                                 "(truth-free)"},
+        "success_eligibility": {
+            "comparators_only": ["B0_frozen_S1",
+                                 "B1_aggregate_gbdt_baseline"],
+            "may_trigger_success": list(AE.SUCCESS_ELIGIBLE),
+            "rule": "if only B1 is compliant/improved but A1-A4 are not, "
+                    "the verdict remains M3-S25-R1-B-GATE"},
+        "secondary_metrics": {
+            "metrics": ["roc_auc", "pr_auc", "brier", "ece"],
+            "rows": "scored OOF rows of the nested CV (oof_prob "
+                    "preserved)",
+            "binding": "report-only; never affects the primary verdict"},
         "verdicts": {"success": "M3-S25-R1-A",
                      "b_gate": "M3-S25-R1-B-GATE",
                      "failure": "M3-S25-R1-X"},
@@ -2055,7 +2112,15 @@ def _verify_frozen_arm_a_inputs() -> dict:
     got_contract = sha_bytes((CFG / "m3s25r1_contract.json").read_bytes())
     if got_contract != EXPECTED_CONTRACT_SHA:
         raise RuntimeError("M3-S25-R1-A0-X: contract SHA drift")
-    got_panel = sha_bytes((CFG / "m3s25r1_panel.json").read_bytes())
+    got_panel = sha_bytes(PANEL_JSON.read_bytes())
+    # A0.1 item 2: the frozen panel FILE sha is enforced at runtime; the
+    # stored panel_sha256 field alone is NOT trusted.  The pin must also
+    # equal the rebind contract's recorded panel_file_sha256.
+    contract = load(ARM_A_CONTRACT)
+    if got_panel != EXPECTED_PANEL_FILE_SHA or             contract["panel"]["panel_file_sha256"] != got_panel:
+        raise RuntimeError(
+            "M3-S25-R1-X: frozen panel FILE sha drift: "
+            f"{got_panel} != {EXPECTED_PANEL_FILE_SHA}")
     manifest_sha = sha_bytes(PANEL_TRUTH_MANIFEST.read_bytes())
     if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
             and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
@@ -2087,7 +2152,7 @@ def arm_a_preflight() -> dict:
             cwd=ROOT, capture_output=True).returncode == 0
     decision = load(SUM / "m3s25r1_panel_decision.json")
     checks["truth_stage_panel_frozen"] = decision.get("PANEL") == "FROZEN"
-    panel = load(CFG / "m3s25r1_panel.json")
+    panel = load(PANEL_JSON)
     checks["frozen_panel_sha"] = (panel.get("panel_sha256")
                                   == AA.FROZEN_PANEL_SHA
                                   and panel.get("frozen") is True)
@@ -2205,7 +2270,7 @@ def arm_a_execute() -> dict:
     if gate("M3_S25_R1_TRUTH_AUTHORIZED"):
         raise RuntimeError(
             "M3-S25-R1-X: truth gate must be CLOSED/EXERCISED during Arm A")
-    panel = load(CFG / "m3s25r1_panel.json")
+    panel = load(PANEL_JSON)
     if panel["panel_sha256"] != AA.FROZEN_PANEL_SHA:
         raise RuntimeError("M3-S25-R1-X: panel SHA drift")
     _verify_frozen_arm_a_inputs()
@@ -2244,9 +2309,9 @@ def arm_a_execute() -> dict:
                 st, plan_seeds[unit_id], s["state_id"], rep,
                 s["config_id"], float(s["s2"]), contract_shas)
             record["recorded_at"] = now()
-            side_p.parent.mkdir(parents=True, exist_ok=True)
-            np.savez_compressed(side_p, **arrays)
-            record["instrumentation_sha256"] = record_file_hash(side_p)
+            # A0.1 item 3: transactional sidecar durability (temp -> write
+            # -> flush -> fsync -> atomic rename -> dir fsync -> SHA verify)
+            record["instrumentation_sha256"] =                 AA.write_sidecar_transactional(side_p, arrays)
             return record
 
         def validate(payload):
@@ -2319,7 +2384,7 @@ def arm_a_evaluate() -> dict:
     manifest = load(PANEL_TRUTH_MANIFEST)
     truth_by_state = {s["state_id"]: s["truth"] for s in manifest["states"]}
     records, sidecars = [], []
-    for s in load(CFG / "m3s25r1_panel.json")["states"]:
+    for s in load(PANEL_JSON)["states"]:
         slug_dir = ARM_A_TRIALS / bounded_slug(s["state_id"])
         for rep in range(AA.REPLICATES):
             unit_id = f"{s['state_id']}|rep{rep}"

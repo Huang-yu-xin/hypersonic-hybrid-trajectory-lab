@@ -2,6 +2,137 @@
   "S1_formula": "abs(g_hat) / ((g_ci_high-g_ci_low)/(2*1.959963984540054))",
   "S1_threshold_frozen": 5.4417199447782,
   "alpha_p": 0.5,
+  "b1_comparator": {
+    "curvature_c_route": "curvature_c = online frozen config metadata persisted in every trial record (truth-free)",
+    "features": [
+      "S1",
+      "g_hat",
+      "abs_g_hat",
+      "SE_g",
+      "CI_width",
+      "s2",
+      "curvature_c",
+      "ESS_grad",
+      "gradient_valid"
+    ],
+    "grid": [
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 50,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.03,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 0,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      },
+      {
+        "l2_regularization": 1,
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 15,
+        "random_state": 2026
+      }
+    ],
+    "ml0_feature_contract_sha256": "09eebf92a61ba5ec718522272d36dedb175581f0c96eb9e1329f73a49a789931",
+    "ml0_model_grid_sha256": "2ac6ed5e9497b3b931ccc4badde9fd2620a24db691e8cee1edd0493121b134c8",
+    "source": "ML0-style aggregate GBDT baseline (ML0 B3)"
+  },
   "estimator": "hyptraj.m3d.adaptation.gradient_decision (unmodified; bit-exact crosscheck enforced on every trial)",
   "feature_contract": "parent m3s2s feature family (bootstrap stability + robust vs classical + influence concentration + event/ESS diagnostics + practical margin), per-trial rows only",
   "improvement_criterion": {
@@ -207,15 +338,47 @@
     "wrong_max": 0.05
   },
   "schema_version": "m3s25r1_arm_a_contract_v1",
+  "secondary_metrics": {
+    "binding": "report-only; never affects the primary verdict",
+    "metrics": [
+      "roc_auc",
+      "pr_auc",
+      "brier",
+      "ece"
+    ],
+    "rows": "scored OOF rows of the nested CV (oof_prob preserved)"
+  },
   "seed_audit": {
     "ARM_A_SEED_AUDIT": "PASS",
     "historical_collision": 0,
+    "per_stream_collisions": {
+      "m3cf1n_seed_pools": 0,
+      "m3s25r1_truth_seed_keys": 0,
+      "m3s25r1_truth_seeds": 0,
+      "m3s2s_arm_a_candidate_seeds": 0,
+      "m3s2s_truth_seed_keys": 0,
+      "m3s2s_truth_seeds": 0,
+      "recorded_historical_seed_pools": 0
+    },
     "truth_stream_collision": 0,
     "unique_seeds": 960,
     "units": 960
   },
   "seed_manifest": "configs/phase_m3s25r1/m3s25r1_arm_a_seed_manifest.json",
   "stage": "M3-S25-R1-A0",
+  "success_eligibility": {
+    "comparators_only": [
+      "B0_frozen_S1",
+      "B1_aggregate_gbdt_baseline"
+    ],
+    "may_trigger_success": [
+      "A1_stability_logistic",
+      "A2_stability_gbdt",
+      "A3_stability_margin_logistic",
+      "A4_stability_margin_gbdt"
+    ],
+    "rule": "if only B1 is compliant/improved but A1-A4 are not, the verdict remains M3-S25-R1-B-GATE"
+  },
   "trials": {
     "ARM_A_BUDGET": 19200000,
     "n_trials": 960,
