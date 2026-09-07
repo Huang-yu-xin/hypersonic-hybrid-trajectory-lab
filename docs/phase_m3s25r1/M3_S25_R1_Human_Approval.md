@@ -9,11 +9,13 @@ and may not be reused for any R1 activity.
 M3_S25_R1_TRUTH_AUTHORIZED: NO
 M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
-M3_S25_R1_A1R_ARM_A_AUTHORIZED: YES
+M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
 AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
-                             Arm-A authorized 2026-09-06; CLOSED at A1R0)
+                             Arm-A authorized 2026-09-06; CLOSED at A1R0;
+                             A1R Arm-A authorized 2026-09-07; CLOSED at
+                             A1R terminal X 2026-09-07)
 ```
 
 ## Old Arm-A gate closure record (M3-S25-R1-A1R0, closure-only, 2026-09-07)
@@ -38,6 +40,36 @@ terminal HEAD = 73e91823fc562a8b5be65a86fa6f1e2a01803d42
   (`M3_S25_R1_A1R_ARM_A_AUTHORIZED` / `M3_S25_R1_A1R_ARM_B_AUTHORIZED`,
   both NO; Codex/tests/scripts may never self-flip them).
 - TRUTH remains CLOSED / NO.  VALUE / RARITY / M3-Q remain BLOCKED.
+
+## A1R replacement Arm-A gate closure record (M3-S25-R1-A1R, closure-only, 2026-09-07)
+
+```text
+M3_S25_R1_A1R_ARM_A_AUTHORIZED = NO
+status = CLOSED / EXERCISED / TERMINAL-X
+terminal = M3-S25-R1-A1R-X
+authorization HEAD = 8deed164c0c830790aaea5481cc3eec898ea79b8
+```
+
+- The replacement Arm-A authorization (Human, 2026-09-07; commit
+  `8deed16`; pre-execution verification ALL PASS) was exercised
+  exactly once and terminated at trial 270 of 960: unit
+  `c020_s25r1_3.8634000847|rep5` CONSUMED_INVALID (20,000 samples
+  consumed; parent-directory fsync failed with Windows error 32;
+  269/960 durable COMPLETE; 690 units FRESH) => the replacement
+  stage is PERMANENTLY TERMINAL `M3-S25-R1-A1R-X`.  No replay,
+  continuation, top-up, or single-unit substitution is permitted.
+- The 269 durable COMPLETE trial records are scientifically valid
+  and preserved on disk but may NOT enter any future stage's
+  dataset, features, CV, metrics, or verdict without a new
+  preregistered stage that explicitly inherits them.
+- `arm_a1r_evaluate` was NOT run (post-execution conditions not
+  met: 269/960, 1 CONSUMED_INVALID).  The truth manifest remains
+  sealed.  Arm B was NOT executed.
+- Full incident report: `docs/phase_m3s25r1/M3_S25_R1_A1R_Incident_
+  Report.md`.  A1R ledger SHA-256:
+  `0ad71e8b620cfda98ee1811a26d517a398d00d72513c98453281327059d528f7`.
+- TRUTH remains CLOSED / NO.  VALUE / RARITY / M3-Q remain BLOCKED.
+  STOP for human post-A1R audit.
 
 ## Arm-A authorization record (ARM A ONLY, 2026-09-06)
 
