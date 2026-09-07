@@ -58,7 +58,7 @@
     },
     {
       "path": "results/phase_m3s25r1/preflight/m3s25r1_arm_a_preflight.json",
-      "sha256": "cb07e8f2f4c41314c936766840c69c0728b6742f3e428d54f623b362c2286d3e",
+      "sha256": "d4eb907237f5be604a55266de88424decea471747c56b11f116d6928ad432bdb",
       "size_bytes": 4341
     },
     {
@@ -182,14 +182,14 @@
       "size_bytes": 2889
     }
   ],
-  "head": "ce38c46df48cd59bcc48d0561aa03675af7286a7",
+  "head": "20ad2045c1948f2389f540662642d7b4aa2cae89",
   "preflight_verdict": "PASS",
   "preregistration_round0": {
     "samples": 0,
     "simulator_calls": 0
   },
   "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
-  "recorded_at": "2026-09-07T12:56:16+0800",
+  "recorded_at": "2026-09-07T13:28:28+0800",
   "scientific_code_hashes": {
     "scripts/run_m3s25r1.py": "a465da3c0f7337680d16e3ead2444c017e124a8d95c0b3cf2e70610448c19c80",
     "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
@@ -206,8 +206,8 @@
     "src/hyptraj/m3ml0/threshold.py": "3882c6024e90b535c0a039eda4081c63da1d8175fa428dfc503811251c781707",
     "src/hyptraj/m3pi1vr0/persistence.py": "6f2386bb87fc03ce3db73d23f69d758c1e4b03f22543f87db30203da62bb2427",
     "src/hyptraj/m3s25r1/__init__.py": "382ea08aed9a65e2d69bc39679428afd9782d8188a61ae595071e6ba448c698a",
-    "src/hyptraj/m3s25r1/arm_a.py": "8a531ffff7545fc9ae1bf0e47ec25344199c6d91b3d2b270da9df1699d5a5533",
-    "src/hyptraj/m3s25r1/arm_a_eval.py": "ebfd3c265a210b1269a471baf325809a27f8b01bce017e974a454952bce68a72",
+    "src/hyptraj/m3s25r1/arm_a.py": "9c54a63a792fd0745446528794d6d1cfb0d91e3821f2a91f64655431b339db6d",
+    "src/hyptraj/m3s25r1/arm_a_eval.py": "1dfc05389a4c2082ac8d469ee4fab650cc97331614b34adba5d491793cbf25d5",
     "src/hyptraj/m3s25r1/candidates.py": "f15b0525be01f3f8f9f5c9e82c7dbc5a88399266433e49e6e840a10c260cce86",
     "src/hyptraj/m3s25r1/history.py": "a9077da05bafc1a9241ebc98b9060f13174e48ebc4cfb4e9ce275bb1d10fb565",
     "src/hyptraj/m3s25r1/runtime.py": "8b574e657ecf43f1fd6d4a5a1bd6d6e08c2bbf68f30dff34938faf7ab146558c",

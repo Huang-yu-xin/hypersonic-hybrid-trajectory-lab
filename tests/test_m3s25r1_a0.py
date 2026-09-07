@@ -594,3 +594,78 @@ def test_secondary_metrics_contract():
     import inspect
     src = inspect.getsource(AE.verdict)
     assert "secondary" not in src and "roc_auc" not in src
+
+
+# --------------------------------------------------------------------------
+# A0.2 micro-amendment
+# --------------------------------------------------------------------------
+
+def test_robust_discrepancy_formula_restored():
+    """A0.2 item 1: abs_g_hat_minus_boot_median == abs(g_hat - boot_median)
+    for BOTH positive and negative g_hat -- explicitly NOT
+    abs(g_hat) - boot_median."""
+    med = 0.30
+
+    def make(g_hat):
+        record = {
+            "schema": AA.TRIAL_SCHEMA, "state_id": "s", "rep_id": 0,
+            "config_id": "c", "s2": 1.0, "curvature_c": 0.5, "seed": 1,
+            "gradient": {"g_hat": g_hat, "g_ci_low": g_hat - 0.1,
+                         "g_ci_high": g_hat + 0.1, "ESS_grad": 5000.0,
+                         "M2_hat": 0.01, "responsibility_mass": 0.9,
+                         "D_hat": 0.02, "problems": [], "s2_base": 1.0,
+                         "batches": 20},
+            "selected_action": "WIDEN", "S1": 1.0, "deployment": "ABSTAIN",
+            "event_count": 500, "event_rate": 0.025, "valid": True,
+        }
+        arrays = {"a_vec": np.full(10, 0.5), "resp": np.full(10, 0.5),
+                  "sq": np.zeros(10), "strata": np.zeros(10, dtype=int),
+                  "bootstrap_g": np.full(500, med)}
+        return AE.feature_row(record, arrays)
+
+    for g_hat in (2.0, -2.0):
+        row = make(g_hat)
+        expected = abs(g_hat - med)
+        wrong = abs(g_hat) - med
+        assert row["abs_g_hat_minus_boot_median"] == pytest.approx(expected)
+        if g_hat < 0:
+            # the restored formula is DISTINGUISHABLE from the broken one
+            assert row["abs_g_hat_minus_boot_median"] != pytest.approx(wrong)
+        # the paired (non-abs) feature remains the plain difference
+        assert row["g_hat_minus_boot_median"] == pytest.approx(g_hat - med)
+
+
+def test_sidecar_dir_fsync_fail_closed(tmp_path, monkeypatch):
+    """A0.2 item 2: an unavailable parent-directory fsync after the
+    atomic rename must yield NO COMPLETE ledger entry, NO scientific
+    record, and a CONSUMED_INVALID unit (=> M3-S25-R1-X => STOP)."""
+    from hyptraj.m3wa1r.persistence import run_trial_transactional
+
+    def broken_fsync(path):
+        return {"pass": False, "reason": "injected: fsync unavailable"}
+
+    monkeypatch.setattr(AA, "fsync_directory", broken_fsync)
+    trial_dir = tmp_path / "t"
+    trial_dir.mkdir(parents=True, exist_ok=True)
+    side = trial_dir / "rep0_instrumentation.npz"
+    rec = trial_dir / "rep0.json"
+    ledger = trial_dir / "ledger.jsonl"
+    arrays = {"a_vec": np.zeros(4), "resp": np.zeros(4), "sq": np.zeros(4),
+              "strata": np.zeros(4, dtype=int), "bootstrap_g": np.zeros(3)}
+
+    def compute():
+        sha = AA.write_sidecar_transactional(side, arrays)
+        return {"schema": AA.TRIAL_SCHEMA, "instrumentation_sha256": sha}
+
+    result = run_trial_transactional(
+        "unit|dirfsync", rec, compute, ledger_path=ledger,
+        pre_hash_validator=lambda r: None)
+    assert result["status"] == "CONSUMED_INVALID"
+    assert not rec.exists()
+    entries = R.ledger_entries(ledger)
+    assert not any(e.get("status") == "COMPLETE" for e in entries)
+    assert any(e.get("status") == "CONSUMED_INVALID" for e in entries)
+    # a healthy fsync still produces a durable, verified sidecar
+    monkeypatch.undo()
+    sha = AA.write_sidecar_transactional(side, arrays)
+    assert sha == R.record_file_hash(side)

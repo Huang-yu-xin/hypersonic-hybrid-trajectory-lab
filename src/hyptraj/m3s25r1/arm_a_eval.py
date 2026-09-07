@@ -154,7 +154,7 @@ def feature_row(record: dict, sidecar_arrays: dict) -> dict:
     ciw = (float(g["g_ci_high"]) - float(g["g_ci_low"]))         if valid else math.nan
     row.update({
         "g_hat_minus_boot_median": float(g["g_hat"]) - med,
-        "abs_g_hat_minus_boot_median": abs(float(g["g_hat"])) - med,
+        "abs_g_hat_minus_boot_median": abs(float(g["g_hat"]) - med),
         "relative_robust_discrepancy":
             abs(float(g["g_hat"]) - med) / max(abs(med), 1e-300),
         "g_hat": gh,

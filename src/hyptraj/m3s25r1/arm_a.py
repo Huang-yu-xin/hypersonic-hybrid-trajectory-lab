@@ -35,6 +35,7 @@ from hyptraj.m3d.adaptation import (
     draw_online_pilot,
     gradient_decision,
 )
+from hyptraj.m3cf1r0.persistence import fsync_directory
 from hyptraj.m3d.benchmark_states import assemble_state, state_arms
 from hyptraj.m3.gradient_estimator import (
     MixtureSpec,
@@ -107,7 +108,6 @@ def write_sidecar_transactional(side_path: Path, arrays: dict,
     COMPLETE => CONSUMED_INVALID => M3-S25-R1-X => STOP => NO REPLAY."""
     import os
     import uuid as _uuid
-    from hyptraj.m3cf1r0.persistence import fsync_directory
     if fault and fault not in SIDECAR_FAULT_TAGS:
         raise ValueError(f"unknown sidecar fault tag {fault!r}")
     side_path.parent.mkdir(parents=True, exist_ok=True)
@@ -122,7 +122,14 @@ def write_sidecar_transactional(side_path: Path, arrays: dict,
         raise InjectedSidecarFault(
             "injected failure after sidecar fsync, before rename")
     os.replace(temp, side_path)
-    fsync_directory(side_path.parent)
+    # A0.2: parent-directory fsync is FAIL-CLOSED -- an unavailable dir
+    # fsync must not yield a durable sidecar (and hence no record COMPLETE;
+    # the outer transactional layer records CONSUMED_INVALID => X => STOP).
+    dir_sync = fsync_directory(side_path.parent)
+    if not dir_sync.get("pass"):
+        from hyptraj.m3cf1r0.persistence import StatePersistenceError
+        raise StatePersistenceError(
+            f"parent-directory fsync unavailable: {dir_sync}")
     final_sha = sha_bytes(side_path.read_bytes())
     if fault == "SIDECAR_AFTER_VERIFY":
         raise InjectedSidecarFault(
