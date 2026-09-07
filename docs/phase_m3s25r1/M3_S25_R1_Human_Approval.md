@@ -7,11 +7,35 @@ and may not be reused for any R1 activity.
 
 ```text
 M3_S25_R1_TRUTH_AUTHORIZED: NO
-M3_S25_R1_ARM_A_AUTHORIZED: NO
+M3_S25_R1_ARM_A_AUTHORIZED: YES
 M3_S25_R1_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
-AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0)
+AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
+                             Arm-A authorized 2026-09-06)
 ```
+
+## Arm-A authorization record (ARM A ONLY, 2026-09-06)
+
+- M3-S25-R1-A0.2 final execution-readiness audit: **PASS** (human,
+  2026-09-06).
+- Explicit human authorization: "Human authorization is granted for ARM
+  A ONLY."
+- Scope: `python scripts/run_m3s25r1.py arm_a_execute` ONLY -- 120
+  states x 8 replicates x 20,000 samples = 960 trials = exact
+  19,200,000 samples, top-up = 0; strict persistence (STARTED before
+  simulator; any sampling without durable COMPLETE => CONSUMED_INVALID
+  => M3-S25-R1-X => STOP => NO REPLAY); after exactly 960/960 durable
+  COMPLETE with CONSUMED_INVALID = 0, the frozen zero-sampling
+  evaluation (`arm_a_evaluate`) may run, unsealing the truth manifest
+  only after completeness; accept only the frozen terminal verdict
+  (`M3-S25-R1-A` / `M3-S25-R1-B-GATE` / `M3-S25-R1-X`).
+- Frozen at authorization: panel body SHA `2bdb9a91...`, panel file SHA
+  `136830a2...`, truth manifest SHA `75f5993b...`, Arm-A contract SHA
+  `f02fc399...`, Arm-A seed manifest SHA `20cbe999...`, branch base
+  `4a335baf4c7449cdc41552c56e1379c048086a22`.
+- **DO NOT execute Arm B.**  `M3_S25_R1_ARM_B_AUTHORIZED` remains NO;
+  Arm B is never authorized simultaneously with Arm A.  VALUE / RARITY /
+  M3-Q remain BLOCKED.  Truth remains CLOSED / EXERCISED.
 
 ## Truth gate closure record (M3-S25-R1-A0, closure-only, 2026-09-06)
 
