@@ -1,59 +1,87 @@
 {
   "budget": {
-    "cumulative_if_replacement_completes": 19220000,
-    "n_trials": 960,
-    "old_invalid_stage_samples": 20000,
-    "replacement_max": 19200000,
-    "replacement_planned": 19200000,
-    "rule": "the old 20,000 never counts toward replacement completeness; cumulative project consumption is reported separately",
+    "a1r_invalid_samples": 20000,
+    "cumulative_if_a2r_completes": 19240000,
+    "effective_final_dataset": 19200000,
+    "inherited_samples": 5380000,
+    "inherited_trials": 269,
+    "new_max": 13820000,
+    "new_planned": 13820000,
+    "new_trials": 691,
+    "old_arm_a_invalid_samples": 20000,
+    "rule": "no invalid sample counts toward scientific completeness; cumulative project consumption reported separately",
     "samples_per_trial": 20000,
     "substitution": 0,
-    "topup": 0
+    "topup": 0,
+    "total_effective_trials": 960
   },
   "corrected_instrumentation": {
+    "bounded_dir_fsync_retry": {
+      "backoff_seconds": [
+        0.0,
+        0.01,
+        0.05,
+        0.15,
+        0.3
+      ],
+      "max_attempts": 5,
+      "rule": "retry ONLY the directory durability operation on the SAME already-written/renamed artifact; NEVER rerun simulator, regenerate payload, or change bytes; all attempts fail => CONSUMED_INVALID => A2R-X => STOP",
+      "transient_errors": "Windows ERROR_SHARING_VIOLATION (32), ERROR_LOCK_VIOLATION (33), BrokenPipeError"
+    },
     "code_sha256": {
       "src/hyptraj/m3s25r1/arm_a.py": "ce4f9b29a139ce2fd459ff3bb10aaf4a74f093cde6a5c878d300ab13f9cde92e",
       "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6"
     },
     "crosscheck": "unmodified gradient_decision bit-exact crosscheck remains MANDATORY on every trial",
     "fix": "post-incident A0.2 correction: CI bounds come from the frozen stratified_bootstrap_gradient_ci on the identical inputs (bit-identical to gradient_decision's internal call); the replicate capture loop is sidecar-only",
-    "transactional_sidecar": "temp -> write -> flush -> fsync -> atomic rename -> parent-dir fsync (fail-closed) -> SHA verify"
+    "transactional_sidecar": "temp -> write -> flush -> fsync -> atomic rename -> parent-dir fsync (bounded retry, A2R-only) -> SHA verify"
   },
   "evaluation_protocol": {
-    "frozen": "B0/B1/A1-A4 comparison, outer GroupKFold(5) / inner GroupKFold(4), groups = config_id; no test-fold tuning; truth manifest unseals ONLY after 960/960 durable COMPLETE with 0 CONSUMED_INVALID and exactly 19,200,000 replacement samples",
+    "frozen": "B0/B1/A1-A4 comparison, outer GroupKFold(5) / inner GroupKFold(4), groups = config_id; no test-fold tuning; truth manifest unseals ONLY after 269 inherited verified + 691 new COMPLETE = 960 with 0 CONSUMED_INVALID and exactly 19,200,000 effective scientific samples",
     "terminal_names": {
-      "b_gate": "M3-S25-R1-A1R-B-GATE",
-      "failure": "M3-S25-R1-A1R-X",
-      "success": "M3-S25-R1-A1R-A"
+      "b_gate": "M3-S25-R1-A2R-B-GATE",
+      "failure": "M3-S25-R1-A2R-X",
+      "success": "M3-S25-R1-A2R-A"
     }
   },
   "gates": {
-    "M3_S25_R1_A1R_ARM_A_AUTHORIZED": "NO",
-    "M3_S25_R1_A1R_ARM_B_AUTHORIZED": "NO",
-    "old_M3_S25_R1_ARM_A_AUTHORIZED": "NO (CLOSED/EXERCISED/TERMINAL-X)",
+    "M3_S25_R1_A2R_ARM_A_AUTHORIZED": "NO",
+    "M3_S25_R1_A2R_ARM_B_AUTHORIZED": "NO",
+    "old_M3_S25_R1_A1R_ARM_A": "NO (CLOSED/EXERCISED/TERMINAL-X)",
+    "old_M3_S25_R1_ARM_A": "NO (CLOSED/EXERCISED/TERMINAL-X)",
     "truth": "NO (CLOSED/EXERCISED)",
     "value_rarity_m3q": "BLOCKED"
   },
-  "namespace": "M3-S25-R1-A1R-GRAD",
+  "inheritance": {
+    "inherited_count": 269,
+    "invalid_unit": "c020_s25r1_3.8634000847|rep5 (EXPOSED / CONSUMED_INVALID / EXCLUDED)",
+    "manifest": "configs/phase_m3s25r1/m3s25r1_a2r_inheritance_manifest.json",
+    "missing_count": 691,
+    "rule": "ALL-269-or-none; no selective dropping; no truth labels",
+    "total_effective_trials": 960
+  },
+  "namespace": "M3-S25-R1-A2R-GRAD",
   "old_stream_retirement": {
-    "old_ledger_sha256_expected": "e5ce5c5a6350443f796558246c434fc0fbe2b855d029d38341fac0db31391c48",
-    "retired_stream": "configs/phase_m3s25r1/m3s25r1_a1r_retired_stream.json",
-    "retired_stream_sha256": "7e673af48d3547fd2dedbd4a9fe882d71c1598fb8f55bef52e6e1b4695f9ab41",
-    "rule": "the old failed 20k realization is EXPOSED / CONSUMED_INVALID and must never enter the replacement dataset, features, CV, metrics or verdict"
+    "old_a1r_ledger_sha256": "0ad71e8b620cfda98ee1811a26d517a398d00d72513c98453281327059d528f7",
+    "retired_stream": "configs/phase_m3s25r1/m3s25r1_a2r_retired_stream.json",
+    "retired_stream_sha256": "6d02e2112901754aa87218edef9796dd11be60dd6ada4d32604f370174336126",
+    "rule": "ALL 960 old A1R seeds retired; 269 inherited retain A1R seeds as provenance ONLY; 691 new slots get entirely new A2R seeds"
   },
-  "parent_terminal": "M3-S25-R1-X (old Arm-A stage, PERMANENT)",
-  "parent_terminal_head": "73e91823fc562a8b5be65a86fa6f1e2a01803d42",
+  "parent_authorization_head": "8deed164c0c830790aaea5481cc3eec898ea79b8",
+  "parent_terminal": "M3-S25-R1-A1R-X (A1R replacement stage, PERMANENT)",
+  "parent_terminal_head": "e955c49569a8056896c28f04acf4743c906323b1",
   "persistence": {
-    "chain": "STARTED -> 20k sampling -> transactional sidecar -> record hash -> COMPLETE",
-    "dir": "results/phase_m3s25r1/arm_a1r/",
-    "failure": "any replacement consumed-invalid unit => M3-S25-R1-A1R-X => STOP => NO REPLAY",
-    "ledger": "results/phase_m3s25r1/arm_a1r/trial_ledger.jsonl",
-    "rule": "separate replacement paths; never reuse, truncate, ignore or reinterpret the old Arm-A ledger"
+    "chain": "STARTED -> 20k sampling -> transactional sidecar (bounded retry) -> record hash -> COMPLETE",
+    "dir": "results/phase_m3s25r1/arm_a2r/",
+    "failure": "any A2R consumed-invalid unit => M3-S25-R1-A2R-X => STOP => NO REPLAY",
+    "ledger": "results/phase_m3s25r1/arm_a2r/trial_ledger.jsonl",
+    "rule": "completely separate A2R persistence; never modify A1R ledger or its 269 inherited artifacts"
   },
-  "schema_version": "m3s25r1_a1r_contract_v1",
+  "schema_version": "m3s25r1_a2r_contract_v1",
   "scientific_inheritance": {
     "S1_threshold_frozen": 5.4417199447782,
     "a0_rebind_contract_sha256": "f02fc399834e5d950d46f29d8e609f1b8df3697097a705db6de8d5474c6085d6",
+    "a1r_contract_sha256": "784f3f5db6e1d44f08b1bac8c6ef369b773648b43d704068f034c40418a15a65",
     "alpha_p": 0.5,
     "arm_b_rules": "unchanged; never authorized with Arm A",
     "b1_comparator": {
@@ -351,7 +379,7 @@
     "panel_body_sha256": "2bdb9a91562cc44c6dd9e1d1c0d49f8950e531c3108ea61b6d03eb0c153ce2b8",
     "panel_file_sha256": "136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff",
     "panel_truth_manifest_sha256": "75f5993bc6a251220e5e533f0b96de153bcef313d95706e6e0b7294db57af880",
-    "rule": "SAME frozen scientific panel and contracts, byte-identical; no truth resampling, no panel reselection",
+    "rule": "SAME frozen scientific panel and contracts, byte-identical; no truth resampling, no panel reselection; 269 inherited A1R records are hash-pinned in place (never copied or rewritten)",
     "safety_gates": {
       "ambiguous_unsafe_max": 0.25,
       "coverage_min": 0.75,
@@ -359,6 +387,6 @@
       "wrong_max": 0.05
     }
   },
-  "seed_manifest": "configs/phase_m3s25r1/m3s25r1_a1r_seed_manifest.json",
-  "stage": "M3-S25-R1-A1R"
+  "seed_manifest": "configs/phase_m3s25r1/m3s25r1_a2r_seed_manifest.json",
+  "stage": "M3-S25-R1-A2R"
 }

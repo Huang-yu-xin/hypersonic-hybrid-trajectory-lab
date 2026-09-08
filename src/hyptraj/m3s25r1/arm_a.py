@@ -101,7 +101,8 @@ SIDECAR_FAULT_TAGS = ("SIDECAR_BEFORE_FSYNC", "SIDECAR_AFTER_FSYNC_BEFORE_RENAME
 
 
 def write_sidecar_transactional(side_path: Path, arrays: dict,
-                                fault: str | None = None) -> str:
+                                fault: str | None = None,
+                                dir_fsync_fn=None) -> str:
     """Durable lossless sidecar write with injected-fault support for
     tests.  Returns the final sidecar sha256.  Any failure AFTER the
     scientific sampling has happened leaves the unit without a durable
@@ -125,7 +126,12 @@ def write_sidecar_transactional(side_path: Path, arrays: dict,
     # A0.2: parent-directory fsync is FAIL-CLOSED -- an unavailable dir
     # fsync must not yield a durable sidecar (and hence no record COMPLETE;
     # the outer transactional layer records CONSUMED_INVALID => X => STOP).
-    dir_sync = fsync_directory(side_path.parent)
+    # A2R: an optional bounded-retry dir_fsync_fn may be passed to retry
+    # transient Windows sharing/locking errors WITHOUT rerunning the
+    # simulator (the artifact is already written/renamed; only the
+    # directory durability operation is retried).
+    _dir_fsync = dir_fsync_fn or fsync_directory
+    dir_sync = _dir_fsync(side_path.parent)
     if not dir_sync.get("pass"):
         from hyptraj.m3cf1r0.persistence import StatePersistenceError
         raise StatePersistenceError(
@@ -174,22 +180,50 @@ def arm_a_seed_plan(panel_states: list[dict],
             "n_trials": N_TRIALS, "budget": BUDGET}
 
 
+def arm_a2r_seed_plan(missing_unit_ids: list[str],
+                      namespace: str = "M3-S25-R1-A2R-GRAD") -> dict:
+    """691 new seeds for the missing logical slots under the A2R namespace.
+
+    The 269 inherited A1R records retain their historical A1R seeds as
+    provenance only; the 691 new slots get entirely new seeds derived
+    from the new namespace (deterministic ``seed(namespace, sid, rep)``).
+    """
+    planned: dict[str, int] = {}
+    units: list[dict] = []
+    for unit_id in sorted(missing_unit_ids):
+        parts = unit_id.rsplit("|rep", 1)
+        if len(parts) != 2:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: malformed unit_id: {unit_id}")
+        sid, rep = parts[0], int(parts[1])
+        sv = seed(namespace, sid, rep)
+        planned[unit_id] = sv
+        units.append({"unit_id": unit_id, "state_id": sid, "rep": rep,
+                      "namespace": namespace, "seed": sv,
+                      "seed_key": [sv, 42424], "samples": N_SAMPLES})
+    return {"namespace": namespace, "planned_seeds": planned,
+            "units": units, "n_units": len(units),
+            "n_trials": N_TRIALS, "budget": BUDGET}
+
+
 def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
-                         truth_key_pools: dict[str, set[tuple]]) -> dict:
+                         truth_key_pools: dict[str, set[tuple]],
+                         expected_count: int = N_TRIALS) -> dict:
     """A0.1 item 6: explicit, type-consistent seed-collision proof.
 
-    - 960 logical units: len(vals) == 960 AND len(set(vals)) == 960.
+    - ``expected_count`` logical units: len(vals) == expected_count AND
+      len(set(vals)) == expected_count (default 960; A2R passes 691).
     - Integer seed VALUES are audited only against integer pools;
       seed_key TUPLES only against tuple pools (never mixed).
     - Per-stream zero-collision proof over every named pool."""
     vals = list(plan["planned_seeds"].values())
-    if not (len(vals) == N_TRIALS and len(set(vals)) == N_TRIALS):
+    if not (len(vals) == expected_count and len(set(vals)) == expected_count):
         raise RuntimeError(
-            f"M3-S25-R1-X: Arm-A seed pool not 960 unique values "
+            f"M3-S25-R1-X: Arm-A seed pool not {expected_count} unique values "
             f"(len={len(vals)}, unique={len(set(vals))})")
     keys = [tuple(u["seed_key"]) for u in plan["units"]]
-    if len(keys) != N_TRIALS or len(set(keys)) != N_TRIALS:
-        raise RuntimeError("M3-S25-R1-X: Arm-A seed keys not 960 unique")
+    if len(keys) != expected_count or len(set(keys)) != expected_count:
+        raise RuntimeError(f"M3-S25-R1-X: Arm-A seed keys not {expected_count} unique")
     collisions = {}
     for pool_name, pool in pools.items():
         hits = sorted({v for v in vals if v in pool})

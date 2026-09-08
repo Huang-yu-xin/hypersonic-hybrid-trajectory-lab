@@ -203,6 +203,7 @@ def run_trial_transactional(
     fault: str | None = None,
     run_uuid: str | None = None,
     clock: Callable[[], str] | None = None,
+    dir_fsync_fn: Callable = fsync_directory,
 ) -> dict:
     """Execute one trial under the frozen M3-WA1R 12-step contract (Sec. 23)."""
     final_path = Path(final_path)
@@ -268,7 +269,7 @@ def run_trial_transactional(
         os.replace(temp_path, final_path)
         fail("AFTER_RENAME_BEFORE_DIRSYNC")
         # -- 8. parent-directory fsync ----------------------------------------
-        dir_sync = fsync_directory(final_path.parent)
+        dir_sync = dir_fsync_fn(final_path.parent)
         if not dir_sync["pass"]:
             raise StatePersistenceError(f"parent-directory fsync unavailable: {dir_sync}")
         fail("AFTER_DIRSYNC_BEFORE_VERIFY")

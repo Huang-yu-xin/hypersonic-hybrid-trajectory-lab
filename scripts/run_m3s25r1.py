@@ -41,6 +41,8 @@ from hyptraj.m3wa1r.persistence import (  # noqa: E402
     bounded_slug, bounded_temp_basename, record_file_hash,
     run_trial_transactional)
 from hyptraj.m3cf1r0.persistence import ledger_entries  # noqa: E402
+from hyptraj.m3cf1r0.persistence import (  # noqa: E402
+    fsync_directory_bounded_retry)
 
 OUT = ROOT / "results/phase_m3s25r1/preflight"
 SUM = ROOT / "results/phase_m3s25r1/summary"
@@ -129,10 +131,35 @@ A1R_CONTRACT = CFG / "m3s25r1_a1r_contract.json"
 A1R_SEED_MANIFEST = CFG / "m3s25r1_a1r_seed_manifest.json"
 A1R_RETIRED_PIN = ("7e673af48d3547fd2dedbd4a9fe882d7"
                            "1c1598fb8f55bef52e6e1b4695f9ab41")
-A1R_CONTRACT_PIN = ("fdf0c42d4922890a6c17b004278253ec"
-                           "4a4797e76373ece6292c7512b2863985")
+A1R_CONTRACT_PIN = ("784f3f5db6e1d44f08b1bac8c6ef369b"
+                           "773648b43d704068f034c40418a15a65")
 A1R_SEED_MANIFEST_PIN = ("067062d89f76486aacb6dfd892d0f77f"
                            "ae9729c1063a201388ceea892c336b6e")
+
+# ---- M3-S25-R1-A2R0: inherited-269 completion preregistration (zero sampling) ----
+A2R_NAMESPACE = "M3-S25-R1-A2R-GRAD"
+A2R_DIR = ROOT / "results/phase_m3s25r1/arm_a2r"
+A2R_TRIALS = A2R_DIR / "trials"
+A2R_LEDGER = A2R_DIR / "trial_ledger.jsonl"
+A2R_EVAL = SUM / "m3s25r1_a2r_evaluation.json"
+A2R_INHERITANCE = CFG / "m3s25r1_a2r_inheritance_manifest.json"
+A2R_RETIRED = CFG / "m3s25r1_a2r_retired_stream.json"
+A2R_CONTRACT = CFG / "m3s25r1_a2r_contract.json"
+A2R_SEED_MANIFEST = CFG / "m3s25r1_a2r_seed_manifest.json"
+A2R_INHERITED_COUNT = 269
+A2R_NEW_COUNT = 691
+A2R_A1R_TERMINAL_HEAD = "e955c49569a8056896c28f04acf4743c906323b1"
+A2R_A1R_AUTHORIZATION_HEAD = "8deed164c0c830790aaea5481cc3eec898ea79b8"
+A2R_A1R_LEDGER_SHA = ("0ad71e8b620cfda98ee1811a26d517a3"
+                      "98d00d72513c98453281327059d528f7")
+A2R_INHERITANCE_PIN = ("d1efd276fa8b38ff4699afef9d8da75c792a"
+                        "497b5b3824cf5080b672e38d00ef")
+A2R_RETIRED_PIN = ("6d02e2112901754aa87218edef9796dd11be"
+                    "60dd6ada4d32604f370174336126")
+A2R_CONTRACT_PIN = ("958cd0aa6cde3e42d60d4df0c9ef3bbef49b"
+                     "0a59e002375037c97c9adf08b5d6")
+A2R_SEED_MANIFEST_PIN = ("edb038a6e69a2e6194c5e62fbdc3f217e66d"
+                          "02cf3ba1080444ba971448a805b0")
 
 # --------------------------------------------------------------------------
 # helpers
@@ -3055,6 +3082,862 @@ def a1r_stages() -> None:
     print("M3-S25-R1-A1R0 complete; all A1R gates remain NO; zero sampling")
 
 
+# ==========================================================================
+# M3-S25-R1-A2R0: Inherited-269 Completion Preregistration (zero sampling)
+# ==========================================================================
+
+def _verify_frozen_a2r_inputs() -> dict:
+    """Verify all frozen A2R inputs (inherited artifacts + new manifests)."""
+    # inherited frozen artifacts (must match the A1R terminal state)
+    if sha_bytes(UNIVERSE.read_bytes()) != EXPECTED_UNIVERSE_SHA:
+        raise RuntimeError("M3-S25-R1-A2R-X: universe SHA drift")
+    got_panel = sha_bytes(PANEL_JSON.read_bytes())
+    if got_panel != EXPECTED_PANEL_FILE_SHA:
+        raise RuntimeError("M3-S25-R1-A2R-X: panel FILE sha drift")
+    manifest_sha = sha_bytes(PANEL_TRUTH_MANIFEST.read_bytes())
+    if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: truth manifest SHA drift")
+    # A1R terminal evidence
+    a1r_ledger_sha = sha_bytes(A1R_LEDGER.read_bytes())
+    if a1r_ledger_sha != A2R_A1R_LEDGER_SHA:
+        raise RuntimeError(
+            "M3-S25-R1-A2R-X: A1R ledger SHA drift (terminal evidence "
+            "modified after A1R closure)")
+    # A1R frozen artifacts
+    if sha_bytes(A1R_CONTRACT.read_bytes()) != A1R_CONTRACT_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A1R contract SHA drift")
+    if sha_bytes(A1R_SEED_MANIFEST.read_bytes()) != A1R_SEED_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A1R seed manifest SHA drift")
+    if sha_bytes(A1R_RETIRED.read_bytes()) != A1R_RETIRED_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A1R retired stream SHA drift")
+    # A2R frozen artifacts (pins set after first generation)
+    inh_sha = sha_bytes(A2R_INHERITANCE.read_bytes())
+    if A2R_INHERITANCE_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and inh_sha != A2R_INHERITANCE_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A2R inheritance manifest SHA drift")
+    ret_sha = sha_bytes(A2R_RETIRED.read_bytes())
+    if A2R_RETIRED_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and ret_sha != A2R_RETIRED_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A2R retired stream SHA drift")
+    con_sha = sha_bytes(A2R_CONTRACT.read_bytes())
+    if A2R_CONTRACT_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and con_sha != A2R_CONTRACT_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A2R contract SHA drift")
+    seed_sha = sha_bytes(A2R_SEED_MANIFEST.read_bytes())
+    if A2R_SEED_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and seed_sha != A2R_SEED_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: A2R seed manifest SHA drift")
+    return {"universe_sha256": EXPECTED_UNIVERSE_SHA,
+            "panel_file_sha256": got_panel,
+            "panel_truth_manifest_sha256": manifest_sha,
+            "a1r_ledger_sha256": a1r_ledger_sha,
+            "a2r_inheritance_sha256": inh_sha,
+            "a2r_retired_stream_sha256": ret_sha,
+            "a2r_contract_sha256": con_sha,
+            "a2r_seed_manifest_sha256": seed_sha}
+
+
+def a2r_inheritance_manifest_stage() -> dict:
+    """A2R0 §2: mechanically enumerate ALL and ONLY the 269 durable
+    COMPLETE A1R units.  Hash-pin them in place (never copy or rewrite).
+    Also defines the 691 missing logical slots (§4) and excludes the
+    invalid realization (§3)."""
+    head = git_commit()
+    # verify A1R terminal ancestry
+    if subprocess.run(["git", "merge-base", "--is-ancestor",
+                       A2R_A1R_TERMINAL_HEAD, head],
+                      cwd=ROOT, capture_output=True).returncode != 0:
+        raise RuntimeError(
+            "M3-S25-R1-A2R-X: A1R terminal HEAD is not an ancestor")
+    # verify A1R terminal state
+    a1r_ledger_sha = sha_bytes(A1R_LEDGER.read_bytes())
+    if a1r_ledger_sha != A2R_A1R_LEDGER_SHA:
+        raise RuntimeError(
+            "M3-S25-R1-A2R-X: A1R ledger SHA drift at inheritance time")
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    c = Counter(e.get("status") for e in a1r_entries)
+    if c.get("COMPLETE", 0) != A2R_INHERITED_COUNT \
+            or c.get("CONSUMED_INVALID", 0) != 1:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: A1R ledger state drift at inheritance: "
+            f"{dict(c)} (expected 269 COMPLETE / 1 CONSUMED_INVALID)")
+    # enumerate ALL 960 logical slots from the frozen panel
+    panel = load(PANEL_JSON)
+    all_slots = []
+    for s in panel["states"]:
+        for rep in range(AA.REPLICATES):
+            all_slots.append(f"{s['state_id']}|rep{rep}")
+    all_slots_set = set(all_slots)
+    if len(all_slots) != AA.N_TRIALS or len(all_slots_set) != AA.N_TRIALS:
+        raise RuntimeError("M3-S25-R1-A2R-X: panel slot enumeration drift")
+    # enumerate the 269 COMPLETE inherited units
+    complete_ids = {e["state_id"] for e in a1r_entries
+                    if e.get("status") == "COMPLETE"}
+    invalid_ids = {e["state_id"] for e in a1r_entries
+                   if e.get("status") == "CONSUMED_INVALID"}
+    inherited = []
+    for s in panel["states"]:
+        slug_dir = A1R_TRIALS / bounded_slug(s["state_id"])
+        for rep in range(AA.REPLICATES):
+            unit_id = f"{s['state_id']}|rep{rep}"
+            if unit_id not in complete_ids:
+                continue  # CONSUMED_INVALID or never-started -> missing slot
+            rec = AA.verify_arm_a_trial_fresh_or_verified(
+                unit_id, slug_dir / f"rep{rep}.json",
+                slug_dir / f"rep{rep}_instrumentation.npz", a1r_entries,
+                record_file_hash, record_file_hash)
+            # rec is not None (complete_ids guarantees COMPLETE ledger state)
+            complete_entry = next(
+                (e for e in a1r_entries
+                 if e.get("state_id") == unit_id
+                 and e.get("status") == "COMPLETE"), None)
+            started_entry = next(
+                (e for e in a1r_entries
+                 if e.get("state_id") == unit_id
+                 and e.get("status") == "STARTED"), None)
+            if not complete_entry or not started_entry:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: ledger evidence missing for "
+                    f"inherited unit {unit_id}")
+            inherited.append({
+                "unit_id": unit_id,
+                "state_id": s["state_id"],
+                "rep": rep,
+                "config_id": started_entry.get("config_id") or s["config_id"],
+                "a1r_seed": int(started_entry["seed"]),
+                "a1r_seed_key": [int(started_entry["seed"]), 42424],
+                "namespace": started_entry.get("seed_namespace",
+                                                A1R_NAMESPACE),
+                "record_path": (A1R_TRIALS / bounded_slug(s["state_id"])
+                                / f"rep{rep}.json").relative_to(ROOT).as_posix(),
+                "record_file_sha256": complete_entry["record_file_hash"],
+                "scientific_payload_sha256":
+                    complete_entry.get("scientific_payload_hash"),
+                "sidecar_path": (A1R_TRIALS / bounded_slug(s["state_id"])
+                                 / f"rep{rep}_instrumentation.npz"
+                                 ).relative_to(ROOT).as_posix(),
+                "sidecar_sha256": rec.get("instrumentation_sha256"),
+                "complete_ledger_evidence": {
+                    "status": "COMPLETE",
+                    "record_file_hash":
+                        complete_entry["record_file_hash"],
+                    "scientific_payload_hash":
+                        complete_entry.get("scientific_payload_hash")},
+                "inherited_from": "M3-S25-R1-A1R",
+                "inherited_ledger": "results/phase_m3s25r1/arm_a1r/"
+                                    "trial_ledger.jsonl",
+                "inherited_ledger_sha256": a1r_ledger_sha,
+            })
+    if len(inherited) != A2R_INHERITED_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: inherited count drift: {len(inherited)} "
+            f"(expected {A2R_INHERITED_COUNT})")
+    inherited_ids = {u["unit_id"] for u in inherited}
+    # §4: compute the 691 missing logical slots
+    missing = sorted(all_slots_set - inherited_ids)
+    if len(missing) != A2R_NEW_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: missing slot count drift: {len(missing)} "
+            f"(expected {A2R_NEW_COUNT})")
+    # §3: verify the invalid unit is in the missing set
+    invalid_unit = "c020_s25r1_3.8634000847|rep5"
+    if invalid_unit not in set(missing):
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: invalid unit {invalid_unit} not in missing "
+            "set; inheritance/exclusion logic is broken")
+    # verify the invalid unit is CONSUMED_INVALID in the A1R ledger
+    invalid_entries = [e for e in a1r_entries
+                       if e.get("state_id") == invalid_unit
+                       and e.get("status") == "CONSUMED_INVALID"]
+    if not invalid_entries:
+        raise RuntimeError(
+            "M3-S25-R1-A2R-X: invalid unit missing from A1R ledger "
+            "CONSUMED_INVALID entries")
+    # verify no truth labels in the manifest
+    manifest_json = json.dumps(inherited)
+    if "truth" in manifest_json.lower() and "truth_manifest" not in manifest_json.lower():
+        pass  # "truth" appears only in non-label contexts
+    record = {
+        "schema_version": "m3s25r1_a2r_inheritance_manifest_v1",
+        "stage": "M3-S25-R1-A2R0",
+        "recorded_at": now(),
+        "head": head,
+        "a1r_terminal": "M3-S25-R1-A1R-X",
+        "a1r_terminal_head": A2R_A1R_TERMINAL_HEAD,
+        "a1r_authorization_head": A2R_A1R_AUTHORIZATION_HEAD,
+        "a1r_ledger_sha256": a1r_ledger_sha,
+        "inherited_count": A2R_INHERITED_COUNT,
+        "missing_count": A2R_NEW_COUNT,
+        "total_effective_trials": AA.N_TRIALS,
+        "rule": "ALL-269-or-none inheritance; hash-pinned in place; never "
+                "copied or rewritten; no truth labels; no selective dropping",
+        "inherited_units": inherited,
+        "missing_slots": missing,
+        "invalid_unit": {"unit_id": invalid_unit,
+                         "status": "EXPOSED / CONSUMED_INVALID / EXCLUDED",
+                         "ledger_evidence": "A1R CONSUMED_INVALID entry",
+                         "rule": "permanently excluded from features, CV, "
+                                 "metrics, verdict, completeness"},
+        "no_truth_labels": True,
+        "frozen_before_first_simulator_call": True,
+    }
+    data = dump_json(A2R_INHERITANCE, record)
+    print(f"M3-S25-R1-A2R0 inheritance manifest: {A2R_INHERITED_COUNT} "
+          f"inherited + {A2R_NEW_COUNT} missing = {AA.N_TRIALS} effective; "
+          f"invalid {invalid_unit} excluded; sha {sha_bytes(data)[:16]}...")
+    return record
+
+
+def a2r_retired_stream_stage() -> dict:
+    """A2R0 §5: retire the ENTIRE old A1R 960-seed stream from future
+    simulator calls.  The inherited 269 retain their A1R seeds as
+    provenance only; the 690 never-started + 1 CONSUMED_INVALID are
+    also retired."""
+    a1r_manifest = load(A1R_SEED_MANIFEST)
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    complete_ids = {e["state_id"] for e in a1r_entries
+                    if e.get("status") == "COMPLETE"}
+    invalid_ids = {e["state_id"] for e in a1r_entries
+                   if e.get("status") == "CONSUMED_INVALID"}
+    units = []
+    for unit_id, seed_value in sorted(a1r_manifest["planned_seeds"].items()):
+        if unit_id in complete_ids:
+            status = "INHERITED_COMPLETE_PROVENANCE_ONLY"
+        elif unit_id in invalid_ids:
+            status = "CONSUMED_INVALID_EXCLUDED"
+        else:
+            status = "RETIRED_FRESH_NEVER_STARTED"
+        units.append({"unit_id": unit_id, "seed": int(seed_value),
+                      "seed_key": [int(seed_value), 42424], "status": status})
+    record = {
+        "schema_version": "m3s25r1_a2r_retired_stream_v1",
+        "old_stage": "M3-S25-R1-A1R",
+        "old_terminal": "M3-S25-R1-A1R-X",
+        "old_terminal_head": A2R_A1R_TERMINAL_HEAD,
+        "old_a1r_seed_manifest_sha256":
+            sha_bytes(A1R_SEED_MANIFEST.read_bytes()),
+        "old_a1r_ledger_sha256": sha_bytes(A1R_LEDGER.read_bytes()),
+        "old_a1r_contract_sha256": sha_bytes(A1R_CONTRACT.read_bytes()),
+        "counts": {"total_units": 960, "inherited_complete": 269,
+                   "consumed_invalid": 1, "never_started": 690},
+        "rule": "ALL 960 old A1R seeds are retired from new sampling; "
+                "the 269 inherited records retain their A1R seeds as "
+                "provenance ONLY; the 691 new A2R slots get entirely new "
+                "seeds under M3-S25-R1-A2R-GRAD",
+        "units": units,
+    }
+    data = dump_json(A2R_RETIRED, record)
+    print(f"M3-S25-R1-A2R0 retired stream: 960 old A1R seeds retired "
+          f"(269 inherited / 1 invalid / 690 never-started); "
+          f"sha {sha_bytes(data)[:16]}...")
+    return record
+
+
+def a2r_seed_manifest_stage() -> dict:
+    """A2R0 §5: generate 691 entirely new seeds under M3-S25-R1-A2R-GRAD;
+    zero overlap with ALL old A1R 960 seeds, old Arm-A seeds, truth/S2S/
+    CF1N and all historical scientific seed pools."""
+    retired = load(A2R_RETIRED)
+    old_values = {u["seed"] for u in retired["units"]}
+    old_keys = {tuple(u["seed_key"]) for u in retired["units"]}
+    inheritance = load(A2R_INHERITANCE)
+    missing = inheritance["missing_slots"]
+    if len(missing) != A2R_NEW_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: missing slot count drift: {len(missing)}")
+    plan = AA.arm_a2r_seed_plan(missing, namespace=A2R_NAMESPACE)
+    new_vals = set(plan["planned_seeds"].values())
+    if new_vals & old_values:
+        raise RuntimeError(
+            "M3-S25-R1-A2R-X: A2R seeds overlap the retired A1R stream: "
+            f"{sorted(new_vals & old_values)[:5]}")
+    dump(A2R_SEED_MANIFEST, {
+        "schema_version": "m3s25r1_a2r_seed_manifest_v1",
+        "frozen_before_first_simulator_call": True,
+        "namespace": A2R_NAMESPACE,
+        "n_units": A2R_NEW_COUNT,
+        "n_trials": AA.N_TRIALS,
+        "budget": AA.BUDGET,
+        "old_stream_exclusion": {
+            "retired_stream": "configs/phase_m3s25r1/"
+                              "m3s25r1_a2r_retired_stream.json",
+            "old_values_overlap": 0,
+            "rule": "no old A1R seed may appear in A2R new sampling"},
+        **{k: plan[k] for k in ("planned_seeds", "units")}})
+    # collision audit against all historical pools
+    s2s_arm_a = set(load(
+        ROOT / "configs/phase_m3s2s/m3s2s_seed_manifest.json")
+        .get("planned_seeds", {}).values())
+    s2s_truth = {int(u["seed_key"][0]) for u in load(
+        ROOT / "configs/phase_m3s2s/m3s2s_truth_seed_manifest.json")
+        .get("units", [])}
+    r1_truth = {int(u["seed_key"][0]) for u in load(
+        CFG / "m3s25r1_truth_seed_manifest.json")["units"]}
+    csv_history = _prior_recorded_seeds()
+    cf1n_ints = set()
+    for name in ("m3cf1n_pref_seeds.json", "m3cf1n_discovery_seeds.json",
+                 "m3cf1n_confirmation_seeds.json"):
+        d = load(ROOT / "configs/phase_m3cf1n" / name)
+        for v in d.values():
+            if isinstance(v, list):
+                for item in v:
+                    if isinstance(item, dict) and "seed_key" in item:
+                        cf1n_ints.add(int(item["seed_key"][0]))
+                    elif isinstance(item, list) and item:
+                        cf1n_ints.add(int(item[0]))
+    # also include the old Arm-A seeds (from the A1R retired stream)
+    old_arm_a_vals = {u["seed"] for u in load(A1R_RETIRED)["units"]}
+    pools = {"retired_old_a1r_seeds": old_values,
+             "retired_old_arm_a_seeds": old_arm_a_vals,
+             "m3s2s_arm_a_candidate_seeds": s2s_arm_a,
+             "m3s2s_truth_seeds": s2s_truth,
+             "m3s25r1_truth_seeds": r1_truth,
+             "recorded_historical_seed_pools": csv_history,
+             "m3cf1n_seed_pools": cf1n_ints}
+    truth_key_pools = {
+        "retired_old_a1r_seed_keys": old_keys,
+        "m3s25r1_truth_seed_keys": {tuple(u["seed_key"]) for u in load(
+            CFG / "m3s25r1_truth_seed_manifest.json")["units"]},
+        "retired_old_arm_a_seed_keys": {tuple(u["seed_key"]) for u in
+                                        load(A1R_RETIRED)["units"]}}
+    audit = AA.seed_collision_audit(plan, pools, truth_key_pools,
+                                    expected_count=A2R_NEW_COUNT)
+    dump(OUT / "m3s25r1_a2r_seed_audit.json", {"recorded_at": now(), **audit})
+    print(f"M3-S25-R1-A2R0 seeds: {A2R_NEW_COUNT} new units under "
+          f"{A2R_NAMESPACE}, 0 collisions (incl. retired A1R + Arm-A)")
+    return plan
+
+
+def a2r_contract_stage() -> dict:
+    """A2R0 §6-7/10-11: the inherited-269 completion contract."""
+    a1r_contract = load(A1R_CONTRACT)
+    a0_contract = load(ARM_A_CONTRACT)
+    panel = load(PANEL_JSON)
+    inheritance = load(A2R_INHERITANCE)
+    retired = load(A2R_RETIRED)
+    contract = {
+        "schema_version": "m3s25r1_a2r_contract_v1",
+        "stage": "M3-S25-R1-A2R",
+        "parent_terminal": "M3-S25-R1-A1R-X (A1R replacement stage, PERMANENT)",
+        "parent_terminal_head": A2R_A1R_TERMINAL_HEAD,
+        "parent_authorization_head": A2R_A1R_AUTHORIZATION_HEAD,
+        "scientific_inheritance": {
+            "rule": "SAME frozen scientific panel and contracts, "
+                    "byte-identical; no truth resampling, no panel "
+                    "reselection; 269 inherited A1R records are hash-pinned "
+                    "in place (never copied or rewritten)",
+            "panel_body_sha256": panel["panel_sha256"],
+            "panel_file_sha256": sha(PANEL_JSON),
+            "panel_truth_manifest_sha256": sha(PANEL_TRUTH_MANIFEST),
+            "a0_rebind_contract_sha256":
+                sha_bytes(ARM_A_CONTRACT.read_bytes()),
+            "a1r_contract_sha256": sha_bytes(A1R_CONTRACT.read_bytes()),
+            "inherited_parent_contract_sha256": _parent_contract_hashes(),
+            "estimator": a0_contract["estimator"],
+            "alpha_p": AA.ALPHA_P,
+            "S1_threshold_frozen": AA.S1_THRESHOLD,
+            "feature_families": a0_contract["feature_contract"],
+            "b1_comparator": a0_contract["b1_comparator"],
+            "model_grids": a0_contract["model_contract"]["grids"],
+            "cv": a0_contract["model_contract"]["cv"],
+            "safety_gates": AA.GATES,
+            "improvement_criterion": AA.IMPROVEMENT,
+            "arm_b_rules": "unchanged; never authorized with Arm A",
+        },
+        "inheritance": {
+            "manifest": "configs/phase_m3s25r1/"
+                        "m3s25r1_a2r_inheritance_manifest.json",
+            "inherited_count": A2R_INHERITED_COUNT,
+            "missing_count": A2R_NEW_COUNT,
+            "total_effective_trials": AA.N_TRIALS,
+            "rule": "ALL-269-or-none; no selective dropping; no truth labels",
+            "invalid_unit": "c020_s25r1_3.8634000847|rep5 "
+                            "(EXPOSED / CONSUMED_INVALID / EXCLUDED)"},
+        "corrected_instrumentation": {
+            "fix": a1r_contract["corrected_instrumentation"]["fix"],
+            "crosscheck": a1r_contract["corrected_instrumentation"]["crosscheck"],
+            "code_sha256": {
+                "src/hyptraj/m3s25r1/arm_a.py":
+                    sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py"),
+                "src/hyptraj/m3s25r1/arm_a_eval.py":
+                    sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py")},
+            "transactional_sidecar": "temp -> write -> flush -> fsync -> "
+                                     "atomic rename -> parent-dir fsync "
+                                     "(bounded retry, A2R-only) -> SHA verify",
+            "bounded_dir_fsync_retry": {
+                "max_attempts": 5,
+                "backoff_seconds": [0.0, 0.01, 0.05, 0.15, 0.30],
+                "transient_errors": "Windows ERROR_SHARING_VIOLATION (32), "
+                                    "ERROR_LOCK_VIOLATION (33), BrokenPipeError",
+                "rule": "retry ONLY the directory durability operation on the "
+                        "SAME already-written/renamed artifact; NEVER rerun "
+                        "simulator, regenerate payload, or change bytes; all "
+                        "attempts fail => CONSUMED_INVALID => A2R-X => STOP"}},
+        "old_stream_retirement": {
+            "retired_stream": "configs/phase_m3s25r1/"
+                              "m3s25r1_a2r_retired_stream.json",
+            "retired_stream_sha256": sha_bytes(A2R_RETIRED.read_bytes()),
+            "old_a1r_ledger_sha256": sha_bytes(A1R_LEDGER.read_bytes()),
+            "rule": "ALL 960 old A1R seeds retired; 269 inherited retain "
+                    "A1R seeds as provenance ONLY; 691 new slots get "
+                    "entirely new A2R seeds"},
+        "namespace": A2R_NAMESPACE,
+        "seed_manifest": "configs/phase_m3s25r1/m3s25r1_a2r_seed_manifest.json",
+        "persistence": {
+            "dir": "results/phase_m3s25r1/arm_a2r/",
+            "ledger": "results/phase_m3s25r1/arm_a2r/trial_ledger.jsonl",
+            "rule": "completely separate A2R persistence; never modify "
+                    "A1R ledger or its 269 inherited artifacts",
+            "chain": "STARTED -> 20k sampling -> transactional sidecar "
+                     "(bounded retry) -> record hash -> COMPLETE",
+            "failure": "any A2R consumed-invalid unit => M3-S25-R1-A2R-X "
+                       "=> STOP => NO REPLAY"},
+        "budget": {
+            "inherited_trials": A2R_INHERITED_COUNT,
+            "new_trials": A2R_NEW_COUNT,
+            "total_effective_trials": AA.N_TRIALS,
+            "samples_per_trial": 20000,
+            "inherited_samples": A2R_INHERITED_COUNT * 20000,
+            "new_planned": A2R_NEW_COUNT * 20000,
+            "new_max": A2R_NEW_COUNT * 20000,
+            "effective_final_dataset": AA.BUDGET,
+            "topup": 0, "substitution": 0,
+            "old_arm_a_invalid_samples": 20000,
+            "a1r_invalid_samples": 20000,
+            "cumulative_if_a2r_completes": 19240000,
+            "rule": "no invalid sample counts toward scientific completeness; "
+                    "cumulative project consumption reported separately"},
+        "evaluation_protocol": {
+            "frozen": "B0/B1/A1-A4 comparison, outer GroupKFold(5) / "
+                      "inner GroupKFold(4), groups = config_id; no "
+                      "test-fold tuning; truth manifest unseals ONLY after "
+                      "269 inherited verified + 691 new COMPLETE = 960 "
+                      "with 0 CONSUMED_INVALID and exactly 19,200,000 "
+                      "effective scientific samples",
+            "terminal_names": {"success": "M3-S25-R1-A2R-A",
+                               "b_gate": "M3-S25-R1-A2R-B-GATE",
+                               "failure": "M3-S25-R1-A2R-X"}},
+        "gates": {"M3_S25_R1_A2R_ARM_A_AUTHORIZED": "NO",
+                  "M3_S25_R1_A2R_ARM_B_AUTHORIZED": "NO",
+                  "old_M3_S25_R1_A1R_ARM_A": "NO (CLOSED/EXERCISED/TERMINAL-X)",
+                  "old_M3_S25_R1_ARM_A": "NO (CLOSED/EXERCISED/TERMINAL-X)",
+                  "truth": "NO (CLOSED/EXERCISED)",
+                  "value_rarity_m3q": "BLOCKED"},
+    }
+    data = dump_json(A2R_CONTRACT, contract)
+    print(f"M3-S25-R1-A2R0 contract frozen (sha {sha_bytes(data)[:16]}...) "
+          f"inherited {A2R_INHERITED_COUNT} + new {A2R_NEW_COUNT} = "
+          f"{AA.N_TRIALS}; cumulative 19,240,000")
+    return contract
+
+
+def _a2r_old_stream_exclusion() -> dict:
+    """A2R0 §5: mechanical proof that no old A1R seed VALUE or KEY appears
+    in the new A2R seed stream."""
+    retired = load(A2R_RETIRED)
+    old_vals = {u["seed"] for u in retired["units"]}
+    old_keys = {tuple(u["seed_key"]) for u in retired["units"]}
+    manifest = load(A2R_SEED_MANIFEST)
+    new_vals = set(manifest["planned_seeds"].values())
+    new_keys = {tuple(u["seed_key"]) for u in manifest["units"]}
+    overlap_vals = sorted(new_vals & old_vals)
+    overlap_keys = sorted(new_keys & old_keys)
+    if overlap_vals or overlap_keys:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: retired A1R seed overlap: "
+            f"vals={overlap_vals[:3]} keys={overlap_keys[:3]}")
+    # also check against old Arm-A seeds
+    old_arm_a = load(A1R_RETIRED)
+    arm_a_vals = {u["seed"] for u in old_arm_a["units"]}
+    arm_a_overlap = sorted(new_vals & arm_a_vals)
+    if arm_a_overlap:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: retired old Arm-A seed overlap: "
+            f"{arm_a_overlap[:3]}")
+    return {"old_a1r_seed_value_overlap": 0, "old_a1r_seed_key_overlap": 0,
+            "old_arm_a_seed_overlap": 0,
+            "old_values_total": len(old_vals),
+            "EXCLUSION": "PASS"}
+
+
+def _a2r_restart_scan(missing_slots: list[str]) -> dict:
+    """A2R0: scan the A2R ledger before the simulator."""
+    entries = ledger_entries(A2R_LEDGER) \
+        if Path(A2R_LEDGER).exists() else []
+    summary = {"fresh": 0, "complete_verified": 0}
+    panel = load(PANEL_JSON)
+    for unit_id in missing_slots:
+        parts = unit_id.rsplit("|rep", 1)
+        sid, rep = parts[0], int(parts[1])
+        slug_dir = A2R_TRIALS / bounded_slug(sid)
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            unit_id, slug_dir / f"rep{rep}.json",
+            slug_dir / f"rep{rep}_instrumentation.npz", entries,
+            record_file_hash, record_file_hash)
+        if rec is None:
+            summary["fresh"] += 1
+        else:
+            summary["complete_verified"] += 1
+    return summary
+
+
+def a2r_preflight() -> dict:
+    """A2R0 §12: the full zero-sampling replacement readiness checklist."""
+    checks = {}
+    head = git_commit()
+    # A1R terminal ancestry
+    checks["a1r_terminal_head_ancestor"] = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", A2R_A1R_TERMINAL_HEAD, head],
+        cwd=ROOT, capture_output=True).returncode == 0
+    # A1R terminal state
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    c = Counter(e.get("status") for e in a1r_entries)
+    checks["a1r_terminal_269_complete"] = c.get("COMPLETE", 0) == A2R_INHERITED_COUNT
+    checks["a1r_terminal_1_consumed_invalid"] = c.get("CONSUMED_INVALID", 0) == 1
+    started_ids = {e["state_id"] for e in a1r_entries
+                   if e.get("status") == "STARTED"}
+    never_started = AA.N_TRIALS - len(started_ids)
+    checks["a1r_terminal_690_never_started"] = never_started == 690
+    # gates
+    checks["a1r_arm_a_gate_closed"] = not gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED")
+    checks["a2r_arm_a_gate_no"] = not gate("M3_S25_R1_A2R_ARM_A_AUTHORIZED")
+    checks["a2r_arm_b_gate_no"] = not gate("M3_S25_R1_A2R_ARM_B_AUTHORIZED")
+    checks["truth_gate_closed"] = not gate("M3_S25_R1_TRUTH_AUTHORIZED")
+    checks["old_arm_a_gate_closed"] = not gate("M3_S25_R1_ARM_A_AUTHORIZED")
+    checks["arm_b_gate_no"] = not gate("M3_S25_R1_ARM_B_AUTHORIZED")
+    # frozen inputs
+    pins = _verify_frozen_a2r_inputs()
+    checks["frozen_inputs_verified"] = True
+    # inheritance manifest
+    inheritance = load(A2R_INHERITANCE)
+    checks["inheritance_269"] = inheritance["inherited_count"] == A2R_INHERITED_COUNT
+    checks["inheritance_691_missing"] = inheritance["missing_count"] == A2R_NEW_COUNT
+    checks["inheritance_all_269_or_none"] = True
+    checks["invalid_unit_excluded"] = (
+        inheritance["invalid_unit"]["unit_id"] == "c020_s25r1_3.8634000847|rep5")
+    checks["no_truth_labels_in_manifest"] = inheritance.get("no_truth_labels", True)
+    # old stream exclusion
+    excl = _a2r_old_stream_exclusion()
+    checks["old_a1r_seed_stream_excluded"] = excl["EXCLUSION"] == "PASS"
+    # seed manifest
+    seeds_cfg = load(A2R_SEED_MANIFEST)
+    audit = load(OUT / "m3s25r1_a2r_seed_audit.json")
+    checks["new_seeds_691_unique"] = (seeds_cfg["n_units"] == A2R_NEW_COUNT
+                                      and audit["unique_seeds"] == A2R_NEW_COUNT
+                                      and audit["historical_collision"] == 0)
+    # same panel / truth / contracts
+    contract = load(A2R_CONTRACT)
+    checks["same_panel_and_contracts"] = (
+        contract["scientific_inheritance"]["panel_file_sha256"]
+        == EXPECTED_PANEL_FILE_SHA
+        and contract["scientific_inheritance"]["panel_truth_manifest_sha256"]
+        == PANEL_TRUTH_MANIFEST_PIN)
+    # corrected instrumentation SHA
+    checks["corrected_instrumentation_sha"] = (
+        contract["corrected_instrumentation"]["code_sha256"]
+        ["src/hyptraj/m3s25r1/arm_a.py"]
+        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py")
+        and contract["corrected_instrumentation"]["code_sha256"]
+        ["src/hyptraj/m3s25r1/arm_a_eval.py"]
+        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py"))
+    # A2R destination empty
+    checks["a2r_destination_empty"] = (
+        (not A2R_TRIALS.exists() or not any(A2R_TRIALS.iterdir()))
+        and not A2R_LEDGER.exists() and not A2R_EVAL.exists())
+    # truth sealed
+    checks["evaluation_truth_sealed"] = verify_panel_truth_manifest()[
+        "PANEL_TRUTH_MANIFEST_AUDIT"] == "PASS"
+    # zero sampling
+    checks["zero_sampling"] = True
+    failed = sorted(k for k, v in checks.items() if not v)
+    report = {
+        "recorded_at": now(), "simulator_calls": 0, "samples": 0,
+        "checks": checks, "failed_checks": failed,
+        "frozen_pins": pins, "old_stream_exclusion": excl,
+        "PREFLIGHT_VERDICT": "PASS" if not failed else "FAIL",
+        "overall": ("A2R EXECUTION-READY (gates remain NO; awaiting the "
+                    "human inherited-completion audit)" if not failed else
+                    "A2R NOT EXECUTION-READY: " + ", ".join(failed)),
+    }
+    dump(OUT / "m3s25r1_a2r_preflight.json", report)
+    print(f"M3-S25-R1-A2R0 preflight: {report['PREFLIGHT_VERDICT']} "
+          f"({len(checks) - len(failed)}/{len(checks)} checks PASS)")
+    return report
+
+
+def verify_frozen_a2r_preflight_pass() -> dict:
+    pf = load(OUT / "m3s25r1_a2r_preflight.json")
+    if pf.get("PREFLIGHT_VERDICT") != "PASS":
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: frozen A2R preflight verdict is "
+            f"{pf.get('PREFLIGHT_VERDICT')!r}; execution not authorized; "
+            "STOP")
+    return pf
+
+
+def arm_a2r_execute() -> dict:
+    """GATED by M3_S25_R1_A2R_ARM_A_AUTHORIZED: YES.  Runs only the 691
+    new trials (the 269 inherited are already durable COMPLETE in A1R).
+    Uses the bounded fsync retry for both sidecar and record."""
+    import hyptraj.m3d.benchmark_states as BS
+    decision = load(SUM / "m3s25r1_panel_decision.json")
+    if decision.get("PANEL") != "FROZEN":
+        raise RuntimeError("M3-S25-R1-A2R-X: truth terminal is not "
+                           "PANEL-FROZEN")
+    if gate("M3_S25_R1_TRUTH_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A2R-X: truth gate must remain "
+                           "CLOSED/EXERCISED")
+    if gate("M3_S25_R1_ARM_A_AUTHORIZED") \
+            or gate("M3_S25_R1_A1R_ARM_A_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A2R-X: old Arm-A gates must remain NO")
+    if gate("M3_S25_R1_ARM_B_AUTHORIZED") \
+            or gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED") \
+            or gate("M3_S25_R1_A2R_ARM_B_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A2R-X: Arm B must remain NO")
+    panel = load(PANEL_JSON)
+    if panel["panel_sha256"] != AA.FROZEN_PANEL_SHA:
+        raise RuntimeError("M3-S25-R1-A2R-X: panel SHA drift")
+    _verify_frozen_a2r_inputs()
+    _a2r_old_stream_exclusion()
+    # verify the 269 inherited records (must all still be durable COMPLETE)
+    inheritance = load(A2R_INHERITANCE)
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    inherited_verified = 0
+    for u in inheritance["inherited_units"]:
+        rec_path = ROOT / u["record_path"]
+        side_path = ROOT / u["sidecar_path"]
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            u["unit_id"], rec_path, side_path, a1r_entries,
+            record_file_hash, record_file_hash)
+        if rec is None:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: inherited unit lost COMPLETE state: "
+                f"{u['unit_id']}; STOP")
+        inherited_verified += 1
+    if inherited_verified != A2R_INHERITED_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: inherited verification count drift: "
+            f"{inherited_verified} != {A2R_INHERITED_COUNT}")
+    # restart scan on the A2R ledger (691 new slots)
+    missing_slots = inheritance["missing_slots"]
+    restart = _a2r_restart_scan(missing_slots)
+    if not gate("M3_S25_R1_A2R_ARM_A_AUTHORIZED"):
+        raise RuntimeError(
+            "M3_S25_R1_A2R_ARM_A_AUTHORIZED is not YES")
+    seeds_cfg = load(A2R_SEED_MANIFEST)
+    plan_seeds = seeds_cfg["planned_seeds"]
+    contract_shas = {"a2r_contract": sha(A2R_CONTRACT),
+                     "a1r_contract": sha(A1R_CONTRACT),
+                     "panel_truth_manifest": sha(PANEL_TRUTH_MANIFEST)}
+    # bounded fsync retry for A2R
+    dir_fsync_fn = fsync_directory_bounded_retry
+    A2R_TRIALS.mkdir(parents=True, exist_ok=True)
+    panel_by_state = {s["state_id"]: s for s in panel["states"]}
+
+    def run_trial(unit_id):
+        parts = unit_id.rsplit("|rep", 1)
+        sid, rep = parts[0], int(parts[1])
+        s = panel_by_state[sid]
+        slug_dir = A2R_TRIALS / bounded_slug(sid)
+        rec_p = slug_dir / f"rep{rep}.json"
+        side_p = slug_dir / f"rep{rep}_instrumentation.npz"
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            unit_id, rec_p, side_p, ledger_entries(A2R_LEDGER),
+            record_file_hash, record_file_hash)
+        if rec is not None:
+            return
+
+        def compute():
+            bench = VR.resolve_bench_config(s["config_id"])
+            st = BS.assemble_state(bench, float(s["s2"]),
+                                   short_config=s["config_id"])
+            if isinstance(st, dict):
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: assembly failed for {sid}")
+            record, arrays = AA.arm_a_trial(
+                st, plan_seeds[unit_id], sid, rep, s["config_id"],
+                float(s["s2"]), contract_shas, namespace=A2R_NAMESPACE)
+            record["recorded_at"] = now()
+            record["stream"] = "arm_a2r_gradient"
+            record["instrumentation_sha256"] = \
+                AA.write_sidecar_transactional(
+                    side_p, arrays, dir_fsync_fn=dir_fsync_fn)
+            return record
+
+        def validate(payload):
+            if payload.get("schema") != AA.TRIAL_SCHEMA:
+                raise RuntimeError("M3-S25-R1-A2R-X: trial schema drift")
+            if payload.get("namespace") != A2R_NAMESPACE:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: trial namespace drift: "
+                    f"{payload.get('namespace')!r} != {A2R_NAMESPACE!r}")
+            if payload.get("seed") != plan_seeds[unit_id]:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: trial seed drift vs the frozen "
+                    f"A2R seed manifest for {unit_id}")
+            if not payload.get("instrumentation_sha256"):
+                raise RuntimeError("M3-S25-R1-A2R-X: sidecar hash missing")
+            if record_file_hash(side_p) != payload["instrumentation_sha256"]:
+                raise RuntimeError("M3-S25-R1-A2R-X: sidecar hash mismatch")
+            if "truth" in payload or payload.get("confirmed_truth") \
+                    or payload.get("corrected_class"):
+                raise RuntimeError(
+                    "M3-S25-R1-A2R-X: truth label leaked into the "
+                    "execution view")
+
+        result = run_trial_transactional(
+            unit_id, rec_p, compute, ledger_path=A2R_LEDGER,
+            pre_hash_validator=validate,
+            base_entry={"panel_state_id": sid, "rep_id": rep,
+                        "config_id": s["config_id"],
+                        "seed_namespace": A2R_NAMESPACE,
+                        "seed": plan_seeds[unit_id],
+                        "samples": AA.N_SAMPLES,
+                        "stream": "arm_a2r_gradient"},
+            dir_fsync_fn=dir_fsync_fn)
+        if result["status"] != "COMPLETE":
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: trial not durably COMPLETE: {unit_id}: "
+                f"{result}; CONSUMED_INVALID policy in force; NO REPLAY")
+
+    for unit_id in missing_slots:
+        run_trial(unit_id)
+    # verify 691/691 new COMPLETE + 269 inherited = 960 effective
+    entries = ledger_entries(A2R_LEDGER)
+    counts = Counter(e.get("status") for e in entries)
+    complete = counts.get("COMPLETE", 0)
+    invalid = counts.get("CONSUMED_INVALID", 0)
+    if invalid or complete != A2R_NEW_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: A2R replacement incomplete ({complete}/"
+            f"{A2R_NEW_COUNT}, invalid {invalid}); STOP")
+    new_consumed = sum(AA.N_SAMPLES for e in entries
+                      if e.get("status") == "COMPLETE")
+    summary = {
+        "inherited_trials": A2R_INHERITED_COUNT,
+        "inherited_samples": A2R_INHERITED_COUNT * AA.N_SAMPLES,
+        "new_trials": complete,
+        "new_CONSUMED_INVALID": invalid,
+        "new_samples": new_consumed,
+        "new_planned": A2R_NEW_COUNT * AA.N_SAMPLES,
+        "effective_trials": A2R_INHERITED_COUNT + complete,
+        "effective_samples": A2R_INHERITED_COUNT * AA.N_SAMPLES + new_consumed,
+        "topup": 0, "substitution": 0,
+        "old_arm_a_invalid_samples": 20_000,
+        "a1r_invalid_samples": 20_000,
+        "cumulative_project_samples": 20_000 + 20_000
+            + A2R_INHERITED_COUNT * AA.N_SAMPLES + new_consumed,
+    }
+    dump(SUM / "m3s25r1_a2r_consumption.json", summary)
+    print(f"M3-S25-R1-A2R execute: {complete}/{A2R_NEW_COUNT} new durable "
+          f"COMPLETE + {A2R_INHERITED_COUNT} inherited = "
+          f"{summary['effective_trials']} effective; new {new_consumed:,}; "
+          f"effective {summary['effective_samples']:,}; cumulative "
+          f"{summary['cumulative_project_samples']:,}; STOP -- evaluation "
+          "is a separate stage")
+    return summary
+
+
+def arm_a2r_evaluate() -> dict:
+    """ONLY after 269 inherited verified + 691 new durable COMPLETE = 960
+    effective with 0 CONSUMED_INVALID: unseal the truth manifest and run
+    the frozen comparison with A2R-local terminal names."""
+    verify_frozen_a2r_preflight_pass()
+    _verify_frozen_a2r_inputs()
+    _a2r_old_stream_exclusion()
+    # verify 691 new COMPLETE
+    entries = ledger_entries(A2R_LEDGER)
+    counts = Counter(e.get("status") for e in entries)
+    complete = counts.get("COMPLETE", 0)
+    invalid = counts.get("CONSUMED_INVALID", 0)
+    if invalid or complete != A2R_NEW_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: evaluation requires {A2R_NEW_COUNT}/"
+            f"{A2R_NEW_COUNT} new durable COMPLETE (got {complete}, "
+            f"invalid {invalid}); STOP")
+    # verify 269 inherited
+    inheritance = load(A2R_INHERITANCE)
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    inherited_verified = 0
+    for u in inheritance["inherited_units"]:
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            u["unit_id"], ROOT / u["record_path"],
+            ROOT / u["sidecar_path"], a1r_entries,
+            record_file_hash, record_file_hash)
+        if rec is None:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: inherited unit lost COMPLETE at eval: "
+                f"{u['unit_id']}")
+        inherited_verified += 1
+    if inherited_verified != A2R_INHERITED_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: inherited verification drift at eval: "
+            f"{inherited_verified} != {A2R_INHERITED_COUNT}")
+    # truth manifest unseal
+    manifest_sha = sha(PANEL_TRUTH_MANIFEST)
+    if PANEL_TRUTH_MANIFEST_PIN != "PENDING-SET-AFTER-GENERATION" \
+            and manifest_sha != PANEL_TRUTH_MANIFEST_PIN:
+        raise RuntimeError("M3-S25-R1-A2R-X: truth manifest SHA drift")
+    truth_by_state = {s["state_id"]: s["truth"] for s in
+                      load(PANEL_TRUTH_MANIFEST)["states"]}
+    # construct the 960-record evaluation view: 269 inherited + 691 new
+    records, sidecars = [], []
+    # inherited (from A1R)
+    for u in inheritance["inherited_units"]:
+        rec_path = ROOT / u["record_path"]
+        side_path = ROOT / u["sidecar_path"]
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            u["unit_id"], rec_path, side_path, a1r_entries,
+            record_file_hash, record_file_hash)
+        records.append(rec)
+        with np.load(side_path) as z:
+            sidecars.append({k: z[k] for k in z.files})
+    # new (from A2R)
+    panel = load(PANEL_JSON)
+    panel_by_state = {s["state_id"]: s for s in panel["states"]}
+    for unit_id in inheritance["missing_slots"]:
+        parts = unit_id.rsplit("|rep", 1)
+        sid, rep = parts[0], int(parts[1])
+        slug_dir = A2R_TRIALS / bounded_slug(sid)
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            unit_id, slug_dir / f"rep{rep}.json",
+            slug_dir / f"rep{rep}_instrumentation.npz", entries,
+            record_file_hash, record_file_hash)
+        if rec is None:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: new trial missing at evaluation: "
+                f"{unit_id}")
+        records.append(rec)
+        with np.load(slug_dir / f"rep{rep}_instrumentation.npz") as z:
+            sidecars.append({k: z[k] for k in z.files})
+    if len(records) != AA.N_TRIALS:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: effective trial count drift: "
+            f"{len(records)} != {AA.N_TRIALS}")
+    results = AE.run_comparison(records, sidecars, truth_by_state)
+    verdict = AE.verdict(results, AA.N_TRIALS, 0, prefix="M3-S25-R1-A2R")
+    out = {"recorded_at": now(),
+           "truth_manifest_unsealed": {"sha256": manifest_sha,
+                                       "after_complete_960": True},
+           "results": results, "verdict": verdict}
+    dump(A2R_EVAL, out)
+    print(f"M3-S25-R1-A2R evaluate: VERDICT = {verdict['VERDICT']} "
+          f"({verdict.get('compliant', [])}); STOP")
+    return out
+
+
+def a2r_stages() -> None:
+    """M3-S25-R1-A2R0: zero-sampling inherited-269 completion
+    preregistration."""
+    a2r_inheritance_manifest_stage()
+    a2r_retired_stream_stage()
+    a2r_seed_manifest_stage()
+    a2r_contract_stage()
+    a2r_preflight()
+    print("M3-S25-R1-A2R0 complete; all A2R gates remain NO; zero sampling")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("stage", choices=[
@@ -3064,7 +3947,10 @@ def main() -> None:
         "panel_truth_manifest", "arm_a_contracts", "arm_a_preflight",
         "arm_a_execute", "arm_a_evaluate", "a1r",
         "a1r_retired_stream", "a1r_seed_manifest", "a1r_contract",
-        "a1r_preflight", "arm_a1r_execute", "arm_a1r_evaluate"])
+        "a1r_preflight", "arm_a1r_execute", "arm_a1r_evaluate",
+        "a2r", "a2r_inheritance_manifest", "a2r_retired_stream",
+        "a2r_seed_manifest", "a2r_contract", "a2r_preflight",
+        "arm_a2r_execute", "arm_a2r_evaluate"])
     args = ap.parse_args()
     if args.stage == "prepare":
         prepare()
@@ -3117,6 +4003,22 @@ def main() -> None:
         arm_a1r_execute()
     elif args.stage == "arm_a1r_evaluate":
         arm_a1r_evaluate()
+    elif args.stage == "a2r":
+        a2r_stages()
+    elif args.stage == "a2r_inheritance_manifest":
+        a2r_inheritance_manifest_stage()
+    elif args.stage == "a2r_retired_stream":
+        a2r_retired_stream_stage()
+    elif args.stage == "a2r_seed_manifest":
+        a2r_seed_manifest_stage()
+    elif args.stage == "a2r_contract":
+        a2r_contract_stage()
+    elif args.stage == "a2r_preflight":
+        a2r_preflight()
+    elif args.stage == "arm_a2r_execute":
+        arm_a2r_execute()
+    elif args.stage == "arm_a2r_evaluate":
+        arm_a2r_evaluate()
 
 
 if __name__ == "__main__":

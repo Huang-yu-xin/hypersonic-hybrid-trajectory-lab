@@ -11,11 +11,14 @@ M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_B_AUTHORIZED: NO
+M3_S25_R1_A2R_ARM_A_AUTHORIZED: NO
+M3_S25_R1_A2R_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
 AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
                              Arm-A authorized 2026-09-06; CLOSED at A1R0;
                              A1R Arm-A authorized 2026-09-07; CLOSED at
-                             A1R terminal X 2026-09-07)
+                             A1R terminal X 2026-09-07;
+                             A2R0 preregistration 2026-09-07)
 ```
 
 ## Old Arm-A gate closure record (M3-S25-R1-A1R0, closure-only, 2026-09-07)
