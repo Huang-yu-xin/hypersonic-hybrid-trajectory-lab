@@ -1,0 +1,198 @@
+{
+  "schema_version": "m3s25r1_b0_contract_v1",
+  "stage": "M3-S25-R1-A2R-B0",
+  "nature": "Arm-B Local-Shape Delta-Preregistration",
+  "recorded_at": "2026-09-09T17:37:06",
+  "parent": {
+    "terminal": "M3-S25-R1-A2R-B-GATE",
+    "head": "5d7eb7b234cedb0069adf7043234047a34028288",
+    "a2r_contract_sha256": "b87f0dfcf6d76ed92cb349c55402636d29a48f9584fcb4c1d3930d6e9e82ea07",
+    "a2r_seed_manifest_sha256": "9d41eecb8d2ed81c1cd7b7779649e55c953441488567f4c966b2ec24bb4f4f2c",
+    "arm_a_contract_sha256": "f02fc399834e5d950d46f29d8e609f1b8df3697097a705db6de8d5474c6085d6",
+    "panel_sha256": "136830a2bdd5291882564e6bba922161ae519139573921161c50f7dfa20950ff"
+  },
+  "delta": {
+    "value": 0.1,
+    "coordinate": "u = log(s^2)",
+    "rule": "FROZEN_HUMAN_CHOICE_NO_COMPARE_NO_FALLBACK",
+    "feasibility": {
+      "method": "s2 * exp(+-0.10) for each center state",
+      "n_states": 120,
+      "n_feasible": 120,
+      "n_infeasible": 0,
+      "s2_side_range": [
+        0.495369,
+        8.802684
+      ],
+      "all_s2_side_positive": true,
+      "verdict": "PASS_ALL_120_STATES_FEASIBLE"
+    }
+  },
+  "crn": {
+    "anchor": "center_seed",
+    "semantics": "DRAW_ONCE_AT_CENTER_PROPOSAL_RECOMPUTE_LOGR_FOR_SIDES",
+    "rule": "center_seed_used_as_CRN_anchor_at_u-Delta_u_u+Delta",
+    "frozen_rng": "np.random.default_rng([int(seed), 101])",
+    "pilot_draw_order": "target_source_first_standard_normal_then_proposal_source_via_proposal_sample",
+    "key_insight": "same seed at different s2 gives DIFFERENT z because s2 enters proposal Cholesky; CRN achieved by drawing ONCE at center and reusing z for all three evaluations with recomputed logr",
+    "implementation": {
+      "step_1": "Recompute center pilot: z, logp, logr_c, strata = draw_online_pilot(st_center, seed_center)",
+      "step_2": "Compute a_vec_c, resp_c, sq_c using center proposal q_c",
+      "step_3": "Evaluate gradient at s2_c, s2_l, s2_r using SAME a_vec_c, resp_c, sq_c",
+      "step_4": "Frozen scalar_gradient_estimate(a_vec, resp, sq, s2=side_s2, dim=dim)",
+      "step_5": "Frozen stratified_bootstrap_gradient_ci(a_vec, resp, sq, strata, s2=side_s2, ...)",
+      "frozen_functions_reused": [
+        "scalar_gradient_estimate",
+        "stratified_bootstrap_gradient_ci",
+        "variance_mass_importance",
+        "component_responsibility",
+        "draw_online_pilot"
+      ]
+    },
+    "no_independent_rng": true,
+    "center_never_rerun": true,
+    "center_record_never_replaced": true,
+    "center_seed_reuse_not_counted_as_new_realization": true
+  },
+  "side_trials": {
+    "n_units": 1920,
+    "n_left": 960,
+    "n_right": 960,
+    "samples_per_trial": 20000,
+    "budget": 38400000,
+    "topup": 0,
+    "substitution": 0,
+    "replay_on_failure": false
+  },
+  "center_anchors": {
+    "n_units": 960,
+    "n_inherited_a1r": 269,
+    "n_a2r_new": 691,
+    "rule": "ALL_960_CENTER_OUTCOMES_FROZEN_NEVER_RERUN"
+  },
+  "frozen_dataset": {
+    "n_states": 120,
+    "n_centers": 960,
+    "n_samples_per_center": 20000,
+    "effective_center_dataset": 19200000,
+    "truth_panel_frozen": true,
+    "estimator_frozen": "hyptraj.m3d.adaptation.gradient_decision",
+    "cv_frozen": "outer_GroupKFold5_inner_GroupKFold4_groups_config_id",
+    "safety_gates_frozen": true
+  },
+  "features": {
+    "family": "LOCAL_SHAPE",
+    "frozen_after_b0_preregistration": true,
+    "no_new_feature_discovery": true,
+    "features": [
+      "local_sign_persistence",
+      "left_sign_match",
+      "right_sign_match",
+      "three_point_sign_pattern",
+      "gradient_slope",
+      "left_slope",
+      "right_slope",
+      "slope_asymmetry",
+      "relative_gradient_slope",
+      "local_gradient_range",
+      "local_S1_range",
+      "g_double_prime_descriptive"
+    ]
+  },
+  "models": {
+    "allowed": [
+      "logistic",
+      "gbdt"
+    ],
+    "no_mlp": true,
+    "no_optuna": true,
+    "no_new_hyperparameter_sweep": true,
+    "no_new_threshold_search": true,
+    "logistic_grid": [
+      {
+        "C": 0.1,
+        "class_weight": null
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 1.0,
+        "class_weight": null
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced"
+      },
+      {
+        "C": 10.0,
+        "class_weight": null
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced"
+      }
+    ],
+    "gbdt_grid_config_count": 16,
+    "reuses_frozen_A2R_machinery": true
+  },
+  "gates": {
+    "coverage_min": 0.75,
+    "unsafe_max": 0.2,
+    "wrong_max": 0.05,
+    "ambiguous_unsafe_max": 0.25,
+    "improvement": {
+      "coverage_gain_vs_b1": 0.03,
+      "nd_unsafe_reduction_vs_frozen_s1": 0.05,
+      "at_coverage_min": 0.75
+    }
+  },
+  "best_arm_a_comparator": {
+    "identity": "B1_aggregate_gbdt_baseline",
+    "reason": "B-GATE means no A-model met success criterion; B1 is the primary comparator for improvement",
+    "frozen": true
+  },
+  "verdicts": {
+    "success": "M3-S25-R1-A2R-C",
+    "valid_negative": "M3-S25-R1-A2R-D",
+    "integrity_invalid": "M3-S25-R1-A2R-X"
+  },
+  "persistence": {
+    "results_dir": "results/phase_m3s25r1/arm_b/",
+    "ledger": "trial_ledger.jsonl",
+    "records_dir": "trials/",
+    "separate_from_arm_a": true,
+    "separate_from_arm_a2r": true
+  },
+  "fsync": {
+    "bounded_dir_fsync_retry": true,
+    "max_attempts": 5,
+    "backoff_seconds": [
+      0.0,
+      0.01,
+      0.05,
+      0.15,
+      0.3
+    ],
+    "retries_only_directory_durability": true,
+    "never_reruns_simulator": true,
+    "all_fail_consume_invalid": true
+  },
+  "integrity": {
+    "consumed_invalid_rule": "CONSUMED_INVALID => M3-S25-R1-A2R-X => STOP => NO_REPLAY",
+    "no_silent_independent_rng": true,
+    "no_fallback_to_005_or_020": true
+  },
+  "gates_arm_b": {
+    "M3_S25_R1_A2R_ARM_B_AUTHORIZED": "NO",
+    "M3_S25_R1_A2R_TRUTH": "BLOCKED",
+    "M3_S25_R1_VALUE_RARITY_M3Q": "BLOCKED"
+  },
+  "seed_manifest_sha256": "b9e5d124605ee1431b345624619732790b656b0e368302b5294bd66aff74c2d8",
+  "seed_manifest_path": "configs/phase_m3s25r1/m3s25r1_b0_seed_manifest.json",
+  "code_sha256": {
+    "arm_a": "FROZEN_FROM_A2R_CONTRACT",
+    "arm_a_eval": "FROZEN_FROM_A2R_CONTRACT"
+  }
+}
