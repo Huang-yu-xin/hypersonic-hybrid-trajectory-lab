@@ -1,7 +1,9 @@
 {
-  "budget": 19200000,
+  "budget": 13820000,
+  "effective_final_dataset": 19200000,
   "frozen_before_first_simulator_call": true,
-  "n_trials": 960,
+  "inherited_trials": 269,
+  "n_trials": 691,
   "n_units": 691,
   "namespace": "M3-S25-R1-A2R-GRAD",
   "old_stream_exclusion": {
@@ -703,6 +705,7 @@
     "wcf1_new_005_s25r1_1.7241350390|rep7": 2019395160
   },
   "schema_version": "m3s25r1_a2r_seed_manifest_v1",
+  "total_effective_trials": 960,
   "units": [
     {
       "namespace": "M3-S25-R1-A2R-GRAD",

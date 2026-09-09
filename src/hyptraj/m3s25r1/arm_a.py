@@ -203,7 +203,11 @@ def arm_a2r_seed_plan(missing_unit_ids: list[str],
                       "seed_key": [sv, 42424], "samples": N_SAMPLES})
     return {"namespace": namespace, "planned_seeds": planned,
             "units": units, "n_units": len(units),
-            "n_trials": N_TRIALS, "budget": BUDGET}
+            "n_trials": len(missing_unit_ids),
+            "budget": len(missing_unit_ids) * N_SAMPLES,
+            "inherited_trials": N_TRIALS - len(missing_unit_ids),
+            "total_effective_trials": N_TRIALS,
+            "effective_final_dataset": BUDGET}
 
 
 def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
@@ -239,7 +243,7 @@ def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
             raise RuntimeError(
                 f"M3-S25-R1-X: Arm-A seed-key collision with {pool_name}: "
                 f"{hits[:5]}")
-    return {"units": N_TRIALS, "unique_seeds": len(set(vals)),
+    return {"units": expected_count, "unique_seeds": len(set(vals)),
             "per_stream_collisions": collisions,
             "historical_collision": 0, "truth_stream_collision": 0,
             "ARM_A_SEED_AUDIT": "PASS"}

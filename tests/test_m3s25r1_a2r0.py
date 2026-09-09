@@ -140,6 +140,11 @@ def test_new_seeds_691_unique_and_disjoint():
     m = R.load(R.A2R_SEED_MANIFEST)
     assert m["namespace"] == "M3-S25-R1-A2R-GRAD"
     assert m["n_units"] == 691
+    assert m["n_trials"] == 691  # A2R0.1: describes only the NEW stream
+    assert m["budget"] == 13_820_000  # 691 * 20,000
+    assert m["inherited_trials"] == 269
+    assert m["total_effective_trials"] == 960
+    assert m["effective_final_dataset"] == 19_200_000
     new_vals = set(m["planned_seeds"].values())
     assert len(new_vals) == 691 and len(new_vals) == len(m["planned_seeds"])
     # zero overlap with retired A1R seeds
@@ -152,6 +157,7 @@ def test_new_seeds_691_unique_and_disjoint():
     assert not (new_vals & arm_a_vals)
     audit = R.load(R.OUT / "m3s25r1_a2r_seed_audit.json")
     assert audit["unique_seeds"] == 691
+    assert audit["units"] == 691  # A2R0.1: expected_count, not global N_TRIALS
     assert all(v == 0 for v in audit["per_stream_collisions"].values())
     assert R.sha_bytes(R.A2R_SEED_MANIFEST.read_bytes()) == R.A2R_SEED_MANIFEST_PIN
 

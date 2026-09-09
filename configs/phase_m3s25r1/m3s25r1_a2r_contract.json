@@ -29,7 +29,7 @@
       "transient_errors": "Windows ERROR_SHARING_VIOLATION (32), ERROR_LOCK_VIOLATION (33), BrokenPipeError"
     },
     "code_sha256": {
-      "src/hyptraj/m3s25r1/arm_a.py": "ce4f9b29a139ce2fd459ff3bb10aaf4a74f093cde6a5c878d300ab13f9cde92e",
+      "src/hyptraj/m3s25r1/arm_a.py": "fb1686492c81dfa3f92242866782d0b6fe1db28735de1b7b09dfd433eaf77d89",
       "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6"
     },
     "crosscheck": "unmodified gradient_decision bit-exact crosscheck remains MANDATORY on every trial",
@@ -64,7 +64,7 @@
   "old_stream_retirement": {
     "old_a1r_ledger_sha256": "0ad71e8b620cfda98ee1811a26d517a398d00d72513c98453281327059d528f7",
     "retired_stream": "configs/phase_m3s25r1/m3s25r1_a2r_retired_stream.json",
-    "retired_stream_sha256": "6d02e2112901754aa87218edef9796dd11be60dd6ada4d32604f370174336126",
+    "retired_stream_sha256": "90c274b47da2817389d38c3bc63fadb498f5e3dd23e9e549e85f24d4ffeade7a",
     "rule": "ALL 960 old A1R seeds retired; 269 inherited retain A1R seeds as provenance ONLY; 691 new slots get entirely new A2R seeds"
   },
   "parent_authorization_head": "8deed164c0c830790aaea5481cc3eec898ea79b8",
@@ -81,7 +81,7 @@
   "scientific_inheritance": {
     "S1_threshold_frozen": 5.4417199447782,
     "a0_rebind_contract_sha256": "f02fc399834e5d950d46f29d8e609f1b8df3697097a705db6de8d5474c6085d6",
-    "a1r_contract_sha256": "784f3f5db6e1d44f08b1bac8c6ef369b773648b43d704068f034c40418a15a65",
+    "a1r_contract_sha256": "fdf0c42d4922890a6c17b004278253ec4a4797e76373ece6292c7512b2863985",
     "alpha_p": 0.5,
     "arm_b_rules": "unchanged; never authorized with Arm A",
     "b1_comparator": {

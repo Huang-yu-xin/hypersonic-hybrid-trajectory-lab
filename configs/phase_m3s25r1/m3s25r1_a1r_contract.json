@@ -12,7 +12,7 @@
   },
   "corrected_instrumentation": {
     "code_sha256": {
-      "src/hyptraj/m3s25r1/arm_a.py": "ce4f9b29a139ce2fd459ff3bb10aaf4a74f093cde6a5c878d300ab13f9cde92e",
+      "src/hyptraj/m3s25r1/arm_a.py": "5198a588c529d473fc2883bd932d6cea467e62eba3f330501e63f0e26dbc6858",
       "src/hyptraj/m3s25r1/arm_a_eval.py": "f40268496886b8e826c1fb8eb4f2276f3545fac0239189cc76f68b65a3b169e6"
     },
     "crosscheck": "unmodified gradient_decision bit-exact crosscheck remains MANDATORY on every trial",

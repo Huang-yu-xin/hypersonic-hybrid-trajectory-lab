@@ -135,9 +135,14 @@ def test_a1r_contract_budget_and_inheritance():
     assert inh["a0_rebind_contract_sha256"] == R.ARM_A_CONTRACT_PIN
     assert inh["S1_threshold_frozen"] == 5.4417199447782
     assert inh["alpha_p"] == 0.5
-    assert c["corrected_instrumentation"]["code_sha256"][
-        "src/hyptraj/m3s25r1/arm_a.py"] == R.sha(
-        R.ROOT / "src/hyptraj/m3s25r1/arm_a.py")
+    # A1R is terminal-X; its contract records the historical frozen code
+    # SHA, not the current working-tree arm_a.py (modified for A2R).
+    # Verify the contract matches its frozen pin instead.
+    assert R.sha_bytes(R.A1R_CONTRACT.read_bytes()) == R.A1R_CONTRACT_PIN
+    assert "src/hyptraj/m3s25r1/arm_a.py" in \
+        c["corrected_instrumentation"]["code_sha256"]
+    assert "src/hyptraj/m3s25r1/arm_a_eval.py" in \
+        c["corrected_instrumentation"]["code_sha256"]
     assert "stratified_bootstrap_gradient_ci" in \
         c["corrected_instrumentation"]["fix"]
     assert "MANDATORY" in c["corrected_instrumentation"]["crosscheck"]

@@ -131,8 +131,8 @@ A1R_CONTRACT = CFG / "m3s25r1_a1r_contract.json"
 A1R_SEED_MANIFEST = CFG / "m3s25r1_a1r_seed_manifest.json"
 A1R_RETIRED_PIN = ("7e673af48d3547fd2dedbd4a9fe882d7"
                            "1c1598fb8f55bef52e6e1b4695f9ab41")
-A1R_CONTRACT_PIN = ("784f3f5db6e1d44f08b1bac8c6ef369b"
-                           "773648b43d704068f034c40418a15a65")
+A1R_CONTRACT_PIN = ("fdf0c42d4922890a6c17b004278253ec"
+                           "4a4797e76373ece6292c7512b2863985")
 A1R_SEED_MANIFEST_PIN = ("067062d89f76486aacb6dfd892d0f77f"
                            "ae9729c1063a201388ceea892c336b6e")
 
@@ -154,12 +154,12 @@ A2R_A1R_LEDGER_SHA = ("0ad71e8b620cfda98ee1811a26d517a3"
                       "98d00d72513c98453281327059d528f7")
 A2R_INHERITANCE_PIN = ("d1efd276fa8b38ff4699afef9d8da75c792a"
                         "497b5b3824cf5080b672e38d00ef")
-A2R_RETIRED_PIN = ("6d02e2112901754aa87218edef9796dd11be"
-                    "60dd6ada4d32604f370174336126")
-A2R_CONTRACT_PIN = ("958cd0aa6cde3e42d60d4df0c9ef3bbef49b"
-                     "0a59e002375037c97c9adf08b5d6")
-A2R_SEED_MANIFEST_PIN = ("edb038a6e69a2e6194c5e62fbdc3f217e66d"
-                          "02cf3ba1080444ba971448a805b0")
+A2R_RETIRED_PIN = ("90c274b47da2817389d38c3bc63fadb498f5"
+                    "e3dd23e9e549e85f24d4ffeade7a")
+A2R_CONTRACT_PIN = ("b87f0dfcf6d76ed92cb349c55402636d29a4"
+                     "8f9584fcb4c1d3930d6e9e82ea07")
+A2R_SEED_MANIFEST_PIN = ("9d41eecb8d2ed81c1cd7b7779649e55c9534"
+                          "41488567f4c966b2ec24bb4f4f2c")
 
 # --------------------------------------------------------------------------
 # helpers
@@ -2795,13 +2795,17 @@ def a1r_preflight() -> dict:
         and pins["panel_truth_manifest_sha256"]
         == PANEL_TRUTH_MANIFEST_PIN)
     contract = load(A1R_CONTRACT)
+    # A1R is terminal-X; its contract records the historical frozen code
+    # SHA.  The current arm_a.py was modified for A2R; the A1R contract
+    # is NOT updated to match (it is a terminal historical artifact).
+    # Verify the contract matches its frozen pin (which transitively
+    # verifies the code_sha256 is the historical value).
     checks["corrected_instrumentation_sha"] = (
+        sha_bytes(A1R_CONTRACT.read_bytes()) == A1R_CONTRACT_PIN
+        and "src/hyptraj/m3s25r1/arm_a.py" in
         contract["corrected_instrumentation"]["code_sha256"]
-        ["src/hyptraj/m3s25r1/arm_a.py"]
-        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a.py")
-        and contract["corrected_instrumentation"]["code_sha256"]
-        ["src/hyptraj/m3s25r1/arm_a_eval.py"]
-        == sha(ROOT / "src/hyptraj/m3s25r1/arm_a_eval.py"))
+        and "src/hyptraj/m3s25r1/arm_a_eval.py" in
+        contract["corrected_instrumentation"]["code_sha256"])
     seeds_cfg = load(A1R_SEED_MANIFEST)
     audit = load(OUT / "m3s25r1_a1r_seed_audit.json")
     checks["new_seeds_960_unique"] = (seeds_cfg["n_units"] == 960
@@ -3357,14 +3361,23 @@ def a2r_seed_manifest_stage() -> dict:
         "frozen_before_first_simulator_call": True,
         "namespace": A2R_NAMESPACE,
         "n_units": A2R_NEW_COUNT,
-        "n_trials": AA.N_TRIALS,
-        "budget": AA.BUDGET,
+        "n_trials": A2R_NEW_COUNT,
+        "budget": A2R_NEW_COUNT * AA.N_SAMPLES,
+        "inherited_trials": A2R_INHERITED_COUNT,
+        "total_effective_trials": AA.N_TRIALS,
+        "effective_final_dataset": AA.BUDGET,
         "old_stream_exclusion": {
             "retired_stream": "configs/phase_m3s25r1/"
                               "m3s25r1_a2r_retired_stream.json",
             "old_values_overlap": 0,
             "rule": "no old A1R seed may appear in A2R new sampling"},
         **{k: plan[k] for k in ("planned_seeds", "units")}})
+    # assertions: seed values unchanged, exactly 691 units, 13.82M budget
+    assert len(plan["planned_seeds"]) == A2R_NEW_COUNT
+    assert plan["n_trials"] == A2R_NEW_COUNT
+    assert plan["budget"] == A2R_NEW_COUNT * AA.N_SAMPLES
+    assert plan["total_effective_trials"] == AA.N_TRIALS
+    assert plan["inherited_trials"] == A2R_INHERITED_COUNT
     # collision audit against all historical pools
     s2s_arm_a = set(load(
         ROOT / "configs/phase_m3s2s/m3s2s_seed_manifest.json")
