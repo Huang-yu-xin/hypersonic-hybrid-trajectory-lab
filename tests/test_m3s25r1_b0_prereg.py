@@ -444,6 +444,30 @@ def test_b042_negative_a2r_config_id_mismatch():
     assert counter.count == 0
 
 
+def test_b043_negative_a2r_missing_config_id():
+    """Remove config_id from A2R COMPLETE ledger entry => FAIL, sim=0."""
+    vc = _get_center_verifier()
+    a1r = _load_a1r_inherited()["inherited_units"]
+    a2r = _load_a2r_manifest()
+    a1r_l = _load_a1r_ledger()
+    a2r_l = _load_a2r_ledger()
+    a2r_l_bad = list(a2r_l)
+    for i, e in enumerate(a2r_l_bad):
+        if e.get("status") == "COMPLETE":
+            a2r_l_bad[i] = dict(e)
+            del a2r_l_bad[i]["config_id"]
+            break
+    counter = _SimCounter()
+    with patch("hyptraj.m3s25r1.arm_b.draw_online_pilot", counter):
+        try:
+            from hyptraj.m3wa1r.persistence import record_file_hash
+            vc(a1r, a2r, a1r_l, a2r_l_bad, record_file_hash, ROOT)
+            assert False, "should have raised"
+        except RuntimeError as e:
+            assert "MISSING frozen config_id" in str(e)
+    assert counter.count == 0
+
+
 def test_b041_negative_missing_samples_field():
     """Verify missing samples field is caught — source has the check."""
     from hyptraj.m3s25r1 import arm_b as AB

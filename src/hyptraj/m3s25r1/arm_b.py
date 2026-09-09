@@ -698,7 +698,10 @@ def verify_center_artifacts(
                 f"record={rec.get('rep_id')} manifest={a2r_u['rep']}")
         # config_id: use ledger entry's frozen config_id
         frozen_config = ledger_entry.get("config_id")
-        if frozen_config is not None and rec.get("config_id") != frozen_config:
+        if not frozen_config:
+            errors.append(
+                f"A2R {uid}: MISSING frozen config_id in COMPLETE ledger")
+        elif rec.get("config_id") != frozen_config:
             errors.append(
                 f"A2R {uid}: CONFIG_ID MISMATCH "
                 f"record={rec.get('config_id')} frozen={frozen_config}")
