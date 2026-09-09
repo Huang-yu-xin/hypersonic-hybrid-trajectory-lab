@@ -696,6 +696,12 @@ def verify_center_artifacts(
             errors.append(
                 f"A2R {uid}: REP MISMATCH "
                 f"record={rec.get('rep_id')} manifest={a2r_u['rep']}")
+        # config_id: use ledger entry's frozen config_id
+        frozen_config = ledger_entry.get("config_id")
+        if frozen_config is not None and rec.get("config_id") != frozen_config:
+            errors.append(
+                f"A2R {uid}: CONFIG_ID MISMATCH "
+                f"record={rec.get('config_id')} frozen={frozen_config}")
         frozen_seed = a2r_seed_map.get(uid, a2r_u.get("seed"))
         if rec.get("seed") != frozen_seed:
             errors.append(
