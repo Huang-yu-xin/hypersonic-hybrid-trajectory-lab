@@ -2,13 +2,19 @@
   "schema_version": "m3s25r1_b0_seed_manifest_v1",
   "stage": "M3-S25-R1-A2R-B0",
   "frozen_before_first_simulator_call": true,
-  "recorded_at": "2026-09-09T17:36:32",
+  "recorded_at": "2026-09-09T20:30:06",
   "parent_b_gate_head": "5d7eb7b234cedb0069adf7043234047a34028288",
   "parent_b_gate_terminal": "M3-S25-R1-A2R-B-GATE",
   "delta": 0.1,
   "delta_coordinate": "u = log(s^2)",
-  "crn_rule": "center_seed_as_crn_anchor",
-  "crn_semantics": "draw_once_at_center_proposal_recompute_logr_for_sides",
+  "crn_rule": "center_seed_as_shared_underlying_RNG_anchor",
+  "crn_semantics": "same_center_seed_is_the_shared_underlying_RNG_anchor;LEFT_and_RIGHT_each_independently_call_draw_online_pilot(st_side_seed_center) on their own side state;transformed_z_logp_logr_strata_are_side_specific;center_z_a_vec_resp_sq_are_never_reused",
+  "crn_forbidden": [
+    "draw center once and reuse center z for side gradients",
+    "replacing center logr by side proposal density",
+    "reusing center a_vec, resp, or sq for a side estimator",
+    "using independent RNG for side evaluations"
+  ],
   "namespace": "M3-S25-R1-A2R-ARM-B",
   "center_anchors": {
     "n_units": 960,

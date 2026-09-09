@@ -3992,12 +3992,22 @@ def arm_b_execute() -> dict:
     a2r_entries = ledger_entries(A2R_LEDGER)
     center_seeds: dict[str, int] = {}
     for u in inheritance["inherited_units"]:
-        center_seeds[u["state_id"]] = u["a1r_seed"]
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
     for u in load(A2R_SEED_MANIFEST)["units"]:
-        center_seeds[u["state_id"]] = u["seed"]
+        center_seeds[u["unit_id"]] = u["seed"]
     contract_shas = {"b0_contract": sha(B0_CONTRACT),
+                     "b0_seed_manifest_sha256": sha(B0_SEED_MANIFEST),
                      "a2r_contract": sha(A2R_CONTRACT),
                      "panel_truth_manifest": sha(PANEL_TRUTH_MANIFEST)}
+    # --- runtime plan verification (BEFORE any simulator call) ---
+    b0_contract = load(B0_CONTRACT)
+    manifest_sha = sha(B0_SEED_MANIFEST)
+    a1r_inherited = inheritance["inherited_units"]
+    a2r_new = load(A2R_SEED_MANIFEST)["units"]
+    plan_result = AB.verify_arm_b_runtime_plan(
+        b0_seeds, b0_contract, center_seeds,
+        a1r_inherited, a2r_new, manifest_sha)
+    print(f"B0 runtime plan verified: {plan_result['ARM_B_PLAN_VERIFIED']}")
     dir_fsync_fn = fsync_directory_bounded_retry
     total_new = 0
 
@@ -4128,6 +4138,19 @@ def arm_b_evaluate() -> dict:
         side_records.append(rec)
         with np.load(slug_dir / f"rep{rep}_{side}_instrumentation.npz") as z:
             side_sidecars.append({k: z[k] for k in z.files})
+    # --- artifact-level budget integrity gate ---
+    per_record_samples = [r.get("samples", 0) for r in side_records]
+    bad_records = [i for i, s in enumerate(per_record_samples) if s != B0_SIDE_SAMPLES]
+    if bad_records:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 artifact budget drift: "
+            f"{len(bad_records)} records have samples != {B0_SIDE_SAMPLES} "
+            f"(first: record[{bad_records[0]}]={per_record_samples[bad_records[0]]})")
+    total_artifact_samples = sum(per_record_samples)
+    if total_artifact_samples != B0_SIDE_BUDGET:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 artifact total samples drift: "
+            f"{total_artifact_samples} != {B0_SIDE_BUDGET}")
     results = ABE.run_comparison(
         center_records, center_sidecars, side_records, side_sidecars,
         truth_by_state)

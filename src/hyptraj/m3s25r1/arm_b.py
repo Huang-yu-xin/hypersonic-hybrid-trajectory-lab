@@ -286,6 +286,165 @@ def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
 
 
 # --------------------------------------------------------------------------
+# production runtime verifier (called in arm_b_execute before simulator)
+# --------------------------------------------------------------------------
+
+def verify_arm_b_runtime_plan(
+    b0_manifest: dict,
+    contract: dict,
+    center_seeds: dict[str, int],
+    a1r_inherited: list[dict],
+    a2r_new_units: list[dict],
+    manifest_sha: str,
+) -> dict:
+    """Production pre-sampling verifier.  Must pass BEFORE any STARTED
+    ledger entry or simulator call.
+
+    Verifies:
+      1. manifest SHA matches the pin in the B0 contract
+      2. corrected CRN semantics in manifest agree with contract
+      3. exactly 1920 side units
+      4. exactly 960 center anchors
+      5. every center has exactly one L and one R
+      6. L seed == R seed == frozen center seed
+      7. center_unit_id/state_id/rep binding matches frozen center record
+      8. no unintended seed reuse across different center anchors
+      9. no missing/extra/duplicate side logical slots
+     10. Delta and side assignment remain frozen
+    """
+    errors: list[str] = []
+
+    # 1. Manifest SHA
+    contract_pinned_sha = contract.get("seed_manifest_sha256", "")
+    if manifest_sha != contract_pinned_sha:
+        errors.append(
+            f"manifest SHA drift: actual={manifest_sha[:16]}... "
+            f"pinned={contract_pinned_sha[:16]}...")
+
+    # 2. CRN semantics agreement
+    manifest_crn = b0_manifest.get("crn_semantics", "")
+    contract_crn = contract.get("crn", {}).get("semantics", "")
+    # Both should contain the key phrases
+    for phrase in ["draw_online_pilot", "side_specific", "never_reused"]:
+        if phrase not in manifest_crn:
+            errors.append(f"manifest CRN semantics missing '{phrase}'")
+        if phrase not in contract_crn:
+            errors.append(f"contract CRN semantics missing '{phrase}'")
+
+    # 3. Exactly 1920 side units
+    units = b0_manifest.get("units", [])
+    if len(units) != 1920:
+        errors.append(f"side unit count: {len(units)} != 1920")
+
+    # 4. Exactly 960 center anchors
+    anchor_seeds: dict[int, list[str]] = {}
+    for u in units:
+        anchor_seeds.setdefault(u["seed"], []).append(u["unit_id"])
+    if len(anchor_seeds) != 960:
+        errors.append(f"unique anchor seeds: {len(anchor_seeds)} != 960")
+
+    # 5. Every center has exactly one L and one R
+    center_for_seed: dict[int, str] = {}
+    for u in units:
+        s = u["seed"]
+        cid = u.get("center_unit_id", "?")
+        if s in center_for_seed and center_for_seed[s] != cid:
+            errors.append(
+                f"cross-center seed sharing: seed {s} in "
+                f"{center_for_seed[s]} and {cid}")
+        center_for_seed[s] = cid
+
+    for seed_val, uids in anchor_seeds.items():
+        if len(uids) != 2:
+            errors.append(
+                f"anchor seed {seed_val} appears {len(uids)} times")
+            continue
+        # Check L/R via side field
+        sides = set()
+        for u in units:
+            if u["seed"] == seed_val:
+                sides.add(u["side"])
+        if sides != {"L", "R"}:
+            errors.append(
+                f"anchor seed {seed_val} sides={sides} (expected {{L,R}})")
+
+    # 6. L seed == R seed == frozen center seed
+    for u in units:
+        cid = u.get("center_unit_id", "")
+        if cid not in center_seeds:
+            errors.append(f"center {cid} not in frozen center_seeds map")
+            continue
+        frozen_seed = center_seeds[cid]
+        if u["seed"] != frozen_seed:
+            errors.append(
+                f"unit {u['unit_id']}: seed {u['seed']} != "
+                f"frozen center seed {frozen_seed}")
+
+    # 7. center_unit_id/state_id/rep binding
+    # Build frozen center record lookup
+    frozen_center: dict[str, dict] = {}
+    for rec in a1r_inherited:
+        uid = rec.get("unit_id", "")
+        frozen_center[uid] = rec
+    for rec in a2r_new_units:
+        uid = rec.get("unit_id", "")
+        frozen_center[uid] = rec
+
+    for u in units:
+        cid = u.get("center_unit_id", "")
+        if cid not in frozen_center:
+            errors.append(f"center_unit_id {cid} not in frozen records")
+            continue
+        fc = frozen_center[cid]
+        # state_id prefix should match
+        center_state = cid.rsplit("|rep", 1)[0]
+        side_state = u.get("state_id", "").rsplit("|", 1)[0]
+        if center_state != side_state:
+            errors.append(
+                f"unit {u['unit_id']}: state_id mismatch "
+                f"center={center_state} side={side_state}")
+        # rep should match
+        if u.get("rep") != fc.get("rep_id") and u.get("rep") != fc.get("rep"):
+            errors.append(
+                f"unit {u['unit_id']}: rep mismatch "
+                f"manifest={u.get('rep')} frozen={fc.get('rep_id', fc.get('rep'))}")
+
+    # 8. No missing/extra/duplicate side logical slots
+    expected_ids = set()
+    for cid in center_seeds:
+        for side in ("L", "R"):
+            expected_ids.add(f"{cid}|side{side}")
+    actual_ids = {u["unit_id"] for u in units}
+    missing = expected_ids - actual_ids
+    extra = actual_ids - expected_ids
+    if missing:
+        errors.append(f"missing side slots: {sorted(missing)[:5]}")
+    if extra:
+        errors.append(f"extra side slots: {sorted(extra)[:5]}")
+    if len(actual_ids) != 1920:
+        errors.append(f"unique side unit_ids: {len(actual_ids)} != 1920")
+
+    # 9. Delta frozen
+    for u in units:
+        if u.get("delta") != DELTA:
+            errors.append(
+                f"unit {u['unit_id']}: delta={u.get('delta')} != {DELTA}")
+
+    if errors:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-ARM-B-X: runtime plan verification FAILED "
+            f"({len(errors)} errors): " + "; ".join(errors[:10]))
+
+    return {
+        "side_units": len(units),
+        "unique_anchors": len(anchor_seeds),
+        "manifest_sha": manifest_sha[:16] + "...",
+        "CRN_VERIFIED": True,
+        "ARM_B_PLAN_VERIFIED": "PASS",
+    }
+
+
+# --------------------------------------------------------------------------
 # transactional sidecar write (identical durability protocol to arm_a)
 # --------------------------------------------------------------------------
 

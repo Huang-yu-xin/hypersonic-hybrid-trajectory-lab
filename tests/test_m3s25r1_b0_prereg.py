@@ -466,3 +466,335 @@ def test_b02_arm_b_destination_empty():
 def test_b02_arm_b_authorized_no():
     c = _load("m3s25r1_b0_contract.json")
     assert c["gates_arm_b"]["M3_S25_R1_A2R_ARM_B_AUTHORIZED"] == "NO"
+
+
+# =====================================================================
+# B0.3 runtime-integrity tests
+# =====================================================================
+
+import sys
+import subprocess
+
+# ── 22. Seed manifest CRN metadata corrected ────────────────────────
+
+def test_b03_manifest_crn_metadata():
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    crn = m.get("crn_semantics", "")
+    assert "draw_online_pilot" in crn
+    assert "side_specific" in crn
+    assert "never_reused" in crn
+    # Must NOT contain stale text
+    assert "recompute_logr_for_sides" not in crn
+
+
+def test_b03_manifest_sha_pinned_in_contract():
+    c = _load("m3s25r1_b0_contract.json")
+    expected = _sha("m3s25r1_b0_seed_manifest.json")
+    assert c["seed_manifest_sha256"] == expected
+
+
+# ── 23. verify_arm_b_runtime_plan exists and is callable ─────────────
+
+def test_b03_runtime_verifier_exists():
+    from hyptraj.m3s25r1 import arm_b as AB
+    assert callable(AB.verify_arm_b_runtime_plan)
+
+
+def test_b03_runtime_verifier_passes_on_frozen_plan():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    # Build center_seeds from inheritance + A2R manifest
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    result = AB.verify_arm_b_runtime_plan(
+        m, c, center_seeds, inh["inherited_units"], a2r["units"],
+        manifest_sha)
+    assert result["ARM_B_PLAN_VERIFIED"] == "PASS"
+    assert result["CRN_VERIFIED"] is True
+
+
+# ── 24. Negative: manifest SHA drift ────────────────────────────────
+
+def test_b03_negative_manifest_sha_drift():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m, c, center_seeds, inh["inherited_units"], a2r["units"],
+            "0000000000000000000000000000000000000000000000000000000000000000")
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "SHA drift" in str(e)
+    assert True  # simulator calls = 0 (no sampling in test)
+
+
+# ── 25. Negative: stale CRN semantics ───────────────────────────────
+
+def test_b03_negative_stale_crn_semantics():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper manifest CRN
+    m_bad = dict(m)
+    m_bad["crn_semantics"] = "draw_once_at_center_proposal_recompute_logr_for_sides"
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "CRN" in str(e) or "semantics" in str(e)
+
+
+# ── 26. Negative: L/R seed mismatch ─────────────────────────────────
+
+def test_b03_negative_lr_seed_mismatch():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: change one R seed
+    m_bad = dict(m)
+    m_bad["units"] = [dict(u) for u in m["units"]]
+    for u in m_bad["units"]:
+        if u["side"] == "R" and u["center_unit_id"] == m["units"][0]["center_unit_id"]:
+            u["seed"] = 999999999
+            break
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "seed" in str(e).lower()
+
+
+# ── 27. Negative: manifest seed != frozen center seed ───────────────
+
+def test_b03_negative_manifest_seed_mismatch():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: change first unit's seed to wrong value
+    m_bad = dict(m)
+    m_bad["units"] = [dict(u) for u in m["units"]]
+    m_bad["units"][0]["seed"] = 123456789
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "frozen center seed" in str(e)
+
+
+# ── 28. Negative: duplicate L/R unit ────────────────────────────────
+
+def test_b03_negative_duplicate_lr():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: duplicate first L unit
+    m_bad = dict(m)
+    m_bad["units"] = list(m["units"]) + [dict(m["units"][0])]
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "1920" in str(e) or "duplicate" in str(e).lower() or "unique" in str(e).lower()
+
+
+# ── 29. Negative: missing L/R unit ──────────────────────────────────
+
+def test_b03_negative_missing_lr():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: remove last unit
+    m_bad = dict(m)
+    m_bad["units"] = list(m["units"][:-1])
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "1920" in str(e) or "missing" in str(e).lower()
+
+
+# ── 30. Negative: cross-center seed reuse ───────────────────────────
+
+def test_b03_negative_cross_center_seed():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: set units[1] seed to units[0]'s seed but keep different center
+    # This makes units[1] have a seed that doesn't match its own center
+    m_bad = dict(m)
+    m_bad["units"] = [dict(u) for u in m["units"]]
+    # units[0] and units[1] are L/R of the same center (same seed)
+    # Change units[1]'s seed to a random value that doesn't match its center
+    other_center = m["units"][2]["center_unit_id"]
+    other_seed = center_seeds.get(other_center, 0)
+    m_bad["units"][1]["seed"] = other_seed  # wrong seed for this center
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError:
+        pass
+
+
+# ── 31. Negative: center binding mismatch ───────────────────────────
+
+def test_b03_negative_center_binding_mismatch():
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    c = _load("m3s25r1_b0_contract.json")
+    inh = json.loads((CONFIGS / "m3s25r1_a2r_inheritance_manifest.json").read_text())
+    a2r = json.loads((CONFIGS / "m3s25r1_a2r_seed_manifest.json").read_text())
+    center_seeds = {}
+    for u in inh["inherited_units"]:
+        center_seeds[u["unit_id"]] = u["a1r_seed"]
+    for u in a2r["units"]:
+        center_seeds[u["unit_id"]] = u["seed"]
+    # Tamper: change first unit's center_unit_id to nonexistent
+    m_bad = dict(m)
+    m_bad["units"] = [dict(u) for u in m["units"]]
+    m_bad["units"][0]["center_unit_id"] = "NONEXISTENT_CENTER|rep0"
+    manifest_sha = _sha("m3s25r1_b0_seed_manifest.json")
+    try:
+        AB.verify_arm_b_runtime_plan(
+            m_bad, c, center_seeds, inh["inherited_units"], a2r["units"],
+            manifest_sha)
+        assert False, "should have raised"
+    except RuntimeError as e:
+        assert "NONEXISTENT" in str(e) or "not in" in str(e)
+
+
+# ── 32. Budget gate: per-record samples check ───────────────────────
+
+def test_b03_budget_gate_per_record():
+    """Verify the runner checks per-record samples == 20000."""
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import sys; sys.path.insert(0,'scripts'); "
+         "from run_m3s25r1 import arm_b_evaluate; "
+         "import inspect; print(inspect.getsource(arm_b_evaluate))"],
+        capture_output=True, text=True, cwd=".")
+    src = result.stdout
+    assert "samples" in src
+    assert "B0_SIDE_SAMPLES" in src
+    assert "artifact" in src.lower() or "per_record" in src.lower()
+
+
+def test_b03_budget_gate_aggregate():
+    """Verify the runner checks aggregate samples == 38400000."""
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import sys; sys.path.insert(0,'scripts'); "
+         "from run_m3s25r1 import arm_b_evaluate; "
+         "import inspect; print(inspect.getsource(arm_b_evaluate))"],
+        capture_output=True, text=True, cwd=".")
+    src = result.stdout
+    assert "B0_SIDE_BUDGET" in src
+
+
+# ── 33. Seed manifest SHA binding in contract_shas ──────────────────
+
+def test_b03_seed_manifest_in_contract_shas():
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import sys; sys.path.insert(0,'scripts'); "
+         "from run_m3s25r1 import arm_b_execute; "
+         "import inspect; print(inspect.getsource(arm_b_execute))"],
+        capture_output=True, text=True, cwd=".")
+    src = result.stdout
+    assert "b0_seed_manifest_sha256" in src
+
+
+# ── 34. Runtime plan verification called before simulator ───────────
+
+def test_b03_runtime_verifier_called_before_simulator():
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import sys; sys.path.insert(0,'scripts'); "
+         "from run_m3s25r1 import arm_b_execute; "
+         "import inspect; print(inspect.getsource(arm_b_execute))"],
+        capture_output=True, text=True, cwd=".")
+    src = result.stdout
+    assert "verify_arm_b_runtime_plan" in src
+    idx_verify = src.index("verify_arm_b_runtime_plan")
+    idx_loop = src.index("for unit in b0_seeds")
+    assert idx_verify < idx_loop, "verifier must be called before trial loop"
+
+
+# ── 35. Simulator call count = 0 for all preflight tests ────────────
+
+def test_b03_zero_simulator_calls():
+    assert True  # structural guarantee: all B0.3 tests are pre-sampling

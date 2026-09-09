@@ -31,7 +31,7 @@
   "crn": {
     "anchor": "center_seed",
     "rule": "shared_underlying_RNG_center_seed_as_CRN_anchor",
-    "semantics": "same_seed_gives_same_component_choices_and_base_epsilons;_different_s2_changes_Cholesky_transform;this_IS_paired_CRN",
+    "semantics": "same_center_seed_is_shared_underlying_RNG_anchor;LEFT_and_RIGHT_each_independently_call_draw_online_pilot(st_side_seed_center);_transformed_z_logp_logr_strata_are_side_specific;_center_z_a_vec_resp_sq_never_reused",
     "frozen_rng": "np.random.default_rng([int(seed), 101])",
     "pilot_draw_order": "target_source_first_standard_normal_then_proposal_source_via_proposal_sample",
     "key_finding": "same seed at different s2 gives SAME component choices and SAME base epsilons (raw RNG output); different s2 changes the Cholesky transform sqrt(s2)*I so transformed z differs; this is accepted as paired CRN because the underlying randomness is shared",
@@ -202,7 +202,7 @@
     "M3_S25_R1_A2R_TRUTH": "BLOCKED",
     "M3_S25_R1_VALUE_RARITY_M3Q": "BLOCKED"
   },
-  "seed_manifest_sha256": "b9e5d124605ee1431b345624619732790b656b0e368302b5294bd66aff74c2d8",
+  "seed_manifest_sha256": "4534e158825c6c567788756ea5409c5461208fdc1b5f87617b733542650659ef",
   "seed_manifest_path": "configs/phase_m3s25r1/m3s25r1_b0_seed_manifest.json",
   "code_sha256": {
     "arm_a": "FROZEN_FROM_A2R_CONTRACT",
