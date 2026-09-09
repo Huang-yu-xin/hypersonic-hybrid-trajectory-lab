@@ -4014,7 +4014,7 @@ def arm_b_execute() -> dict:
           f"({center_result['inherited_verified']} inherited + "
           f"{center_result['a2r_verified']} A2R = "
           f"{center_result['total_centers']} centers, "
-          f"{center_result['total_samples']} samples)")
+          f"effective_samples={center_result['effective_sample_sum']})")
     # Derive center_seeds from VERIFIED records (not from manifests alone)
     center_seeds = center_result["center_seeds"]
     # --- runtime plan verification (BEFORE any simulator call) ---
