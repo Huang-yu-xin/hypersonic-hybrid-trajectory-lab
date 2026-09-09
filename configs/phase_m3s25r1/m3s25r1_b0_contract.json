@@ -1,5 +1,5 @@
 {
-  "schema_version": "m3s25r1_b0_contract_v1",
+  "schema_version": "m3s25r1_b0_contract_v1_b0_1",
   "stage": "M3-S25-R1-A2R-B0",
   "nature": "Arm-B Local-Shape Delta-Preregistration",
   "recorded_at": "2026-09-09T17:37:06",
@@ -30,26 +30,24 @@
   },
   "crn": {
     "anchor": "center_seed",
-    "semantics": "DRAW_ONCE_AT_CENTER_PROPOSAL_RECOMPUTE_LOGR_FOR_SIDES",
-    "rule": "center_seed_used_as_CRN_anchor_at_u-Delta_u_u+Delta",
+    "rule": "shared_underlying_RNG_center_seed_as_CRN_anchor",
+    "semantics": "same_seed_gives_same_component_choices_and_base_epsilons;_different_s2_changes_Cholesky_transform;this_IS_paired_CRN",
     "frozen_rng": "np.random.default_rng([int(seed), 101])",
     "pilot_draw_order": "target_source_first_standard_normal_then_proposal_source_via_proposal_sample",
-    "key_insight": "same seed at different s2 gives DIFFERENT z because s2 enters proposal Cholesky; CRN achieved by drawing ONCE at center and reusing z for all three evaluations with recomputed logr",
+    "key_finding": "same seed at different s2 gives SAME component choices and SAME base epsilons (raw RNG output); different s2 changes the Cholesky transform sqrt(s2)*I so transformed z differs; this is accepted as paired CRN because the underlying randomness is shared",
     "implementation": {
-      "step_1": "Recompute center pilot: z, logp, logr_c, strata = draw_online_pilot(st_center, seed_center)",
-      "step_2": "Compute a_vec_c, resp_c, sq_c using center proposal q_c",
-      "step_3": "Evaluate gradient at s2_c, s2_l, s2_r using SAME a_vec_c, resp_c, sq_c",
-      "step_4": "Frozen scalar_gradient_estimate(a_vec, resp, sq, s2=side_s2, dim=dim)",
-      "step_5": "Frozen stratified_bootstrap_gradient_ci(a_vec, resp, sq, strata, s2=side_s2, ...)",
-      "frozen_functions_reused": [
-        "scalar_gradient_estimate",
-        "stratified_bootstrap_gradient_ci",
-        "variance_mass_importance",
-        "component_responsibility",
-        "draw_online_pilot"
-      ]
+      "for_each_center_unit": "construct left state (s2*exp(-0.10)) and right state (s2*exp(+0.10))",
+      "left": "draw_online_pilot(st_left, seed_center) returns own z,logp,logr,strata; run frozen gradient pipeline",
+      "right": "draw_online_pilot(st_right, seed_center) returns own z,logp,logr,strata; run frozen gradient pipeline",
+      "center": "NEVER rerun; center seed reused only as CRN anchor"
     },
-    "no_independent_rng": true,
+    "forbidden": [
+      "draw center once and reuse center z for side gradients",
+      "replacing center logr by side proposal density",
+      "reusing center a_vec, resp, or sq for a side estimator",
+      "using independent RNG for side evaluations",
+      "silent switch to non-CRN approach"
+    ],
     "center_never_rerun": true,
     "center_record_never_replaced": true,
     "center_seed_reuse_not_counted_as_new_realization": true
@@ -146,12 +144,27 @@
       "coverage_gain_vs_b1": 0.03,
       "nd_unsafe_reduction_vs_frozen_s1": 0.05,
       "at_coverage_min": 0.75
+    },
+    "improvement_vs_best_arm_a": {
+      "coverage_gain_vs_a4": 0.03,
+      "nd_unsafe_reduction_vs_a4": 0.05,
+      "at_coverage_min": 0.75,
+      "a4_coverage": 0.8666666666666667,
+      "a4_nd_unsafe": 0.21041666666666667
     }
   },
   "best_arm_a_comparator": {
-    "identity": "B1_aggregate_gbdt_baseline",
-    "reason": "B-GATE means no A-model met success criterion; B1 is the primary comparator for improvement",
-    "frozen": true
+    "identity": "A4_stability_margin_gbdt",
+    "selection_rule": "highest deployable_coverage among A1-A4; ties broken by lowest nd_unsafe",
+    "frozen_metrics": {
+      "deployable_coverage": 0.8666666666666667,
+      "nd_unsafe": 0.21041666666666667,
+      "wrong_direction_rate": 0.0,
+      "ambiguous_unsafe": 0.3541666666666667
+    },
+    "selection_recorded_at": "2026-09-09T10:27:24+0800",
+    "frozen": true,
+    "note": "B0/B1 remain baseline comparators but are NOT the primary Arm-B comparison target"
   },
   "verdicts": {
     "success": "M3-S25-R1-A2R-C",
@@ -194,5 +207,16 @@
   "code_sha256": {
     "arm_a": "FROZEN_FROM_A2R_CONTRACT",
     "arm_a_eval": "FROZEN_FROM_A2R_CONTRACT"
+  },
+  "amendment": {
+    "version": "B0.1",
+    "type": "CRN-semantics amendment",
+    "recorded_at": "2026-09-09T18:37:49",
+    "changes": [
+      "Corrected CRN semantics: shared underlying RNG, not identical z",
+      "Forbid center-z reuse, center logr replacement, center a_vec/resp/sq reuse",
+      "Frozen best Arm-A comparator: A4_stability_margin_gbdt with documented selection rule",
+      "Added direct parity test and negative test requirements"
+    ]
   }
 }

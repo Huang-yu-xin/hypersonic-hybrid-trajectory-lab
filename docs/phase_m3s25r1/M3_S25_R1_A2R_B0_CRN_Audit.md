@@ -1,7 +1,7 @@
-# M3-S25-R1-A2R-B0 CRN Audit
+# M3-S25-R1-A2R-B0 CRN Audit (B0.1 corrected)
 
-Recorded during B0 preregistration. Parent terminal: M3-S25-R1-A2R-B-GATE
-at `5d7eb7b234cedb0069adf7043234047a34028288`.
+Recorded during B0.1 CRN-semantics amendment. Parent terminal:
+M3-S25-R1-A2R-B-GATE at `5d7eb7b234cedb0069adf7043234047a34028288`.
 
 ## 1. Question
 
@@ -72,7 +72,9 @@ The RNG `[seed, 101]` is consumed in this order:
 | 3 | `rng.standard_normal((10000, d))` | 10000*d | NO |
 
 **Key finding**: The raw RNG output is IDENTICAL regardless of `s2`.
-The RNG sequence is fully determined by the seed.
+The RNG sequence is fully determined by the seed. Same seed gives:
+- Same component choices (step 2)
+- Same base Gaussian epsilons (step 3)
 
 ## 4. Where s2 Enters
 
@@ -88,41 +90,39 @@ zq = centers[comp] + transformed           # zq is DIFFERENT
 - `chols[selected_component] = sqrt(s2) * I` changes with `s2`
 - Therefore `zq` (proposal-source samples) is DIFFERENT for different `s2`
 
-**Result**: Calling `draw_online_pilot(st, seed)` with the same seed but
-different `s2` values produces DIFFERENT `z` arrays. The proposal-source
-half (10000 samples) differs because the Cholesky scaling changes.
+## 5. CRN Semantics (Corrected in B0.1)
 
-## 5. CRN Achievability
+**CORRECTED**: `CRN = shared underlying RNG / center seed`, NOT `identical z`.
 
-**Naive approach** (call draw_online_pilot at each s2 with same seed):
-NOT CRN -- z differs across s2 values.
+Same seed across center/left/right gives the same component choices and
+base Gaussian epsilons. Different s2 changes the deterministic Cholesky
+transform, so different z is expected and is still paired CRN.
 
-**Correct approach** (draw ONCE at center, reuse z for all evaluations):
+The CRN coupling is through the SHARED underlying RNG sequence, not
+through identical output arrays. This is standard paired CRN practice:
+the same random seeds drive the same stochastic process, but the
+deterministic transformation differs across parameter values.
 
-1. Draw pilot ONCE at center: `z, logp, logr_c, strata = draw_online_pilot(st_center, seed_center)`
-2. Compute `a_vec_c, resp_c, sq_c` using center proposal `q_c`
-3. For each side evaluation (left, right):
-   - Recompute `logr_side` for proposal-source samples using side proposal
-   - Compute `a_vec_side, resp_side` using side proposal
-   - `sq` is the SAME (centers don't depend on s2)
-   - Call frozen `scalar_gradient_estimate(a_vec_side, resp_side, sq, s2=side_s2, dim=dim)`
-   - Call frozen `stratified_bootstrap_gradient_ci(a_vec_side, resp_side, sq, strata, s2=side_s2, ...)`
+## 6. Implementation (Corrected in B0.1)
 
-**This IS valid CRN**: the same `z` samples are evaluated under different
-`s2` values. The importance weights are recomputed for each side proposal,
-but the underlying random draws are identical.
+For each center logical unit with frozen center seed `seed_c`:
 
-## 6. Why This Is Correct
+1. Construct left state: `s2_left = s2_center * exp(-0.10)`
+2. Construct right state: `s2_right = s2_center * exp(+0.10)`
+3. Left: `z_L, logp_L, logr_L, strata_L = draw_online_pilot(st_left, seed_c)`
+4. Right: `z_R, logp_R, logr_R, strata_R = draw_online_pilot(st_right, seed_c)`
+5. Each side runs the full frozen gradient pipeline with its OWN z, logp, logr, strata
+6. Center is NEVER rerun
 
-The CRN principle requires: same random numbers, different parameter values.
+## 7. What Is FORBIDDEN
 
-Here:
-- **Same random numbers**: `z` is drawn once from center proposal; identical for all 3 evaluations
-- **Different parameter values**: `s2_c`, `s2_l = s2_c * exp(-0.10)`, `s2_r = s2_c * exp(+0.10)`
-- **Valid importance sampling**: importance weights `p(z)/q(z)` are computed correctly for each proposal
-- **Frozen estimators reused**: `scalar_gradient_estimate` and `stratified_bootstrap_gradient_ci` are called with the correct `s2` value
+- Drawing center once and reusing center z for side gradients
+- Replacing center logr by side proposal density
+- Reusing center a_vec, resp, or sq for a side estimator
+- Using independent RNG for side evaluations
+- Silent switch to non-CRN approach
 
-## 7. Feasibility Proof
+## 8. Feasibility Proof
 
 For all 120 panel states:
 - `s2_side = s2 * exp(+-0.10)` ranges from 0.495 to 8.803
@@ -130,20 +130,12 @@ For all 120 panel states:
 - All `s2_side` within reasonable numerical range
 - **Verdict**: 120/120 states feasible for Delta=0.10
 
-## 8. What Is NOT Allowed
-
-- Calling `draw_online_pilot` separately at each s2 with the same seed (NOT CRN)
-- Using independent RNG for side evaluations (breaks CRN coupling)
-- Rerunning center trials
-- Replacing center records
-- Counting center seed reuse as new center realization
-
 ## 9. Conclusion
 
 **CRN IS achievable** with the frozen RNG implementation. The approach is:
-draw the pilot ONCE at the center proposal, recompute logr for side
-proposals, and evaluate the gradient at each s2 using the frozen
-`scalar_gradient_estimate`. The same `z` samples are used for all three
-evaluations, satisfying the CRN principle.
+for each center unit, construct left/right side states with modified s2,
+call `draw_online_pilot` independently for each side using the center
+seed as CRN anchor, and run the full frozen gradient pipeline with each
+side's own returned arrays.
 
-`ARM_B_ELIGIBLE = YES` (CRN semantics verified, feasibility confirmed)
+`ARM_B_ELIGIBLE = YES` (CRN semantics verified and corrected, feasibility confirmed)
