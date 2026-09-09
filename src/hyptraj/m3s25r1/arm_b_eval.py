@@ -80,6 +80,11 @@ IMPROVEMENT_VS_A4 = {
     "unsafe_reduction_vs_a4": 0.05,
     "at_coverage_min": 0.75,
 }
+# Derived absolute thresholds (for documentation/verification):
+#   coverage >= A4_coverage + 0.03 = 0.8966666666666667
+#   nd_unsafe <= A4_nd_unsafe - 0.05 = 0.16041666666666667 (with cov >= 0.75)
+A4_COVERAGE_THRESHOLD = A4_FROZEN["deployable_coverage"] + IMPROVEMENT_VS_A4["coverage_gain_vs_a4"]  # 0.896666...
+A4_ND_UNSAFE_THRESHOLD = A4_FROZEN["nd_unsafe"] - IMPROVEMENT_VS_A4["unsafe_reduction_vs_a4"]      # 0.160416...
 
 # --------------------------------------------------------------------------
 # LOCAL-SHAPE feature family (12 features)
@@ -747,17 +752,21 @@ def verdict(results: dict, complete: int, consumed_invalid: int,
     Arm-B success gates:
       Absolute: coverage >= 0.75, ND unsafe <= 0.20, wrong <= 0.05,
                 ambiguous_unsafe < 0.25
-      Relative to A4 (frozen): coverage gain >= 0.03 OR
-                               ND unsafe reduction >= 0.05 with coverage >= 0.75
+      Relative to A4 (frozen):
+        coverage >= 0.8966666666666667  (A4 0.8667 + 0.03)
+        OR nd_unsafe <= 0.16041666666666667 with coverage >= 0.75
+          (A4 0.2104 - 0.05)
+
+    Completeness: must be N_SIDE_TRIALS (1920), NOT N_CENTER_TRIALS (960).
 
     Terminal verdicts:
       M3-S25-R1-A2R-C  Arm-B success
       M3-S25-R1-A2R-D  valid negative
       M3-S25-R1-A2R-X  integrity invalid
     """
-    if consumed_invalid or complete != N_CENTER_TRIALS:
+    if consumed_invalid or complete != N_SIDE_TRIALS:
         return {"VERDICT": f"{prefix}-A2R-X",
-                "reason": f"completeness {complete}/{N_CENTER_TRIALS}, "
+                "reason": f"completeness {complete}/{N_SIDE_TRIALS}, "
                           f"consumed_invalid {consumed_invalid}"}
 
     compliant = {}

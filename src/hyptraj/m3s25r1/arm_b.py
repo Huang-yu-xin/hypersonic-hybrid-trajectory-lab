@@ -186,46 +186,101 @@ def arm_b_seed_plan(center_units: list[dict],
 
 def seed_collision_audit(plan: dict, pools: dict[str, set[int]],
                           truth_key_pools: dict[str, set[tuple]],
-                          expected_count: int | None = None) -> dict:
+                          expected_units: int | None = None,
+                          expected_anchors: int | None = None) -> dict:
     """Side-seed collision audit: prove zero overlap across named pools.
 
-    ``expected_count`` defaults to ``plan['n_units']`` (1920 for the
-    full run).  Integer seed VALUES are audited only against integer
-    pools; seed_key TUPLES only against tuple pools (never mixed).
+    Arm-B has 1920 side units derived from 960 center CRN anchors.
+    LEFT and RIGHT for the same center share the same historical center
+    seed.  Therefore there are 960 UNIQUE seed values (not 1920).
+
+    Checks:
+      - exactly ``expected_units`` side units (default 1920)
+      - exactly ``expected_anchors`` unique anchor seeds (default 960)
+      - every side unit's seed equals its center anchor seed
+      - each anchor seed appears exactly twice (L + R)
+      - no cross-center seed sharing (each center has a distinct anchor)
+      - zero overlap with retired/excluded pools
+      - intentional L/R center-anchor reuse is NOT a collision
+
+    ``expected_count`` parameter is deprecated; use ``expected_units``.
     """
-    if expected_count is None:
-        expected_count = plan["n_units"]
-    vals = list(plan["planned_seeds"].values())
-    if not (len(vals) == expected_count and len(set(vals)) == expected_count):
+    if expected_units is None:
+        expected_units = plan["n_units"]
+    if expected_anchors is None:
+        expected_anchors = plan.get("n_center_anchors",
+                                     plan.get("n_center_anchors", 960))
+
+    # --- structural checks ---
+    units = plan["units"]
+    if len(units) != expected_units:
         raise RuntimeError(
-            f"M3-S25-R1-A2R-ARM-B-X: side seed pool not {expected_count} "
-            f"unique values (len={len(vals)}, unique={len(set(vals))})")
-    keys = [tuple(u["seed_key"]) for u in plan["units"]]
-    if len(keys) != expected_count or len(set(keys)) != expected_count:
+            f"M3-S25-R1-A2R-ARM-B-X: expected {expected_units} side units, "
+            f"got {len(units)}")
+
+    # --- anchor pairing: each center seed appears exactly L + R = 2 ---
+    anchor_counts: dict[int, list[str]] = {}
+    for u in units:
+        anchor_counts.setdefault(u["seed"], []).append(u["unit_id"])
+    for seed_val, uids in anchor_counts.items():
+        if len(uids) != 2:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-ARM-B-X: anchor seed {seed_val} appears "
+                f"{len(uids)} times (expected exactly 2: L+R)")
+        # Extract side from the unit's side field, not from unit_id
+        sides = set()
+        for u in units:
+            if u["seed"] == seed_val:
+                sides.add(u["side"])
+        if sides != {"L", "R"}:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-ARM-B-X: anchor seed {seed_val} has "
+                f"sides {sides} (expected {{L, R}})")
+
+    unique_anchors = set(anchor_counts.keys())
+    if len(unique_anchors) != expected_anchors:
         raise RuntimeError(
-            f"M3-S25-R1-A2R-ARM-B-X: side seed keys not {expected_count} "
-            "unique")
+            f"M3-S25-R1-A2R-ARM-B-X: expected {expected_anchors} unique "
+            f"anchor seeds, got {len(unique_anchors)}")
+
+    # --- cross-center isolation: different centers must not share seeds ---
+    center_for_seed: dict[int, str] = {}
+    for u in units:
+        cid = u.get("center_unit_id", "?")
+        s = u["seed"]
+        if s in center_for_seed and center_for_seed[s] != cid:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-ARM-B-X: cross-center seed sharing: "
+                f"seed {s} used by both {center_for_seed[s]} and {cid}")
+        center_for_seed[s] = cid
+
+    # --- pool collision checks (retired/excluded seeds) ---
+    vals = list(unique_anchors)
     collisions: dict[str, int] = {}
     for pool_name, pool in pools.items():
         hits = sorted({v for v in vals if v in pool})
         collisions[pool_name] = len(hits)
         if hits:
             raise RuntimeError(
-                f"M3-S25-R1-A2R-ARM-B-X: side seed collision with "
+                f"M3-S25-R1-A2R-ARM-B-X: anchor seed collision with "
                 f"{pool_name}: {hits[:5]}")
+
+    keys = [(s, center_for_seed[s]) for s in vals]
     for pool_name, pool in truth_key_pools.items():
         hits = sorted({k for k in keys if k in pool})
         collisions[pool_name] = len(hits)
         if hits:
             raise RuntimeError(
-                f"M3-S25-R1-A2R-ARM-B-X: side seed-key collision with "
+                f"M3-S25-R1-A2R-ARM-B-X: anchor key collision with "
                 f"{pool_name}: {hits[:5]}")
+
     return {
-        "units": expected_count,
-        "unique_seeds": len(set(vals)),
+        "side_units": expected_units,
+        "unique_anchors": len(unique_anchors),
+        "anchors_per_center": 2,
         "per_stream_collisions": collisions,
+        "cross_center_sharing": 0,
         "historical_collision": 0,
-        "truth_stream_collision": 0,
         "ARM_B_SEED_AUDIT": "PASS",
     }
 

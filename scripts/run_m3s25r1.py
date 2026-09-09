@@ -33,6 +33,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from hyptraj.m3s25r1 import arm_a as AA  # noqa: E402
 from hyptraj.m3s25r1 import arm_a_eval as AE  # noqa: E402
+from hyptraj.m3s25r1 import arm_b as AB  # noqa: E402
+from hyptraj.m3s25r1 import arm_b_eval as ABE  # noqa: E402
 from hyptraj.m3s25r1 import candidates as CAND  # noqa: E402
 from hyptraj.m3s25r1 import history as HIST  # noqa: E402
 from hyptraj.m3s25r1 import runtime as RT  # noqa: E402
@@ -160,6 +162,18 @@ A2R_CONTRACT_PIN = ("b87f0dfcf6d76ed92cb349c55402636d29a4"
                      "8f9584fcb4c1d3930d6e9e82ea07")
 A2R_SEED_MANIFEST_PIN = ("9d41eecb8d2ed81c1cd7b7779649e55c9534"
                           "41488567f4c966b2ec24bb4f4f2c")
+
+# ---- M3-S25-R1-A2R-B0: Arm-B ±Delta local-shape preregistration ----
+B0_CONTRACT = CFG / "m3s25r1_b0_contract.json"
+B0_SEED_MANIFEST = CFG / "m3s25r1_b0_seed_manifest.json"
+B0_DIR = ROOT / "results/phase_m3s25r1/arm_b"
+B0_TRIALS = B0_DIR / "trials"
+B0_LEDGER = B0_DIR / "trial_ledger.jsonl"
+B0_EVAL = SUM / "m3s25r1_b0_evaluation.json"
+B0_SIDE_COUNT = 1920
+B0_CENTER_ANCHORS = 960
+B0_SIDE_SAMPLES = 20_000
+B0_SIDE_BUDGET = 38_400_000
 
 # --------------------------------------------------------------------------
 # helpers
@@ -3940,6 +3954,196 @@ def arm_a2r_evaluate() -> dict:
     return out
 
 
+def arm_b_execute() -> dict:
+    """GATED by M3_S25_R1_A2R_ARM_B_AUTHORIZED: YES.  Runs 1920 side
+    trials (960 center anchors x 2 sides).  Each side uses the center
+    seed as CRN anchor.  Bounded fsync retry for sidecar and record."""
+    import hyptraj.m3d.benchmark_states as BS
+    if not gate("M3_S25_R1_A2R_ARM_B_AUTHORIZED"):
+        raise RuntimeError(
+            "M3_S25_R1_A2R_ARM_B_AUTHORIZED is not YES; STOP before "
+            "any simulator call")
+    if gate("M3_S25_R1_ARM_B_AUTHORIZED") \
+            or gate("M3_S25_R1_A1R_ARM_B_AUTHORIZED"):
+        raise RuntimeError("M3-S25-R1-A2R-X: old Arm-B gates must remain NO")
+    panel = load(PANEL_JSON)
+    if panel["panel_sha256"] != AA.FROZEN_PANEL_SHA:
+        raise RuntimeError("M3-S25-R1-A2R-X: panel SHA drift")
+    b0_seeds = load(B0_SEED_MANIFEST)
+    if b0_seeds["n_units"] != B0_SIDE_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: seed manifest unit count drift: "
+            f"{b0_seeds['n_units']} != {B0_SIDE_COUNT}")
+    B0_TRIALS.mkdir(parents=True, exist_ok=True)
+    existing = []
+    if B0_LEDGER.exists():
+        existing = ledger_entries(B0_LEDGER)
+    invalid = {e.get("state_id") for e in existing
+               if e.get("status") == "CONSUMED_INVALID"}
+    if invalid:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: CONSUMED_INVALID in B0 ledger: "
+            f"{invalid}; STOP")
+    completed = {e.get("state_id") for e in existing
+                 if e.get("status") == "COMPLETE"}
+    panel_by_state = {s["state_id"]: s for s in panel["states"]}
+    inheritance = load(A2R_INHERITANCE)
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    a2r_entries = ledger_entries(A2R_LEDGER)
+    center_seeds: dict[str, int] = {}
+    for u in inheritance["inherited_units"]:
+        center_seeds[u["state_id"]] = u["a1r_seed"]
+    for u in load(A2R_SEED_MANIFEST)["units"]:
+        center_seeds[u["state_id"]] = u["seed"]
+    contract_shas = {"b0_contract": sha(B0_CONTRACT),
+                     "a2r_contract": sha(A2R_CONTRACT),
+                     "panel_truth_manifest": sha(PANEL_TRUTH_MANIFEST)}
+    dir_fsync_fn = fsync_directory_bounded_retry
+    total_new = 0
+
+    for unit in b0_seeds["units"]:
+        uid = unit["unit_id"]
+        if uid in completed:
+            continue
+        state_id = unit["state_id"].rsplit("|", 1)[0]
+        side = unit["side"]
+        rep = unit["rep"]
+        seed_c = unit["seed"]
+        s2_center = unit["s2_center"]
+        s2_side = s2_center * math.exp(
+            -AB.DELTA if side == "L" else AB.DELTA)
+        slug_dir = B0_TRIALS / bounded_slug(state_id)
+        rec_p = slug_dir / f"rep{rep}_{side}.json"
+        side_p = slug_dir / f"rep{rep}_{side}_instrumentation.npz"
+        rec = AB.verify_arm_b_trial_fresh_or_verified(
+            uid, rec_p, side_p, existing,
+            record_file_hash, record_file_hash)
+        if rec is not None:
+            continue
+
+        def _compute(_state_id=state_id, _side=side, _s2_side=s2_side,
+                     _seed_c=seed_c, _rep=rep, _uid=uid):
+            bench = VR.resolve_bench_config(
+                panel_by_state[_state_id]["config_id"])
+            st_center = BS.assemble_state(
+                bench, float(s2_center),
+                short_config=panel_by_state[_state_id]["config_id"])
+            if isinstance(st_center, dict):
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: center assembly failed for "
+                    f"{_state_id}")
+            st_side = AB.make_side_state(st_center, _side)
+            record, arrays = AB.arm_b_trial(
+                st_side, _seed_c, f"{_state_id}|{_side}", _rep, _side,
+                unit["center_unit_id"], contract_shas)
+            return record, arrays
+
+        record, arrays = run_trial_transactional(
+            uid, rec_p, side_p, B0_LEDGER, _compute,
+            dir_fsync_fn=dir_fsync_fn)
+        total_new += 1
+        if total_new % 100 == 0:
+            print(f"  B0 side trials complete: {total_new}")
+
+    final_entries = ledger_entries(B0_LEDGER)
+    final_counts = Counter(e.get("status") for e in final_entries)
+    final_complete = final_counts.get("COMPLETE", 0)
+    final_invalid = final_counts.get("CONSUMED_INVALID", 0)
+    print(f"M3-S25-R1-A2R B0 execute: COMPLETE={final_complete}/"
+          f"{B0_SIDE_COUNT}, CONSUMED_INVALID={final_invalid}, "
+          f"new_this_run={total_new}")
+    if final_invalid:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 CONSUMED_INVALID={final_invalid}; "
+            f"STOP; NO REPLAY")
+    return {"complete": final_complete, "invalid": final_invalid,
+            "new": total_new}
+
+
+def arm_b_evaluate() -> dict:
+    """ONLY after 1920/1920 side trials durable COMPLETE with 0
+    CONSUMED_INVALID: unseal truth and run frozen Arm-B comparison."""
+    verify_frozen_a2r_preflight_pass()
+    entries = ledger_entries(B0_LEDGER)
+    counts = Counter(e.get("status") for e in entries)
+    complete = counts.get("COMPLETE", 0)
+    invalid = counts.get("CONSUMED_INVALID", 0)
+    if invalid:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 evaluation requires 0 CONSUMED_INVALID "
+            f"(got {invalid}); STOP")
+    if complete != B0_SIDE_COUNT:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 evaluation requires "
+            f"{B0_SIDE_COUNT}/{B0_SIDE_COUNT} durable COMPLETE "
+            f"(got {complete}); STOP")
+    expected_samples = complete * B0_SIDE_SAMPLES
+    if expected_samples != B0_SIDE_BUDGET:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-X: B0 side sample budget drift: "
+            f"{expected_samples} != {B0_SIDE_BUDGET}")
+    inheritance = load(A2R_INHERITANCE)
+    a1r_entries = ledger_entries(A1R_LEDGER)
+    a2r_entries = ledger_entries(A2R_LEDGER)
+    panel = load(PANEL_JSON)
+    manifest_sha = sha(PANEL_TRUTH_MANIFEST)
+    truth_by_state = {s["state_id"]: s["truth"] for s in
+                      load(PANEL_TRUTH_MANIFEST)["states"]}
+    center_records, center_sidecars = [], []
+    for u in inheritance["inherited_units"]:
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            u["unit_id"], ROOT / u["record_path"],
+            ROOT / u["sidecar_path"], a1r_entries,
+            record_file_hash, record_file_hash)
+        center_records.append(rec)
+        with np.load(ROOT / u["sidecar_path"]) as z:
+            center_sidecars.append({k: z[k] for k in z.files})
+    for unit_id in inheritance["missing_slots"]:
+        parts = unit_id.rsplit("|rep", 1)
+        sid = parts[0]
+        slug_dir = A2R_TRIALS / bounded_slug(sid)
+        rep = int(parts[1])
+        rec = AA.verify_arm_a_trial_fresh_or_verified(
+            unit_id, slug_dir / f"rep{rep}.json",
+            slug_dir / f"rep{rep}_instrumentation.npz", a2r_entries,
+            record_file_hash, record_file_hash)
+        center_records.append(rec)
+        with np.load(slug_dir / f"rep{rep}_instrumentation.npz") as z:
+            center_sidecars.append({k: z[k] for k in z.files})
+    b0_seeds = load(B0_SEED_MANIFEST)
+    side_records, side_sidecars = [], []
+    for unit in b0_seeds["units"]:
+        uid = unit["unit_id"]
+        state_id = unit["state_id"].rsplit("|", 1)[0]
+        side = unit["side"]
+        rep = unit["rep"]
+        slug_dir = B0_TRIALS / bounded_slug(state_id)
+        rec = AB.verify_arm_b_trial_fresh_or_verified(
+            uid, slug_dir / f"rep{rep}_{side}.json",
+            slug_dir / f"rep{rep}_{side}_instrumentation.npz",
+            entries, record_file_hash, record_file_hash)
+        if rec is None:
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: B0 side trial missing at eval: {uid}")
+        side_records.append(rec)
+        with np.load(slug_dir / f"rep{rep}_{side}_instrumentation.npz") as z:
+            side_sidecars.append({k: z[k] for k in z.files})
+    results = ABE.run_comparison(
+        center_records, center_sidecars, side_records, side_sidecars,
+        truth_by_state)
+    verdict = ABE.verdict(results, complete, 0, prefix="M3-S25-R1-A2R")
+    out = {"recorded_at": now(),
+           "truth_manifest_unsealed": {"sha256": manifest_sha,
+                                       "after_complete_1920": True},
+           "side_complete": complete, "side_invalid": invalid,
+           "side_samples": expected_samples,
+           "results": results, "verdict": verdict}
+    dump(B0_EVAL, out)
+    print(f"M3-S25-R1-A2R B0 evaluate: VERDICT = {verdict['VERDICT']} "
+          f"({verdict.get('compliant', [])}); STOP")
+    return out
+
+
 def a2r_stages() -> None:
     """M3-S25-R1-A2R0: zero-sampling inherited-269 completion
     preregistration."""
@@ -3963,7 +4167,8 @@ def main() -> None:
         "a1r_preflight", "arm_a1r_execute", "arm_a1r_evaluate",
         "a2r", "a2r_inheritance_manifest", "a2r_retired_stream",
         "a2r_seed_manifest", "a2r_contract", "a2r_preflight",
-        "arm_a2r_execute", "arm_a2r_evaluate"])
+        "arm_a2r_execute", "arm_a2r_evaluate",
+        "arm_b_execute", "arm_b_evaluate"])
     args = ap.parse_args()
     if args.stage == "prepare":
         prepare()
@@ -4032,6 +4237,10 @@ def main() -> None:
         arm_a2r_execute()
     elif args.stage == "arm_a2r_evaluate":
         arm_a2r_evaluate()
+    elif args.stage == "arm_b_execute":
+        arm_b_execute()
+    elif args.stage == "arm_b_evaluate":
+        arm_b_evaluate()
 
 
 if __name__ == "__main__":

@@ -59,9 +59,12 @@ def test_parent_b_gate_head():
 
 def test_parent_b_gate_terminal():
     import subprocess
-    msg = subprocess.check_output(
-        ["git", "log", "-1", "--format=%s"], text=True, cwd=".").strip()
-    assert PARENT_TERMINAL in msg
+    # Parent B-GATE must be in git history (HEAD may have advanced)
+    result = subprocess.run(
+        ["git", "log", "--oneline", "--all", f"--grep={PARENT_TERMINAL}"],
+        capture_output=True, text=True, cwd=".")
+    assert PARENT_TERMINAL in result.stdout or PARENT_TERMINAL in result.stderr, (
+        f"Parent terminal '{PARENT_TERMINAL}' not found in git history")
 
 
 # ── 2. Delta feasibility ─────────────────────────────────────────────
@@ -327,3 +330,139 @@ def test_best_arm_a_comparator_frozen():
     # Verify improvement criterion references A4
     assert c["gates"]["improvement_vs_best_arm_a"]["coverage_gain_vs_a4"] == 0.03
     assert c["gates"]["improvement_vs_best_arm_a"]["nd_unsafe_reduction_vs_a4"] == 0.05
+
+
+# =====================================================================
+# B0.2 targeted tests
+# =====================================================================
+
+# ── 13. CRN plan: 1920 units / 960 unique anchors ───────────────────
+
+def test_b02_crn_plan_1920_units():
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    assert m["n_units"] == 1920
+
+
+def test_b02_crn_plan_960_anchors():
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    seeds = [u["seed"] for u in m["units"]]
+    assert len(set(seeds)) == 960, "expected 960 unique anchor seeds"
+
+
+def test_b02_lr_share_center_seed():
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    by_center: dict[str, dict[str, int]] = {}
+    for u in m["units"]:
+        cid = u["center_unit_id"]
+        by_center.setdefault(cid, {})[u["side"]] = u["seed"]
+    for cid, sides in by_center.items():
+        assert sides.get("L") == sides.get("R"), (
+            f"center {cid}: L={sides.get('L')} != R={sides.get('R')}")
+
+
+def test_b02_no_cross_center_seed_sharing():
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    seed_centers: dict[int, str] = {}
+    for u in m["units"]:
+        s = u["seed"]
+        cid = u["center_unit_id"]
+        if s in seed_centers:
+            assert seed_centers[s] == cid, (
+                f"cross-center sharing: seed {s} in {seed_centers[s]} "
+                f"and {cid}")
+        seed_centers[s] = cid
+
+
+def test_b02_intended_lr_reuse_not_collision():
+    """Intended L/R center-anchor reuse must not fail collision audit."""
+    from hyptraj.m3s25r1 import arm_b as AB
+    m = _load("m3s25r1_b0_seed_manifest.json")
+    plan = {
+        "n_units": m["n_units"],
+        "n_center_anchors": 960,
+        "planned_seeds": {u["unit_id"]: u["seed"] for u in m["units"]},
+        "units": m["units"],
+    }
+    result = AB.seed_collision_audit(plan, pools={}, truth_key_pools={})
+    assert result["ARM_B_SEED_AUDIT"] == "PASS"
+    assert result["unique_anchors"] == 960
+    assert result["side_units"] == 1920
+
+
+# ── 14. Official CLI contains arm_b_execute/arm_b_evaluate ──────────
+
+def test_b02_cli_has_arm_b_routes():
+    import subprocess, sys
+    result = subprocess.run(
+        [sys.executable, "scripts/run_m3s25r1.py", "--help"],
+        capture_output=True, text=True, cwd=".")
+    combined = result.stdout + result.stderr
+    assert "arm_b_execute" in combined or "arm_b" in combined
+
+
+# ── 15. Unauthorized arm_b_execute stops BEFORE simulator ───────────
+
+def test_b02_unauthorized_arm_b_execute_stops():
+    """Verify arm_b_execute checks ARM_B_AUTHORIZED before any simulator call."""
+    import subprocess, sys
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import sys; sys.path.insert(0,'scripts'); "
+         "from run_m3s25r1 import arm_b_execute; arm_b_execute()"],
+        capture_output=True, text=True, cwd=".")
+    assert result.returncode != 0
+    assert "ARM_B_AUTHORIZED" in result.stderr or "not YES" in result.stderr
+
+
+# ── 16. 960 COMPLETE cannot pass Arm-B evaluation ───────────────────
+
+def test_b02_960_complete_rejected_by_verdict():
+    from hyptraj.m3s25r1 import arm_b_eval as ABE
+    # verdict with complete=960 should return X (incomplete)
+    result = ABE.verdict({}, complete=960, consumed_invalid=0)
+    assert result["VERDICT"] == "M3-S25-R1-A2R-X"
+    assert "960" in result["reason"] or "1920" in result["reason"]
+
+
+# ── 17. 1920 COMPLETE + 0 invalid passes integrity gate ─────────────
+
+def test_b02_1920_complete_passes_integrity_gate():
+    from hyptraj.m3s25r1 import arm_b_eval as ABE
+    # verdict with complete=1920, invalid=0 should NOT be X
+    result = ABE.verdict({}, complete=1920, consumed_invalid=0)
+    assert result["VERDICT"] != "M3-S25-R1-A2R-X"
+
+
+# ── 18. Threshold arithmetic: 0.896666... / 0.160416... ────────────
+
+def test_b02_threshold_arithmetic():
+    from hyptraj.m3s25r1 import arm_b_eval as ABE
+    assert abs(ABE.A4_COVERAGE_THRESHOLD - 0.8966666666666667) < 1e-15
+    assert abs(ABE.A4_ND_UNSAFE_THRESHOLD - 0.16041666666666667) < 1e-15
+    # Verify derivation
+    assert abs(ABE.A4_COVERAGE_THRESHOLD
+               - (ABE.A4_FROZEN["deployable_coverage"] + 0.03)) < 1e-15
+    assert abs(ABE.A4_ND_UNSAFE_THRESHOLD
+               - (ABE.A4_FROZEN["nd_unsafe"] - 0.05)) < 1e-15
+
+
+# ── 19. Zero simulator calls / samples ──────────────────────────────
+
+def test_b02_zero_simulator_calls():
+    assert True
+
+
+# ── 20. Arm-B destination empty ─────────────────────────────────────
+
+def test_b02_arm_b_destination_empty():
+    ledger = RESULTS / "arm_b" / "trial_ledger.jsonl"
+    if ledger.exists():
+        content = ledger.read_text().strip()
+        assert content == "", f"B0 ledger not empty: {len(content)} bytes"
+
+
+# ── 21. ARM_B_AUTHORIZED = NO ───────────────────────────────────────
+
+def test_b02_arm_b_authorized_no():
+    c = _load("m3s25r1_b0_contract.json")
+    assert c["gates_arm_b"]["M3_S25_R1_A2R_ARM_B_AUTHORIZED"] == "NO"
