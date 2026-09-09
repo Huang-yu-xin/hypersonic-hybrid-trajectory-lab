@@ -3999,11 +3999,25 @@ def arm_b_execute() -> dict:
                      "b0_seed_manifest_sha256": sha(B0_SEED_MANIFEST),
                      "a2r_contract": sha(A2R_CONTRACT),
                      "panel_truth_manifest": sha(PANEL_TRUTH_MANIFEST)}
-    # --- runtime plan verification (BEFORE any simulator call) ---
+    # --- center artifact verification (BEFORE any Arm-B simulator call) ---
     b0_contract = load(B0_CONTRACT)
     manifest_sha = sha(B0_SEED_MANIFEST)
     a1r_inherited = inheritance["inherited_units"]
-    a2r_new = load(A2R_SEED_MANIFEST)["units"]
+    a2r_seed_manifest = load(A2R_SEED_MANIFEST)
+    a2r_new = a2r_seed_manifest["units"]
+    center_result = AB.verify_center_artifacts(
+        a1r_inherited, a2r_seed_manifest,
+        a1r_entries, a2r_entries,
+        record_file_hash, ROOT)
+    print(f"B0 center artifacts verified: "
+          f"{center_result['ARM_B_CENTER_VERIFIED']} "
+          f"({center_result['inherited_verified']} inherited + "
+          f"{center_result['a2r_verified']} A2R = "
+          f"{center_result['total_centers']} centers, "
+          f"{center_result['total_samples']} samples)")
+    # Derive center_seeds from VERIFIED records (not from manifests alone)
+    center_seeds = center_result["center_seeds"]
+    # --- runtime plan verification (BEFORE any simulator call) ---
     plan_result = AB.verify_arm_b_runtime_plan(
         b0_seeds, b0_contract, center_seeds,
         a1r_inherited, a2r_new, manifest_sha)

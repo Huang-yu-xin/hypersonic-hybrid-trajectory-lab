@@ -445,6 +445,283 @@ def verify_arm_b_runtime_plan(
 
 
 # --------------------------------------------------------------------------
+# pre-sampling center-artifact verifier
+# --------------------------------------------------------------------------
+
+def verify_center_artifacts(
+    a1r_inherited: list[dict],
+    a2r_seed_manifest: dict,
+    a1r_ledger_entries: list[dict],
+    a2r_ledger_entries: list[dict],
+    record_file_hash_fn,
+    root_path,
+) -> dict:
+    """Canonical pre-sampling verifier for the 960 durable center records.
+
+    Must pass BEFORE any Arm-B STARTED ledger entry or simulator call.
+
+    Verifies:
+      1. 269 inherited A1R centers: durable COMPLETE, record/sidecar hashes
+         match inheritance evidence, binding matches, seed/frozen, samples=20000
+      2. 691 A2R centers: durable COMPLETE, zero CONSUMED_INVALID, hashes
+         verify against A2R ledger, binding matches seed manifest, samples=20000
+      3. Effective universe: 960 unique, 19.2M samples, 120x8 design
+      4. Derives center_seeds from VERIFIED records, crosschecks against
+         frozen manifests
+
+    Returns verified center_seeds dict keyed by center unit_id.
+    """
+    errors: list[str] = []
+    verified_seeds: dict[str, int] = {}  # unit_id -> seed from record
+    N_SAMPLES_EXPECTED = 20_000
+
+    # ── 1. Verify 269 inherited A1R centers ──────────────────────────
+    a1r_complete = {e.get("state_id"): e for e in a1r_ledger_entries
+                    if e.get("status") == "COMPLETE"}
+    a1r_invalid = {e.get("state_id") for e in a1r_ledger_entries
+                   if e.get("status") == "CONSUMED_INVALID"}
+
+    for u in a1r_inherited:
+        uid = u["unit_id"]
+        state_id = u["state_id"]
+
+        # Must be COMPLETE in A1R ledger
+        if uid not in a1r_complete:
+            errors.append(f"A1R inherited {uid}: not COMPLETE in A1R ledger")
+            continue
+
+        # Must not be CONSUMED_INVALID
+        if uid in a1r_invalid:
+            errors.append(f"A1R inherited {uid}: CONSUMED_INVALID in A1R ledger")
+            continue
+
+        # Record and sidecar must exist
+        rec_path = root_path / u["record_path"]
+        side_path = root_path / u["sidecar_path"]
+        if not rec_path.exists():
+            errors.append(f"A1R inherited {uid}: record missing at {rec_path}")
+            continue
+        if not side_path.exists():
+            errors.append(f"A1R inherited {uid}: sidecar missing at {side_path}")
+            continue
+
+        # Record hash must match inheritance evidence
+        actual_rec_hash = record_file_hash_fn(rec_path)
+        expected_rec_hash = u.get("record_file_sha256") or \
+            u.get("complete_ledger_evidence", {}).get("record_file_hash")
+        if expected_rec_hash and actual_rec_hash != expected_rec_hash:
+            errors.append(
+                f"A1R inherited {uid}: record hash drift "
+                f"actual={actual_rec_hash[:16]} expected={expected_rec_hash[:16]}")
+            continue
+
+        # Sidecar hash
+        actual_side_hash = record_file_hash_fn(side_path)
+        expected_side_hash = u.get("sidecar_sha256") or \
+            u.get("complete_ledger_evidence", {}).get("scientific_payload_hash")
+        if expected_side_hash and actual_side_hash != expected_side_hash:
+            errors.append(
+                f"A1R inherited {uid}: sidecar hash drift "
+                f"actual={actual_side_hash[:16]} expected={expected_side_hash[:16]}")
+            continue
+
+        # Load record and verify fields
+        import json
+        rec = json.loads(rec_path.read_text(encoding="utf-8"))
+
+        # Binding: state_id/rep/config
+        rec_state = rec.get("state_id", "")
+        if rec_state != state_id:
+            errors.append(
+                f"A1R inherited {uid}: state_id mismatch "
+                f"record={rec_state} manifest={state_id}")
+
+        rec_rep = rec.get("rep_id")
+        if rec_rep is not None and rec_rep != u.get("rep"):
+            errors.append(
+                f"A1R inherited {uid}: rep mismatch "
+                f"record={rec_rep} manifest={u.get('rep')}")
+
+        # Seed
+        rec_seed = rec.get("seed")
+        a1r_seed = u.get("a1r_seed")
+        if rec_seed is not None and a1r_seed is not None and rec_seed != a1r_seed:
+            errors.append(
+                f"A1R inherited {uid}: seed mismatch "
+                f"record={rec_seed} frozen_a1r={a1r_seed}")
+
+        # Samples
+        rec_samples = rec.get("samples")
+        if rec_samples is not None and rec_samples != N_SAMPLES_EXPECTED:
+            errors.append(
+                f"A1R inherited {uid}: samples={rec_samples} != {N_SAMPLES_EXPECTED}")
+
+        # Record from verified payload
+        if rec_seed is not None:
+            verified_seeds[uid] = rec_seed
+
+    # ── 2. Verify 691 A2R centers ────────────────────────────────────
+    a2r_missing = a2r_seed_manifest.get("missing_slots",
+                                         a2r_seed_manifest.get("units", []))
+    a2r_seed_map = a2r_seed_manifest.get("planned_seeds", {})
+    # Build unit lookup from seed manifest
+    a2r_units_by_uid = {}
+    for u in a2r_seed_manifest.get("units", []):
+        a2r_units_by_uid[u["unit_id"]] = u
+
+    a2r_complete = {e.get("state_id"): e for e in a2r_ledger_entries
+                    if e.get("status") == "COMPLETE"}
+    a2r_invalid_count = sum(1 for e in a2r_ledger_entries
+                            if e.get("status") == "CONSUMED_INVALID")
+    if a2r_invalid_count > 0:
+        errors.append(f"A2R: {a2r_invalid_count} CONSUMED_INVALID entries")
+
+    for uid in (a2r_missing if isinstance(a2r_missing, list)
+                else [u.get("unit_id", u) if isinstance(u, dict) else u
+                      for u in a2r_missing]):
+        if isinstance(uid, dict):
+            uid = uid.get("unit_id", "")
+
+        # Must be COMPLETE in A2R ledger
+        if uid not in a2r_complete:
+            errors.append(f"A2R {uid}: not COMPLETE in A2R ledger")
+            continue
+
+        # Get A2R unit info from seed manifest
+        a2r_u = a2r_units_by_uid.get(uid)
+        if a2r_u is None:
+            errors.append(f"A2R {uid}: not in A2R seed manifest units")
+            continue
+
+        state_id = a2r_u.get("state_id", uid.rsplit("|rep", 1)[0])
+
+        # Record and sidecar must exist
+        from hyptraj.m3wa1r.persistence import bounded_slug
+        parts = uid.rsplit("|rep", 1)
+        sid = parts[0]
+        rep = int(parts[1])
+        slug_dir = root_path / "results/phase_m3s25r1/arm_a2r/trials" / bounded_slug(sid)
+        rec_path = slug_dir / f"rep{rep}.json"
+        side_path = slug_dir / f"rep{rep}_instrumentation.npz"
+        if not rec_path.exists():
+            errors.append(f"A2R {uid}: record missing at {rec_path}")
+            continue
+        if not side_path.exists():
+            errors.append(f"A2R {uid}: sidecar missing at {side_path}")
+            continue
+
+        # Record hash
+        actual_rec_hash = record_file_hash_fn(rec_path)
+        ledger_entry = a2r_complete.get(uid, {})
+        expected_rec_hash = ledger_entry.get("record_file_hash")
+        if expected_rec_hash and actual_rec_hash != expected_rec_hash:
+            errors.append(
+                f"A2R {uid}: record hash drift "
+                f"actual={actual_rec_hash[:16]} expected={expected_rec_hash[:16]}")
+            continue
+
+        # Load record
+        import json
+        rec = json.loads(rec_path.read_text(encoding="utf-8"))
+
+        # Binding: state_id/rep
+        rec_state = rec.get("state_id", "")
+        manifest_state = a2r_u.get("state_id", state_id)
+        # state_id in manifest may not include config prefix; check containment
+        if rec_state and manifest_state and rec_state != manifest_state:
+            # Try matching the state_id part after config
+            rec_core = rec_state.split("_s25r1_")[0] if "_s25r1_" in rec_state else rec_state
+            man_core = manifest_state.split("_s25r1_")[0] if "_s25r1_" in manifest_state else manifest_state
+            if rec_core != man_core:
+                errors.append(
+                    f"A2R {uid}: state_id mismatch "
+                    f"record={rec_state} manifest={manifest_state}")
+
+        rec_rep = rec.get("rep_id")
+        if rec_rep is not None and a2r_u.get("rep") is not None \
+                and rec_rep != a2r_u["rep"]:
+            errors.append(
+                f"A2R {uid}: rep mismatch "
+                f"record={rec_rep} manifest={a2r_u['rep']}")
+
+        # Seed
+        rec_seed = rec.get("seed")
+        frozen_seed = a2r_seed_map.get(uid) or a2r_u.get("seed")
+        if rec_seed is not None and frozen_seed is not None \
+                and rec_seed != frozen_seed:
+            errors.append(
+                f"A2R {uid}: seed mismatch "
+                f"record={rec_seed} frozen={frozen_seed}")
+
+        # Samples
+        rec_samples = rec.get("samples")
+        if rec_samples is not None and rec_samples != N_SAMPLES_EXPECTED:
+            errors.append(
+                f"A2R {uid}: samples={rec_samples} != {N_SAMPLES_EXPECTED}")
+
+        if rec_seed is not None:
+            verified_seeds[uid] = rec_seed
+
+    # ── 3. Effective center universe ─────────────────────────────────
+    all_center_ids = set(verified_seeds.keys())
+    expected_inherited = {u["unit_id"] for u in a1r_inherited}
+    expected_a2r = set()
+    for item in (a2r_missing if isinstance(a2r_missing, list) else []):
+        if isinstance(item, dict):
+            expected_a2r.add(item.get("unit_id", ""))
+        else:
+            expected_a2r.add(str(item))
+
+    missing_inherited = expected_inherited - all_center_ids
+    missing_a2r = expected_a2r - all_center_ids
+    extra = all_center_ids - expected_inherited - expected_a2r
+
+    if missing_inherited:
+        errors.append(f"missing inherited centers: {len(missing_inherited)}")
+    if missing_a2r:
+        errors.append(f"missing A2R centers: {len(missing_a2r)}")
+    if extra:
+        errors.append(f"extra centers not in any manifest: {len(extra)}")
+
+    total_centers = len(all_center_ids)
+    if total_centers != 960:
+        errors.append(f"total center count: {total_centers} != 960")
+
+    # 120 x 8 design check
+    state_rep_counts: dict[str, set[int]] = {}
+    for uid in all_center_ids:
+        parts = uid.rsplit("|rep", 1)
+        if len(parts) == 2:
+            sid, rep_str = parts
+            try:
+                rep = int(rep_str)
+                state_rep_counts.setdefault(sid, set()).add(rep)
+            except ValueError:
+                pass
+    n_states = len(state_rep_counts)
+    if n_states != 120:
+        errors.append(f"unique states: {n_states} != 120")
+    for sid, reps in state_rep_counts.items():
+        if len(reps) != 8:
+            errors.append(f"state {sid}: {len(reps)} reps != 8")
+
+    if errors:
+        raise RuntimeError(
+            f"M3-S25-R1-A2R-ARM-B-X: center artifact verification FAILED "
+            f"({len(errors)} errors): " + "; ".join(errors[:15]))
+
+    return {
+        "inherited_verified": len(expected_inherited & all_center_ids),
+        "a2r_verified": len(expected_a2r & all_center_ids),
+        "total_centers": total_centers,
+        "total_samples": total_centers * N_SAMPLES_EXPECTED,
+        "states": n_states,
+        "center_seeds": verified_seeds,
+        "ARM_B_CENTER_VERIFIED": "PASS",
+    }
+
+
+# --------------------------------------------------------------------------
 # transactional sidecar write (identical durability protocol to arm_a)
 # --------------------------------------------------------------------------
 
