@@ -11,14 +11,16 @@ M3_S25_R1_ARM_A_AUTHORIZED: NO
 M3_S25_R1_ARM_B_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_B_AUTHORIZED: NO
-M3_S25_R1_A2R_ARM_A_AUTHORIZED: YES
+M3_S25_R1_A2R_ARM_A_AUTHORIZED: NO
 M3_S25_R1_A2R_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
 AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
                              Arm-A authorized 2026-09-06; CLOSED at A1R0;
                              A1R Arm-A authorized 2026-09-07; CLOSED at
                              A1R terminal X 2026-09-07;
-                             A2R0 preregistration 2026-09-07)
+                             A2R0 preregistration 2026-09-07;
+                             A2R Arm-A authorized 2026-09-08; CLOSED at
+                             A2R B-GATE 2026-09-08)
 ```
 
 ## Old Arm-A gate closure record (M3-S25-R1-A1R0, closure-only, 2026-09-07)
@@ -73,6 +75,32 @@ authorization HEAD = 8deed164c0c830790aaea5481cc3eec898ea79b8
   `0ad71e8b620cfda98ee1811a26d517a398d00d72513c98453281327059d528f7`.
 - TRUTH remains CLOSED / NO.  VALUE / RARITY / M3-Q remain BLOCKED.
   STOP for human post-A1R audit.
+
+## A2R Arm-A gate closure record (M3-S25-R1-A2R, closure-only, 2026-09-08)
+
+```text
+M3_S25_R1_A2R_ARM_A_AUTHORIZED = NO
+status = CLOSED / EXERCISED / B-GATE
+terminal = M3-S25-R1-A2R-B-GATE
+authorization HEAD = 2317287bb9fb03cf2928ded7eeb14b1109593df2
+```
+
+- The A2R Arm-A authorization (Human, 2026-09-08; commit
+  `2317287`) was exercised once: 691/691 new durable COMPLETE with
+  0 CONSUMED_INVALID + 269 inherited verified = 960 effective trials /
+  19,200,000 effective samples / 19,240,000 cumulative.  The bounded
+  directory-fsync retry (5 attempts, deterministic backoff) succeeded
+  on all 691 trials (the A1R Windows sharing-violation failure did
+  not recur).
+- The frozen B0/B1/A1-A4 evaluation unsealed the truth manifest after
+  960/960 completeness and produced terminal `M3-S25-R1-A2R-B-GATE`
+  (no A-model met the frozen success criterion; the stage terminates
+  at the B-GATE, not A or X).
+- Arm B was NOT executed.  Truth remains CLOSED/EXERCISED.  VALUE /
+  RARITY / M3-Q remain BLOCKED.
+- Evaluation: `results/phase_m3s25r1/summary/m3s25r1_a2r_evaluation.json`
+- A2R ledger SHA: see consumption summary.
+- STOP for human post-A2R audit.
 
 ## Arm-A authorization record (ARM A ONLY, 2026-09-06)
 
