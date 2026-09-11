@@ -18,6 +18,7 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import re
 import shutil
 import subprocess
@@ -4025,17 +4026,27 @@ def arm_b_execute() -> dict:
     dir_fsync_fn = fsync_directory_bounded_retry
     total_new = 0
 
-    for unit in b0_seeds["units"]:
+    def run_side_trial(unit: dict) -> bool:
+        """One Arm-B side trial under the frozen persistence contract.
+
+        Mirrors the PROVEN A2R route: durable STARTED -> one 20,000-sample
+        side draw -> instrumentation sidecar -> temp write + fsync ->
+        atomic rename -> bounded directory-fsync retry -> durable hash
+        verification -> COMPLETE.  Returns True only when a NEW trial was
+        durably completed."""
         uid = unit["unit_id"]
-        if uid in completed:
-            continue
         state_id = unit["state_id"].rsplit("|", 1)[0]
         side = unit["side"]
         rep = unit["rep"]
         seed_c = unit["seed"]
         s2_center = unit["s2_center"]
-        s2_side = s2_center * math.exp(
+        # the frozen manifest value and an independent recomputation of
+        # s2_center * exp(-+Delta); both must agree with the state that
+        # make_side_state actually builds.
+        s2_side_manifest = float(unit["s2_side"])
+        s2_side_recomputed = s2_center * math.exp(
             -AB.DELTA if side == "L" else AB.DELTA)
+        sid = panel_by_state[state_id]
         slug_dir = B0_TRIALS / bounded_slug(state_id)
         rec_p = slug_dir / f"rep{rep}_{side}.json"
         side_p = slug_dir / f"rep{rep}_{side}_instrumentation.npz"
@@ -4043,31 +4054,98 @@ def arm_b_execute() -> dict:
             uid, rec_p, side_p, existing,
             record_file_hash, record_file_hash)
         if rec is not None:
-            continue
+            return False
 
-        def _compute(_state_id=state_id, _side=side, _s2_side=s2_side,
-                     _seed_c=seed_c, _rep=rep, _uid=uid):
-            bench = VR.resolve_bench_config(
-                panel_by_state[_state_id]["config_id"])
-            st_center = BS.assemble_state(
-                bench, float(s2_center),
-                short_config=panel_by_state[_state_id]["config_id"])
+        def compute():
+            bench = VR.resolve_bench_config(sid["config_id"])
+            st_center = BS.assemble_state(bench, float(s2_center),
+                                          short_config=sid["config_id"])
             if isinstance(st_center, dict):
                 raise RuntimeError(
                     f"M3-S25-R1-A2R-X: center assembly failed for "
-                    f"{_state_id}")
-            st_side = AB.make_side_state(st_center, _side)
+                    f"{state_id}")
+            st_side = AB.make_side_state(st_center, side)
+            if abs(float(st_side.s2) - s2_side_manifest) > 1e-12 \
+                    or abs(float(st_side.s2) - s2_side_recomputed) > 1e-12:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: s2_side drift for {uid}: built "
+                    f"{st_side.s2} vs manifest {s2_side_manifest} vs "
+                    f"recomputed {s2_side_recomputed}; the ±Delta "
+                    f"perturbation must follow the frozen manifest")
             record, arrays = AB.arm_b_trial(
-                st_side, _seed_c, f"{_state_id}|{_side}", _rep, _side,
+                st_side, seed_c, f"{state_id}|{side}", rep, side,
                 unit["center_unit_id"], contract_shas)
-            return record, arrays
+            record["recorded_at"] = now()
+            record["stream"] = "arm_b_side_gradient"
+            # sidecar FIRST (durable, bounded dir-fsync retry), then bind
+            # its hash into the record that gets hashed and persisted.
+            record["instrumentation_sha256"] = \
+                AB.write_sidecar_transactional(
+                    side_p, arrays, dir_fsync_fn=dir_fsync_fn)
+            return record
 
-        record, arrays = run_trial_transactional(
-            uid, rec_p, side_p, B0_LEDGER, _compute,
+        def validate(payload):
+            if payload.get("schema") != AB.SIDE_SCHEMA:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: side trial schema drift: "
+                    f"{payload.get('schema')!r} != {AB.SIDE_SCHEMA!r}")
+            if payload.get("namespace") != AB.ARM_B_NAMESPACE:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: side trial namespace drift: "
+                    f"{payload.get('namespace')!r} != "
+                    f"{AB.ARM_B_NAMESPACE!r}")
+            if int(payload.get("seed")) != int(seed_c):
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: side seed drift vs the frozen B0 "
+                    f"CRN anchor for {uid}")
+            if payload.get("side") != side:
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: side label drift for {uid}")
+            if int(payload.get("samples")) != int(B0_SIDE_SAMPLES):
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: side sample count drift for "
+                    f"{uid}: {payload.get('samples')} != "
+                    f"{B0_SIDE_SAMPLES}")
+            if float(payload.get("delta", -1.0)) != float(AB.DELTA):
+                raise RuntimeError(
+                    f"M3-S25-R1-A2R-X: Delta drift for {uid}")
+            if not payload.get("instrumentation_sha256"):
+                raise RuntimeError(
+                    "M3-S25-R1-A2R-X: sidecar hash missing")
+            if record_file_hash(side_p) != payload["instrumentation_sha256"]:
+                raise RuntimeError(
+                    "M3-S25-R1-A2R-X: sidecar hash mismatch")
+            if "truth" in payload or payload.get("confirmed_truth") \
+                    or payload.get("corrected_class"):
+                raise RuntimeError(
+                    "M3-S25-R1-A2R-X: truth label leaked into the "
+                    "execution view")
+
+        result = run_trial_transactional(
+            uid, rec_p, compute, ledger_path=B0_LEDGER,
+            pre_hash_validator=validate,
+            base_entry={"panel_state_id": state_id, "rep_id": rep,
+                        "config_id": sid["config_id"],
+                        "seed_namespace": AB.ARM_B_NAMESPACE,
+                        "seed": seed_c, "side": side,
+                        "samples": B0_SIDE_SAMPLES,
+                        "stream": "arm_b_side_gradient"},
             dir_fsync_fn=dir_fsync_fn)
-        total_new += 1
-        if total_new % 100 == 0:
-            print(f"  B0 side trials complete: {total_new}")
+        if result["status"] != "COMPLETE":
+            raise RuntimeError(
+                f"M3-S25-R1-A2R-X: side trial not durably COMPLETE: "
+                f"{uid}: {result}; CONSUMED_INVALID policy in force; "
+                f"NO REPLAY")
+        return True
+
+    for unit in b0_seeds["units"]:
+        uid = unit["unit_id"]
+        if uid in completed:
+            continue
+        if run_side_trial(unit):
+            total_new += 1
+            if total_new % 100 == 0:
+                print(f"  B0 side trials complete: {total_new}")
 
     final_entries = ledger_entries(B0_LEDGER)
     final_counts = Counter(e.get("status") for e in final_entries)

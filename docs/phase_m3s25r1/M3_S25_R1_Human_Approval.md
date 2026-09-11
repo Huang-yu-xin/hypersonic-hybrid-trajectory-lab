@@ -12,7 +12,7 @@ M3_S25_R1_ARM_B_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_A_AUTHORIZED: NO
 M3_S25_R1_A1R_ARM_B_AUTHORIZED: NO
 M3_S25_R1_A2R_ARM_A_AUTHORIZED: NO
-M3_S25_R1_A2R_ARM_B_AUTHORIZED: YES
+M3_S25_R1_A2R_ARM_B_AUTHORIZED: NO
 AUTHORIZER: Human
 AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
                              Arm-A authorized 2026-09-06; CLOSED at A1R0;
@@ -20,8 +20,65 @@ AUTHORIZATION_DATE: 2026-09-06 (T1 exercised 2026-09-06; closed at A0;
                              A1R terminal X 2026-09-07;
                              A2R0 preregistration 2026-09-07;
                              A2R Arm-A authorized 2026-09-08; CLOSED at
-                             A2R B-GATE 2026-09-08)
+                             A2R B-GATE 2026-09-08;
+                             A2R Arm-B authorized 2026-09-09; WITHDRAWN
+                             to NO on 2026-09-09 -- see the withdrawal
+                             record below; NOT exercised; 0 samples)
 ```
+
+## A2R Arm-B gate WITHDRAWAL record (2026-09-09, zero sampling)
+
+```text
+M3_S25_R1_A2R_ARM_B_AUTHORIZED = NO   (YES -> NO, 2026-09-09)
+status = WITHDRAWN / NOT EXERCISED / zero samples
+authorization HEAD = 3f866942df16c1e2592cdbf2b7a237144c14bedb
+simulator calls = 0; scientific samples = 0; B0 ledger = absent
+```
+
+Human authorization for A2R Arm-B execution (2026-09-09, commit
+`3f86694`) was presented for execution.  The pre-sampling frozen gates
+ran and **PASSED**:
+
+- `B0 center artifacts verified: PASS (269 inherited + 691 A2R = 960
+  centers, effective_samples=19200000)`
+- `B0 runtime plan verified: PASS` (manifest SHA pin, 1920 -> 960 L/R
+  CRN-anchor topology, Delta = 0.10 frozen)
+
+The runner then aborted inside the side-trial loop **BEFORE the first
+scientific simulator call** on three mechanical wiring defects in
+`scripts/run_m3s25r1.py::arm_b_execute` (none of them scientific --
+no Delta, seed, sample count, CRN semantics, feature, model, CV or
+threshold was involved):
+
+1. `math` is never imported, but the loop calls `math.exp(-AB.DELTA)`
+   at line 4037 => `NameError` while computing `s2_side`.
+2. The `run_trial_transactional(...)` call passes 5 positional
+   arguments against the signature `(logical_id, final_path,
+   run_simulator, *, ledger_path, pre_hash_validator, ...)` =>
+   `TypeError: too many positional arguments`.  The proven A2R route
+   uses the keyword form.
+3. Even with (1) and (2) repaired, the route omits the mandatory
+   `pre_hash_validator` (schema / namespace / seed / sidecar-hash /
+   truth-leak checks), returns a `(record, arrays)` tuple where a dict
+   payload is required, and never writes the instrumentation sidecar,
+   so `instrumentation_sha256` would stay null.
+
+No sample was consumed and nothing was persisted: the B0 trial ledger
+does not exist, `results/phase_m3s25r1/arm_b/trials` contains 0 files,
+and the 960-center / 19,200,000-sample effective center dataset was
+never opened for writing (A2R 691 and A1R 270 records unchanged).
+Therefore this is NOT a CONSUMED_INVALID and NOT a terminal
+`M3-S25-R1-A2R-X`; the authorization was **not exercised**.
+
+Root cause of the escape: every `arm_b_execute` test was an
+`inspect.getsource()` source-text assertion; the trial loop was never
+actually executed under test, so the wiring was never exercised.
+
+Disposition: the gate is returned to NO so the defects are repaired by
+a zero-sampling amendment (matching the B0.4.1 / B0.4.2 / B0.4.3
+precedent) with a real-path test, then re-audited and re-authorized.
+TRUTH remains CLOSED / NO.  VALUE / RARITY / M3-Q remain BLOCKED.
+Arm-B evaluation was NOT run.
 
 ## Old Arm-A gate closure record (M3-S25-R1-A1R0, closure-only, 2026-09-07)
 

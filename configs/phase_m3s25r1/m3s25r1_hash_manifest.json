@@ -47,6 +47,16 @@
       "size_bytes": 298111
     },
     {
+      "path": "configs/phase_m3s25r1/m3s25r1_b0_contract.json",
+      "sha256": "b6340d1ae2a3185ba289baf2fca25d4b50ea83e68fe1d380734327c1a72f9dab",
+      "size_bytes": 7662
+    },
+    {
+      "path": "configs/phase_m3s25r1/m3s25r1_b0_seed_manifest.json",
+      "sha256": "4534e158825c6c567788756ea5409c5461208fdc1b5f87617b733542650659ef",
+      "size_bytes": 1240374
+    },
+    {
       "path": "configs/phase_m3s25r1/m3s25r1_budget_contract.json",
       "sha256": "38a9f4379de1ac6ed6fa1d77f45932820ae3d73626b5cd4a031f1f4dbb03a708",
       "size_bytes": 710
@@ -203,8 +213,28 @@
     },
     {
       "path": "docs/phase_m3s25r1/M3_S25_R1_A2R0_Record.md",
-      "sha256": "f6fd5ee06c6f2d903817223212a100fc8712cf0ea453813e0ce1fac3514cb656",
-      "size_bytes": 2541
+      "sha256": "660ad0e820a6fedb5f625713490743512374284e9ae9ce9cec2e86f32e97a30c",
+      "size_bytes": 4382
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A2R_B0_5_Amendment_Record.md",
+      "sha256": "46fc33664a5b857b668de49c28ac85cfc45f4d5332957bdeed7b819b05db2371",
+      "size_bytes": 8144
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A2R_B0_CRN_Audit.md",
+      "sha256": "799fee760387c9bc4950c29a106beae1fd012597885b0acee41941bfd9baf62e",
+      "size_bytes": 5286
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A2R_B0_Record.md",
+      "sha256": "0cf8c2775aef993615061d3869b369622e23e9bf84352772a73fe2aa514bdba2",
+      "size_bytes": 5670
+    },
+    {
+      "path": "docs/phase_m3s25r1/M3_S25_R1_A2R_Terminal_Report.md",
+      "sha256": "0037f96d3a350492e334133f365c049d542994d52dbb3491380f6ad645213c77",
+      "size_bytes": 1967
     },
     {
       "path": "docs/phase_m3s25r1/M3_S25_R1_Arm_A_Incident_Report.md",
@@ -262,16 +292,16 @@
       "size_bytes": 2889
     }
   ],
-  "head": "618d4a03bcc78d925b29724b30460bfd812e52d4",
+  "head": "3f866942df16c1e2592cdbf2b7a237144c14bedb",
   "preflight_verdict": "PASS",
   "preregistration_round0": {
     "samples": 0,
     "simulator_calls": 0
   },
   "python_version": "3.11.15 (main, Jun 23 2026, 15:20:37) [MSC v.1944 64 bit (AMD64)]",
-  "recorded_at": "2026-09-08T19:34:07+0800",
+  "recorded_at": "2026-09-11T15:30:11+0800",
   "scientific_code_hashes": {
-    "scripts/run_m3s25r1.py": "c20ccc90c0f7a94d93f532dc54f7bdcfb528f1e7a6f3d0f7ec7515c713dc9519",
+    "scripts/run_m3s25r1.py": "33ad48da37afb44bb80d1675d9ff60212819d4035870697b776d7c41f8056fae",
     "scripts/run_m3s2s.py": "3b3f005acb2ffe7e2a6e7ceb0088d50f6c059daa794cfdc4f893aa2d6e9e1684",
     "src/hyptraj/m1d/experiments.py": "a5208f22221cae8d55c3792d1f3569813d3455347200ba4c9621d6be2b4cfd1e",
     "src/hyptraj/m3/gradient_estimator.py": "daccaf9ce550c16ea9233434bcbb652bd8dc126595e47eee8b6f9771d7993d24",
